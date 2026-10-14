@@ -141,7 +141,130 @@ java -jar target\com.findinpath.findinpath.jar
 visit the application landing page `http://localhost:8080/index`, login
 ### Background
 
+[Unleash Documentation](https://docs.getunleash.io/) 
+
+
+
+### State Machine - Unleash/Generic Feature Manager Client:
+```code
+stateDiagram-v2
+    direction TB
+
+    [*] --> Created
+
+    Created --> Initializing: Configure SDK
+    Initializing --> LoadingLocal: Read bootstrap or cache
+    LoadingLocal --> ReadyCached: Usable configuration found
+    LoadingLocal --> Fetching: No usable configuration
+
+    Initializing --> Fetching: Start network synchronization
+    Fetching --> ReadyFresh: Fetch succeeds
+    Fetching --> WaitingRetry: Fetch fails
+
+    ReadyCached --> Fetching: Background refresh
+    ReadyFresh --> Evaluating: Flag requested
+    ReadyCached --> Evaluating: Flag requested
+    Evaluating --> ReadyFresh: Return evaluated result
+    Evaluating --> ReadyCached: Return evaluated result
+
+    ReadyFresh --> WaitingRetry: Refresh fails
+    WaitingRetry --> ReadyStale: Retry policy permits continued operation
+    WaitingRetry --> Fetching: Retry timer expires
+
+    ReadyStale --> Evaluating: Use last known configuration
+    ReadyStale --> Fetching: Refresh retry
+
+    ReadyFresh --> Stopping: Application shuts down
+    ReadyCached --> Stopping: Application shuts down
+    ReadyStale --> Stopping: Application shuts down
+    Stopping --> [*]
+
+    note right of Evaluating
+      Local evaluation:
+      flag definition
+      activation strategy
+      evaluation context
+      constraints and rollout
+    end note
+
+    note right of ReadyStale
+      Cached values may be old.
+      New server-side changes
+      are not yet available.
+    end note
+
+```
+
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    [*] --> Created
+
+    Created --> Initializing: Configure<br/>SDK
+    Initializing --> LoadingLocal: Read bootstrap<br/>or cache
+    LoadingLocal --> ReadyCached: Usable <br/>configuration<br/>detected
+    LoadingLocal --> Fetching: No usable<br/>configuration<br/>found
+
+    Initializing --> Fetching: Start network<br/> synchronization
+    Fetching --> ReadyFresh: Fetch<br/>succeeds
+    Fetching --> WaitingRetry: Fetch<br/>fails
+
+    ReadyCached --> Fetching: Background refresh
+    ReadyFresh --> Evaluating: Flag<br/>requested
+    ReadyCached --> Evaluating: Flag<br/>requested
+    Evaluating --> ReadyFresh: Return<br/>evaluated<br/>result
+    Evaluating --> ReadyCached: Return<br/>evaluated<br/>result
+
+    ReadyFresh --> WaitingRetry: Refresh<br/>fails
+    WaitingRetry --> ReadyStale: Retry policy permits<br/>continued operation
+    WaitingRetry --> Fetching: Retry timer<br/>expires
+
+    ReadyStale --> Evaluating: Use last known<br/>configuration
+    ReadyStale --> Fetching: Refresh retry
+
+    ReadyFresh --> Stopping: Application<br/>shuts down
+    ReadyCached --> Stopping: Application<br/>shuts down
+    ReadyStale --> Stopping: Application<br/>shuts down
+    Stopping --> [*]
+
+    note right of Evaluating
+      Local evaluation:
+      flag definition
+      activation strategy
+      evaluation context
+      constraints and rollout
+    end note
+
+    note right of ReadyStale
+      Cached values may be old.
+      New server-side changes
+      are not yet available.
+    end note
+
+```
+```
+```
+```mermaid
+
+flowchart LR
+    A["Application requests flag"] --> B{"Flag<br/>definition<br/>available?"}
+    B -- No --> C["Fallback<br/>or <br/>disabled result"]
+    B -- Yes --> D{"Flag<br/>enabled<br/>globally ?"}
+    D -- No --> E["Disabled"]
+    D -- Yes --> F{"Activation<br/>strategy<br/>matches?"}
+    F -- No --> E
+    F -- Yes --> G{"Context<br/>constraints<br/>satisfied?"}
+    G -- No --> E
+    G -- Yes --> H[["Rollout <br/>or<br/>stickiness rules"]]
+    H --> I["Enabled<br/>or<br/>selected variant"]
+    C --> J["Application will<br/>use result"]
+    E --> J
+    I --> J
+
+```
 The definition:
+
 > __Feature Toggles__ _decouple_ deployment of code from release of new features
 
 ### Troubleshooting
