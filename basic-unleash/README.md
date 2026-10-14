@@ -194,6 +194,7 @@ stateDiagram-v2
     end note
 
 ```
+![Diagram 1](screenshots/diagram1.png)
 
 ```mermaid
 stateDiagram-v2
@@ -243,8 +244,27 @@ stateDiagram-v2
     end note
 
 ```
+
+```code
+
+flowchart LR
+    A["Application requests flag"] --> B{"Flag<br/>definition<br/>available?"}
+    B -- No --> C["Fallback<br/>or <br/>disabled result"]
+    B -- Yes --> D{"Flag<br/>enabled<br/>globally ?"}
+    D -- No --> E["Disabled"]
+    D -- Yes --> F{"Activation<br/>strategy<br/>matches?"}
+    F -- No --> E
+    F -- Yes --> G{"Context<br/>constraints<br/>satisfied?"}
+    G -- No --> E
+    G -- Yes --> H[["Rollout <br/>or<br/>stickiness rules"]]
+    H --> I["Enabled<br/>or<br/>selected variant"]
+    C --> J["Application will<br/>use result"]
+    E --> J
+    I --> J
 ```
-```
+![Diagram 2](screenshots/diagram2.png)
+
+
 ```mermaid
 
 flowchart LR
@@ -266,6 +286,38 @@ flowchart LR
 The definition:
 
 > __Feature Toggles__ _decouple_ deployment of code from release of new features
+
+
+
+__Feature Management__ is not strictly a successor to __Blue-Green Deployment__ [BG](https://en.wikipedia.org/wiki/Blue%E2%80%93green_deployment)). It is a *more* granular, complementary control mechanism that can reduce the need to use deployment topology as the only means of controlling feature exposure
+
+#### Archtecutral Requirement
+
+Feature-management decisions must be explainable, traceable, and auditable across the entire path from flag configuration to application behavior.
+
+#### Dashboard Protection
+
+The __Unleash__ / generic  __Future Manager Server__ administration dashboard is not merely a convenient screen for changing a Boolean: 
+It is a privileged control plane exposed through a web application. That makes its own identity, authorization, and governance requirements an architectural concern, distinct from the SDK's runtime behavior.
+
+The risk is easy to obscure in executive language. A requirement such as 
+
+> *centralized feature lifecycle management with enterprise-grade security
+
+sounds adequate, but does not explicitly establish who may change a production flag, who may authorize a rollout, or who can alter the targeting rules.
+
+#### Feature Management Control-Plane Security
+
+The feature-management administration interface shall be treated as a privileged production control plane, not merely as an application configuration dashboard.
+
+The solution must provide enterprise-integrated authentication and granular role-based access control (RBAC), with appropriate separation of duties across flag creation, configuration, approval, rollout, and production administration. Authorization must apply to the underlying management APIs as well as the web interface; hiding or disabling UI controls is not an authorization boundary.
+
+The implementation must support auditable attribution of configuration changes, controlled access to production environments, and traceability from a change request through approval and deployment to its resulting application behavior. Administrative access, credentials, and management-plane connectivity must be governed independently of the application SDK's runtime permissions.
+
+The vendor must document the supported authorization model, role granularity, environment isolation, audit capabilities, integration with enterprise identity and privileged-access controls, and any licensing or deployment limitations affecting these capabilities.
+
+The architectural review should therefore examine the actual control plane and its security obligations, rather than accepting the profitability proposition as evidence that the proposed design is complete.
+
 
 ### Troubleshooting
 
