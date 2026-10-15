@@ -196,6 +196,8 @@ stateDiagram-v2
 ```
 ![Diagram 1](screenshots/diagram1.png)
 
+![Diagram 1](screenshots/diagram1-alternative-rendering.png)
+
 ```mermaid
 stateDiagram-v2
     direction LR
@@ -264,6 +266,7 @@ flowchart LR
 ```
 ![Diagram 2](screenshots/diagram2.png)
 
+![Diagram 2](screenshots/diagram2-alternative-rendering.png)
 
 ```mermaid
 
@@ -317,6 +320,27 @@ The implementation must support auditable attribution of configuration changes, 
 The vendor must document the supported authorization model, role granularity, environment isolation, audit capabilities, integration with enterprise identity and privileged-access controls, and any licensing or deployment limitations affecting these capabilities.
 
 The architectural review should therefore examine the actual control plane and its security obligations, rather than accepting the profitability proposition as evidence that the proposed design is complete.
+
+### TL;DR;
+
+1. Network firewall inventory
+Identify the feature-management server as a distinct network component, with its required communication paths, source and destination zones, ports and protocols, and the direction of initiated connections. Include the administrative interface and API separately from application SDK traffic where the deployment architecture requires that distinction.
+
+2. Architecture diagram
+Show the management/control plane, runtime evaluation path, and relevant dependencies. Establish whether applications communicate with the central service directly, through an intermediary, or through some combination—and what happens if the service is unavailable.
+
+3. RBAC and operational ownership
+Add the management interface and its underlying APIs to the access-control review. Identify who may create and change flags, approve changes, enable production rollouts, and administer the platform. Establish the identity integration, audit requirements, and operational ownership appropriate to the actual product capabilities.
+
+
+these are not three independent paperwork exercises. They describe the same component from three perspectives: connectivity, architecture, and authority.
+
+
+As we move into deployment and operational support, could we ensure that the feature-management service is explicitly represented in the architecture diagram, network firewall inventory, and RBAC review?
+
+In particular, it would be useful to distinguish the application runtime communication paths from administrative access to the management interface and APIs, and to identify the applicable production access controls and audit requirements.
+
+This is not a request to revisit the approved solution selection. It is to ensure that the required connectivity, security boundaries, and operational responsibilities are documented before implementation.
 
 
 ### Troubleshooting
