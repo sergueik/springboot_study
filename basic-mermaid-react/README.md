@@ -348,28 +348,28 @@ alternatively
 docker build --target builder -f Dockerfile .
 ```
 ```text
-Sending build context to Docker daemon  6.397MB
+Sending build context to Docker daemon  6.413MB
 Step 1/9 : FROM node:22.12.0-alpine AS builder
  ---> 3448d7ddbc59
 Step 2/9 : WORKDIR /app
  ---> Using cache
  ---> 79c6f9b18150
 Step 3/9 : COPY package*.json /app/
- ---> d23d38347781
+ ---> efb5f9416710
 Step 4/9 : ARG NPM_REGISTRY
- ---> Running in 502b4e3640fc
-Removing intermediate container 502b4e3640fc
- ---> b6fbef484db5
+ ---> Running in 665a8d409034
+Removing intermediate container 665a8d409034
+ ---> 02c90b694244
 Step 5/9 : RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
- ---> Running in e421811e12e4
-Removing intermediate container e421811e12e4
- ---> a6dcecdf01b1
+ ---> Running in 0d02267f0d73
+Removing intermediate container 0d02267f0d73
+ ---> 68d2c2f1414f
 Step 6/9 : RUN npm install || { cat /root/.npm/_logs/*.log; exit 1; }
- ---> Running in d22ca7b09852
-npm warn deprecated jpeg-exif@1.1.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+ ---> Running in 69738a216106
 npm warn deprecated crypto-js@4.2.0: Active development of CryptoJS has been discontinued. This library is no longer maintained.
+npm warn deprecated jpeg-exif@1.1.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
-added 159 packages, and audited 160 packages in 40s
+added 159 packages, and audited 160 packages in 48s
 
 13 packages are looking for funding
   run `npm fund` for details
@@ -385,14 +385,14 @@ npm notice New major version of npm available! 10.9.0 -> 12.2.0
 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
 npm notice To update run: npm install -g npm@12.2.0
 npm notice
-Removing intermediate container d22ca7b09852
- ---> d2482c8c8f8f
+Removing intermediate container 69738a216106
+ ---> e93e82eb53a5
 Step 7/9 : COPY index.html vite.config.js favicon.png /app/
- ---> d09fd3aaead3
+ ---> 256a97fc226c
 Step 8/9 : ADD src /app/src
- ---> 17d120e61160
+ ---> 053dec1a3230
 Step 9/9 : RUN npm run build
- ---> Running in fa77e971c047
+ ---> Running in 638793a0e52b
 
 > mermaid-react@0.1.0 build
 > vite build
@@ -440,89 +440,90 @@ dist/assets/chunk-2Q5K7J3B-C1jixKkw.js                                          
 dist/assets/chunk-JWPE2WC7-DVXcaiue.js                                           0.22 kB │ gzip:   0.17 kB
 dist/assets/chunk-XXDRQBXY-BakWylwG.js                                           0.26 kB │ gzip:   0.22 kB
 dist/assets/chunk-5VM5RSS4-ZNzvKenW.js                                           0.36 kB │ gzip:   0.27 kB
-dist/assets/flowDiagram-HODETNUW-BGpOCoL3.js                                     0.47 kB │ gzip:   0.27 kB
+dist/assets/flowDiagram-HODETNUW-COUONpRO.js                                     0.47 kB │ gzip:   0.27 kB
 dist/assets/chunk-POPQ4Y6H-BbjG91Jw.js                                           0.57 kB │ gzip:   0.40 kB
-dist/assets/infoDiagram-27XIBGKW-y4kLH1xv.js                                     0.65 kB │ gzip:   0.42 kB
-dist/assets/classDiagram-ZZMXUADV-BRFu7hId.js                                    0.69 kB │ gzip:   0.41 kB
-dist/assets/classDiagram-v2-VYDZK3BY-BRFu7hId.js                                 0.69 kB │ gzip:   0.41 kB
-dist/assets/stateDiagram-v2-MP3YSRHH-CGNdKioS.js                                 0.70 kB │ gzip:   0.41 kB
-dist/assets/swimlanesDiagram-VR7AAH4N-DQGolGRY.js                                0.75 kB │ gzip:   0.44 kB
+dist/assets/infoDiagram-27XIBGKW-CGLau5zi.js                                     0.65 kB │ gzip:   0.42 kB
+dist/assets/classDiagram-ZZMXUADV-xB7uLrsJ.js                                    0.69 kB │ gzip:   0.41 kB
+dist/assets/classDiagram-v2-VYDZK3BY-xB7uLrsJ.js                                 0.69 kB │ gzip:   0.41 kB
+dist/assets/stateDiagram-v2-MP3YSRHH-kW01-n_v.js                                 0.70 kB │ gzip:   0.41 kB
+dist/assets/swimlanesDiagram-VR7AAH4N-BYpUyh4S.js                                0.75 kB │ gzip:   0.44 kB
 dist/assets/sizeCapture-INFHLROL-3uHXrFqA.js                                     0.87 kB │ gzip:   0.51 kB
 dist/assets/line-DwXbLlg9.js                                                     0.94 kB │ gzip:   0.47 kB
 dist/assets/ordinal-BDEzSJ7C.js                                                  1.17 kB │ gzip:   0.56 kB
 dist/assets/rolldown-runtime-BCiCTKAo.js                                         1.30 kB │ gzip:   0.71 kB
 dist/assets/chunk-GVQU2GXP-DzUe2A8w.js                                           1.41 kB │ gzip:   0.79 kB
-dist/assets/railroadDiagram-O6MQD6OU-cwskXjja.js                                 1.66 kB │ gzip:   0.77 kB
-dist/assets/abnfDiagram-VCTEODGH-C38q3V3U.js                                     1.84 kB │ gzip:   0.89 kB
+dist/assets/railroadDiagram-O6MQD6OU-Dgy2YrMC.js                                 1.66 kB │ gzip:   0.77 kB
+dist/assets/abnfDiagram-VCTEODGH-CVxeA9wy.js                                     1.84 kB │ gzip:   0.89 kB
 dist/assets/chunk-P2QGCYS3-DD7DGpVJ.js                                           1.94 kB │ gzip:   0.95 kB
 dist/assets/chunk-F27PBJKO-Bd_pVafX.js                                           1.97 kB │ gzip:   0.88 kB
-dist/assets/pegDiagram-XKGWAZYB-Cy7LEws5.js                                      2.00 kB │ gzip:   0.94 kB
-dist/assets/ebnfDiagram-PWID7BFC-C-Tp8Mlt.js                                     2.06 kB │ gzip:   0.89 kB
+dist/assets/pegDiagram-XKGWAZYB-ScZzzM8a.js                                      2.00 kB │ gzip:   0.94 kB
+dist/assets/ebnfDiagram-PWID7BFC-CljrsrHN.js                                     2.06 kB │ gzip:   0.89 kB
 dist/assets/dist-DGs_yUrP.js                                                     2.17 kB │ gzip:   0.97 kB
 dist/assets/path-fybaL0A-.js                                                     2.27 kB │ gzip:   0.98 kB
 dist/assets/arc-Bw7m-cfu.js                                                      3.47 kB │ gzip:   1.46 kB
-dist/assets/diagram-Z3DM3KII-Cyvd3YDL.js                                         4.27 kB │ gzip:   1.85 kB
+dist/assets/diagram-Z3DM3KII-BW-KI6hi.js                                         4.27 kB │ gzip:   1.85 kB
 dist/assets/defaultLocale-BFoDCU3G.js                                            4.63 kB │ gzip:   2.12 kB
 dist/assets/linear-BXgYrK5n.js                                                   5.51 kB │ gzip:   2.25 kB
 dist/assets/chunk-PWAF6VOD-B254sQkl.js                                           5.83 kB │ gzip:   2.68 kB
-dist/assets/diagram-UQ7AKVKN-CWa8FiR9.js                                         6.06 kB │ gzip:   2.56 kB
-dist/assets/pieDiagram-E7YTZNPT-BwkNgO21.js                                      6.21 kB │ gzip:   2.59 kB
-dist/assets/diagram-S7CK7UJ4-O_dJIT02.js                                         8.11 kB │ gzip:   3.65 kB
-dist/assets/cynefinDiagram-5FMLGOSQ-Bm6Rc58Y.js                                  9.93 kB │ gzip:   3.51 kB
-dist/assets/stateDiagram-D77RDMKH-B4uiYHKC.js                                   10.53 kB │ gzip:   3.68 kB
+dist/assets/diagram-UQ7AKVKN-jjozXjqQ.js                                         6.06 kB │ gzip:   2.56 kB
+dist/assets/pieDiagram-E7YTZNPT-C5QyXu3f.js                                      6.21 kB │ gzip:   2.59 kB
+dist/assets/diagram-S7CK7UJ4-Uwrjvyoa.js                                         8.11 kB │ gzip:   3.65 kB
+dist/assets/cynefinDiagram-5FMLGOSQ-DLlyoGxK.js                                  9.93 kB │ gzip:   3.51 kB
+dist/assets/stateDiagram-D77RDMKH-Bo_1KI7m.js                                   10.53 kB │ gzip:   3.68 kB
 dist/assets/diagram-VSXAHHWV-6aZpSUC5.js                                        10.66 kB │ gzip:   4.12 kB
-dist/assets/dagre-GXQ25YYZ-xFb8rcrX.js                                          10.85 kB │ gzip:   4.10 kB
-dist/assets/chunk-SVP7TREG-V0co009P.js                                          15.63 kB │ gzip:   4.35 kB
-dist/assets/diagram-VX7I27RA-DcPW1ra0.js                                        15.74 kB │ gzip:   5.52 kB
+dist/assets/dagre-GXQ25YYZ-DuxoeNpV.js                                          10.85 kB │ gzip:   4.10 kB
+dist/assets/chunk-SVP7TREG-BNsM4Qov.js                                          15.63 kB │ gzip:   4.35 kB
+dist/assets/diagram-VX7I27RA-BG9vlaye.js                                        15.74 kB │ gzip:   5.52 kB
 dist/assets/mermaid-parser.core-Cpib-OZd.js                                     16.58 kB │ gzip:   3.93 kB
-dist/assets/ishikawaDiagram-5VMMS53U-wlUkZ-Ee.js                                17.30 kB │ gzip:   6.53 kB
-dist/assets/kanban-definition-UXKFOSKX-P9-yDEhb.js                              20.21 kB │ gzip:   7.12 kB
+dist/assets/ishikawaDiagram-5VMMS53U-yRi_6-Kz.js                                17.30 kB │ gzip:   6.53 kB
+dist/assets/kanban-definition-UXKFOSKX-Li_Tvq6c.js                              20.21 kB │ gzip:   7.12 kB
 dist/assets/sankeyDiagram-P5KCCOFB-DHU_dWow.js                                  22.79 kB │ gzip:   8.25 kB
 dist/assets/journeyDiagram-3NMN7TZE-CCh5jV98.js                                 23.15 kB │ gzip:   8.16 kB
-dist/assets/mindmap-definition-YA3MSWOX-B3bodB50.js                             23.36 kB │ gzip:   7.95 kB
-dist/assets/wardleyDiagram-VM6X3IG4-BSyqbt4U.js                                 25.19 kB │ gzip:   6.55 kB
+dist/assets/mindmap-definition-YA3MSWOX-CDJWvb82.js                             23.36 kB │ gzip:   7.95 kB
+dist/assets/wardleyDiagram-VM6X3IG4-CnwOD1rt.js                                 25.19 kB │ gzip:   6.55 kB
 dist/assets/rough.esm-Dy-Kn_BL.js                                               27.10 kB │ gzip:   8.85 kB
 dist/assets/gitGraphDiagram-WWUBYQGX-BqAZiW-U.js                                29.01 kB │ gzip:   8.57 kB
-dist/assets/timeline-definition-24CTP7MA-DUzhRQBp.js                            30.36 kB │ gzip:   9.96 kB
-dist/assets/erDiagram-RLTQ6QDP-DfjLDBfm.js                                      30.60 kB │ gzip:  10.53 kB
+dist/assets/timeline-definition-24CTP7MA-DdpAldlS.js                            30.36 kB │ gzip:   9.96 kB
+dist/assets/erDiagram-RLTQ6QDP-m5kjZ0ju.js                                      30.60 kB │ gzip:  10.53 kB
 dist/assets/chunk-75Z2AOVW-DRXKjQv2.js                                          30.75 kB │ gzip:   8.50 kB
-dist/assets/requirementDiagram-BXWQKSXE-BFSfVSTC.js                             30.91 kB │ gzip:   9.73 kB
+dist/assets/requirementDiagram-BXWQKSXE-Dd7HUel7.js                             30.91 kB │ gzip:   9.73 kB
 dist/assets/quadrantDiagram-AXDQQJYC-BUbfGmN2.js                                33.51 kB │ gzip:   9.74 kB
-dist/assets/dagre-DSFPDb-J.js                                                   36.85 kB │ gzip:  13.21 kB
-dist/assets/chunk-IMKFNOWR-B6r50ZBn.js                                          37.63 kB │ gzip:  12.26 kB
-dist/assets/vennDiagram-4TSXK5OY-D9HqNddK.js                                    41.15 kB │ gzip:  15.11 kB
-dist/assets/blockDiagram-I7D4REHJ-C0sqd04R.js                                   41.38 kB │ gzip:  13.33 kB
-dist/assets/xychartDiagram-S5SC5T6Z-CP9Vyb1D.js                                 44.14 kB │ gzip:  12.21 kB
+dist/assets/dagre-C6JJLb6i.js                                                   36.85 kB │ gzip:  13.21 kB
+dist/assets/chunk-IMKFNOWR-5DaSBqDd.js                                          37.63 kB │ gzip:  12.26 kB
+dist/assets/vennDiagram-4TSXK5OY-CotdWYJg.js                                    41.15 kB │ gzip:  15.11 kB
+dist/assets/blockDiagram-I7D4REHJ-BQ7cerZm.js                                   41.38 kB │ gzip:  13.34 kB
+dist/assets/xychartDiagram-S5SC5T6Z-Bvg8JWAU.js                                 44.14 kB │ gzip:  12.21 kB
 dist/assets/src-Bc_iCBZR.js                                                     45.66 kB │ gzip:  16.00 kB
-dist/assets/chunk-TICWLB2K-IDUVcbQg.js                                          48.77 kB │ gzip:  15.74 kB
+dist/assets/chunk-TICWLB2K-CDMO7uvr.js                                          48.77 kB │ gzip:  15.74 kB
 dist/assets/chunk-GMAD6QVW-DXXDaxv9.js                                          51.20 kB │ gzip:  16.68 kB
-dist/assets/chunk-SHT3W25Y-B-TEoent.js                                          61.19 kB │ gzip:  19.82 kB
+dist/assets/chunk-SHT3W25Y-Bb16uRWI.js                                          61.19 kB │ gzip:  19.82 kB
 dist/assets/c4Diagram-7LVT6UL2-BTVkQOE9.js                                      64.74 kB │ gzip:  18.52 kB
 dist/assets/ganttDiagram-EL5Y4UJY-DEwoREEa.js                                   69.36 kB │ gzip:  22.74 kB
-dist/assets/cose-bilkent-JH36ORCC-BVBfVmNE.js                                   81.22 kB │ gzip:  21.52 kB
+dist/assets/cose-bilkent-JH36ORCC-d1jJRUaj.js                                   81.22 kB │ gzip:  21.52 kB
 dist/assets/chunk-4HAMMTFA-yGvg_REc.js                                         104.85 kB │ gzip:  25.62 kB
-dist/assets/swimlanes-42K2YHIH-B3T5SR8J.js                                     110.98 kB │ gzip:  37.95 kB
-dist/assets/sequenceDiagram-WJ2MYXX4-rHNeyony.js                               115.73 kB │ gzip:  30.58 kB
-dist/assets/architectureDiagram-5GKGNRK7-DUBa_B1T.js                           148.87 kB │ gzip:  41.11 kB
+dist/assets/swimlanes-42K2YHIH-C4i2U8jr.js                                     110.98 kB │ gzip:  37.95 kB
+dist/assets/sequenceDiagram-WJ2MYXX4-LBEm59n7.js                               115.73 kB │ gzip:  30.58 kB
+dist/assets/architectureDiagram-5GKGNRK7-CnCgy-w7.js                           148.87 kB │ gzip:  41.10 kB
 dist/assets/chunk-DU6HZSFF-B6IZsRR5.js                                         239.21 kB │ gzip:  39.55 kB
 dist/assets/katex-DJhrJSbw.js                                                  258.59 kB │ gzip:  77.43 kB
-dist/assets/cytoscape.esm-CHBj4VkZ.js                                          434.61 kB │ gzip: 137.74 kB
+dist/assets/cytoscape.esm-BegBNzOV.js                                          434.75 kB │ gzip: 137.75 kB
 dist/assets/chunk-FOHPRMQF-DD4dKubD.js                                         662.08 kB │ gzip: 143.15 kB
-dist/assets/index-CIG7IiBV.js                                                1,130.50 kB │ gzip: 394.76 kB
+dist/assets/index-CZgYOn_E.js                                                1,130.74 kB │ gzip: 394.89 kB
 
 [plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 4.21s
-Removing intermediate container fa77e971c047
- ---> c44d71bac3de
-Successfully built c44d71bac3de
+✓ built in 4.65s
+Removing intermediate container 638793a0e52b
+ ---> 947fcc748d02
+Successfully built 947fcc748d02
 ```
 
 
 |Legacy function|Responsibility|Porting approach|
+|---------------|--------------|----------------|
 |`prepareSvgForExport()`|Clone SVG, normalize dimensions, inline computed styles, remove embedded CSS, replace foreignObject labels|Preserve initially; this contains important compatibility workarounds|
 |`normalizeSvgViewBoxToIntegers()`|Round the SVG viewBox coordinates and dimensions|Preserve as a separately testable diagnostic workaround|
 |`exportSvg()`|Prepare the rendered SVG and call svgExport.downloadSvg()|Preserve export logic; replace DOM lookup|
@@ -530,6 +531,18 @@ Successfully built c44d71bac3de
 |`renderMermaid()`|Render the Mermaid source and update the output|Replace with the head-version rendering path|
 |`zoomIn()` / `zoomOut()`|Apply CSS transforms to the displayed SVG|Keep independent of export|
 
+
+#### Challenges with Porting
+
+
+|Issue|Consequence|
+|-----|-----------|
+|utility methods `prepareSvgForExport()` and `normalizeSvgViewBoxToIntegers()` are not defined in the supplied `App.jsx`.|`exportSvg()` will throw a `ReferenceError` when invoked unless those functions are defined elsewhere.|
+|`#output` id attributed `<svg>` element does not exist in the `App.jsx`/`main.jsx`.|The fallback selector cannot find the diagram.|
+|`window.exportSvg` is assigned inside the component body.|It is reassigned on every render. It is callable, but this is unnecessary and makes the integration less clean.|
+|`svgExport` is imported as a module namespace.|This is valid only if `svg-exportjs-browser` exposes the expected named exports in the installed version.|
+|`mermaid.render()` completes asynchronously.|Export must happen after the rendered SVG has been committed to the DOM, or it must use the SVG string returned directly by Mermaid.|
+||
 #### Observation
 
 The generated Vite/React/Mermaid application is fully static and works correctly when served over HTTP (nginx).
