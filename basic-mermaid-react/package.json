@@ -8,9 +8,15 @@
     "build": "vite build"
   },
   "dependencies": {
+    "blob-stream": "^0.1.3",
+    "blob-stream-browserify": "^0.1.3",
     "mermaid": "^11.0.0",
+    "pdfkit": "^0.16.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "svg-exportjs-browser": "^2.1.0",
+    "svg-to-pdfkit": "^0.1.8",
+    "umd": "^3.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "6.0.4",
