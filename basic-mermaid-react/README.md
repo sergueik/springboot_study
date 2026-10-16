@@ -399,6 +399,9 @@ subst E: %CD%
 ```
 ![Running from E: Drive](screenshots/capture-local-e.png)
 
+![Running Latest Mermaid from E: Drive](screenshots/capture-local-e2.png)
+
+
 > NOTE: without the Chrome option `--allow-file-access-from-files` the error becomes:
 
 ```text

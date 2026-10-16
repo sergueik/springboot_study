@@ -232,10 +232,17 @@ console.log("downloadPng:", typeof svgExport.downloadPng);
 export default function App() {
   // ReferenceError: svgExport is not defined
   const [diagram, setDiagram] = useState(`
-graph TD
- A[Browser] --> B[React]
- B --> C[Mermaid]
- C --> D[SVG]
+architecture-beta
+    group api(cloud)[API]
+
+    service db(database)[Database] in api
+    service disk1(disk)[Storage] in api
+    service disk2(disk)[Storage] in api
+    service server(server)[Server] in api
+
+    db:L -- R:server
+    disk1:T -- B:server
+    disk2:T -- B:db
 `);
 
   const [svg, setSvg] = useState("");
