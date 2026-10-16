@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import mermaid from "mermaid";
-// Cannot read properties of undefined (reading 'toString') o = $f().kMaxLength 
-// import pdfkit from "pdfkit";
 import umd from "umd";
-// global is not defined
-// import blobStream from "blob-stream";
 import blobStreamBrowserify from "blob-stream-browserify";
 import * as svgExport from "svg-exportjs-browser";
-import svgPdfkit from "svg-to-pdfkit";
 
 
 window.prepareSvgForExport = function(sourceSvg) {
