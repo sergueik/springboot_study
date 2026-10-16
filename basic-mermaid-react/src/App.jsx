@@ -244,6 +244,7 @@ graph TD
 `);
 
   const [svg, setSvg] = useState("");
+  const [rendered, setRendered] = useState(false);
 	
   useEffect(() => {
 
@@ -256,6 +257,7 @@ graph TD
       diagram
     ).then(result => {
       setSvg(result.svg);
+      setRendered(true);
     });
 
   }, [diagram]);
@@ -271,12 +273,18 @@ graph TD
           e => setDiagram(e.target.value)
         }
       />
-
+      <hr/>
+        <button 
+          disabled={!rendered} 
+          onClick={() => window.exportSvg()} >
+        Export SVG
+      </button>
+      <hr/>
       <div
         dangerouslySetInnerHTML={{
           __html: svg
         }}
       />
-    </>
+</>
   );
 }

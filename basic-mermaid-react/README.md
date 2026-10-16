@@ -548,6 +548,28 @@ Successfully built 947fcc748d02
 ![Exporting SVG POC from Chrome Dev Tools](screenshots/capture-svg-export-console.png)
 
 
+
+* align with the Mermaid rederer  using React states
+```js
+  const [rendered, setRendered] = useState(false);
+...
+    mermaid.render(
+      "output",
+      diagram
+    ).then(result => {
+      setSvg(result.svg);
+      setRendered(true);
+    });
+...
+  <button 
+      disabled={!rendered} 
+      onClick={() => window.exportSvg()} >
+    Export SVG
+  </button>
+
+```
+![Exporting SVG](screenshots/capture-svg-export-button.png)
+
 #### Observation
 
 The generated Vite/React/Mermaid application is fully static and works correctly when served over HTTP (nginx).
