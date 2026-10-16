@@ -1,0 +1,8 @@
+namePrefix: pre-post-sync-
+
+bases:
+- ../kustomize-guestbook
+
+resources:
+- pre-sync-job.yaml
+- post-sync-job.yaml

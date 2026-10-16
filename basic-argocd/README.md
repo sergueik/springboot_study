@@ -84,8 +84,27 @@ That last constraint changes the design substantially. You are not merely replac
 
 |Responsibility|GitHub Actions implementation|Complexity|Importance|
 |--------------|-----------------------------|----------|----------|
-|Discover desired state|Checkout repository; render manifests with Helm or Kustomize|⭐⭐💀|⭐⭐⭐⭐⭐|
-|Observe live state|Query remote Kubernetes API|⭐⭐💀|⭐⭐⭐⭐⭐|
+|Discover desired state|Checkout repository; render manifests with Helm or Kustomize|⭐⭐💀|⭐|
+|Observe live state|Query remote Kubernetes API|⭐⭐💀|⭐⭐|
 |Detect differences|Compare desired vs. live state, accounting for defaults and server-side mutations|⭐⭐⭐⭐⭐💀💀|⭐⭐⭐⭐⭐|
-|Reconcile|Apply desired manifests using kubectl apply or server-side apply|⭐⭐⭐💀|⭐⭐⭐⭐⭐|
-|Verify convergence|Inspect resource status, rollout conditions and health; report failures or retry|⭐⭐⭐⭐💀|⭐⭐⭐⭐⭐|
+|Reconcile|Apply desired manifests using kubectl apply or server-side apply|⭐⭐⭐💀|⭐⭐⭐⭐|
+|Verify convergence|Inspect resource status, rollout conditions and health; report failures or retry|⭐⭐⭐⭐💀|⭐⭐⭐|
+
+#### Components
+
+__API Server__: Handles the Web UI, CLI commands, and manages Role-Based Access Control (RBAC).
+__Repository Server__: Communicates with Git repositories, maintains a local cache, and renders manifests from tools like Helm, Kustomize, or Jsonnet.
+__Application Controller__: Acts as the reconciliation engine, continuously comparing live cluster states against the target Git state and detecting configuration drift (OutOfSync).
+__Redis Cache__: state cache
+
+
+### See Also
+
+   * [docker hub](https://hub.docker.com/r/argoproj/argocd)
+   * collection of [Example Apps to Demonstrate Argo CD](https://github.com/argoproj/argocd-example-apps) and related [video](https://www.youtube.com/watch?v=0WAm0y2vLIo)
+
+   * [ArgoCD In One Shot](https://github.com/LondheShubham153/argocd-in-one-shot)
+   * [Demos of arogcd one shot video project sources](https://github.com/LondheShubham153/argocd-demos)
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

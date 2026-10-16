@@ -1101,7 +1101,7 @@ Thus the practical rule is:
 | Commit either artifact to source control | **Neither** |
 
 
-![Head Mounted Hands Free Loupe for Precision Work](screenshot/capture-simpsons.png)
+![Head Mounted Hands Free Loupe for Precision Work](screenshots/capture-simpsons.png)
 
 ### Blue Prism
 
@@ -1609,6 +1609,93 @@ OOXML:
 |2000|Exchange 2000 shipped, incorporating the technology.|
 |2001–02|Other applications started exploiting essentially the same style of interaction; Microsoft specifically mentions Oddpost, appearing about a year after Exchange 2000 shipped.|
 |2005|Jesse James Garrett coined Ajax as the name for the broader technique.|
+
+
+### BDD Vs. SKILL.md
+```code
+flowchart LR
+
+N1[Describe<br/>Feature<br/>Expected]
+C1{"Feature <br/>Works?<br/>❓"}
+N2["🔧<br/>Implement<br/>Feature"]
+N3[Refactor<br/>Code]
+N1--"🤸‍♀️Run Test"--> C1
+C1--"🤔No"-->N2
+N2--"🤸‍♀️Run Test"-->C1
+C1--"🔆Yes"-->N3
+N3 --> N1 
+
+```
+```mermaid
+
+flowchart LR
+
+N1[Describe<br/>Feature<br/>Expected]
+C1{"Feature <br/>Works?<br/>❓"}
+N2["🔧<br/>Implement<br/>Feature"]
+N3[Refactor<br/>Code]
+N1--"🤸‍♀️Run Test"--> C1
+C1--"🤔No"-->N2
+N2--"🤸‍♀️Run Test"-->C1
+C1--"🔆Yes"-->N3
+N3 --> N1 
+```
+![BDD Flow](screenshots/bdd-flow.png)
+
+
+```code
+flowchart LR
+
+    S(("Start")) --> A["🔍 Examine<br/>Legacy Process"]
+    A --> B["📚 Find Known<br/>Implementations"]
+    B --> C{"Choose<br/>Approach"}
+
+    subgraph POC["🛠️ Approach A — Conventional PoC"]
+        P1[["💻 Implement PoC"]]
+        P2[/"🏁 Code"/]
+        P1 --> P2
+    end
+
+    subgraph SKILLS["🧠 Approach B — Skill-Assisted"]
+        K1["📥 Import Skills"]
+         K3[/"🏁  Skills"/]
+        K1 --"review"--> P2 --> K3
+    end
+
+    C -- "🛠️ Conventional" --> P1
+    C -- "🧠 Skill-assisted" --> K1
+
+    P2 --"👪<br/>review"--> E((("End")))
+    K3 --> E
+```
+
+```mermaid
+flowchart LR
+
+    S(("Start")) --> A["🔍 Examine<br/>Legacy Process"]
+    A --> B["📚 Find Known<br/>Implementations"]
+    B --> C{"Choose<br/>Approach"}
+
+    subgraph POC["🛠️ Approach A — Conventional PoC"]
+        P1[["💻 Implement PoC"]]
+        P2[/"🏁 Code"/]
+        P1 --> P2
+    end
+
+    subgraph SKILLS["🧠 Approach B — Skill-Assisted"]
+        K1["📥 Import Skills"]
+         K3[/"🏁  Skills"/]
+        K1 --"review"--> P2 --> K3
+    end
+
+    C -- "🛠️ Conventional" --> P1
+    C -- "🧠 Skill-assisted" --> K1
+
+    P2 --"👪<br/>review"--> E((("End")))
+    K3 --> E
+```
+
+![SKILL Flow](screenshots/skill-flow.png)
 
 
 ### See Also
