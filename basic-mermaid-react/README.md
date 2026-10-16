@@ -194,7 +194,9 @@ Successfully tagged mermaid-react:latest
 NAME=mermaid-react
 docker run --name $NAME -d -p 8080:80 $IMAGE
 ```
-
+```sh
+docker-machine ip
+```
 ![Run Nginx Docker](screenshots/capture-nginx-docker.png)
 
 ![Bookmark](screenshots/capture-container-bookmark.png)
@@ -280,7 +282,7 @@ dir /b/s /a-d assets | findstr -i "index-BGiIaHVw.js chunk-Y2CYZVJY-DsF7k-Jl.js 
 ```
 > NOTE: moving the files around does not help:
 
-![Directory Listing With C: Drive](screenshots/captute-local-c-2.png)
+![Directory Listing With C: Drive](screenshots/capture-local-c-2.png)
 
 
 ![Trouble With C: Drive](screenshots/capture-local-c.png)
@@ -542,7 +544,10 @@ Successfully built 947fcc748d02
 |`window.exportSvg` is assigned inside the component body.|It is reassigned on every render. It is callable, but this is unnecessary and makes the integration less clean.|
 |`svgExport` is imported as a module namespace.|This is valid only if `svg-exportjs-browser` exposes the expected named exports in the installed version.|
 |`mermaid.render()` completes asynchronously.|Export must happen after the rendered SVG has been committed to the DOM, or it must use the SVG string returned directly by Mermaid.|
-||
+
+![Exporting SVG POC from Chrome Dev Tools](screenshots/capture-svg-export-console.png)
+
+
 #### Observation
 
 The generated Vite/React/Mermaid application is fully static and works correctly when served over HTTP (nginx).

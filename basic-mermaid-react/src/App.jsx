@@ -210,9 +210,10 @@ window.normalizeSvgViewBoxToIntegers = function(svg) {
   console.log( '  original:' + original +  '  normalized:' + normalized);
   svg.setAttribute( 'viewBox', normalized);
 };
+
 window.exportSvg = async function(sourceSvg) {
   sourceSvg = sourceSvg ||
-      document.querySelector('#output svg');
+      document.querySelector('svg#output');
 
   if (!sourceSvg) {
       console.warn(
@@ -251,7 +252,7 @@ graph TD
     });
 
     mermaid.render(
-      "diagram",
+      "output",
       diagram
     ).then(result => {
       setSvg(result.svg);
