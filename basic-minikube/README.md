@@ -41,7 +41,7 @@ if still seeing error and /or if there is no  kubectl or kubeadm inside the vm, 
 kubectl version
 ```
 ```text
- kubectl: command not found
+kubectl: command not found
 ```
 ```sh
 which kubecl
@@ -1064,6 +1064,288 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
 [ 🩼  ← ]   degraded / allowed
 [ 🛏️  → ]   critical / blocked
 
+### Troubleshooting
+
+> NOTE: Minikube appears to need `wmic.exe` which is a problem:
+Microsoft has permanently removed the *"legacy"* `wmic.exe` command-line utility from __Windows 11__
+versions __24H2, 25H2, and later builds as of August 2026
+
+
+```text
+minikube.exe start --driver=virtualbox
+```
+```text
+* minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+* Using the virtualbox driver based on existing profile
+* minikube 1.39.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.39.0
+* To disable this notice, run: 'minikube config set WantUpdateNotification false'
+
+* Starting control plane node minikube in cluster minikube
+* Restarting existing virtualbox VM for "minikube" ...
+! StartHost failed, but will try again: driver start: Host is not running
+* Updating the running virtualbox "minikube" VM ...
+* Found network options:
+  - NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+  - no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+E1016 16:49:15.431783   37784 cache.go:203] Error caching images:  Caching images for kubeadm: caching images: caching image "C:\\Users\\kouzm\\.minikube\\cache\\images\\gcr.io\\k8s-minikube\\storage-provisioner_v5": getting destination path: parsing docker archive dst ref: replace a Win drive letter to a volume name: exec: "wmic": executable file not found in %PATH%
+* Preparing Kubernetes v1.22.3 on Docker 20.10.6 ...
+  - env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+X Unable to load cached images: loading cached images: CreateFile C:\Users\kouzm\.minikube\cache\images\k8s.gcr.io\coredns_1.8.0: The system cannot find the file specified.
+
+! Unable to restart cluster, will reset it: apiserver health: apiserver healthz never reported healthy: cluster wait timed out during healthz check
+E1016 16:54:19.072265   37784 logs.go:267] Failed to list containers for "kube-apiserver": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+E1016 16:54:21.087324   37784 logs.go:267] Failed to list containers for "etcd": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+E1016 16:54:23.105726   37784 logs.go:267] Failed to list containers for "coredns": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+E1016 16:54:25.121210   37784 logs.go:267] Failed to list containers for "kube-scheduler": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+E1016 16:54:27.140259   37784 logs.go:267] Failed to list containers for "kube-proxy": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+E1016 16:54:29.157810   37784 logs.go:267] Failed to list containers for "kubernetes-dashboard": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+E1016 16:54:31.171361   37784 logs.go:267] Failed to list containers for "storage-provisioner": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+E1016 16:54:33.186651   37784 logs.go:267] Failed to list containers for "kube-controller-manager": docker: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+*
+X Error starting cluster: cp: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+*
+╭──────────────────────────────────────────────────────────────────╮
+│                                                                  │
+│    * If the above advice does not help, please let us know:      │
+│      https://github.com/kubernetes/minikube/issues/new/choose    │
+│                                                                  │
+│    * Please attach the following file to the GitHub issue:       │
+│    * - C:\Users\kouzm\.minikube\logs\lastStart.txt               │
+│                                                                  │
+╰──────────────────────────────────────────────────────────────────╯
+
+
+X Exiting due to GUEST_START: cp: NewSession: new client: new client: dial tcp 127.0.0.1:57753: connectex: No connection could be made because the target machine actively refused it.
+*
+╭──────────────────────────────────────────────────────────────────╮
+│                                                                  │
+│    * If the above advice does not help, please let us know:      │
+│      https://github.com/kubernetes/minikube/issues/new/choose    │
+│                                                                  │
+│    * Please attach the following file to the GitHub issue:       │
+│    * - C:\Users\kouzm\.minikube\logs\lastStart.txt               │
+│                                                                  │
+╰──────────────────────────────────────────────────────────────────╯
+
+```
+
+To innstall `wmic.exe` back on __Windows 11__ version `25H2` use Powershell shell on split token
+a.k.a as administrator and use Windows Feature management cmdlet:
+```powershell
+Add-WindowsCapability -Online -Name WMIC~~~~ 
+```
+
+```text
+Path          :
+Online        : True
+RestartNeeded : False
+```
+
+confirm via
+```powershell
+Get-WindowsCapability -Online | Where-Object {$_.Name -like "*WMIC*"}
+```
+unroftunately it may return nothing and
+```cmd
+where.exe wmic.*
+```
+
+```text
+INFO: Could not find files for the given pattern(s).
+``` 
+
+download `wmic_dlc.zip` from [Windows Management Instrumentation Command-line (WMIC) removal from Windows](https://support.microsoft.com/en-us/servicing/os/windows/docs/2025/09/windows-management-instrumentation-command-line-wmic-removal-from-windows)       
+article
+
+```sh
+curl -skLo ~/Downloads/wmic_dlc.zip https://download.microsoft.com/download/1f01d660-d821-49b3-b247-7bc2fe9f4561/wmic_dlc.zip
+unzip ~/Downloads/wmic_dlc.zip
+```
+```cmd
+Set-ExecutionPolicy Bypass -Scope Process
+. .\install.ps1
+```
+```text
+Microsoft (R) MOF Compiler Version 10.0.26100.8521
+Copyright (c) Microsoft Corp. 1997-2006. All rights reserved.
+Parsing MOF file: C:\Windows\System32\wbem\cli.mof
+MOF file has been successfully parsed
+Storing data in the repository...
+Done!
+Microsoft (R) MOF Compiler Version 10.0.26100.8521
+Copyright (c) Microsoft Corp. 1997-2006. All rights reserved.
+Parsing MOF file: C:\Windows\System32\wbem\cliegaliases.mof
+MOF file has been successfully parsed
+Storing data in the repository...
+Done!
+WMIC has been installed successfully.
+```
+```cmd
+where.exe wmic.*
+```
+```text
+C:\Windows\System32\wbem\WMIC.exe
+```
+The Virtual Box Manager shows the VM stuck in *stopping* state. It is possile to recycle the VM from 
+and recreate:
+```cmd
+minikube.exe start --driver=virtualbox
+```
+```text
+* minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+* Using the virtualbox driver based on existing profile
+* Starting control plane node minikube in cluster minikube
+* virtualbox "minikube" VM is missing, will recreate.
+* Creating virtualbox VM (CPUs=2, Memory=4000MB, Disk=20000MB) ...
+* Found network options:
+  - NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+  - no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+E1016 17:06:34.938329   25096 cache.go:203] Error caching images:  Caching images for kubeadm: caching images: caching image "C:\\Users\\kouzm\\.minikube\\cache\\images\\k8s.gcr.io\\etcd_3.4.13-0": getting destination path: parsing docker archive dst ref: replace a Win drive letter to a volume name: exec: "wmic": executable file not found in %PATH%
+* Preparing Kubernetes v1.22.3 on Docker 20.10.6 ...
+  - env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+X Unable to load cached images: loading cached images: CreateFile C:\Users\kouzm\.minikube\cache\images\k8s.gcr.io\coredns_1.8.0: The system cannot find the file specified.
+  - Generating certificates and keys ...
+  - Booting up control plane ...
+  - Configuring RBAC rules ...
+* Verifying Kubernetes components...
+  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
+* Enabled addons: storage-provisioner, default-storageclass
+* kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```
+
+```cmd
+minikube.exe status
+```
+```text
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+```
+```cmd
+minikube.exe kubectl -- get pods -A
+```
+```text
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-78fcd69978-2xd49           1/1     Running   0          7s
+kube-system   etcd-minikube                      1/1     Running   0          16s
+kube-system   kube-apiserver-minikube            1/1     Running   0          22s
+kube-system   kube-controller-manager-minikube   1/1     Running   0          16s
+kube-system   kube-proxy-lptn9                   1/1     Running   0          8s
+kube-system   kube-scheduler-minikube            1/1     Running   0          16s
+kube-system   storage-provisioner                1/1     Running   0          15s
+``` 
+
+> NOTE: To print Windows version information directly to the console one cannot use `winver.exe` which is compiled into GUI window app.
+
+```cmd
+ver
+```
+```text
+Microsoft Windows [Version 10.0.26200.9457]
+```
+NOTE: this does not print version in Microsoft preferred reference format "Version 25H2".
+
+To *retrieve* Windows version in Microsoft  preferred format (e.g. "Version 25H2"), one must directly 
+query the `DisplayVersion` registry key:
+
+```powershell
+(get-itemproperty 'HKLM:/SOFTWARE/Microsoft/Windows NT/CurrentVersion').DisplayVersion
+```
+```text
+25H2
+```
+ > NOTE: do not *Show* the Minikube VM or you will noe be able to purge it:
+```cmd
+minikube delete --all --purge
+```
+```text
+* Deleting "minikube" in virtualbox ...
+X Failed to delete cluster: api remove: remove C:\Users\kouzm\.minikube\machines\minikube\minikube\Logs\VBox.log: The process cannot access the file because it is being used by another process.
+* You may need to manually remove the "minikube" VM from your hypervisor
+* Removing C:\Users\kouzm\.minikube\machines\minikube ...
+
+X Exiting due to GUEST_FILE_IN_USE: remove C:\Users\kouzm\.minikube\machines\minikube\minikube\Logs\VBox.log: The process cannot access the file because it is being used by another process.
+* Suggestion: Another program is using a file required by minikube. If you are using Hyper-V, try stopping the minikube VM from within the Hyper-V manager
+* Documentation: https://docs.docker.com/machine/drivers/hyper-v/
+* Related issue: https://github.com/kubernetes/minikube/issues/7300
+```
+```cmd
+minikube.exe status
+```
+```text
+E1016 17:29:42.610229   20808 status.go:258] status error: host: load: filestore "minikube": open C:\Users\kouzm\.minikube\machines\minikube\config.json: The system cannot find the file specified.
+E1016 17:29:42.610229   20808 status.go:261] The "minikube" host does not exist!
+minikube
+type: Control Plane
+host: Nonexistent
+kubelet: Nonexistent
+apiserver: Nonexistent
+kubeconfig: Nonexistent
+```
+
+```cmd
+minikube.exe start --driver=virtualbox
+```
+```text
+* minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+* Using the virtualbox driver based on existing profile
+* Starting control plane node minikube in cluster minikube
+! StartHost failed, but will try again: Error loading existing host. Please try running [minikube delete], then run [minikube start] again.: filestore "minikube": open C:\Users\kouzm\.minikube\machines\minikube\config.json: The system cannot find the file specified.
+* Failed to start virtualbox VM. Running "minikube delete" may fix it: Error loading existing host. Please try running [minikube delete], then run [minikube start] again.: filestore "minikube": open C:\Users\kouzm\.minikube\machines\minikube\config.json: The system cannot find the file specified.
+
+X Exiting due to GUEST_NOT_FOUND: Failed to start host: Error loading existing host. Please try running [minikube delete], then run [minikube start] again.: filestore "minikube": open C:\Users\kouzm\.minikube\machines\minikube\config.json: The system cannot find the file specified.
+* Suggestion: minikube is missing files relating to your guest environment. This can be fixed by running 'minikube delete'
+* Related issue: https://github.com/kubernetes/minikube/issues/9130
+```
+subsequent attempts
+
+```cmd
+minikube delete --all --purge
+```
+are hanging
+
+remove the hidden directory, this will lead minikube to fully reinstall including download of nbase images:
+```cmd
+```
+```cmd
+minikube.exe start --driver=virtualbox
+```
+```text
+* minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+* Using the virtualbox driver based on user configuration
+* minikube 1.39.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.39.0
+* To disable this notice, run: 'minikube config set WantUpdateNotification false'
+
+* Downloading VM boot image ...
+    > minikube-v1.20.0.iso.sha256: 65 B / 65 B [-------------] 100.00% ? p/s 0s
+    > minikube-v1.20.0.iso: 245.40 MiB / 245.40 MiB [] 100.00% 8.26 MiB p/s 30s
+* Downloading VM boot image ...
+    > minikube-v1.20.0.iso.sha256: 65 B / 65 B [-------------] 100.00% ? p/s 0s
+    > minikube-v1.20.0.iso: 245.40 MiB / 245.40 MiB [] 100.00% 8.26 MiB p/s 30s
+* Starting control plane node minikube in cluster minikube
+* Downloading Kubernetes v1.20.2 preload ...
+    > preloaded-images-k8s-v10-v1...: 491.71 MiB / 491.71 MiB  100.00% 6.68 MiB
+* Creating virtualbox VM (CPUs=2, Memory=4000MB, Disk=20000MB) ...
+* Found network options:
+  - NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+  - no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+* Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+  - env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
+  - Generating certificates and keys ...
+  - Booting up control plane ...
+  - Configuring RBAC rules ...
+* Verifying Kubernetes components...
+  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
+* Enabled addons: storage-provisioner, default-storageclass
+* kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```
+> NOTE: your proxy settings will likely be different
 ### See Also
 
    * https://github.com/DanWahlin/DockerAndKubernetesCourseCode/tree/main/samples
