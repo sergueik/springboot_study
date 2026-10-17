@@ -118,7 +118,7 @@ apiserver: Running
 kubeconfig: Configured
 ```
 
-```
+```cmd
 minikube.exe kubectl create namespace argocd 
 ```
 > NOTE in first (e.g. if recycled prior ) will show downloads
@@ -263,7 +263,7 @@ Value: 10.0.2.15
 ```
 ```
 SET VM="{e8e61b40-c769-4c5c-ae19-51e35b9c8bde}"
-VBoxManage.exe modifyvm "%VM%" --nat-pf1 "web,tcp/udp,,8080,10.0.2.15,8080"
+VBoxManage.exe modifyvm "%VM%" --nat-pf1 "web,tcp,,8080,10.0.2.15,8080"
 ```
 
 ```text
@@ -271,13 +271,352 @@ VBoxManage.exe: error: The machine 'minikube' is already locked for a session (o
 VBoxManage.exe: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component MachineWrap, interface IMachine, callee IUnknown
 VBoxManage.exe: error: Context: "LockMachine(a->session, LockType_Write)" at line 529 of file VBoxManageModifyVM.cpp
 ```
-for testing sake do the same iinteractively through Virtualbox Manager:
+VBoxManage will not update the VM which is not stopppe. 
+When VM is running, use `controlvm` instead:
+
+```poweshell
+$VM='{e8e61b40-c769-4c5c-ae19-51e35b9c8bde}'
+pushd 'C:\Program Files\Oracle\VirtualBox'
+./VBoxManage.exe showvminfo $VM --details
+
+```
+```text
+Name:            minikube
+Groups:          /
+Guest OS:        Linux 2.6 / 3.x / 4.x (64-bit)
+UUID:            e8e61b40-c769-4c5c-ae19-51e35b9c8bde
+Config file:     C:\Users\kouzm\.minikube\machines\minikube\minikube\minikube.vbox
+Snapshot folder: C:\Users\kouzm\.minikube\machines\minikube\minikube\Snapshots
+Log folder:      C:\Users\kouzm\.minikube\machines\minikube\minikube\Logs
+Hardware UUID:   e8e61b40-c769-4c5c-ae19-51e35b9c8bde
+Memory size:     4000MB
+Page Fusion:     off
+VRAM size:       8MB
+CPU exec cap:    100%
+HPET:            on
+Chipset:         piix3
+Firmware:        BIOS
+Number of CPUs:  2
+PAE:             on
+Long Mode:       on
+Triple Fault Reset: off
+APIC:            on
+X2APIC:          off
+CPUID Portability Level: 0
+CPUID overrides: None
+Boot menu mode:  disabled
+Boot Device (1): DVD
+Boot Device (2): DVD
+Boot Device (3): HardDisk
+Boot Device (4): Not Assigned
+ACPI:            on
+IOAPIC:          on
+BIOS APIC mode:  APIC
+Time offset:     0ms
+RTC:             UTC
+Hardw. virt.ext: on
+Nested Paging:   on
+Large Pages:     on
+VT-x VPID:       on
+VT-x unr. exec.: on
+Paravirt. Provider: Default
+Effective Paravirt. Provider: KVM
+State:           running (since 2026-10-16T21:38:28.851000000)
+Monitor count:   1
+3D Acceleration: off
+2D Video Acceleration: off
+Teleporter Enabled: off
+Teleporter Port: 0
+Teleporter Address:
+Teleporter Password:
+Tracing Enabled: off
+Allow Tracing to Access VM: off
+Tracing Configuration:
+Autostart Enabled: off
+Autostart Delay: 0
+Default Frontend:
+Storage Controller Name (0):            SATA
+Storage Controller Type (0):            IntelAhci
+Storage Controller Instance Number (0): 0
+Storage Controller Max Port Count (0):  30
+Storage Controller Port Count (0):      30
+Storage Controller Bootable (0):        on
+SATA (0, 0): C:\Users\kouzm\.minikube\machines\minikube\boot2docker.iso (UUID: 47c9cbf8-fa66-46f0-ad86-427f59cb1229)
+SATA (1, 0): C:\Users\kouzm\.minikube\machines\minikube\disk.vmdk (UUID: f7c31550-964e-4d68-8272-da382605480e)
+NIC 1:           MAC: 080027A84198, Attachment: NAT, Cable connected: on, Trace: off (file: none), Type: virtio, Reported speed: 0 Mbps, Boot priority: 0, Promisc Policy: deny, Bandwidth group: none
+NIC 1 Settings:  MTU: 0, Socket (send: 64, receive: 64), TCP Window (send:64, receive: 64)
+NIC 1 Rule(0):   name = ssh, protocol = tcp, host ip = 127.0.0.1, host port = 60813, guest ip = , guest port = 22
+NIC 1 Rule(1):   name = web, protocol = tcp, host ip = 127.0.0.1, host port = 8080, guest ip = , guest port = 8080
+NIC 2:           MAC: 08002744027E, Attachment: Host-only Interface 'VirtualBox Host-Only Ethernet Adapter #5', Cable connected: on, Trace: off (file: none), Type: virtio, Reported speed: 0 Mbps, Boot priority: 0, Promisc Policy: deny, Bandwidth group: none
+NIC 3:           disabled
+NIC 4:           disabled
+NIC 5:           disabled
+NIC 6:           disabled
+NIC 7:           disabled
+NIC 8:           disabled
+Pointing Device: PS/2 Mouse
+Keyboard Device: PS/2 Keyboard
+UART 1:          disabled
+UART 2:          disabled
+UART 3:          disabled
+UART 4:          disabled
+LPT 1:           disabled
+LPT 2:           disabled
+Audio:           enabled (Driver: DSOUND, Controller: AC97, Codec: STAC9700)
+Audio playback:  disabled
+Audio capture: disabled
+Clipboard Mode:  disabled
+Drag and drop Mode: disabled
+Session name:    headless
+Video mode:      720x400x0 at 0,0 enabled
+VRDE:            disabled
+USB:             disabled
+EHCI:            disabled
+XHCI:            disabled
+
+USB Device Filters:
+
+<none>
+
+Available remote USB devices:
+
+<none>
+
+Currently Attached USB Devices:
+
+<none>
+
+Bandwidth groups:  <none>
+
+Shared folders:
+
+Name: 'c/Users', Host path: '\\?\c:\Users' (machine mapping), writable
+
+VRDE Connection:    not active
+Clients so far:     0
+
+Capturing:          not active
+Capture audio:      not active
+Capture screens:    0
+Capture file:       C:\Users\kouzm\.minikube\machines\minikube\minikube\minikube.webm
+Capture dimensions: 1024x768
+Capture rate:       512 kbps
+Capture FPS:        25
+Capture options:
+
+Guest:
+
+Configured memory balloon size:      0 MB
+OS type:                             Linux26_64
+Additions run level:                 2
+Additions version:                   5.2.42 r137960
+
+
+Guest Facilities:
+
+Facility "VirtualBox Base Driver": active/running (last update: 2026/10/16 21:39:05 UTC)
+Facility "VirtualBox System Service": active/running (last update: 2026/10/16 21:39:06 UTC)
+Facility "Seamless Mode": not active (last update: 2026/10/16 21:39:05 UTC)
+Facility "Graphics Mode": not active (last update: 2026/10/16 21:39:05 UTC)
+```
+```powershell
+$VM='{e8e61b40-c769-4c5c-ae19-51e35b9c8bde}'
+pushd 'C:\Program Files\Oracle\VirtualBox'
+./VBoxManage.exe controlvm $VM natpf1 "web,tcp,,8080,,8080"
+```
+```text
+VBoxManage.exe: error: A NAT rule of this name already exists
+VBoxManage.exe: error: Details: code E_INVALIDARG (0x80070057), component NATEngineWrap, interface INATEngine, callee IUnknown
+VBoxManage.exe: error: Context: "AddRedirect(Bstr(strName).raw(), proto, Bstr(strHostIp).raw(), RTStrToUInt16(strHostPort), Bstr(strGuestIp).raw(), RTStrToUInt16(strGuestPort))" at line 952 of file VBoxManageControlVM.cpp
+```
+
+```powershell
+./VBoxManage.exe controlvm $VM natpf1 delete web
+```
+```powershell
+./VBoxManage.exe controlvm $VM natpf1 "web,tcp,,8080,,8080"
+```
+
+one will have to interctively confirm the network settings change.
+
+```cmd
+./VBoxManage.exe showvminfo $VM --machinereadable
+```
+```text
+name="minikube"
+groups="/"
+ostype="Linux 2.6 / 3.x / 4.x (64-bit)"
+UUID="e8e61b40-c769-4c5c-ae19-51e35b9c8bde"
+CfgFile="C:\\Users\\kouzm\\.minikube\\machines\\minikube\\minikube\\minikube.vbox"
+SnapFldr="C:\\Users\\kouzm\\.minikube\\machines\\minikube\\minikube\\Snapshots"
+LogFldr="C:\\Users\\kouzm\\.minikube\\machines\\minikube\\minikube\\Logs"
+hardwareuuid="e8e61b40-c769-4c5c-ae19-51e35b9c8bde"
+memory=4000
+pagefusion="off"
+vram=8
+cpuexecutioncap=100
+hpet="on"
+chipset="piix3"
+firmware="BIOS"
+cpus=2
+pae="on"
+longmode="on"
+triplefaultreset="off"
+apic="on"
+x2apic="off"
+cpuid-portability-level=0
+bootmenu="disabled"
+boot1="dvd"
+boot2="dvd"
+boot3="disk"
+boot4="none"
+acpi="on"
+ioapic="on"
+biosapic="apic"
+biossystemtimeoffset=0
+rtcuseutc="on"
+hwvirtex="on"
+nestedpaging="on"
+largepages="on"
+vtxvpid="on"
+vtxux="on"
+paravirtprovider="default"
+effparavirtprovider="kvm"
+VMState="running"
+VMStateChangeTime="2026-10-16T21:38:28.851000000"
+monitorcount=1
+accelerate3d="off"
+accelerate2dvideo="off"
+teleporterenabled="off"
+teleporterport=0
+teleporteraddress=""
+teleporterpassword=""
+tracing-enabled="off"
+tracing-allow-vm-access="off"
+tracing-config=""
+autostart-enabled="off"
+autostart-delay=0
+defaultfrontend=""
+storagecontrollername0="SATA"
+storagecontrollertype0="IntelAhci"
+storagecontrollerinstance0="0"
+storagecontrollermaxportcount0="30"
+storagecontrollerportcount0="30"
+storagecontrollerbootable0="on"
+"SATA-0-0"="C:\Users\kouzm\.minikube\machines\minikube\boot2docker.iso"
+"SATA-ImageUUID-0-0"="47c9cbf8-fa66-46f0-ad86-427f59cb1229"
+"SATA-tempeject"="off"
+"SATA-IsEjected"="off"
+"SATA-1-0"="C:\Users\kouzm\.minikube\machines\minikube\disk.vmdk"
+"SATA-ImageUUID-1-0"="f7c31550-964e-4d68-8272-da382605480e"
+"SATA-2-0"="none"
+"SATA-3-0"="none"
+"SATA-4-0"="none"
+"SATA-5-0"="none"
+"SATA-6-0"="none"
+"SATA-7-0"="none"
+"SATA-8-0"="none"
+"SATA-9-0"="none"
+"SATA-10-0"="none"
+"SATA-11-0"="none"
+"SATA-12-0"="none"
+"SATA-13-0"="none"
+"SATA-14-0"="none"
+"SATA-15-0"="none"
+"SATA-16-0"="none"
+"SATA-17-0"="none"
+"SATA-18-0"="none"
+"SATA-19-0"="none"
+"SATA-20-0"="none"
+"SATA-21-0"="none"
+"SATA-22-0"="none"
+"SATA-23-0"="none"
+"SATA-24-0"="none"
+"SATA-25-0"="none"
+"SATA-26-0"="none"
+"SATA-27-0"="none"
+"SATA-28-0"="none"
+"SATA-29-0"="none"
+natnet1="nat"
+macaddress1="080027A84198"
+cableconnected1="on"
+nic1="nat"
+nictype1="virtio"
+nicspeed1="0"
+mtu="0"
+sockSnd="64"
+sockRcv="64"
+tcpWndSnd="64"
+tcpWndRcv="64"
+Forwarding(0)="ssh,tcp,127.0.0.1,60813,,22"
+Forwarding(1)="web,tcp,,8080,,8080"
+hostonlyadapter2="VirtualBox Host-Only Ethernet Adapter #5"
+macaddress2="08002744027E"
+cableconnected2="on"
+nic2="hostonly"
+nictype2="virtio"
+nicspeed2="0"
+nic3="none"
+nic4="none"
+nic5="none"
+nic6="none"
+nic7="none"
+nic8="none"
+hidpointing="ps2mouse"
+hidkeyboard="ps2kbd"
+uart1="off"
+uart2="off"
+uart3="off"
+uart4="off"
+lpt1="off"
+lpt2="off"
+audio="dsound"
+audio_in="false"
+audio_out="false"
+clipboard="disabled"
+draganddrop="disabled"
+SessionName="headless"
+VideoMode="720,400,0"@0,0 1
+vrde="off"
+usb="off"
+ehci="off"
+xhci="off"
+SharedFolderNameMachineMapping1="c/Users"
+SharedFolderPathMachineMapping1="\\?\c:\Users"
+VRDEActiveConnection="off"
+VRDEClients=0
+videocap="off"
+videocap_audio="off"
+videocapscreens=0
+videocapfile="C:\Users\kouzm\.minikube\machines\minikube\minikube\minikube.webm"
+videocapres=1024x768
+videocaprate=512
+videocapfps=25
+videocapopts=
+GuestMemoryBalloon=0
+GuestOSType="Linux26_64"
+GuestAdditionsRunLevel=2
+GuestAdditionsVersion="5.2.42 r137960"
+GuestAdditionsFacility_VirtualBox Base Driver=50,1792186745798
+GuestAdditionsFacility_VirtualBox System Service=50,1792186746243
+GuestAdditionsFacility_Seamless Mode=0,1792186745797
+GuestAdditionsFacility_Graphics Mode=0,1792186745797
+```
+```powershell
+./VBoxManage.exe showvminfo $VM --machinereadable | select-string -pattern 'Forwarding\(.\)'
+```
+```text
+
+Forwarding(0)="ssh,tcp,127.0.0.1,60813,,22"
+Forwarding(1)="web,tcp,,8080,,8080"
+```
+For testing sake do the same interactively through Virtualbox Manager:
 
 ![Port Forwarding](screenshots/port-forwarding.png)
 
 acknowledge `net::ERR_CERT_AUTHORITY_INVALID`
 
-![Port Forwarding](screenshots/untrusted-cert.png)
+![Insecure Cert Accept Approval](screenshots/untrusted-cert.png)
 
 
 * retrieve
@@ -324,6 +663,163 @@ deployment.apps/nginx-deployment scaled
 ```
 ![Appliction Details](screenshots/application-scaled-argocd.png)
 
+
+Destroy the `nginx` example application and disconnect from the repository.
+
+Connect to [Example Apps to Demonstrate Argo CD](https://github.com/argoproj/argocd-example-apps)
+
+Create separate namespace for the guestbook application:
+
+```cmd
+minikube.exe kubectl get namespaces
+```
+```text
+NAME              STATUS   AGE
+argocd            Active   167m
+default           Active   3h3m
+guestbook         Active   1s
+kube-node-lease   Active   3h3m
+kube-public       Active   3h3m
+kube-system       Active   3h3m
+```
+Examine deployment YAML - will use the same `app` to __ArgoCD__:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-ui
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: guestbook-ui
+  template:
+    metadata:
+      labels:
+        app: guestbook-ui
+    spec:
+      containers:
+        - image: gcr.io/google-samples/gb-frontend:v5
+          name: guestbook-ui
+          ports:
+            - containerPort: 80
+```
+
+Choose Automatic sync when filling the application inputs. You will need to force sync if any error made and corrected in application configuration
+
+![Appliction Details](screenshots/application-guestbook-details-argocd.png)
+
+### Historical Background: What *Really* Happened — Google, Kubernetes, and the Cloud Wars
+
+#### 1. Google had the technology before Kubernetes existed
+
+During the 2000s, Google developed **Borg**, an internal cluster-management and workload-scheduling system. It helped Google operate enormous fleets of machines running services such as Search and Gmail.
+
+Borg was a substantial engineering advantage, but it remained an internal system. Google did not simply publish Borg's source code and rename it Kubernetes.
+
+In 2013, engineers including Joe Beda, Brendan Burns, and Craig McLuckie began pushing for a public container-orchestration platform informed by Google's experience. The idea was controversial: why give competitors access to concepts developed through years of Google's engineering investment?
+
+#### 2. Meanwhile, the cloud market was developing into a two-horse race
+
+By the mid-2010s, AWS had a substantial first-mover advantage. It had accumulated customers, services, operational experience, and a growing ecosystem.
+
+Microsoft had another powerful advantage: its established enterprise relationships, software business, and distribution channels.
+
+Google possessed formidable distributed-systems expertise, but technical excellence did not automatically translate into cloud-market leadership. Google Cloud was competing against two companies with different, but substantial, commercial advantages.
+
+The problem was therefore not simply that Google needed a better scheduler. It needed a way to make its technology relevant to a much broader market.
+
+#### 3. The industry was at risk of fragmenting into competing proprietary ecosystems
+
+Docker made container packaging substantially more accessible, but packaging an application into a container did not solve the larger operational problems:
+
+- Which machine should run a workload?
+- How should failed workloads be restarted?
+- How should applications scale?
+- How should services discover and communicate with one another?
+- How should deployments be updated without manually coordinating every machine?
+
+Cloud providers and technology companies could build their own answers. AWS had ECS and its own service interfaces; other vendors developed competing orchestration and deployment systems.
+
+These solutions could work well individually, but differences in APIs, operational models, tooling, and required skills increased the cost of moving between platforms.
+
+Customers faced the prospect of learning one provider's ecosystem and becoming increasingly dependent on it. A container image alone did not guarantee portability.
+
+#### 4. Google made a strategic bet on an open orchestration platform
+
+Google announced **Kubernetes in June 2014**. Version 1.0 followed in July 2015, when Kubernetes was donated as seed technology for the newly established Cloud Native Computing Foundation.
+
+Kubernetes drew on lessons from Borg and Google's distributed-systems experience, but it was a new, open-source system rather than a public release of Borg itself.
+
+The strategic significance was that Google could make a broadly useful orchestration platform available to developers without requiring them to adopt Google's entire proprietary infrastructure.
+
+This helped create a common interface around which other cloud providers, enterprises, software vendors, and independent developers could build.
+
+#### 5. The strategic inversion: Google could benefit even when customers chose competitors
+
+The interesting commercial mechanism was this:
+
+Google did not need to win every infrastructure sale for Kubernetes to become valuable to Google.
+
+If Kubernetes became the common platform developers used to deploy containerized workloads, Google could offer a managed Kubernetes service, contribute to the ecosystem, and compete on the surrounding infrastructure and services.
+
+Customers could use Kubernetes on Google Cloud, AWS, Azure, or their own infrastructure. That reduced the need to choose a provider solely because of its proprietary orchestration technology.
+
+AWS eventually introduced its managed Kubernetes service, Amazon EKS, which became generally available in 2018. AWS continued to offer ECS as well.
+
+The result was not the disappearance of proprietary cloud services. It was the emergence of a shared orchestration layer alongside those services.
+
+#### 6. Portability became a competitive advantage — but not a universal escape from lock-in
+
+Kubernetes standardized many important aspects of workload deployment and management. A workload based on ordinary Kubernetes APIs and portable container images can often be moved between local clusters, on-premises installations, and managed cloud Kubernetes services with relatively little change.
+
+However, a Kubernetes application can still depend heavily on provider-specific services:
+
+- Identity and access management
+- Databases and managed messaging
+- Storage classes and persistent-volume behavior
+- Networking, load balancers, and ingress
+- Cloud-specific APIs and proprietary integrations
+
+Kubernetes therefore reduces certain forms of lock-in; it does not eliminate them. Portability depends on the application's architecture, dependencies, and operational requirements.
+
+#### 7. Why this matters for a local Minikube and Argo CD lab
+
+Minikube provides a local Kubernetes environment. Argo CD adds a GitOps control loop that continuously compares the desired application configuration stored in Git with the state observed in Kubernetes.
+
+This makes a useful distinction visible:
+
+- **Kubernetes** provides the orchestration API and control plane.
+- **Argo CD** provides Git-driven application delivery and reconciliation.
+- **Helm** packages and renders Kubernetes resources into deployable manifests.
+- **Minikube** provides a local cluster in which to experiment with these mechanisms.
+
+None of these requires adopting a particular cloud provider for a basic lab.
+
+A local experiment can therefore help distinguish Kubernetes-native behavior from cloud-specific services, without requiring Google's infrastructure, a production cluster, or a catalog of sample applications.
+
+#### Conclusion
+
+The historical story is not that Google secretly developed Kubernetes for decades and then gave away the same product. Google operated Borg internally for years, then developed and released Kubernetes as a new open-source platform informed by that experience.
+
+The larger strategic story is that Google helped establish an open orchestration standard in a market where AWS had a major first-mover advantage and Microsoft had powerful enterprise distribution.
+
+**The central insight:** Google could turn an internal engineering advantage into an industry-wide platform, allowing it to compete not only through proprietary technology but also through the adoption of a common standard.
+
+That interpretation is consistent with the history, although it would be too strong to claim that avoiding vendor lock-in was the single decisive reason Google open-sourced Kubernetes. The move also served engineering, ecosystem-building, and commercial objectives.
+
+##### Historical references
+
+- Kubernetes project history: https://kubernetes.io/blog/2015/04/borg-predecessor-to-kubernetes/
+- Kubernetes announcement and project background: https://kubernetes.io/blog/2014/06/introducing-kubernetes/
+- Cloud Native Computing Foundation: https://www.cncf.io/
+- Amazon EKS: https://aws.amazon.com/eks/
+- Google Kubernetes Engine: https://cloud.google.com/kubernetes-engine
+
+
+
 ### See Also
 
    * [docker hub](https://hub.docker.com/r/argoproj/argocd)
@@ -334,7 +830,7 @@ deployment.apps/nginx-deployment scaled
    * [installing ArgoCD on Minikube and deploying a test application](https://medium.com/@mehmetodabashi/installing-argocd-on-minikube-and-deploying-a-test-application-caa68ec55fbf)
    * [Setting Up ArgoCD on Kubernetes CLuster](https://dev.to/durrello/setting-up-argocd-on-minikube-for-a-local-dev-environment-5637)
    * [hands-on introduction to Argo CD : Kubernetes DevOps CI/CD](https://www.youtube.com/watch?v=2WSJF7d8dUg)
-
+   * another [self Managed Argo CD - App of Everything](https://github.com/bukurt/argocd)
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
