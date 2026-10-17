@@ -1,5 +1,1320 @@
 ﻿### Install
 
+[Minikube](https://minikube.sigs.k8s.io/docs/start) is orchestrator of K8 configurations running on
+LHC container driver directly or Hypervisor hosting the same 
+
+```powershell
+pushd "${env:USERPROFILE}\Downloads"
+new-item -path .  -itemtype Directory -force -name 'minikube'
+$progresspreference = 'SilentlyContinue'
+$version = 'latest'
+$version = 'v1.39.0'
+$url = ('https://github.com/kubernetes/minikube/releases/{0}/download/minikube-windows-amd64.exe' -f $version)
+$url = ('https://github.com/kubernetes/minikube/releases/download/{0}/minikube-installer.exe'  -f $version)
+invoke-webrequest -usebasicparsing -outfile './minikube/minikube.exe' -uri $url 
+```
+```powershell
+get-item .\minikube\minikube.exe | select-object  -property versioninfo,length|format-list
+```
+```text
+VersionInfo : File:             C:\Users\kouzm\Downloads\minikube\minikube.exe
+              InternalName:
+              OriginalFilename:
+              FileVersion:
+              FileDescription:
+              Product:
+              ProductVersion:
+              Debug:            False
+              Patched:          False
+              PreRelease:       False
+              PrivateBuild:     False
+              SpecialBuild:     False
+              Language:
+
+Length      : 54308621
+```
+```powershell
+start .\minikube\minikube.exe
+```
+![installer welcome](screenshots/capture-installer.png)
+> NOTE : the "1. Installation Click on the buttons that describe your target platform..." [page](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download) link provided on is likely incorrect / outdated hanging :
+
+> ```powershell
+> invoke-webrequest -usebasicparsing -outfile './minikube/minikube.exe' -uri 'https://github.com/kubernetes/minikube/releases/v1.39.0/download/minikube-windows-amd64.exe'
+> ```
+> ```text
+> invoke-webrequest : Not Found
+> At line:1 char:1
+> + invoke-webrequest -usebasicparsing -outfile './minikube/minikube.exe' ...
+> + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>     + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+>     + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+> ```
+
+> 🤓 The old binary is not simply gone from __v1.39.0__. 
+> The appliction release still lists `minikube-windows-amd64.exe`. 
+> However, a __Minikube__ issue [23770](https://github.com/kubernetes/minikube/issues/23770) from September 20, 2026, explicitly describes the asset-layout change planned for __v1.40.0__. 
+> The new layout uses simplified asset names, and the issue states that the new URL scheme applies to __v1.40.0__ onward. 
+  
+> 😮 The blank VersionInfo fields are a separate issue. Your downloaded file is an installer, not necessarily the standalone CLI executable. 
+> Windows version-resource metadata is optional; blank `FileVersion`,`ProductVersion`, and `OriginalFilename` fields do not mean the download is invalid. 
+> The 54,308,621-byte length alone cannot establish its identity or integrity.
+> The `minikube.exe` is an __Nullsoft Scriptable Install System__ ([NSIS](https://nsis.sourceforge.io/Main_Page)) package
+> ```xml
+>  <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+>  <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+>    <assemblyIdentity version="1.0.0.0" processorArchitecture="*" name="Nullsoft.NSIS.exehead" type="win32"/>
+>    <description>Nullsoft Install System v3.08-3+deb12u1</description>
+>    <dependency>
+>      <dependentAssembly>
+>        <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*"/>
+>      </dependentAssembly>
+>    </dependency>
+>    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+>      <security>
+>        <requestedPrivileges>
+>          <requestedExecutionLevel level="requireAdministrator" uiAccess="false"/>
+>        </requestedPrivileges>
+>      </security>
+>    </trustInfo>
+>    <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+>      <application>
+>        <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+>        <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/>
+>        <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
+>        <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
+>      </application>
+>    </compatibility>
+>  </assembly>
+>  ```
+  
+
+For Ubuntu Centos use binary doanload of debian package
+```sh
+curl -skLo /tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+sudo dpkg -i /tmp/minikube_latest_amd64.deb
+```
+or rpm:
+```
+curl -skLo /tmp/minikube-latest.x86_64.rpm https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
+sudo rpm -Uvh /tmp/minikube-latest.x86_64.rpm
+```
+
+Which drivers are ?
+
+|Driver|Windows support|What to expect|
+|------|---------------|--------------|
+|VirtualBox|Supported|VM lifecycle, NAT, host-only networking|
+|Docker|Supported|Container-based cluster, networking and runtime|
+|Podman|Experimental|Daemonless container tooling, Podman machine and runtime integration|
+|Hyper-V|Supported on eligible Windows editions|Native Windows virtualization|
+|QEMU|Experimental|Alternative VM and device emulation|
+
+it appears the catalog `https://storage.googleapis.com/minikube/` is still operational
+
+```xml
+<Contents>
+  <Key>iso/minikube-v1.39.0-amd64.iso</Key>
+  <Generation>1788305191125191</Generation>
+  <MetaGeneration>1</MetaGeneration>
+  <LastModified>2026-09-01T23:26:31.180Z</LastModified>
+  <ETag>"50ada20a09b86a46a94f8444284a11b2"</ETag>
+  <Size>414697472</Size>
+</Contents>
+<Contents>
+  <Key>iso/minikube-v1.39.0-amd64.iso.sha256</Key>
+  <Generation>1788305193439847</Generation>
+  <MetaGeneration>1</MetaGeneration>
+  <LastModified>2026-09-01T23:26:33.489Z</LastModified>
+  <ETag>"39ec979cb04fcef18d0acfaa7969ea58"</ETag>
+  <Size>65</Size>
+</Contents>
+<Contents>
+  <Key>iso/minikube-v1.39.0-arm64.iso</Key>
+  <Generation>1788305201051301</Generation>
+  <MetaGeneration>1</MetaGeneration>
+  <LastModified>2026-09-01T23:26:41.105Z</LastModified>
+  <ETag>"9afe64ec4ba6d758cca5f2b2a2399918"</ETag>
+  <Size>448708608</Size>
+</Contents>
+<Contents>
+  <Key>iso/minikube-v1.39.0-arm64.iso.sha256</Key>
+  <Generation>1788305203284225</Generation>
+  <MetaGeneration>1</MetaGeneration>
+  <LastModified>2026-09-01T23:26:43.333Z</LastModified>
+  <ETag>"5f56478301177b2d3a6912e8d4c297c2"</ETag>
+  <Size>65</Size>
+</Contents>
+```
+      
+```sh
+curl -skLo ~/Downloads/minikube/a.iso https://storage.googleapis.com/minikube/iso/minikube-v1.39.0-amd64.iso
+```
+```
+sha256sum ~/Downloads/minikube/a.iso 
+```
+> NOTE: does not appear to match the `sha256` in the release catalog...
+
+```text
+e034d26e27e03e37aab43cd3560c40f955a3476cc994e8964585523a1ba86b6a */c/Users/kouzm/Downloads/minikube/a.iso
+```
+
+but it is a valid iso:
+
+```cmd
+ /c/Program\ Files/7-Zip/7z.exe l ~/Downloads/minikube/a.iso
+```
+```text
+7-Zip 21.07 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-12-26
+
+Scanning the drive for archives:
+1 file, 414697472 bytes (396 MiB)
+
+Listing archive: C:\Users\kouzm\Downloads\minikube\a.iso
+
+--
+Path = C:\Users\kouzm\Downloads\minikube\a.iso
+Type = Iso
+Physical Size = 414697472
+Created = 2026-09-01 19:26:02
+Modified = 2026-09-01 19:26:02
+
+   Date      Time    Attr         Size   Compressed  Name
+------------------- ----- ------------ ------------  ------------------------
+2026-09-01 19:26:01 D....                            boot
+2026-09-01 19:26:01 .....     28320768     28320768  boot\bzImage
+2026-09-01 19:26:02 .....    385841768    385841768  boot\initrd
+2026-09-01 19:26:02 .....         2048         2048  boot.catalog
+2026-09-01 19:26:02 D....                            isolinux
+2026-09-01 19:26:00 .....        36864        36864  isolinux\isolinux.bin
+2026-09-01 19:26:02 .....          247          247  isolinux\isolinux.cfg
+2026-09-01 19:26:00 .....       114796       114796  isolinux\ldlinux.c32
+                    .....         2048         2048  [BOOT]\Boot-NoEmul.img
+------------------- ----- ------------ ------------  ------------------------
+
+```
+
+|File|Size|Role|
+|----|----|----|
+|`boot/bzImage`|28.3 MB|Linux kernel image|
+|`boot/initrd`|385.8 MB|Initial RAM filesystem, likely containing most of the userspace and startup machinery|
+|`isolinux/isolinux.bin`|36 KB|ISOLINUX bootloader|
+|`isolinux/isolinux.cfg`|247 B|Bootloader configuration|
+|`boot.catalog`|2 KB|El Torito boot catalog|
+
+```sh
+/c/Program\ Files/7-Zip/7z.exe e ~/Downloads/minikube/a.iso isolinux/isolinux.cfg -so
+```
+
+```text
+default 1
+label 1
+      kernel /boot/bzImage
+      initrd /boot/initrd
+      append root=/dev/sr0 loglevel=3 console=ttyS0 noembed nomodeset norestore waitusb=10 random.trust_cpu=on hw_rng_model=virtio systemd.legacy_systemd_cgroup_controller=yes
+```
+
+```sh
+mkdir -p ~/Downloads/minikube/initrd-inspect
+/c/Program\ Files/7-Zip/7z.exe x "-o$HOME/Downloads/minikube/initrd-inspect" ~/Downloads/minikube/a.iso  'boot/initrd'
+```
+```text
+7-Zip 21.07 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-12-26
+
+Scanning the drive for archives:
+1 file, 414697472 bytes (396 MiB)
+
+Extracting archive: C:\Users\kouzm\Downloads\minikube\a.iso
+--
+Path = C:\Users\kouzm\Downloads\minikube\a.iso
+Type = Iso
+Physical Size = 414697472
+Created = 2026-09-01 19:26:02
+Modified = 2026-09-01 19:26:02
+
+Everything is Ok
+
+Size:       385841768
+Compressed: 414697472
+
+```
+```sh
+ls -l ~/Downloads/minikube/initrd-inspect/boot/initrd
+```
+```text 
+-rw-r--r-- 1 kouzm 197609 385841768 Sep  1 19:26 /c/Users/kouzm/Downloads/minikube/initrd-inspect/boot/initrd
+```
+```
+file  ~/Downloads/minikube/initrd-inspect/boot/initrd
+```
+```
+/c/Users/kouzm/Downloads/minikube/initrd-inspect/boot/initrd: gzip compressed data, max compression, from Unix, original size modulo 2^32 1048390144 gzip compressed data, unknown method, extra field, encrypted, from FAT filesystem (MS-DOS, OS/2, NT), original size modulo 2^32 1048390144
+```
+```sh 
+/c/Program\ Files/7-Zip/7z.exe l ~/Downloads/minikube/initrd-inspect/boot/initrd
+```
+```text
+7-Zip 21.07 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-12-26
+
+Scanning the drive for archives:
+1 file, 385841768 bytes (368 MiB)
+
+Listing archive: C:\Users\kouzm\Downloads\minikube\initrd-inspect\boot\initrd
+
+--
+Path = C:\Users\kouzm\Downloads\minikube\initrd-inspect\boot\initrd
+Type = gzip
+Headers Size = 10
+
+   Date      Time    Attr         Size   Compressed  Name
+------------------- ----- ------------ ------------  ------------------------
+                    .....   1048390144    385841768  initrd~
+------------------- ----- ------------ ------------  ------------------
+
+```
+
+```sh
+gzip -l ~/Downloads/minikube/initrd-inspect/boot/initrd
+```
+```text
+         compressed        uncompressed  ratio uncompressed_name
+          385841768          1048390144  63.2% /c/Users/kouzm/Downloads/minikube/initrd-inspect/boot/initrd
+
+```
+
+```sh
+/c/Program\ Files/7-Zip/7z.exe x ~/Downloads/minikube/initrd-inspect/boot/initrd -"o/c/users/$USERNAME/Downloads/minikube/initrd-inspect/"
+```
+
+```sh
+file \~/Downloads/minikube/initrd-inspect/initrd~
+```
+```text
+~/Downloads/minikube/initrd-inspect/initrd~: ASCII cpio archive (SVR4 with no CRC)
+```
+cannot extract on Windows:
+
+```sh
+/c/Program\ Files/7-Zip/7z.exe x ~/Downloads/minikube/initrd-inspect/initrd~ -"o/c/users/$USERNAME/Downloads/minikube/initrd-inspect/"
+```
+```text
+
+7-Zip 21.07 (x64) : Copyright (c) 1999-2021 Igor Pavlov : 2021-12-26
+
+Scanning the drive for archives:
+1 file, 1048390144 bytes (1000 MiB)
+
+Extracting archive: C:\Users\kouzm\Downloads\minikube\initrd-inspect\initrd~
+--
+Path = C:\Users\kouzm\Downloads\minikube\initrd-inspect\initrd~
+Type = Cpio
+Physical Size = 1048390144
+SubType = New ASCII
+
+
+Would you like to replace the existing file:
+  Path:     C:\users\kouzm\Downloads\minikube\initrd-inspect\usr\lib\modules\6.6.152\kernel\net\netfilter\xt_DSCP.ko
+  Size:     11808 bytes (12 KiB)
+  Modified: 2026-09-01 19:17:54
+with the file from archive:
+  Path:     usr\lib\modules\6.6.152\kernel\net\netfilter\xt_dscp.ko
+  Size:     9784 bytes (10 KiB)
+  Modified: 2026-09-01 19:17:55
+? (Y)es / (N)o / (A)lways / (S)kip all / A(u)to rename all / (Q)uit?
+Archives with Errors: 1
+
+
+```
+
+```
+/c/Program\ Files/7-Zip/7z.exe l ~/Downloads/minikube/initrd-inspect/initrd~  | awk '{print $NF}' | tee minikube.fs.log
+```
+```text
+CHANGELOG
+bin
+boot
+boot\bzImage
+dev
+dev\console
+dev\fd
+dev\stderr
+dev\stdin
+dev\stdout
+etc
+etc\VERSION
+etc\X11
+etc\X11\xinit
+etc\X11\xinit\xinitrc.d
+etc\X11\xinit\xinitrc.d\50-systemd-user.sh
+etc\acpi
+etc\acpi\events
+etc\acpi\events\powerbtn
+etc\bindresvport.blacklist
+etc\buildkit
+etc\buildkit\buildkitd.toml
+etc\cni
+etc\cni\net.d
+etc\cni\net.d\.keep
+etc\cni\net.d\87-podman-bridge.conflist
+etc\containerd
+etc\containerd\certs.d
+etc\containerd\certs.d\docker.io
+etc\containerd\certs.d\docker.io\hosts.toml
+etc\containerd\config.toml
+etc\containers
+etc\containers\oci
+etc\containers\oci\hooks.d
+etc\containers\policy.json
+etc\containers\registries.conf
+etc\credstore
+etc\credstore.encrypted
+etc\crio
+etc\crio\crio.conf
+etc\crio\crio.conf.d
+etc\crio\crio.conf.d\02-crio.conf
+etc\dbus-1
+etc\dbus-1\session.conf
+etc\dbus-1\system.conf
+etc\docker
+etc\docker\.keep
+etc\docker\daemon.json
+etc\ethertypes
+etc\exports
+etc\fstab
+etc\fuse.conf
+etc\group
+etc\hostname
+etc\hosts
+etc\init.d
+etc\init.d\fuse3
+etc\inputrc
+etc\issue
+etc\lfs-release
+etc\locale.conf
+etc\localtime
+etc\lvm
+etc\lvm\lvm.conf
+etc\lvm\lvmlocal.conf
+etc\lvm\profile
+etc\lvm\profile\cache-mq.profile
+etc\lvm\profile\cache-smq.profile
+etc\lvm\profile\command_profile_template.profile
+etc\lvm\profile\lvmdbusd.profile
+etc\lvm\profile\metadata_profile_template.profile
+etc\lvm\profile\thin-generic.profile
+etc\lvm\profile\thin-performance.profile
+etc\lvm\profile\vdo-small.profile
+etc\machine-id
+etc\mke2fs.conf
+etc\modules-load.d
+etc\motd
+etc\mtab
+etc\netconfig
+etc\nfsmount.conf
+etc\nsswitch.conf
+etc\os-release
+etc\pam.d
+etc\pam.d\vmtoolsd
+etc\passwd
+etc\profile
+etc\profile.d
+etc\profile.d\umask.sh
+etc\protocols
+etc\resolv.conf
+etc\services
+etc\shadow
+etc\shells
+etc\ssh
+etc\ssh\moduli
+etc\ssh\ssh_config
+etc\ssh\ssh_config.d
+etc\ssh\ssh_config.d\20-systemd-ssh-proxy.conf
+etc\ssh\sshd_config
+etc\ssl
+etc\ssl\certs
+...
+etc\ssl\misc
+etc\ssl\misc\tsget.pl
+etc\ssl\openssl.cnf
+etc\ssl\openssl.cnf.dist
+etc\ssl\private
+etc\sudo.conf
+etc\sudo_logsrvd.conf
+etc\sudoers
+etc\sysconfig
+etc\sysconfig\crio
+etc\sysconfig\sysstat
+etc\sysconfig\sysstat.ioconf
+etc\sysctl.d
+etc\sysctl.d\11-tcp-mtu-probing.conf
+etc\sysctl.d\50-fs-inotify.conf
+etc\sysctl.d\90-cilium-rp_filter.conf
+etc\sysctl.d\disable-ipv6.conf
+etc\sysctl.d\forward.conf
+etc\systemd
+etc\systemd\coredump.conf
+etc\systemd\journald.conf
+etc\systemd\logind.conf
+etc\systemd\network
+etc\systemd\network\10-eth1.network
+etc\systemd\network\20-dhcp.network
+etc\systemd\network\eth0.network
+etc\systemd\networkd.conf
+etc\systemd\pstore.conf
+etc\systemd\resolved.conf
+etc\systemd\resolved.conf.d
+etc\systemd\resolved.conf.d\50-dnssec.conf
+etc\systemd\sleep.conf
+etc\systemd\system
+etc\systemd\system.conf
+etc\systemd\system\cri-o.service
+etc\systemd\system\ctrl-alt-del.target
+etc\systemd\system\dbus-org.freedesktop.network1.service
+etc\systemd\system\dbus-org.freedesktop.resolve1.service
+etc\systemd\system\dbus-org.freedesktop.timesync1.service
+etc\systemd\system\default.target.wants
+etc\systemd\system\default.target.wants\podman.service
+etc\systemd\system\getty.target.wants
+etc\systemd\system\getty.target.wants\getty@tty1.service
+etc\systemd\system\multi-user.target.wants
+etc\systemd\system\multi-user.target.wants\acpid.service
+etc\systemd\system\multi-user.target.wants\cri-docker.service
+etc\systemd\system\multi-user.target.wants\crio.service
+etc\systemd\system\multi-user.target.wants\hv_fcopy_daemon.service
+etc\systemd\system\multi-user.target.wants\hv_kvp_daemon.service
+etc\systemd\system\multi-user.target.wants\hv_vss_daemon.service
+etc\systemd\system\multi-user.target.wants\lvm-devices-import.path
+etc\systemd\system\multi-user.target.wants\lvm-devices-import.service
+etc\systemd\system\multi-user.target.wants\machines.target
+etc\systemd\system\multi-user.target.wants\minikube-automount.service
+etc\systemd\system\multi-user.target.wants\minikube-scheduled-stop.service
+etc\systemd\system\multi-user.target.wants\nfs-client.target
+etc\systemd\system\multi-user.target.wants\nfs-server.service
+etc\systemd\system\multi-user.target.wants\remote-fs.target
+etc\systemd\system\multi-user.target.wants\rpcbind.service
+etc\systemd\system\multi-user.target.wants\sshd.service
+etc\systemd\system\multi-user.target.wants\systemd-networkd.service
+etc\systemd\system\multi-user.target.wants\vboxservice.service
+etc\systemd\system\multi-user.target.wants\vmtoolsd.service
+etc\systemd\system\network-online.target.wants
+etc\systemd\system\network-online.target.wants\systemd-networkd-wait-online.service
+etc\systemd\system\nfs-mountd.service.requires
+etc\systemd\system\nfs-mountd.service.requires\fsidd.service
+etc\systemd\system\nfs-server.service.requires
+etc\systemd\system\nfs-server.service.requires\fsidd.service
+etc\systemd\system\remote-fs.target.wants
+etc\systemd\system\remote-fs.target.wants\nfs-client.target
+etc\systemd\system\sockets.target.wants
+etc\systemd\system\sockets.target.wants\buildkit.socket
+etc\systemd\system\sockets.target.wants\cri-docker.socket
+etc\systemd\system\sockets.target.wants\dm-event.socket
+etc\systemd\system\sockets.target.wants\docker.socket
+etc\systemd\system\sockets.target.wants\podman.socket
+etc\systemd\system\sockets.target.wants\rpcbind.socket
+etc\systemd\system\sockets.target.wants\systemd-journald-audit.socket
+etc\systemd\system\sockets.target.wants\systemd-networkd.socket
+etc\systemd\system\sysinit.target.wants
+etc\systemd\system\sysinit.target.wants\blk-availability.service
+etc\systemd\system\sysinit.target.wants\lvm2-monitor.service
+etc\systemd\system\sysinit.target.wants\systemd-network-generator.service
+etc\systemd\system\sysinit.target.wants\systemd-pstore.service
+etc\systemd\system\sysinit.target.wants\systemd-resolved.service
+etc\systemd\system\sysinit.target.wants\systemd-timesyncd.service
+etc\systemd\system\sysinit.target.wants\systemd-udev-load-credentials.service
+etc\systemd\system\system.slice.wants
+etc\systemd\system\system.slice.wants\system-xfs_scrub.slice
+etc\systemd\system\systemd-journald.service.wants
+etc\systemd\system\systemd-journald.service.wants\systemd-journald-audit.socket
+etc\systemd\system\systemd-timesyncd.service.d
+etc\systemd\system\systemd-timesyncd.service.d\disable-virtualbox.conf
+etc\systemd\system\timers.target.wants
+etc\systemd\system\timers.target.wants\fstrim.timer
+etc\systemd\system\timers.target.wants\xfs_scrub_all.timer
+etc\systemd\timesyncd.conf
+etc\systemd\user
+etc\systemd\user.conf
+etc\timezone
+etc\tmpfiles.d
+etc\udev
+etc\udev\iocost.conf
+etc\udev\rules.d
+etc\udev\rules.d\70-hv_fcopy.rules
+etc\udev\rules.d\70-hv_kvp.rules
+etc\udev\rules.d\70-hv_vss.rules
+etc\udev\rules.d\80-net-setup-link.rules
+etc\udev\udev.conf
+etc\vconsole.conf
+etc\vmware-tools
+etc\vmware-tools\poweroff-vm-default
+etc\vmware-tools\poweron-vm-default
+etc\vmware-tools\resume-vm-default
+etc\vmware-tools\scripts
+etc\vmware-tools\scripts\vmware
+etc\vmware-tools\scripts\vmware\network
+etc\vmware-tools\statechange.subr
+etc\vmware-tools\suspend-vm-default
+etc\vmware-tools\tools.conf.example
+etc\xattr.conf
+etc\xdg
+etc\xdg\systemd
+etc\xdg\systemd\user
+home
+home\docker
+init
+lib
+lib64
+libexec
+libexec\rmt
+linuxrc
+media
+mnt
+opt
+opt\cni
+...
+proc
+root
+root\.ssh
+run
+sbin
+srv
+sys
+tmp
+usr
+usr\bin
+...
+usr\lib
+...
+usr\lib\open-vm-tools\plugins\vmsvc\libvmbackup.so
+usr\lib\os-release
+usr\lib\ossl-modules
+usr\lib\ossl-modules\legacy.so
+usr\lib\pam.d
+usr\lib\pam.d\systemd-run0
+usr\lib\pam.d\systemd-user
+usr\lib\sa
+usr\lib\sa\sa1
+usr\lib\sa\sa2
+usr\lib\sa\sadc
+usr\lib\sysctl.d
+usr\lib\sysctl.d\50-coredump.conf
+usr\lib\sysctl.d\50-default.conf
+usr\lib\sysctl.d\50-pid-max.conf
+usr\lib\sysctl.d\README
+usr\lib\systemd
+usr\lib\systemd\libsystemd-core-256.so
+usr\lib\systemd\libsystemd-shared-256.so
+usr\lib\systemd\network
+usr\lib\systemd\network\80-6rd-tunnel.link
+usr\lib\systemd\network\80-6rd-tunnel.network
+usr\lib\systemd\network\80-auto-link-local.network.example
+usr\lib\systemd\network\80-container-host0-tun.network
+usr\lib\systemd\network\80-container-host0.network
+usr\lib\systemd\network\80-container-vb.link
+usr\lib\systemd\network\80-container-vb.network
+usr\lib\systemd\network\80-container-ve.link
+usr\lib\systemd\network\80-container-ve.network
+usr\lib\systemd\network\80-container-vz.link
+usr\lib\systemd\network\80-container-vz.network
+usr\lib\systemd\network\80-namespace-ns.link
+usr\lib\systemd\network\80-namespace-ns.network
+usr\lib\systemd\network\80-vm-vt.link
+usr\lib\systemd\network\80-vm-vt.network
+usr\lib\systemd\network\80-wifi-adhoc.network
+usr\lib\systemd\network\80-wifi-ap.network.example
+usr\lib\systemd\network\80-wifi-station.network.example
+usr\lib\systemd\network\89-ethernet.network.example
+usr\lib\systemd\network\99-default.link
+usr\lib\systemd\ntp-units.d
+usr\lib\systemd\ntp-units.d\80-systemd-timesync.list
+usr\lib\systemd\resolv.conf
+usr\lib\systemd\ssh_config.d
+usr\lib\systemd\ssh_config.d\20-systemd-ssh-proxy.conf
+usr\lib\systemd\system
+usr\lib\systemd\system-environment-generators
+usr\lib\systemd\system-generators
+usr\lib\systemd\system-generators\nfs-server-generator
+usr\lib\systemd\system-generators\nfsroot-generator
+usr\lib\systemd\system-generators\rpc-pipefs-generator
+usr\lib\systemd\system-generators\systemd-debug-generator
+usr\lib\systemd\system-generators\systemd-fstab-generator
+usr\lib\systemd\system-generators\systemd-getty-generator
+usr\lib\systemd\system-generators\systemd-gpt-auto-generator
+usr\lib\systemd\system-generators\systemd-run-generator
+usr\lib\systemd\system-generators\systemd-ssh-generator
+usr\lib\systemd\system-generators\systemd-system-update-generator
+usr\lib\systemd\system-generators\systemd-tpm2-generator
+usr\lib\systemd\system-preset
+usr\lib\systemd\system-preset\50-minikube.preset
+usr\lib\systemd\system-preset\51-buildkit.preset
+usr\lib\systemd\system-preset\80-buildroot.preset
+usr\lib\systemd\system-preset\90-systemd.preset
+usr\lib\systemd\system-shutdown
+usr\lib\systemd\system-sleep
+usr\lib\systemd\system\acpid.service
+usr\lib\systemd\system\autovt@.service
+usr\lib\systemd\system\basic.target
+usr\lib\systemd\system\blk-availability.service
+usr\lib\systemd\system\blockdev@.target
+usr\lib\systemd\system\bluetooth.target
+usr\lib\systemd\system\boot-complete.target
+usr\lib\systemd\system\buildkit.service
+usr\lib\systemd\system\buildkit.socket
+usr\lib\systemd\system\capsule.slice
+usr\lib\systemd\system\capsule@.service
+usr\lib\systemd\system\console-getty.service
+usr\lib\systemd\system\container-getty@.service
+usr\lib\systemd\system\containerd.service
+usr\lib\systemd\system\cri-docker.service
+usr\lib\systemd\system\cri-docker.socket
+usr\lib\systemd\system\crio.service
+usr\lib\systemd\system\ctrl-alt-del.target
+usr\lib\systemd\system\dbus-org.freedesktop.hostname1.service
+usr\lib\systemd\system\dbus-org.freedesktop.login1.service
+usr\lib\systemd\system\dbus-org.freedesktop.machine1.service
+usr\lib\systemd\system\dbus-org.freedesktop.timedate1.service
+usr\lib\systemd\system\dbus.service
+usr\lib\systemd\system\dbus.socket
+usr\lib\systemd\system\debug-shell.service
+usr\lib\systemd\system\default.target
+usr\lib\systemd\system\dev-hugepages.mount
+usr\lib\systemd\system\dev-mqueue.mount
+usr\lib\systemd\system\dm-event.service
+usr\lib\systemd\system\dm-event.socket
+usr\lib\systemd\system\docker.socket
+usr\lib\systemd\system\emergency.service
+usr\lib\systemd\system\emergency.target
+usr\lib\systemd\system\exit.target
+usr\lib\systemd\system\factory-reset.target
+usr\lib\systemd\system\final.target
+usr\lib\systemd\system\first-boot-complete.target
+usr\lib\systemd\system\fsidd.service
+usr\lib\systemd\system\fstrim.service
+usr\lib\systemd\system\fstrim.timer
+usr\lib\systemd\system\getty-pre.target
+usr\lib\systemd\system\getty.target
+usr\lib\systemd\system\getty@.service
+usr\lib\systemd\system\getty@.service.d
+usr\lib\systemd\system\getty@.service.d\buildroot-console.conf
+usr\lib\systemd\system\graphical.target
+usr\lib\systemd\system\halt.target
+usr\lib\systemd\system\hv_fcopy_daemon.service
+usr\lib\systemd\system\hv_kvp_daemon.service
+usr\lib\systemd\system\hv_vss_daemon.service
+usr\lib\systemd\system\kexec.target
+usr\lib\systemd\system\kmod-static-nodes.service
+usr\lib\systemd\system\local-fs-pre.target
+usr\lib\systemd\system\local-fs.target
+usr\lib\systemd\system\local-fs.target.wants
+usr\lib\systemd\system\local-fs.target.wants\tmp.mount
+usr\lib\systemd\system\lvm-devices-import.path
+usr\lib\systemd\system\lvm-devices-import.service
+usr\lib\systemd\system\lvm2-monitor.service
+usr\lib\systemd\system\machine.slice
+usr\lib\systemd\system\machines.target
+usr\lib\systemd\system\machines.target.wants
+usr\lib\systemd\system\machines.target.wants\var-lib-machines.mount
+usr\lib\systemd\system\minikube-automount.service
+usr\lib\systemd\system\minikube-scheduled-stop.service
+usr\lib\systemd\system\modprobe@.service
+usr\lib\systemd\system\multi-user.target
+usr\lib\systemd\system\multi-user.target.wants
+usr\lib\systemd\system\multi-user.target.wants\dbus.service
+usr\lib\systemd\system\multi-user.target.wants\getty.target
+usr\lib\systemd\system\multi-user.target.wants\systemd-ask-password-wall.path
+usr\lib\systemd\system\multi-user.target.wants\systemd-logind.service
+usr\lib\systemd\system\network-online.target
+usr\lib\systemd\system\network-pre.target
+usr\lib\systemd\system\network.target
+usr\lib\systemd\system\nfs-client.target
+usr\lib\systemd\system\nfs-mountd.service
+usr\lib\systemd\system\nfs-server.service
+usr\lib\systemd\system\nfs-utils.service
+usr\lib\systemd\system\nss-lookup.target
+usr\lib\systemd\system\nss-user-lookup.target
+usr\lib\systemd\system\paths.target
+usr\lib\systemd\system\podman.service
+usr\lib\systemd\system\podman.socket
+usr\lib\systemd\system\podman.socket.d
+usr\lib\systemd\system\podman.socket.d\override.conf
+usr\lib\systemd\system\poweroff.target
+usr\lib\systemd\system\printer.target
+usr\lib\systemd\system\proc-fs-nfsd.mount
+usr\lib\systemd\system\reboot.target
+usr\lib\systemd\system\remote-fs-pre.target
+usr\lib\systemd\system\remote-fs.target
+usr\lib\systemd\system\remote-fs.target.wants
+usr\lib\systemd\system\remote-fs.target.wants\var-lib-machines.mount
+usr\lib\systemd\system\rescue.service
+usr\lib\systemd\system\rescue.target
+usr\lib\systemd\system\rpc-statd-notify.service
+usr\lib\systemd\system\rpc-statd.service
+usr\lib\systemd\system\rpc_pipefs.target
+usr\lib\systemd\system\rpcbind.service
+usr\lib\systemd\system\rpcbind.socket
+usr\lib\systemd\system\rpcbind.target
+usr\lib\systemd\system\run-nfs-rpc_pipefs.mount
+usr\lib\systemd\system\serial-getty@.service
+usr\lib\systemd\system\shutdown.target
+usr\lib\systemd\system\sigpwr.target
+usr\lib\systemd\system\sleep.target
+usr\lib\systemd\system\slices.target
+usr\lib\systemd\system\smartcard.target
+usr\lib\systemd\system\sockets.target
+usr\lib\systemd\system\sockets.target.wants
+usr\lib\systemd\system\sockets.target.wants\dbus.socket
+usr\lib\systemd\system\sockets.target.wants\systemd-coredump.socket
+usr\lib\systemd\system\sockets.target.wants\systemd-creds.socket
+usr\lib\systemd\system\sockets.target.wants\systemd-hostnamed.socket
+usr\lib\systemd\system\sockets.target.wants\systemd-journald-dev-log.socket
+usr\lib\systemd\system\sockets.target.wants\systemd-journald.socket
+usr\lib\systemd\system\sockets.target.wants\systemd-udevd-control.socket
+usr\lib\systemd\system\sockets.target.wants\systemd-udevd-kernel.socket
+usr\lib\systemd\system\soft-reboot.target
+usr\lib\systemd\system\sound.target
+usr\lib\systemd\system\ssh-access.target
+usr\lib\systemd\system\sshd.service
+usr\lib\systemd\system\suspend.target
+usr\lib\systemd\system\swap.target
+usr\lib\systemd\system\sys-fs-fuse-connections.mount
+usr\lib\systemd\system\sys-kernel-config.mount
+usr\lib\systemd\system\sys-kernel-debug.mount
+usr\lib\systemd\system\sys-kernel-tracing.mount
+usr\lib\systemd\system\sysinit.target
+usr\lib\systemd\system\sysinit.target.wants
+usr\lib\systemd\system\sysinit.target.wants\dev-hugepages.mount
+usr\lib\systemd\system\sysinit.target.wants\dev-mqueue.mount
+usr\lib\systemd\system\sysinit.target.wants\kmod-static-nodes.service
+usr\lib\systemd\system\sysinit.target.wants\sys-fs-fuse-connections.mount
+usr\lib\systemd\system\sysinit.target.wants\sys-kernel-config.mount
+usr\lib\systemd\system\sysinit.target.wants\sys-kernel-debug.mount
+usr\lib\systemd\system\sysinit.target.wants\sys-kernel-tracing.mount
+usr\lib\systemd\system\sysinit.target.wants\systemd-ask-password-console.path
+usr\lib\systemd\system\sysinit.target.wants\systemd-journal-flush.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-journald.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-machine-id-commit.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-modules-load.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-sysctl.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-tmpfiles-setup-dev-early.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-tmpfiles-setup-dev.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-tmpfiles-setup.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-udev-trigger.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-udevd.service
+usr\lib\systemd\system\sysinit.target.wants\systemd-update-done.service
+usr\lib\systemd\system\syslog.socket
+usr\lib\systemd\system\system-update-cleanup.service
+usr\lib\systemd\system\system-update-pre.target
+usr\lib\systemd\system\system-update.target
+usr\lib\systemd\system\system-xfs_scrub.slice
+usr\lib\systemd\system\systemd-ask-password-console.path
+usr\lib\systemd\system\systemd-ask-password-console.service
+usr\lib\systemd\system\systemd-ask-password-wall.path
+usr\lib\systemd\system\systemd-ask-password-wall.service
+usr\lib\systemd\system\systemd-boot-check-no-failures.service
+usr\lib\systemd\system\systemd-coredump.socket
+usr\lib\systemd\system\systemd-coredump@.service
+usr\lib\systemd\system\systemd-creds.socket
+usr\lib\systemd\system\systemd-creds@.service
+usr\lib\systemd\system\systemd-exit.service
+usr\lib\systemd\system\systemd-fsck-root.service
+usr\lib\systemd\system\systemd-fsck@.service
+usr\lib\systemd\system\systemd-growfs-root.service
+usr\lib\systemd\system\systemd-growfs@.service
+usr\lib\systemd\system\systemd-halt.service
+usr\lib\systemd\system\systemd-hostnamed.service
+usr\lib\systemd\system\systemd-hostnamed.socket
+usr\lib\systemd\system\systemd-journal-flush.service
+usr\lib\systemd\system\systemd-journald-audit.socket
+usr\lib\systemd\system\systemd-journald-dev-log.socket
+usr\lib\systemd\system\systemd-journald-sync@.service
+usr\lib\systemd\system\systemd-journald-varlink@.socket
+usr\lib\systemd\system\systemd-journald.service
+usr\lib\systemd\system\systemd-journald.socket
+usr\lib\systemd\system\systemd-journald@.service
+usr\lib\systemd\system\systemd-journald@.socket
+usr\lib\systemd\system\systemd-kexec.service
+usr\lib\systemd\system\systemd-logind.service
+usr\lib\systemd\system\systemd-machine-id-commit.service
+usr\lib\systemd\system\systemd-machined.service
+usr\lib\systemd\system\systemd-modules-load.service
+usr\lib\systemd\system\systemd-network-generator.service
+usr\lib\systemd\system\systemd-networkd-persistent-storage.service
+usr\lib\systemd\system\systemd-networkd-wait-online.service
+usr\lib\systemd\system\systemd-networkd-wait-online@.service
+usr\lib\systemd\system\systemd-networkd.service
+usr\lib\systemd\system\systemd-networkd.socket
+usr\lib\systemd\system\systemd-nspawn@.service
+usr\lib\systemd\system\systemd-poweroff.service
+usr\lib\systemd\system\systemd-pstore.service
+usr\lib\systemd\system\systemd-reboot.service
+usr\lib\systemd\system\systemd-remount-fs.service
+usr\lib\systemd\system\systemd-resolved.service
+usr\lib\systemd\system\systemd-soft-reboot.service
+usr\lib\systemd\system\systemd-suspend.service
+usr\lib\systemd\system\systemd-sysctl.service
+usr\lib\systemd\system\systemd-time-wait-sync.service
+usr\lib\systemd\system\systemd-timedated.service
+usr\lib\systemd\system\systemd-timesyncd.service
+usr\lib\systemd\system\systemd-tmpfiles-clean.service
+usr\lib\systemd\system\systemd-tmpfiles-clean.timer
+usr\lib\systemd\system\systemd-tmpfiles-setup-dev-early.service
+usr\lib\systemd\system\systemd-tmpfiles-setup-dev.service
+usr\lib\systemd\system\systemd-tmpfiles-setup.service
+usr\lib\systemd\system\systemd-udev-load-credentials.service
+usr\lib\systemd\system\systemd-udev-settle.service
+usr\lib\systemd\system\systemd-udev-trigger.service
+usr\lib\systemd\system\systemd-udevd-control.socket
+usr\lib\systemd\system\systemd-udevd-kernel.socket
+usr\lib\systemd\system\systemd-udevd.service
+usr\lib\systemd\system\systemd-update-done.service
+usr\lib\systemd\system\systemd-vconsole-setup.service
+usr\lib\systemd\system\time-set.target
+usr\lib\systemd\system\time-sync.target
+usr\lib\systemd\system\timers.target
+usr\lib\systemd\system\timers.target.wants
+usr\lib\systemd\system\timers.target.wants\systemd-tmpfiles-clean.timer
+usr\lib\systemd\system\tmp.mount
+usr\lib\systemd\system\tpm2.target
+usr\lib\systemd\system\umount.target
+usr\lib\systemd\system\usb-gadget.target
+usr\lib\systemd\system\user-.slice.d
+usr\lib\systemd\system\user-.slice.d\10-defaults.conf
+usr\lib\systemd\system\user-runtime-dir@.service
+usr\lib\systemd\system\user.slice
+usr\lib\systemd\system\user@.service
+usr\lib\systemd\system\user@.service.d
+usr\lib\systemd\system\user@.service.d\10-login-barrier.conf
+usr\lib\systemd\system\user@0.service.d
+usr\lib\systemd\system\user@0.service.d\10-login-barrier.conf
+usr\lib\systemd\system\var-lib-machines.mount
+usr\lib\systemd\system\vboxservice.service
+usr\lib\systemd\system\vmtoolsd.service
+usr\lib\systemd\system\xfs_scrub@.service
+usr\lib\systemd\system\xfs_scrub_all.service
+usr\lib\systemd\system\xfs_scrub_all.timer
+usr\lib\systemd\system\xfs_scrub_all_fail.service
+usr\lib\systemd\system\xfs_scrub_fail@.service
+usr\lib\systemd\system\xfs_scrub_media@.service
+usr\lib\systemd\system\xfs_scrub_media_fail@.service
+usr\lib\systemd\systemd
+usr\lib\systemd\systemd-battery-check
+usr\lib\systemd\systemd-boot-check-no-failures
+usr\lib\systemd\systemd-cgroups-agent
+usr\lib\systemd\systemd-coredump
+usr\lib\systemd\systemd-executor
+usr\lib\systemd\systemd-fsck
+usr\lib\systemd\systemd-growfs
+usr\lib\systemd\systemd-hostnamed
+usr\lib\systemd\systemd-journald
+usr\lib\systemd\systemd-logind
+usr\lib\systemd\systemd-machined
+usr\lib\systemd\systemd-makefs
+usr\lib\systemd\systemd-modules-load
+usr\lib\systemd\systemd-network-generator
+usr\lib\systemd\systemd-networkd
+usr\lib\systemd\systemd-networkd-wait-online
+usr\lib\systemd\systemd-pstore
+usr\lib\systemd\systemd-remount-fs
+usr\lib\systemd\systemd-reply-password
+usr\lib\systemd\systemd-resolved
+usr\lib\systemd\systemd-shutdown
+usr\lib\systemd\systemd-sleep
+usr\lib\systemd\systemd-socket-proxyd
+usr\lib\systemd\systemd-ssh-proxy
+usr\lib\systemd\systemd-sulogin-shell
+usr\lib\systemd\systemd-sysctl
+usr\lib\systemd\systemd-sysroot-fstab-check
+usr\lib\systemd\systemd-time-wait-sync
+usr\lib\systemd\systemd-timedated
+usr\lib\systemd\systemd-timesyncd
+usr\lib\systemd\systemd-udevd
+usr\lib\systemd\systemd-update-done
+usr\lib\systemd\systemd-update-helper
+usr\lib\systemd\systemd-user-runtime-dir
+usr\lib\systemd\systemd-vconsole-setup
+usr\lib\systemd\systemd-xdg-autostart-condition
+usr\lib\systemd\user
+usr\lib\systemd\user-environment-generators
+usr\lib\systemd\user-environment-generators\30-systemd-environment-d-generator
+usr\lib\systemd\user-generators
+usr\lib\systemd\user-generators\systemd-xdg-autostart-generator
+usr\lib\systemd\user-preset
+usr\lib\systemd\user-preset\90-systemd.preset
+usr\lib\systemd\user\app.slice
+usr\lib\systemd\user\background.slice
+usr\lib\systemd\user\basic.target
+usr\lib\systemd\user\bluetooth.target
+usr\lib\systemd\user\capsule@.target
+usr\lib\systemd\user\default.target
+usr\lib\systemd\user\exit.target
+usr\lib\systemd\user\graphical-session-pre.target
+usr\lib\systemd\user\graphical-session.target
+usr\lib\systemd\user\paths.target
+usr\lib\systemd\user\printer.target
+usr\lib\systemd\user\session.slice
+usr\lib\systemd\user\shutdown.target
+usr\lib\systemd\user\smartcard.target
+usr\lib\systemd\user\sockets.target
+usr\lib\systemd\user\sound.target
+usr\lib\systemd\user\systemd-exit.service
+usr\lib\systemd\user\systemd-tmpfiles-clean.service
+usr\lib\systemd\user\systemd-tmpfiles-clean.timer
+usr\lib\systemd\user\systemd-tmpfiles-setup.service
+usr\lib\systemd\user\timers.target
+usr\lib\systemd\user\xdg-desktop-autostart.target
+usr\lib\sysusers.d
+usr\lib\sysusers.d\dbus.conf
+usr\lib\tc
+usr\lib\tc\experimental.dist
+usr\lib\tc\normal.dist
+usr\lib\tc\pareto.dist
+usr\lib\tc\paretonormal.dist
+usr\lib\terminfo
+usr\lib\tmpfiles.d
+...
+usr\lib\udev
+...
+usr\lib\xtables
+...
+usr\lib\xtables\libxt_udp.so
+usr\lib64
+usr\libexec
+...
+usr\libexec\git-core\git
+usr\bin\git-upload-pack
+usr\bin\git-upload-archive
+usr\bin\git-receive-pack
+usr\bin\git
+usr\libexec\git-core\git-write-tree
+...
+usr\libexec\xfsprogs
+usr\libexec\xfsprogs\xfs_scrub_fail
+usr\sbin
+usr\sbin\VBoxControl
+usr\sbin\VBoxService
+usr\sbin\acpid
+...
+usr\sbin\xtables-legacy-multi
+usr\share
+usr\share\applications
+usr\share\applications\htop.desktop
+usr\share\bash-completion
+...
+usr\share\ca-certificates
+...
+usr\share\common-lisp
+usr\share\common-lisp\source
+usr\share\common-lisp\source\gpgme
+usr\share\common-lisp\source\gpgme\gpgme-grovel.lisp
+usr\share\common-lisp\source\gpgme\gpgme-package.lisp
+usr\share\common-lisp\source\gpgme\gpgme.asd
+usr\share\common-lisp\source\gpgme\gpgme.lisp
+usr\share\consolefonts
+...
+usr\share\consoletrans\cp874_to_uni.trans
+usr\share\consoletrans\iso02_to_cp1250.trans
+usr\share\consoletrans\koi2alt
+usr\share\consoletrans\koi8-r_to_uni.trans
+usr\share\consoletrans\koi8-u_to_uni.trans
+usr\share\consoletrans\koi8u2ruscii
+usr\share\consoletrans\latin2u.trans
+usr\share\consoletrans\null
+usr\share\consoletrans\space
+usr\share\consoletrans\trivial
+usr\share\consoletrans\utflist
+usr\share\consoletrans\vga2iso
+usr\share\consoletrans\viscii1.0_to_tcvn.trans
+usr\share\consoletrans\viscii1.0_to_viscii1.1.trans
+usr\share\consoletrans\zero
+usr\share\containers
+usr\share\containers\oci
+usr\share\containers\oci\hooks.d
+usr\share\dbus-1
+usr\share\dbus-1\services
+...
+usr\share\et
+usr\share\et\et_c.awk
+usr\share\et\et_h.awk
+usr\share\factory
+usr\share\factory\etc
+usr\share\factory\etc\issue
+usr\share\factory\etc\locale.conf
+usr\share\factory\etc\nsswitch.conf
+usr\share\factory\etc\pam.d
+usr\share\factory\etc\pam.d\other
+usr\share\factory\etc\pam.d\system-auth
+usr\share\factory\etc\vconsole.conf
+usr\share\gettext
+usr\share\gettext\its
+usr\share\gettext\its\gschema.its
+usr\share\gettext\its\gschema.loc
+usr\share\git-core
+usr\share\git-core\templates
+usr\share\git-core\templates\description
+usr\share\git-core\templates\hooks
+...
+usr\share\git-core\templates\info
+usr\share\git-core\templates\info\exclude
+usr\share\gitweb
+usr\share\gitweb\gitweb.cgi
+usr\share\gitweb\static
+usr\share\gitweb\static\git-favicon.png
+usr\share\gitweb\static\git-logo.png
+usr\share\gitweb\static\gitweb.css
+usr\share\gitweb\static\gitweb.js
+usr\share\glib-2.0
+usr\share\glib-2.0\dtds
+usr\share\glib-2.0\dtds\gresource.dtd
+usr\share\glib-2.0\schemas
+usr\share\glib-2.0\valgrind
+usr\share\glib-2.0\valgrind\glib.supp
+usr\share\gnupg
+usr\share\gnupg\distsigkey.gpg
+usr\share\icons
+usr\share\icons\hicolor
+usr\share\icons\hicolor\scalable
+usr\share\icons\hicolor\scalable\apps
+usr\share\icons\hicolor\scalable\apps\htop.svg
+usr\share\iproute2
+usr\share\iproute2\bpf_pinning
+usr\share\iproute2\ematch_map
+usr\share\iproute2\group
+usr\share\iproute2\nl_protos
+usr\share\iproute2\rt_dsfield
+usr\share\iproute2\rt_protos
+usr\share\iproute2\rt_realms
+usr\share\iproute2\rt_scopes
+usr\share\iproute2\rt_tables
+usr\share\keymaps
+...
+usr\share\locale
+usr\share\metainfo
+usr\share\metainfo\org.kernel.software.network.ethtool.metainfo.xml
+usr\share\mime
+usr\share\mime\packages
+usr\share\mime\packages\io.systemd.xml
+usr\share\open-vm-tools
+...
+usr\share\perl5
+usr\share\perl5\FromCPAN
+usr\share\perl5\FromCPAN\Error.pm
+usr\share\perl5\FromCPAN\Mail
+usr\share\perl5\FromCPAN\Mail\Address.pm
+usr\share\perl5\Git
+usr\share\perl5\Git.pm
+usr\share\perl5\Git\I18N.pm
+usr\share\perl5\Git\IndexInfo.pm
+usr\share\perl5\Git\LoadCPAN
+usr\share\perl5\Git\LoadCPAN.pm
+usr\share\perl5\Git\LoadCPAN\Error.pm
+usr\share\perl5\Git\LoadCPAN\Mail
+usr\share\perl5\Git\LoadCPAN\Mail\Address.pm
+usr\share\perl5\Git\Packet.pm
+usr\share\perl5\Git\SVN
+usr\share\perl5\Git\SVN.pm
+usr\share\perl5\Git\SVN\Editor.pm
+usr\share\perl5\Git\SVN\Fetcher.pm
+usr\share\perl5\Git\SVN\GlobSpec.pm
+usr\share\perl5\Git\SVN\Log.pm
+usr\share\perl5\Git\SVN\Memoize
+usr\share\perl5\Git\SVN\Memoize\YAML.pm
+usr\share\perl5\Git\SVN\Migration.pm
+usr\share\perl5\Git\SVN\Prompt.pm
+usr\share\perl5\Git\SVN\Ra.pm
+usr\share\perl5\Git\SVN\Utils.pm
+usr\share\pixmaps
+usr\share\pixmaps\htop.png
+usr\share\polkit-1
+usr\share\polkit-1\actions
+...
+usr\share\ss
+usr\share\ss\ct_c.awk
+usr\share\ss\ct_c.sed
+usr\share\terminfo
+usr\share\terminfo\a
+...
+usr\share\unimaps\ruscii.uni
+usr\share\unimaps\tcvn.uni
+usr\share\unimaps\viscii.uni
+usr\share\xfsprogs
+...
+usr\share\xml
+usr\share\xml\dbus-1
+usr\share\xml\dbus-1\busconfig.dtd
+usr\share\xml\dbus-1\catalog.xml
+usr\share\xml\dbus-1\introspect.dtd
+usr\share\xtables
+usr\share\xtables\iptables.xslt
+usr\share\xtables\pf.os
+usr\share\zoneinfo
+usr\share\zoneinfo\Africa
+...
+usr\share\zoneinfo\Zulu
+usr\share\zoneinfo\iso3166.tab
+usr\share\zoneinfo\leap-seconds.list
+usr\share\zoneinfo\posix
+usr\share\zoneinfo\posix\Africa
+...
+usr\share\zoneinfo\right\Zulu
+usr\share\zoneinfo\zone.tab
+usr\share\zoneinfo\zone1970.tab
+usr\share\zoneinfo\zonenow.tab
+var
+var\cache
+var\cache\private
+var\empty
+var\lib
+var\lib\boot2docker
+var\lib\boot2docker\.keep
+var\lib\dbus
+var\lib\dbus\machine-id
+var\lib\machines
+var\lib\private
+var\lib\sudo
+var\lib\sudo\lectured
+var\lib\systemd
+var\lib\systemd\coredump
+var\lib\systemd\ephemeral-trees
+var\lib\systemd\linger
+var\lib\systemd\network
+var\lib\systemd\pstore
+var\lib\systemd\timesync
+var\lib\xfsprogs
+var\lock
+var\log
+var\log\.keep
+var\log\journal
+var\log\private
+var\log\sa
+var\run
+var\spool
+var\tmp
+version.json
+------------------------
+5026 files, 384 folders
+
+```
+
+(details in `minikube.fs.log`)
+
+the configuration
+```text
+etc\systemd\system
+etc\systemd\system.conf
+etc\systemd\system\cri-o.service
+etc\systemd\system\ctrl-alt-del.target
+etc\systemd\system\dbus-org.freedesktop.network1.service
+etc\systemd\system\dbus-org.freedesktop.resolve1.service
+etc\systemd\system\dbus-org.freedesktop.timesync1.service
+etc\systemd\system\default.target.wants
+etc\systemd\system\default.target.wants\podman.service
+etc\systemd\system\getty.target.wants
+etc\systemd\system\getty.target.wants\getty@tty1.service
+etc\systemd\system\multi-user.target.wants
+etc\systemd\system\multi-user.target.wants\acpid.service
+etc\systemd\system\multi-user.target.wants\cri-docker.service
+etc\systemd\system\multi-user.target.wants\crio.service
+etc\systemd\system\multi-user.target.wants\hv_fcopy_daemon.service
+etc\systemd\system\multi-user.target.wants\hv_kvp_daemon.service
+etc\systemd\system\multi-user.target.wants\hv_vss_daemon.service
+etc\systemd\system\multi-user.target.wants\lvm-devices-import.path
+etc\systemd\system\multi-user.target.wants\lvm-devices-import.service
+etc\systemd\system\multi-user.target.wants\machines.target
+etc\systemd\system\multi-user.target.wants\minikube-automount.service
+etc\systemd\system\multi-user.target.wants\minikube-scheduled-stop.service
+etc\systemd\system\multi-user.target.wants\nfs-client.target
+etc\systemd\system\multi-user.target.wants\nfs-server.service
+etc\systemd\system\multi-user.target.wants\remote-fs.target
+etc\systemd\system\multi-user.target.wants\rpcbind.service
+etc\systemd\system\multi-user.target.wants\sshd.service
+etc\systemd\system\multi-user.target.wants\systemd-networkd.service
+etc\systemd\system\multi-user.target.wants\vboxservice.service
+etc\systemd\system\multi-user.target.wants\vmtoolsd.service
+etc\systemd\system\network-online.target.wants
+etc\systemd\system\network-online.target.wants\systemd-networkd-wait-online.service
+etc\systemd\system\nfs-mountd.service.requires
+etc\systemd\system\nfs-mountd.service.requires\fsidd.service
+etc\systemd\system\nfs-server.service.requires
+etc\systemd\system\nfs-server.service.requires\fsidd.service
+etc\systemd\system\remote-fs.target.wants
+etc\systemd\system\remote-fs.target.wants\nfs-client.target
+etc\systemd\system\sockets.target.wants
+etc\systemd\system\sockets.target.wants\buildkit.socket
+etc\systemd\system\sockets.target.wants\cri-docker.socket
+etc\systemd\system\sockets.target.wants\dm-event.socket
+etc\systemd\system\sockets.target.wants\docker.socket
+etc\systemd\system\sockets.target.wants\podman.socket
+etc\systemd\system\sockets.target.wants\rpcbind.socket
+etc\systemd\system\sockets.target.wants\systemd-journald-audit.socket
+etc\systemd\system\sockets.target.wants\systemd-networkd.socket
+etc\systemd\system\sysinit.target.wants
+etc\systemd\system\sysinit.target.wants\blk-availability.service
+etc\systemd\system\sysinit.target.wants\lvm2-monitor.service
+etc\systemd\system\sysinit.target.wants\systemd-network-generator.service
+etc\systemd\system\sysinit.target.wants\systemd-pstore.service
+etc\systemd\system\sysinit.target.wants\systemd-resolved.service
+etc\systemd\system\sysinit.target.wants\systemd-timesyncd.service
+etc\systemd\system\sysinit.target.wants\systemd-udev-load-credentials.service
+etc\systemd\system\system.slice.wants
+etc\systemd\system\system.slice.wants\system-xfs_scrub.slice
+etc\systemd\system\systemd-journald.service.wants
+etc\systemd\system\systemd-journald.service.wants\systemd-journald-audit.socket
+etc\systemd\system\systemd-timesyncd.service.d
+etc\systemd\system\systemd-timesyncd.service.d\disable-virtualbox.conf
+etc\systemd\system\timers.target.wants
+etc\systemd\system\timers.target.wants\fstrim.timer
+etc\systemd\system\timers.target.wants\xfs_scrub_all.timer
+
+```
+means 
+
+|Entry in listing|What it suggests|
+|------------------------|----------------|
+|default.target.wants\podman.service|Podman is enabled through the default target.|
+|multi-user.target.wants\cri-o.service and crio.service|CRI-O is enabled for the multi-user boot target. The two names may be a unit and an alias; inspect their contents before counting them as separate services.|
+|multi-user.target.wants\cri-docker.service|A Docker-compatible CRI adapter is enabled.|
+|sockets.target.wants\docker.socket|Docker-compatible API access can be socket-activated. This alone does not prove dockerd is installed or running.|
+|sockets.target.wants\podman.socket|Podman's API socket is enabled.|
+|sockets.target.wants\buildkit.socket|BuildKit's service endpoint is enabled through socket activation.|
+|multi-user.target.wants\vboxservice.service|VirtualBox guest integration is explicitly supported.|
+|multi-user.target.wants\vmtoolsd.service|VMware guest integration is also represented.|
+|hv_fcopy_daemon, hv_kvp_daemon, hv_vss_daemon|Hyper-V integration components are present.|
+|minikube-automount.service|Minikube-specific mount setup is part of startup.|
+|minikube-scheduled-stop.service|There is a Minikube-specific scheduled-stop mechanism worth investigating.|
+|sshd.service, systemd-networkd.service|SSH access and systemd-managed networking are part of the appliance.|
+
+
+|Target            |What it can reveal|
+|------------------|------------------|
+|etc/VERSION|Image/version identification|
+|CHANGELOG|Image-specific changes and build history|
+|init|The initial boot process, if present at the root|
+|etc/os-release|Distribution identity and version|
+|etc/init.d/ or systemd units|Service startup and dependencies|
+|usr/bin/, usr/sbin/|Available management tools|
+|usr/lib/modules/6.6.152/|Kernel module set and supported features|
+|etc/containerd/, etc/docker/, etc/crio/|Container runtime configuration, depending on what's included|
+|Kubernetes-related binaries and configuration|How the VM initializes its Kubernetes node|
+
+
+On Windows, copy the `a.iso` to a directory accessible to the Linux VM. 
+Inside Linux, assuming you have copied the ISO to `/tmp/a.iso`:
+
+```sh
+mkdir -p ~/minikube-inspect/iso
+cd ~/minikube-inspect/iso
+
+# Extract the kernel and initrd from the ISO.
+7z x /tmp/a.iso boot/bzImage boot/initrd
+
+# Decompress and extract the CPIO archive into a Linux filesystem.
+mkdir -p ../rootfs
+cd ../rootfs
+
+gzip -dc ../iso/boot/initrd |
+  cpio -idm --no-absolute-filenames
+  
+```
+### Older Install Steps
 * follow the [steps](https://phoenixnap.com/kb/install-minikube-on-ubuntu) listed for bionic
 
 ```sh
@@ -1373,6 +2688,10 @@ minikube.exe start --driver=virtualbox
    * [extending applications on Kubernetes with multi-container pods](https://learnk8s.io/sidecar-containers-patterns)
    * [multi-container pods in Kubernetes](https://k21academy.com/docker-kubernetes/multi-container-pods/)
    * [sidecar container best practices and examples](https://www.containiq.com/post/kubernetes-sidecar-container)	
+   * https://learn.microsoft.com/en-us/windows/win32/msi/orca-exe
+   * https://learn.microsoft.com/en-us/windows/apps/windows-sdk/downloads?source=recommendations
+   * https://github.com/kubernetes/minikube/tree/master/installers/windows
+   * https://nsis.sourceforge.io/Main_Page
    * GKE documentation
 
        + [https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts](https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts)
@@ -1409,5 +2728,7 @@ minikube.exe start --driver=virtualbox
 
      + [k8 minikube docs](https://minikube.sigs.k8s.io/docs/start/)
      + [building a Kubernetes Cluster from Scratch: A Detailed Guide](https://codeproject.com/articles/Building-a-Kubernetes-Cluster-from-Scratch-A-Detai)
+     
+     
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
