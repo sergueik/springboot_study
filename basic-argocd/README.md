@@ -32,12 +32,12 @@ __Argo CD__:
 
 
 
-The key similarity is declarative desired-state management backed by reconciliation. 
+The key similarity is declarative desired-state management backed by reconciliation.
 __Puppet__ was already doing that long before __Argo CD__ appeared.
-There is also a meaningful difference: Puppet traditionally manages resources on machines — __packages__, __files__, __services__, __users__ and __configuration__. 
-__Argo CD__ narrows this to delivering applications into __Kubernetes__ and 
+There is also a meaningful difference: Puppet traditionally manages resources on machines — __packages__, __files__, __services__, __users__ and __configuration__.
+__Argo CD__ narrows this to delivering applications into __Kubernetes__ and
 tracking their health and synchronization state.
-So I would characterize __Argo CD__ as an __GitOps__-oriented descendant of the same architectural idea, 
+So I would characterize __Argo CD__ as an __GitOps__-oriented descendant of the same architectural idea,
 rather than literally a replacement for __Puppet__.
 And this connects directly to your earlier __GitHub Actions__ question:
 - __GitHub Actions__ says: execute this workflow when an event occurs.
@@ -45,15 +45,15 @@ And this connects directly to your earlier __GitHub Actions__ question:
 - __Argo CD__ says: make the __Kubernetes__ application conform to the desired state in __Git__.
 
 The last two share a fundamental model. The first has a different execution model.
-The historical irony: __GitOps__ didn't invent declarative reconciliation. 
-It applied that established configuration-management idea to a __Kubernetes__-centric, __Git__-driven application-delivery workflow. 
+The historical irony: __GitOps__ didn't invent declarative reconciliation.
+It applied that established configuration-management idea to a __Kubernetes__-centric, __Git__-driven application-delivery workflow.
 __Argo CD__ feels like __Puppet__ reborn because, at the level of control-loop architecture, there really is a family resemblance.
 
 
 
 __Argo CD__ narrows __Puppet__ resource-management domain to __Kubernetes__ application delivery,
 but it does not merely replace __Puppet__ operation dictionary with __kubectl__ and __Helm__ commands.
-  
+
 
 The distinction is between reducing the managed resource model and reducing the execution vocabulary.
 
@@ -67,7 +67,7 @@ The distinction is between reducing the managed resource model and reducing the 
 
 
 
-The subtlety is that __Helm__ is not simply another set of imperative operations. __Argo CD__ can render a __Helm__ chart into Kubernetes manifests and then reconcile the resulting resources. 
+The subtlety is that __Helm__ is not simply another set of imperative operations. __Argo CD__ can render a __Helm__ chart into Kubernetes manifests and then reconcile the resulting resources.
 Likewise, __Kustomize__ and plain __YAML__ are supported; __Argo CD__ is not limited to __Helm__
 
 __Argo CD__ is conceptually a simplified and specialized declarative configuration-management controller:
@@ -106,7 +106,7 @@ The install on Windows MiniKube (relatively old version - update suggested):
 minikube.exe start --driver=virtualbox
 ```
 ```cmd
-minikube.exe status 
+minikube.exe status
 ```
 
 ```
@@ -119,7 +119,7 @@ kubeconfig: Configured
 ```
 
 ```cmd
-minikube.exe kubectl create namespace argocd 
+minikube.exe kubectl create namespace argocd
 ```
 > NOTE in first (e.g. if recycled prior ) will show downloads
 ```text
@@ -271,7 +271,7 @@ VBoxManage.exe: error: The machine 'minikube' is already locked for a session (o
 VBoxManage.exe: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component MachineWrap, interface IMachine, callee IUnknown
 VBoxManage.exe: error: Context: "LockMachine(a->session, LockType_Write)" at line 529 of file VBoxManageModifyVM.cpp
 ```
-VBoxManage will not update the VM which is not stopppe. 
+VBoxManage will not update the VM which is not stopppe.
 When VM is running, use `controlvm` instead:
 
 ```poweshell
@@ -637,7 +637,7 @@ xD5p4Io2b9OE10Ss
 ![Login](screenshots/login-argocd.png)
 
 if run from bash
- 
+
 ```sh
 minikube.exe kubectl -- -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 ```
@@ -645,7 +645,7 @@ login as `admin`, will be redirected to initial dashboard:
 
 ![Login](screenshots/dashbpard-argocd.png)
 
-connect to demo repository `https://github.com/OdabasiMehmet/nginx-kubernetes.git` and 
+connect to demo repository `https://github.com/OdabasiMehmet/nginx-kubernetes.git` and
 
 ![Appliction Created](screenshots/application-argocd.png)
 
@@ -710,6 +710,26 @@ spec:
 Choose Automatic sync when filling the application inputs. You will need to force sync if any error made and corrected in application configuration
 
 ![Appliction Details](screenshots/application-guestbook-details-argocd.png)
+### Backgound
+
+| Period|Phase | What happen |
+|-------|------|-------------|
+|2000 |Borg: Google's internal | Google developed and operated Borg to schedule and manage workloads across enormous clusters. This infrastructure helped run services such as Search and Gmail:<br/>internal system, not a public product|
+|2013|The realization|Engineers including Joe Beda, Brendan Burns and Craig McLuckie began pushing for a public container-orchestration platform informed by Google's internal experience<br/>Leadership initially worried about giving away a competitive advantage|
+|2014..15|Kubernetes go public| Kubernetes was announced in June 2014 and reached version 1.0 in July 2015. It borrowed lessons and design ideas from Borg but<br/>was a new, open-source system—not simply Borg's source code released to everyone|
+|2015 onward|An ecosystem, not longer Google's product|Google donated Kubernetes as seed technology for the Cloud Native Computing Foundation.<br/> Contributions from other companies helped turn it into a portable, broadly adopted platform|
+
+
+> AWS had the first-mover advantage, Microsoft had an enormous enterprise distribution channel,
+> Google had world-class infrastructure technology but a weaker position in the cloud market.
+> Open-sourcing Kubernetes helped Google turn a private engineering advantage into a standard that competing cloud providers would also adopt.
+
+__GCP__ recognize that technical superiority and cloud-market adoption are different problems:
+  - __AWS__ had accumulated customers, services, operational experience and ecosystem momentum.
+  - __Microsoft__ could build on enterprise relationships and its existing software business.
+  - __Google__ had solid distributed-systems expertise, but persuading customers to make __CGP__ their primary cloud provider was a separate challenge
+
+
 
 ### Historical Background: What *Really* Happened — Google, Kubernetes, and the Cloud Wars
 
