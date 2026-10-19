@@ -102,13 +102,15 @@ __Redis Cache__: state cache
 Initial setup based on [gist](https://gist.github.com/bhimsur/b6c575916883ff7712861beacbe1ff0b)
 
 The install on Windows MiniKube (relatively old version - update suggested):
+
+#### Windows 11 Host
+
 ```cmd
 minikube.exe start --driver=virtualbox
 ```
 ```cmd
 minikube.exe status
 ```
-
 ```
 minikube
 type: Control Plane
@@ -118,6 +120,42 @@ apiserver: Running
 kubeconfig: Configured
 ```
 
+#### Ubuntu Host
+
+```
+minikube start --driver=virtualbox
+```
+```text
+😄  minikube v1.36.0 on Ubuntu 18.04
+✨  Using the virtualbox driver based on existing profile
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+🔄  Restarting existing virtualbox VM for "minikube" ...
+🎉  minikube 1.39.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.39.0
+💡  To disable this notice, run: 'minikube config set WantUpdateNotification false'
+
+❗  Image was not built for the current minikube version. To resolve this you can delete and recreate your minikube cluster using the latest images. Expected minikube version: v1.35.0 -> Actual minikube version: v1.36.0
+🐳  Preparing Kubernetes v1.33.1 on Docker 28.0.4 ...
+❗  kubeadm certificates have expired. Generating new ones...
+🔗  Configuring bridge CNI (Container Networking Interface) ...
+🔎  Verifying Kubernetes components...
+   n ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+💡  kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+
+```
+```sh
+minikube status
+```
+```text
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+```
 ```cmd
 minikube.exe kubectl create namespace argocd
 ```
@@ -271,7 +309,7 @@ VBoxManage.exe: error: The machine 'minikube' is already locked for a session (o
 VBoxManage.exe: error: Details: code VBOX_E_INVALID_OBJECT_STATE (0x80bb0007), component MachineWrap, interface IMachine, callee IUnknown
 VBoxManage.exe: error: Context: "LockMachine(a->session, LockType_Write)" at line 529 of file VBoxManageModifyVM.cpp
 ```
-VBoxManage will not update the VM which is not stopppe.
+VBoxManage `modifyvm` will only change the VM which is stoppped.
 When VM is running, use `controlvm` instead:
 
 ```poweshell
@@ -618,7 +656,6 @@ acknowledge `net::ERR_CERT_AUTHORITY_INVALID`
 
 ![Insecure Cert Accept Approval](screenshots/untrusted-cert.png)
 
-
 * retrieve
 ```cmd
 minikube.exe kubectl -- --namespace argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
@@ -668,7 +705,7 @@ Destroy the `nginx` example application and disconnect from the repository.
 
 Connect to [Example Apps to Demonstrate Argo CD](https://github.com/argoproj/argocd-example-apps)
 
-Create separate namespace for the guestbook application:
+Create separate `guestbook` namespace for the guestbook application:
 
 ```cmd
 minikube.exe kubectl get namespaces
@@ -710,7 +747,144 @@ spec:
 Choose Automatic sync when filling the application inputs. You will need to force sync if any error made and corrected in application configuration
 
 ![Appliction Details](screenshots/application-guestbook-details-argocd.png)
+
+
+#### Ubuntu Host
+```sh
+VERSION=v2.8.4
+minikube kubectl -- apply --namespace argocd -f  https://raw.githubusercontent.com/argoproj/argo-cd/$VERSION/manifests/install.yaml
+```
+```text
+customresourcedefinition.apiextensions.k8s.io/applications.argoproj.io created
+customresourcedefinition.apiextensions.k8s.io/applicationsets.argoproj.io created
+customresourcedefinition.apiextensions.k8s.io/appprojects.argoproj.io created
+serviceaccount/argocd-application-controller created
+serviceaccount/argocd-applicationset-controller created
+serviceaccount/argocd-dex-server created
+serviceaccount/argocd-notifications-controller created
+serviceaccount/argocd-redis created
+serviceaccount/argocd-repo-server created
+serviceaccount/argocd-server created
+role.rbac.authorization.k8s.io/argocd-application-controller created
+role.rbac.authorization.k8s.io/argocd-applicationset-controller created
+role.rbac.authorization.k8s.io/argocd-dex-server created
+role.rbac.authorization.k8s.io/argocd-notifications-controller created
+role.rbac.authorization.k8s.io/argocd-server created
+clusterrole.rbac.authorization.k8s.io/argocd-application-controller created
+clusterrole.rbac.authorization.k8s.io/argocd-server created
+rolebinding.rbac.authorization.k8s.io/argocd-application-controller created
+rolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller created
+rolebinding.rbac.authorization.k8s.io/argocd-dex-server created
+rolebinding.rbac.authorization.k8s.io/argocd-notifications-controller created
+rolebinding.rbac.authorization.k8s.io/argocd-server created
+clusterrolebinding.rbac.authorization.k8s.io/argocd-application-controller created
+clusterrolebinding.rbac.authorization.k8s.io/argocd-server created
+configmap/argocd-cm created
+configmap/argocd-cmd-params-cm created
+configmap/argocd-gpg-keys-cm created
+configmap/argocd-notifications-cm created
+configmap/argocd-rbac-cm created
+configmap/argocd-ssh-known-hosts-cm created
+configmap/argocd-tls-certs-cm created
+secret/argocd-notifications-secret created
+secret/argocd-secret created
+service/argocd-applicationset-controller created
+service/argocd-dex-server created
+service/argocd-metrics created
+service/argocd-notifications-controller-metrics created
+service/argocd-redis created
+service/argocd-repo-server created
+service/argocd-server created
+service/argocd-server-metrics created
+deployment.apps/argocd-applicationset-controller created
+deployment.apps/argocd-dex-server created
+deployment.apps/argocd-notifications-controller created
+deployment.apps/argocd-redis created
+deployment.apps/argocd-repo-server created
+deployment.apps/argocd-server created
+statefulset.apps/argocd-application-controller created
+networkpolicy.networking.k8s.io/argocd-application-controller-network-policy created
+networkpolicy.networking.k8s.io/argocd-applicationset-controller-network-policy created
+networkpolicy.networking.k8s.io/argocd-dex-server-network-policy created
+networkpolicy.networking.k8s.io/argocd-notifications-controller-network-policy created
+networkpolicy.networking.k8s.io/argocd-redis-network-policy created
+networkpolicy.networking.k8s.io/argocd-repo-server-network-policy created
+networkpolicy.networking.k8s.io/argocd-server-network-policy created
+```
+
+```sh
+minikube kubectl port-forward svc/argocd-server --namespace argocd 8080:443
+```
+```text
+Forwarding from 127.0.0.1:8080 -> 8080
+Forwarding from [::1]:8080 -> 8080
+
+```
+```sh>
+minikube kubectl -- get all -n argocd
+
+```
+> NOTE may need to interrupt wth `Ctrl^C`
+```
+NAME                                                    READY   STATUS    RESTARTS   AGE
+pod/argocd-application-controller-0                     1/1     Running   0          4m12s
+pod/argocd-applicationset-controller-77594b7754-dqw5z   1/1     Running   0          4m12s
+pod/argocd-dex-server-55cdd54ccb-wjx2d                  1/1     Running   0          4m12s
+pod/argocd-notifications-controller-7765c495c7-c585v    1/1     Running   0          4m12s
+pod/argocd-redis-5d849fc6db-78kzd                       1/1     Running   0          4m12s
+pod/argocd-repo-server-5477d857fc-rh4p9                 1/1     Running   0          4m12s
+pod/argocd-server-dcdcd9f88-xrz4l                       1/1     Running   0          4m12s
+
+NAME                                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+service/argocd-applicationset-controller          ClusterIP   10.101.152.106   <none>        7000/TCP,8080/TCP            4m13s
+service/argocd-dex-server                         ClusterIP   10.105.149.193   <none>        5556/TCP,5557/TCP,5558/TCP   4m13s
+service/argocd-metrics                            ClusterIP   10.105.115.22    <none>        8082/TCP                     4m13s
+service/argocd-notifications-controller-metrics   ClusterIP   10.96.32.232     <none>        9001/TCP                     4m13s
+service/argocd-redis                              ClusterIP   10.111.188.213   <none>        6379/TCP                     4m13s
+service/argocd-repo-server                        ClusterIP   10.96.77.212     <none>        8081/TCP,8084/TCP            4m12s
+service/argocd-server                             ClusterIP   10.105.219.66    <none>        80/TCP,443/TCP               4m12s
+service/argocd-server-metrics                     ClusterIP   10.109.42.160    <none>        8083/TCP                     4m12s
+
+NAME                                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/argocd-applicationset-controller   1/1     1            1           4m12s
+deployment.apps/argocd-dex-server                  1/1     1            1           4m12s
+deployment.apps/argocd-notifications-controller    1/1     1            1           4m12s
+deployment.apps/argocd-redis                       1/1     1            1           4m12s
+deployment.apps/argocd-repo-server                 1/1     1            1           4m12s
+deployment.apps/argocd-server                      1/1     1            1           4m12s
+
+NAME                                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/argocd-applicationset-controller-77594b7754   1         1         1       4m12s
+replicaset.apps/argocd-dex-server-55cdd54ccb                  1         1         1       4m12s
+replicaset.apps/argocd-notifications-controller-7765c495c7    1         1         1       4m12s
+replicaset.apps/argocd-redis-5d849fc6db                       1         1         1       4m12s
+replicaset.apps/argocd-repo-server-5477d857fc                 1         1         1       4m12s
+replicaset.apps/argocd-server-dcdcd9f88                       1         1         1       4m12s
+
+NAME                                             READY   AGE
+statefulset.apps/argocd-application-controller   1/1     4m12s
+
+```
+```text
+et
+```
+```text
+"minikube" {c89f1689-bc57-4cc3-86a9-b3a6afb63538}
+```
+
+```sh
+VM='c89f1689-bc57-4cc3-86a9-b3a6afb63538';VBoxManage controlvm $VM natpf1 "web,tcp,,8080,,8080"
+```
+
+```sh
+minikube kubectl -- --namespace argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"  |base64 -d -
+```
+![capture application hosted in virtualbox on ubuntu](screenshots/application-argocd-ubuntu.png)
+
 ### Backgound
+
+
+
 
 | Period|Phase | What happen |
 |-------|------|-------------|
