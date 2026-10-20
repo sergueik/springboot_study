@@ -1013,8 +1013,256 @@ That interpretation is consistent with the history, although it would be too str
 - Google Kubernetes Engine: https://cloud.google.com/kubernetes-engine
 
 
+### ArgoCD on Kind
+> NOTE: on __Ubuntu__ __18.04__ go is very old
+
+```sh
+apt-get remove golang-go]
+``` 
+
+```
+VERSION='1.14.1'
+wget https://dl.google.com/go/go${VERSION}.linux-amd64.tar.gz
+
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go${VERSION}.linux-amd64.tar.gz
+```
+
+export GO111MODULE=on
+```
+```
+go install sigs.k8s.io/kind@v0.33.0 
+```
+```
+can't load package: package sigs.k8s.io/kind@v0.33.0: 
+can only use path@version syntax with 'go get'
+```
+```sh
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+export GO111MODULE=on
+```
+
+```
+go get sigs.k8s.io/kind@v0.33.0 
+```
+```txt
+go: downloading sigs.k8s.io/kind v0.33.0
+go: downloading al.essio.dev/pkg/shellescape v1.5.1
+go: downloading github.com/spf13/pflag v1.0.5
+go: downloading github.com/pkg/errors v0.9.1
+go: downloading github.com/mattn/go-isatty v0.0.20
+go: downloading github.com/spf13/cobra v1.8.0
+go: downloading github.com/pelletier/go-toml v1.9.5
+go: downloading github.com/evanphx/json-patch/v5 v5.6.0
+go: downloading go.yaml.in/yaml/v3 v3.0.4
+go: downloading github.com/BurntSushi/toml v1.4.0
+go: downloading golang.org/x/sys v0.6.0
+go: downloading sigs.k8s.io/yaml v1.4.0
+go: downloading github.com/inconshreveable/mousetrap v1.1.0
+../../../go/pkg/mod/github.com/!burnt!sushi/toml@v1.4.0/decode.go:9:2: package io/fs is not in GOROOT (/usr/local/go/src/io/fs)
+```
+update to `16.1` but `module requires Go 1.18`
+
+```sh
+go install sigs.k8s.io/kind@v0.22.0 
+```
+```text
+go: downloading sigs.k8s.io/kind v0.22.0
+go: downloading github.com/spf13/cobra v1.4.0
+go: downloading github.com/alessio/shellescape v1.4.1
+go: downloading github.com/mattn/go-isatty v0.0.14
+go: downloading github.com/pelletier/go-toml v1.9.4
+go: downloading github.com/BurntSushi/toml v1.0.0
+go: downloading gopkg.in/yaml.v3 v3.0.1
+go: downloading sigs.k8s.io/yaml v1.3.0
+go: downloading golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
+go: downloading github.com/google/safetext v0.0.0-20220905092116-b49f7bc46da2
+go: downloading gopkg.in/yaml.v2 v2.4.0
+
+```
+
+```sh
+kind version
+```
+```text
+kind v0.22.0 go1.16.1 linux/amd64
+```
+#### Create a Kind Cluster
+```sh
+cat <<EOF > kind-config.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30443
+    hostPort: 8443
+    protocol: TCP
+EOF
+```
+
+* Create the cluster using the configuration
+```sh
+kind create cluster --name argocd-cluster --config kind-config.yaml
+```
+
+```text
+Creating cluster "argocd-cluster" ...
+ ✓ Ensuring node image (kindest/node:v1.29.2) 🖼 
+ ✓ Preparing nodes 📦  
+ ✓ Writing configuration 📜 
+ ✓ Starting control-plane 🕹️ 
+ ✓ Installing CNI 🔌 
+ ✓ Installing StorageClass 💾 
+Set kubectl context to "kind-argocd-cluster"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-argocd-cluster
+
+Have a nice day! 👋
+
+```
+
+```sh
+docker image ls
+```
+```text
+NAME                                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+service/argocd-applicationset-controller          ClusterIP   10.101.152.106   <none>        7000/TCP,8080/TCP            4m13s
+service/argocd-dex-server                         ClusterIP   10.105.149.193   <none>        5556/TCP,5557/TCP,5558/TCP   4m13s
+service/argocd-metrics                            ClusterIP   10.105.115.22    <none>        8082/TCP                     4m13s
+service/argocd-notifications-controller-metrics   ClusterIP   10.96.32.232     <none>        9001/TCP                     4m13s
+service/argocd-redis                              ClusterIP   10.111.188.213   <none>        6379/TCP                     4m13s
+service/argocd-repo-server                        ClusterIP   10.96.77.212     <none>        8081/TCP,8084/TCP            4m12s
+service/argocd-server                             ClusterIP   10.105.219.66    <none>        80/TCP,443/TCP               4m12s
+service/argocd-server-metrics                     ClusterIP   10.109.42.160    <none>        8083/TCP             
+service/argocd-server-metrics                     ClusterIP   10.109.42.160    <none>        8083/TCP                     4m12s
+
+NAME                                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/argocd-applicationset-controller   1/1     1            1           4m12s
+deployment.apps/argocd-dex-server                  1/1     1            1           4m12s
+deployment.apps/argocd-notifications-controller    1/1     1            1           4m12s
+deployment.apps/argocd-redis                       1/1     1            1           4m12s
+deployment.apps/argocd-repo-server                 1/1     1            1           4m12s
+deployment.apps/argocd-server                      1/1     1            1           4m12s
+
+NAME                                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/argocd-applicationset-controller-77594b7754   1         1         1       4m12s
+replicaset.apps/argocd-dex-server-55cdd54ccb                  1         1         1       4m12s
+replicaset.apps/argocd-notifications-controller-7765c495c7    1         1         1       4m12s
+replicaset.apps/argocd-redis-5d849fc6db                       1         1         1       4m12s
+replicaset.apps/argocd-repo-server-5477d857fc                 1         1         1       4m12s
+
+
+```
+
+```sh
+kubectl cluster-info --context kind-argocd-cluster
+```
+```text
+Kubernetes control plane is running at https://127.0.0.1:36977
+CoreDNS is running at https://127.0.0.1:36977/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+```
+
+```sh
+kubectl create namespace argocd
+```
+```text
+namespace/argocd created
+```
+```sh
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+```text
+
+customresourcedefinition.apiextensions.k8s.io/applications.argoproj.io serverside-applied
+customresourcedefinition.apiextensions.k8s.io/applicationsets.argoproj.io serverside-applied
+customresourcedefinition.apiextensions.k8s.io/appprojects.argoproj.io serverside-applied
+serviceaccount/argocd-application-controller serverside-applied
+serviceaccount/argocd-applicationset-controller serverside-applied
+serviceaccount/argocd-dex-server serverside-applied
+serviceaccount/argocd-notifications-controller serverside-applied
+serviceaccount/argocd-redis serverside-applied
+serviceaccount/argocd-repo-server serverside-applied
+serviceaccount/argocd-server serverside-applied
+role.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+role.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+role.rbac.authorization.k8s.io/argocd-dex-server serverside-applied
+role.rbac.authorization.k8s.io/argocd-notifications-controller serverside-applied
+role.rbac.authorization.k8s.io/argocd-redis serverside-applied
+role.rbac.authorization.k8s.io/argocd-server serverside-applied
+clusterrole.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+clusterrole.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+clusterrole.rbac.authorization.k8s.io/argocd-server serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-dex-server serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-notifications-controller serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-redis serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-server serverside-applied
+clusterrolebinding.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+clusterrolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+clusterrolebinding.rbac.authorization.k8s.io/argocd-server serverside-applied
+configmap/argocd-cm serverside-applied
+configmap/argocd-cmd-params-cm serverside-applied
+configmap/argocd-gpg-keys-cm serverside-applied
+configmap/argocd-notifications-cm serverside-applied
+configmap/argocd-rbac-cm serverside-applied
+configmap/argocd-ssh-known-hosts-cm serverside-applied
+configmap/argocd-tls-certs-cm serverside-applied
+secret/argocd-notifications-secret serverside-applied
+secret/argocd-secret serverside-applied
+service/argocd-applicationset-controller serverside-applied
+service/argocd-dex-server serverside-applied
+service/argocd-metrics serverside-applied
+service/argocd-notifications-controller-metrics serverside-applied
+service/argocd-redis serverside-applied
+service/argocd-repo-server serverside-applied
+service/argocd-server serverside-applied
+service/argocd-server-metrics serverside-applied
+deployment.apps/argocd-applicationset-controller serverside-applied
+deployment.apps/argocd-dex-server serverside-applied
+deployment.apps/argocd-notifications-controller serverside-applied
+deployment.apps/argocd-redis serverside-applied
+deployment.apps/argocd-repo-server serverside-applied
+deployment.apps/argocd-server serverside-applied
+statefulset.apps/argocd-application-controller serverside-applied
+networkpolicy.networking.k8s.io/argocd-application-controller-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-applicationset-controller-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-dex-server-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-notifications-controller-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-redis-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-repo-server-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-server-network-policy serverside-applied
+```
+```sh
+docker container ls 
+```
+```text
+CONTAINER ID   IMAGE                  COMMAND                  CREATED          STATUS          PORTS                                                NAMES
+ff285934790c   kindest/node:v1.29.2   "/usr/local/bin/entr…"   46 minutes ago   Up 40 minutes   127.0.0.1:36977->6443/tcp, 0.0.0.0:8443->30443/tcp   argocd-cluster-control-plane
+```
+```sh
+docker image ls 
+```
+```text
+REPOSITORY     TAG       IMAGE ID       CREATED       SIZE
+kindest/node   <none>    09c50567d34e   2 years ago   956MB
+```
+
+```sh
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+```sh
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+```
+
+![capture application hosted in docker on ubuntu](screenshots/application-argocd-kind.png)
 
 ### See Also
+
 
    * [docker hub](https://hub.docker.com/r/argoproj/argocd)
    * collection of [Example Apps to Demonstrate Argo CD](https://github.com/argoproj/argocd-example-apps) and related [video](https://www.youtube.com/watch?v=0WAm0y2vLIo)
@@ -1025,6 +1273,8 @@ That interpretation is consistent with the history, although it would be too str
    * [Setting Up ArgoCD on Kubernetes CLuster](https://dev.to/durrello/setting-up-argocd-on-minikube-for-a-local-dev-environment-5637)
    * [hands-on introduction to Argo CD : Kubernetes DevOps CI/CD](https://www.youtube.com/watch?v=2WSJF7d8dUg)
    * another [self Managed Argo CD - App of Everything](https://github.com/bukurt/argocd)
+   * [kind](https://kind.sigs.k8s.io/)
+   * https://argo-cd.readthedocs.io/en/latest/try_argo_cd_locally/   
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
