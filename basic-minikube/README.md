@@ -1829,7 +1829,6 @@ minikube start --driver=virtualbox
 ```
 ```sh
 minikube kubectl get ns
-
 ```
 ```text
 NAME              STATUS   AGE
@@ -2555,7 +2554,8 @@ kube-system   kube-scheduler-minikube            1/1     Running   0          16
 kube-system   storage-provisioner                1/1     Running   0          15s
 ``` 
 
-> NOTE: To print Windows version information directly to the console one cannot use `winver.exe` which is compiled into GUI window app.
+> NOTE: To print Windows version information directly to the console one cannot use `winver.exe` which is compiled into GUI window app. 
+> The `ver` command is for it:
 
 ```cmd
 ver

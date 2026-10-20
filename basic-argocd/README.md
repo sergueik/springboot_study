@@ -1019,7 +1019,7 @@ That interpretation is consistent with the history, although it would be too str
 > NOTE: on __Ubuntu__ __18.04__ / __22.04__  Go is very old. But it is always a good practice to avoid "latest" Go.
 
 ```sh
-apt-get remove golang-go
+sudo apt-get remove golang-go
 ``` 
 
 ```
@@ -1027,7 +1027,7 @@ VERSION='1.16.1'
 wget https://dl.google.com/go/go${VERSION}.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go${VERSION}.linux-amd64.tar.gz
 ```
-#### Install Pinned Kind
+#### Compile and Install Pinned Kind
 
 ```sh
 export GOROOT=/usr/local/go
@@ -1036,7 +1036,8 @@ export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GO111MODULE=on
 ```
 ```sh
-go install sigs.k8s.io/kind@v0.22.0 
+VERSION=v0.22.0
+go install sigs.k8s.io/kind@$VERSION
 ```
 ```text
 go: downloading sigs.k8s.io/kind v0.22.0
@@ -1051,7 +1052,19 @@ go: downloading golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
 go: downloading github.com/google/safetext v0.0.0-20220905092116-b49f7bc46da2
 go: downloading gopkg.in/yaml.v2 v2.4.0
 ```
+```sh
+which kind
+```
+```text
+/home/sergueik/go/bin/kind
+```
 
+```sh
+echo $PATH | grep $GOPATH
+```
+```text
+/home/sergueik/bin:/home/sergueik/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:/home/sergueik/go/bin
+```
 ```sh
 kind version
 ```
@@ -1142,6 +1155,11 @@ Kustomize Version: v5.8.1
 ```sh
 kubectl cluster-info --context kind-argocd-cluster
 ```
+```text
+Kubernetes control plane is running at https://127.0.0.1:44057
+CoreDNS is running at https://127.0.0.1:44057/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
+> NOTE: need the command producing the below output:
 
 ```text
 NAME                                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
@@ -1169,11 +1187,6 @@ replicaset.apps/argocd-dex-server-55cdd54ccb                  1         1       
 replicaset.apps/argocd-notifications-controller-7765c495c7    1         1         1       4m12s
 replicaset.apps/argocd-redis-5d849fc6db                       1         1         1       4m12s
 replicaset.apps/argocd-repo-server-5477d857fc                 1         1         1       4m12s
-```
-
-```text
-Kubernetes control plane is running at https://127.0.0.1:36977
-CoreDNS is running at https://127.0.0.1:36977/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
 
 ```sh
@@ -1251,15 +1264,57 @@ docker container ls
 ```
 ```text
 CONTAINER ID   IMAGE                  COMMAND                  CREATED          STATUS          PORTS                                                NAMES
-ff285934790c   kindest/node:v1.29.2   "/usr/local/bin/entr…"   46 minutes ago   Up 40 minutes   127.0.0.1:36977->6443/tcp, 0.0.0.0:8443->30443/tcp   argocd-cluster-control-plane
+ebd255c6282f   kindest/node:v1.29.2   "/usr/local/bin/entr…"   19 minutes ago   Up 19 minutes   127.0.0.1:44057->6443/tcp, 0.0.0.0:8443->30443/tcp   argocd-cluster-control-plane
 ```
 ```sh
-docker image ls 
+docker images |grep kindest/node 
 ```
 ```text
-REPOSITORY     TAG       IMAGE ID       CREATED       SIZE
-kindest/node   <none>    09c50567d34e   2 years ago   956MB
+kindest/node                                    <none>                  09c50567d34e   2 years ago   956MB
 ```
+```sh
+docker image ls
+```
+```text
+REPOSITORY                        TAG       IMAGE ID       CREATED       SIZE
+kindest/node                      <none>    09c50567d34e   2 years ago   956MB
+```
+> NOTE there may be many more images
+
+#### Pin The Image
+
+```sh
+docker inspect 09c5 |jq '.[].RepoDigests'
+```
+```json
+[
+  "kindest/node@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245"
+]
+```
+```sh
+docker inspect 09c5 |jq -r '.[].Id'
+```
+```text
+sha256:09c50567d34e79e369b18002f0807a76af33a7570a285d382497d573d70b0ca1
+```
+```sh
+docker image inspect 09c5 --format '{{json .Config.Labels}}' | jq '.'
+```
+> NOTE: may be empty
+
+
+```sh
+docker inspect 09c5 |jq -r '.[].RepoDigests[]' | awk -F@ '{print $2}'
+```
+```text
+sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245
+```
+
+```sh
+DIGEST='sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245'
+curl -s 'https://docker.com' | jq -r --arg dig "$DIGEST" '.results[] | select(.digest == $dig) | .name'
+```
+> NOTE: may be empty
 
 ```sh
 kubectl port-forward svc/argocd-server -n argocd 8080:443
@@ -1268,6 +1323,9 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 ```
 
+```
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d |xclip -sel clip
+```
 ![capture application hosted in docker on ubuntu](screenshots/application-argocd-kind.png)
 
 ### See Also
