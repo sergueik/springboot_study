@@ -4,8 +4,8 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <packaging>jar</packaging>
-  <artifactId>findinpath</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <artifactId>unleash-client</artifactId>
+  <version>0.3.0-SNAPSHOT</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -13,15 +13,15 @@
     <relativePath/>
   </parent>
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>11</java.version>
     <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
     <spring-security.version>5.3.4.RELEASE</spring-security.version>
     <thymeleaf-extras-springsecurity5.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity5.version>
     <unleash.version>3.3.1</unleash.version>
     <yauaa.version>5.19</yauaa.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   <dependencyManagement>
     <dependencies>

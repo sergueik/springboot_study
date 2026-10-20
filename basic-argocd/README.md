@@ -1014,56 +1014,27 @@ That interpretation is consistent with the history, although it would be too str
 
 
 ### ArgoCD on Kind
-> NOTE: on __Ubuntu__ __18.04__ go is very old
+
+#### Install Recent Go
+> NOTE: on __Ubuntu__ __18.04__ / __22.04__  Go is very old. But it is always a good practice to avoid "latest" Go.
 
 ```sh
-apt-get remove golang-go]
+apt-get remove golang-go
 ``` 
 
 ```
-VERSION='1.14.1'
+VERSION='1.16.1'
 wget https://dl.google.com/go/go${VERSION}.linux-amd64.tar.gz
-
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go${VERSION}.linux-amd64.tar.gz
 ```
+#### Install Pinned Kind
 
-export GO111MODULE=on
-```
-```
-go install sigs.k8s.io/kind@v0.33.0 
-```
-```
-can't load package: package sigs.k8s.io/kind@v0.33.0: 
-can only use path@version syntax with 'go get'
-```
 ```sh
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GO111MODULE=on
 ```
-
-```
-go get sigs.k8s.io/kind@v0.33.0 
-```
-```txt
-go: downloading sigs.k8s.io/kind v0.33.0
-go: downloading al.essio.dev/pkg/shellescape v1.5.1
-go: downloading github.com/spf13/pflag v1.0.5
-go: downloading github.com/pkg/errors v0.9.1
-go: downloading github.com/mattn/go-isatty v0.0.20
-go: downloading github.com/spf13/cobra v1.8.0
-go: downloading github.com/pelletier/go-toml v1.9.5
-go: downloading github.com/evanphx/json-patch/v5 v5.6.0
-go: downloading go.yaml.in/yaml/v3 v3.0.4
-go: downloading github.com/BurntSushi/toml v1.4.0
-go: downloading golang.org/x/sys v0.6.0
-go: downloading sigs.k8s.io/yaml v1.4.0
-go: downloading github.com/inconshreveable/mousetrap v1.1.0
-../../../go/pkg/mod/github.com/!burnt!sushi/toml@v1.4.0/decode.go:9:2: package io/fs is not in GOROOT (/usr/local/go/src/io/fs)
-```
-update to `16.1` but `module requires Go 1.18`
-
 ```sh
 go install sigs.k8s.io/kind@v0.22.0 
 ```
@@ -1079,7 +1050,6 @@ go: downloading sigs.k8s.io/yaml v1.3.0
 go: downloading golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
 go: downloading github.com/google/safetext v0.0.0-20220905092116-b49f7bc46da2
 go: downloading gopkg.in/yaml.v2 v2.4.0
-
 ```
 
 ```sh
@@ -1088,7 +1058,39 @@ kind version
 ```text
 kind v0.22.0 go1.16.1 linux/amd64
 ```
+
+> NOTE: cannot install latest versions of kind with older Go:
+> ```
+> go install sigs.k8s.io/kind@v0.33.0 
+> ```
+> ```text
+> can't load package: package sigs.k8s.io/kind@v0.33.0: 
+> can only use path@version syntax with 'go get'
+> ```
+> 
+> ```sh
+> go get sigs.k8s.io/kind@v0.33.0 
+> ```
+> ```txt
+> go: downloading sigs.k8s.io/kind v0.33.0
+> go: downloading al.essio.dev/pkg/shellescape v1.5.1
+> go: downloading github.com/spf13/pflag v1.0.5
+> go: downloading github.com/pkg/errors v0.9.1
+> go: downloading github.com/mattn/go-isatty v0.0.20
+> go: downloading github.com/spf13/cobra v1.8.0
+> go: downloading github.com/pelletier/go-toml v1.9.5
+> go: downloading github.com/evanphx/json-patch/v5 v5.6.0
+> go: downloading go.yaml.in/yaml/v3 v3.0.4
+> go: downloading github.com/BurntSushi/toml v1.4.0
+> go: downloading golang.org/x/sys v0.6.0
+> go: downloading sigs.k8s.io/yaml v1.4.0
+> go: downloading github.com/inconshreveable/mousetrap v1.1.0
+> ../../../go/pkg/mod/github.com/!burnt!sushi/toml@v1.4.0/decode.go:9:2: package io/fs is not in GOROOT (/usr/local/go/src/io/fs)
+> ```
+> can update to go `16.1` but `module requires Go 1.18`
+
 #### Create a Kind Cluster
+
 ```sh
 cat <<EOF > kind-config.yaml
 kind: Cluster
@@ -1102,7 +1104,6 @@ nodes:
 EOF
 ```
 
-* Create the cluster using the configuration
 ```sh
 kind create cluster --name argocd-cluster --config kind-config.yaml
 ```
@@ -1121,12 +1122,27 @@ You can now use your cluster with:
 kubectl cluster-info --context kind-argocd-cluster
 
 Have a nice day! 👋
+```
 
+#### Install Kubectl on Development Node
+
+```sh
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+```
+```sh
+kubectl version --client
+```
+```text
+Client Version: v1.37.1
+Kustomize Version: v5.8.1
 ```
 
 ```sh
-docker image ls
+kubectl cluster-info --context kind-argocd-cluster
 ```
+
 ```text
 NAME                                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
 service/argocd-applicationset-controller          ClusterIP   10.101.152.106   <none>        7000/TCP,8080/TCP            4m13s
@@ -1153,17 +1169,11 @@ replicaset.apps/argocd-dex-server-55cdd54ccb                  1         1       
 replicaset.apps/argocd-notifications-controller-7765c495c7    1         1         1       4m12s
 replicaset.apps/argocd-redis-5d849fc6db                       1         1         1       4m12s
 replicaset.apps/argocd-repo-server-5477d857fc                 1         1         1       4m12s
-
-
 ```
 
-```sh
-kubectl cluster-info --context kind-argocd-cluster
-```
 ```text
 Kubernetes control plane is running at https://127.0.0.1:36977
 CoreDNS is running at https://127.0.0.1:36977/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-
 ```
 
 ```sh
@@ -1176,7 +1186,6 @@ namespace/argocd created
 kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 ```text
-
 customresourcedefinition.apiextensions.k8s.io/applications.argoproj.io serverside-applied
 customresourcedefinition.apiextensions.k8s.io/applicationsets.argoproj.io serverside-applied
 customresourcedefinition.apiextensions.k8s.io/appprojects.argoproj.io serverside-applied

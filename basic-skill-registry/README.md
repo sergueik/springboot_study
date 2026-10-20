@@ -1646,19 +1646,21 @@ N3 --> N1
 ```code
 flowchart LR
 
+flowchart LR
+
     S(("Start")) --> A["🔍 Examine<br/>Legacy Process"]
-    A --> B["📚 Find Known<br/>Implementations"]
+    A --"explore<br/>open‑source"--> B["📚 Find<br/>existing<br/>solutions"]
     B --> C{"Choose<br/>Approach"}
 
     subgraph POC["🛠️ Approach A — Conventional PoC"]
-        P1[["💻 Implement PoC"]]
+        P1[["💻 Implement<br/>PoC"]]
         P2[/"🏁 Code"/]
         P1 --> P2
     end
 
     subgraph SKILLS["🧠 Approach B — Skill-Assisted"]
-        K1["📥 Import Skills"]
-         K3[/"🏁  Skills"/]
+        K1["📥 Import<br/>SKILL.md"]
+         K3[/"🏁 SKILL.md"/]
         K1 --"review"--> P2 --> K3
     end
 
@@ -1673,18 +1675,18 @@ flowchart LR
 flowchart LR
 
     S(("Start")) --> A["🔍 Examine<br/>Legacy Process"]
-    A --> B["📚 Find Known<br/>Implementations"]
+    A --"explore<br/>open‑source"--> B["📚 Find<br/>existing<br/>solutions"]
     B --> C{"Choose<br/>Approach"}
 
     subgraph POC["🛠️ Approach A — Conventional PoC"]
-        P1[["💻 Implement PoC"]]
+        P1[["💻 Implement<br/>PoC"]]
         P2[/"🏁 Code"/]
         P1 --> P2
     end
 
     subgraph SKILLS["🧠 Approach B — Skill-Assisted"]
-        K1["📥 Import Skills"]
-         K3[/"🏁  Skills"/]
+        K1["📥 Import<br/>SKILL.md"]
+         K3[/"🏁 SKILL.md"/]
         K1 --"review"--> P2 --> K3
     end
 
