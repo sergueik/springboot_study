@@ -154,7 +154,6 @@ host: Running
 kubelet: Running
 apiserver: Running
 kubeconfig: Configured
-
 ```
 ```cmd
 minikube.exe kubectl create namespace argocd
@@ -281,6 +280,56 @@ statefulset.apps/argocd-application-controller   1/1     7m3s
 minikube.exe kubectl -- port-forward svc/argocd-server --namespace argocd 8080:443
 ```
 
+after the minikube was stopped and started, argoCD installed earlier, will launch 
+
+```cmd
+minikube.exe kubectl -- get all --namespace argocd
+```
+```text
+NAME                                                    READY   STATUS    RESTARTS   AGE
+pod/argocd-application-controller-0                     1/1     Running   1          4d18h
+pod/argocd-applicationset-controller-5cf484b59d-7cxc5   1/1     Running   1          4d18h
+pod/argocd-dex-server-857455bcbd-7kf7f                  1/1     Running   1          4d18h
+pod/argocd-notifications-controller-66bfff8745-965bb    1/1     Running   1          4d18h
+pod/argocd-redis-8698676ff6-6htqt                       1/1     Running   1          4d18h
+pod/argocd-repo-server-7c8d87478b-msk8d                 1/1     Running   3          4d18h
+pod/argocd-server-6bf47d79b4-lxg72                      1/1     Running   4          4d18h
+
+NAME                                              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+service/argocd-applicationset-controller          ClusterIP   10.104.43.83     <none>        7000/TCP,8080/TCP            4d18h
+service/argocd-dex-server                         ClusterIP   10.110.168.213   <none>        5556/TCP,5557/TCP,5558/TCP   4d18h
+service/argocd-metrics                            ClusterIP   10.96.43.118     <none>        8082/TCP                     4d18h
+service/argocd-notifications-controller-metrics   ClusterIP   10.102.211.96    <none>        9001/TCP                     4d18h
+service/argocd-redis                              ClusterIP   10.101.13.81     <none>        6379/TCP                     4d18h
+service/argocd-repo-server                        ClusterIP   10.110.108.169   <none>        8081/TCP,8084/TCP            4d18h
+service/argocd-server                             ClusterIP   10.97.251.21     <none>        80/TCP,443/TCP               4d18h
+service/argocd-server-metrics                     ClusterIP   10.103.229.52    <none>        8083/TCP                     4d18h
+
+NAME                                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/argocd-applicationset-controller   1/1     1            1           4d18h
+deployment.apps/argocd-dex-server                  1/1     1            1           4d18h
+deployment.apps/argocd-notifications-controller    1/1     1            1           4d18h
+deployment.apps/argocd-redis                       1/1     1            1           4d18h
+deployment.apps/argocd-repo-server                 1/1     1            1           4d18h
+deployment.apps/argocd-server                      1/1     1            1           4d18h
+
+NAME                                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/argocd-applicationset-controller-5cf484b59d   1         1         1       4d18h
+replicaset.apps/argocd-dex-server-857455bcbd                  1         1         1       4d18h
+replicaset.apps/argocd-notifications-controller-66bfff8745    1         1         1       4d18h
+replicaset.apps/argocd-redis-8698676ff6                       1         1         1       4d18h
+replicaset.apps/argocd-repo-server-7c8d87478b                 1         1         1       4d18h
+replicaset.apps/argocd-server-6bf47d79b4                      1         1         1       4d18h
+
+NAME                                             READY   AGE
+statefulset.apps/argocd-application-controller   1/1     4d18h
+```
+
+One will have to explicitly port-forward:
+
+```cmd
+minikube.exe kubectl -- port-forward svc/argocd-server --namespace argocd 8080:443
+```
 ```text
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
@@ -660,9 +709,19 @@ acknowledge `net::ERR_CERT_AUTHORITY_INVALID`
 ```cmd
 minikube.exe kubectl -- --namespace argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
 ```
+
 ```text
 eEQ1cDRJbzJiOU9FMTBTcw==
 ```
+then
+```cmd
+"c:\Program Files\Git\usr\bin\echo.exe" "eEQ1cDRJbzJiOU9FMTBTcw==" | "c:\Program Files\Git\usr\bin\base64.exe" -d - 
+```
+```text
+xD5p4Io2b9OE10Ss
+```
+alterntively
+
 ```powershell
 $data = 'eEQ1cDRJbzJiOU9FMTBTcw=='
 $bytes = [System.Convert]::FromBase64String($data)
@@ -671,6 +730,15 @@ $bytes = [System.Convert]::FromBase64String($data)
 ```text
 xD5p4Io2b9OE10Ss
 ```
+
+> NOTE: Do __NOT__ use the CMD's ECHO command:
+> ```cmd
+> echo eEQ1cDRJbzJiOU9FMTBTcw== | "c:\Program Files\Git\usr\bin\base64.exe" -d - 
+> ```
+> ```text
+> xD5p4Io2b9OE10Ss/usr/bin/base64: invalid input
+> ```
+
 ![Login](screenshots/login-argocd.png)
 
 if run from bash
@@ -1269,6 +1337,19 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 ```
 
 ![capture application hosted in docker on ubuntu](screenshots/application-argocd-kind.png)
+
+
+### Next Step
+
+__Argo CD__ is no longer the thing you need to learn to install. 
+You need to learn how to diagnose a deployment that __Argo CD__ cannot successfully reconcile.
+
+The electricity analogy is apt. Once the supply is available, one stops caring whether it comes through a wall socket or a power bank.
+Likewise, after establishing that __Argo CD__ works on __Windows__ __11__ in __VirtualBox__,
+__Ubuntu__ __18.04__ with __VirtualBox__, and __kind__ with a pinned node image, 
+the infrastructure is mostly a laboratory prerequisite.
+
+Your next step should be to treat __Argo CD__ as a small operational control system and deliberately introduce faults into the applications it manages.
 
 ### See Also
 
