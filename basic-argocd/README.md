@@ -879,6 +879,7 @@ VM='c89f1689-bc57-4cc3-86a9-b3a6afb63538';VBoxManage controlvm $VM natpf1 "web,t
 ```sh
 minikube kubectl -- --namespace argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"  |base64 -d -
 ```
+
 ![capture application hosted in virtualbox on ubuntu](screenshots/application-argocd-ubuntu.png)
 
 ### Backgound
@@ -1328,6 +1329,615 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 ```
 ![capture application hosted in docker on ubuntu](screenshots/application-argocd-kind.png)
 
+
+### Install Custom Images into Kind Container to make 
+
+### Troubleshooting
+
+
+Underpowered machine
+
+```sh
+kind create cluster --name argocd-cluster --config kind-config.yaml
+```
+```text
+Creating cluster "argocd-cluster" ...
+ ✓ Ensuring node image (kindest/node:v1.29.2) 🖼
+ ✓ Preparing nodes 📦
+ ✓ Writing configuration 📜
+ ✗ Starting control-plane 🕹️
+Deleted nodes: ["argocd-cluster-control-plane"]
+ERROR: failed to create cluster: failed to init node with kubeadm:
+command
+"docker exec --privileged argocd-cluster-control-plane kubeadm init --skip-phases=preflight --config=/kind/kubeadm.conf --skip-token-print --v=6"
+failed with error: exit status 137
+
+```
+The Exit status __137__ means the process was killed by the __Out-Of-Memory__ (__OOM__) __Killer__.
+The attempt to recrate swap does not help:
+
+```sh
+ ls -hl /swapfile
+ sudo swapoff -a
+ sudo rm -f /swapfile 
+ sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
+ sudo chmod 600 /swapfile
+ sudo mkswap /swapfile
+ sudo swapon /swapfile
+```
+
+free shows is barely used:
+
+```sh
+free
+```
+```text
+              total        used        free      shared  buff/cache   available
+Mem:        3901312     1088960      792364       10744     2019988     2557720
+Swap:       4194300         524     4193776
+```
+
+nor the custom `kind-config.yaml` yaml:
+
+```yaml
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30443
+    hostPort: 8443
+    protocol: TCP
+kubeadmConfigPatches:
+- |
+  apiVersion: kubeadm.k8s.io/v1beta3
+  kind: ClusterConfiguration
+  apiServer:
+    extraArgs:
+      max-requests-inflight: "50"
+```
+On Ubuntu 18.04, the default kernel configuration allows for a mechanism called Linux Memory Overcommit, paired with system-level Cgroup memory limits. Because your host has 3.9 GB of RAM, Docker’s underlying container storage or the host Linux kernel is killing kubeadm early to prevent a system lockup, even if free shows you have headroom right before execution
+
+Since changing the vm.overcommit_memory setting didn't bypass the error, this confirms that the memory ceiling is a hard, physical constraint enforced at the container runtime level, or your 4GB of physical RAM is genuinely maxing out during the intensive kubeadm init phase.
+Because kubeadm init spins up multiple control plane components simultaneously (etcd, kube-apiserver, kube-controller-manager, and kube-scheduler), it briefly spikes past your available memory, forcing the container to crash.
+To successfully get this cluster running on your system, implement these specific adjustments:
+
+Solution 1: Use an Older, Lower-Footprint Kubernetes Version
+
+The absolute latest versions of Kubernetes require significantly more base RAM to initialize. Dropping down to an optimized, lighter-weight version (like v1.26 or v1.27) reduces the initial memory footprint during setup by nearly 40%, allowing it to comfortably fit within your 4GB system.
+Run the creation command targeting a highly stable, lower-overhead image:
+bash
+kind create cluster --name argocd-cluster --image kindest/node:v1.27.3@sha256:3966d76aeacab6f5626651da4210d7a96efdc257321ee2524fe08d4b3abce063
+Use code with caution.
+
+Solution 2: Explicitly Force the Container to Use Your Swap Space
+
+Even though your system has 4GB of swap space available, Docker containers default to a memory-swap value that restricts them from utilizing it. You can pass runtime flags directly to the container through kind to forcefully allow it to spill over into your swap file.
+1. Save the following configuration as kind-swap-override.yaml:yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraContainerRuntimeArgs:
+  - "--memory=3g"
+  - "--memory-swap=6g" # Allows 3GB of RAM + 3GB of your Swap file
+Use code with caution.
+2. Spin up the cluster using this profile:bash
+kind create cluster --name argocd-cluster --config kind-swap-override.yaml
+Use code with caution.
+
+Solution 3: Free Host System Cached Memory Before Running
+
+Your free command showed that 2.0 GB of your 4GB RAM is tied up in buff/cache. While the Linux kernel theoretically frees cached memory when needed, it sometimes reacts too slowly during a sudden kubeadm spike, triggering the OOM killer anyway.
+Manually flush your system's memory cache right before creating the cluster:
+bash
+# Clear pagecache, dentries, and inodes
+sudo sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
+
+# Immediately run the cluster creation
+kind create cluster --name argocd-cluster
+Use code with caution.
+If the exit status 137 persists, run sudo dmesg -T | tail -n 30 immediately after the failure. What exact text does it display regarding the killed process? (This will show the exact memory cgroup or process causing the hard stop).
+
+kind create cluster --name argocd-cluster --image kindest/node:v1.27.3@sha256:3966d76aeacab6f5626651da4210d7a96efdc257321ee2524fe08d4b3abce063
+
+RROR: failed to create cluster: failed to pull image "kindest/node:v1.27.3@sha256:3966d76aeacab6f5626651da4210d7a96efdc257321ee2524fe08d4b3abce063": command "docker pull kindest/node:v1.27.3@sha256:3966d76aeacab6f5626651da4210d7a96efdc257321ee2524fe08d4b3abce063" failed with error: exit status 1
+Command Output: Error response from daemon: manifest for kindest/node@sha256:3966d76aeacab6f5626651da4210d7a96efdc257321ee2524fe08d4b3abce063 not found: manifest unknown: manifest unknown
+
+
+ kind create cluster --name argocd-cluster --image kindest/node:v1.27.3
+
+``` 
+ kind create cluster --name argocd-cluster --image kindest/node:v1.27.3
+```
+```text
+Creating cluster "argocd-cluster" ...
+ ✓ Ensuring node image (kindest/node:v1.27.3) 🖼 
+ ✓ Preparing nodes 📦  
+ ✓ Writing configuration 📜 
+ ✗ Starting control-plane 🕹️ 
+ERROR: failed to create cluster: failed to init node with kubeadm: command "docker exec --privileged argocd-cluster-control-plane kubeadm init --skip-phases=preflight --config=/kind/kubeadm.conf --skip-token-print --v=6" failed with error: exit status 1
+Command Output: I1021 21:45:58.469740     104 initconfiguration.go:255] loading configuration from "/kind/kubeadm.conf"
+W1021 21:45:58.473076     104 initconfiguration.go:332] [config] WARNING: Ignored YAML document with GroupVersionKind kubeadm.k8s.io/v1beta3, Kind=JoinConfiguration
+[init] Using Kubernetes version: v1.27.3
+[certs] Using certificateDir folder "/etc/kubernetes/pki"
+I1021 21:45:58.841196     104 certs.go:112] creating a new certificate authority for ca
+[certs] Generating "ca" certificate and key
+I1021 21:45:59.138241     104 certs.go:519] validating certificate period for ca certificate
+[certs] Generating "apiserver" certificate and key
+[certs] apiserver serving cert is signed for DNS names [argocd-cluster-control-plane kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local localhost] and IPs [10.96.0.1 172.19.0.2 127.0.0.1]
+[certs] Generating "apiserver-kubelet-client" certificate and key
+I1021 21:46:00.264969     104 certs.go:112] creating a new certificate authority for front-proxy-ca
+[certs] Generating "front-proxy-ca" certificate and key
+I1021 21:46:01.261984     104 certs.go:519] validating certificate period for front-proxy-ca certificate
+[certs] Generating "front-proxy-client" certificate and key
+I1021 21:46:01.867720     104 certs.go:112] creating a new certificate authority for etcd-ca
+[certs] Generating "etcd/ca" certificate and key
+I1021 21:46:02.647093     104 certs.go:519] validating certificate period for etcd/ca certificate
+[certs] Generating "etcd/server" certificate and key
+[certs] etcd/server serving cert is signed for DNS names [argocd-cluster-control-plane localhost] and IPs [172.19.0.2 127.0.0.1 ::1]
+[certs] Generating "etcd/peer" certificate and key
+[certs] etcd/peer serving cert is signed for DNS names [argocd-cluster-control-plane localhost] and IPs [172.19.0.2 127.0.0.1 ::1]
+[certs] Generating "etcd/healthcheck-client" certificate and key
+[certs] Generating "apiserver-etcd-client" certificate and key
+I1021 21:46:04.232892     104 certs.go:78] creating new public/private key files for signing service account users
+[certs] Generating "sa" key and public key
+I1021 21:46:04.826325     104 kubeconfig.go:103] creating kubeconfig file for admin.conf
+[kubeconfig] Using kubeconfig folder "/etc/kubernetes"
+[kubeconfig] Writing "admin.conf" kubeconfig file
+I1021 21:46:05.176716     104 kubeconfig.go:103] creating kubeconfig file for kubelet.conf
+[kubeconfig] Writing "kubelet.conf" kubeconfig file
+I1021 21:46:05.524229     104 kubeconfig.go:103] creating kubeconfig file for controller-manager.conf
+[kubeconfig] Writing "controller-manager.conf" kubeconfig file
+I1021 21:46:05.667915     104 kubeconfig.go:103] creating kubeconfig file for scheduler.conf
+[kubeconfig] Writing "scheduler.conf" kubeconfig file
+I1021 21:46:05.808205     104 kubelet.go:67] Stopping the kubelet
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Starting the kubelet
+I1021 21:46:06.660912     104 manifests.go:99] [control-plane] getting StaticPodSpecs
+I1021 21:46:06.661458     104 certs.go:519] validating certificate period for CA certificate
+I1021 21:46:06.661595     104 manifests.go:125] [control-plane] adding volume "ca-certs" for component "kube-apiserver"
+I1021 21:46:06.661608     104 manifests.go:125] [control-plane] adding volume "etc-ca-certificates" for component "kube-apiserver"
+I1021 21:46:06.661620     104 manifests.go:125] [control-plane] adding volume "k8s-certs" for component "kube-apiserver"
+I1021 21:46:06.661630     104 manifests.go:125] [control-plane] adding volume "usr-local-share-ca-certificates" for component "kube-apiserver"
+I1021 21:46:06.661640     104 manifests.go:125] [control-plane] adding volume "usr-share-ca-certificates" for component "kube-apiserver"
+[control-plane] Using manifest folder "/etc/kubernetes/manifests"
+[control-plane] Creating static Pod manifest for "kube-apiserver"
+I1021 21:46:06.710599     104 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-apiserver" to "/etc/kubernetes/manifests/kube-apiserver.yaml"
+[control-plane] Creating static Pod manifest for "kube-controller-manager"
+I1021 21:46:06.710845     104 manifests.go:99] [control-plane] getting StaticPodSpecs
+I1021 21:46:06.711722     104 manifests.go:125] [control-plane] adding volume "ca-certs" for component "kube-controller-manager"
+I1021 21:46:06.711938     104 manifests.go:125] [control-plane] adding volume "etc-ca-certificates" for component "kube-controller-manager"
+I1021 21:46:06.712006     104 manifests.go:125] [control-plane] adding volume "flexvolume-dir" for component "kube-controller-manager"
+I1021 21:46:06.712079     104 manifests.go:125] [control-plane] adding volume "k8s-certs" for component "kube-controller-manager"
+I1021 21:46:06.712157     104 manifests.go:125] [control-plane] adding volume "kubeconfig" for component "kube-controller-manager"
+I1021 21:46:06.712209     104 manifests.go:125] [control-plane] adding volume "usr-local-share-ca-certificates" for component "kube-controller-manager"
+I1021 21:46:06.712278     104 manifests.go:125] [control-plane] adding volume "usr-share-ca-certificates" for component "kube-controller-manager"
+I1021 21:46:06.723235     104 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-controller-manager" to "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+I1021 21:46:06.723508     104 manifests.go:99] [control-plane] getting StaticPodSpecs
+[control-plane] Creating static Pod manifest for "kube-scheduler"
+I1021 21:46:06.724220     104 manifests.go:125] [control-plane] adding volume "kubeconfig" for component "kube-scheduler"
+I1021 21:46:06.728518     104 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-scheduler" to "/etc/kubernetes/manifests/kube-scheduler.yaml"
+[etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
+I1021 21:46:06.731465     104 local.go:65] [etcd] wrote Static Pod manifest for a local etcd member to "/etc/kubernetes/manifests/etcd.yaml"
+I1021 21:46:06.732066     104 waitcontrolplane.go:83] [wait-control-plane] Waiting for the API server to be healthy
+I1021 21:46:06.733976     104 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+I1021 21:46:06.745932     104 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/healthz?timeout=10s  in 7 milliseconds
+... repeated 70 times
+I1021 21:46:46.248193     104 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/healthz?timeout=10s  in 0 milliseconds
+[kubelet-check] Initial timeout of 40s passed.
+I1021 21:46:46.747559     104 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/healthz?timeout=10s  in 0 milliseconds
+... repeated 150 times
+Unfortunately, an error has occurred:
+	timed out waiting for the condition
+
+This error is likely caused by:
+	- The kubelet is not running
+	- The kubelet is unhealthy due to a misconfiguration of the node in some way (required cgroups disabled)
+
+If you are on a systemd-powered system, you can try to troubleshoot the error with the following commands:
+	- 'systemctl status kubelet'
+	- 'journalctl -xeu kubelet'
+
+Additionally, a control plane component may have crashed or exited when started by the container runtime.
+To troubleshoot, list all containers using your preferred container runtimes CLI.
+Here is one example how you may list all running Kubernetes containers by using crictl:
+	- 'crictl --runtime-endpoint unix:///run/containerd/containerd.sock ps -a | grep kube | grep -v pause'
+	Once you have found the failing container, you can inspect its logs with:
+	- 'crictl --runtime-endpoint unix:///run/containerd/containerd.sock logs CONTAINERID'
+couldn't initialize a Kubernetes cluster
+k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/init.runWaitControlPlanePhase
+	cmd/kubeadm/app/cmd/phases/init/waitcontrolplane.go:108
+k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow.(*Runner).Run.func1
+	cmd/kubeadm/app/cmd/phases/workflow/runner.go:259
+k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow.(*Runner).visitAll
+	cmd/kubeadm/app/cmd/phases/workflow/runner.go:446
+k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow.(*Runner).Run
+	cmd/kubeadm/app/cmd/phases/workflow/runner.go:232
+k8s.io/kubernetes/cmd/kubeadm/app/cmd.newCmdInit.func1
+	cmd/kubeadm/app/cmd/init.go:111
+github.com/spf13/cobra.(*Command).execute
+	vendor/github.com/spf13/cobra/command.go:916
+github.com/spf13/cobra.(*Command).ExecuteC
+	vendor/github.com/spf13/cobra/command.go:1040
+github.com/spf13/cobra.(*Command).Execute
+	vendor/github.com/spf13/cobra/command.go:968
+k8s.io/kubernetes/cmd/kubeadm/app.Run
+	cmd/kubeadm/app/kubeadm.go:50
+main.main
+	cmd/kubeadm/kubeadm.go:25
+runtime.main
+	/usr/local/go/src/runtime/proc.go:250
+runtime.goexit
+	/usr/local/go/src/runtime/asm_amd64.s:1598
+error execution phase wait-control-plane
+k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow.(*Runner).Run.func1
+	cmd/kubeadm/app/cmd/phases/workflow/runner.go:260
+k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow.(*Runner).visitAll
+	cmd/kubeadm/app/cmd/phases/workflow/runner.go:446
+k8s.io/kubernetes/cmd/kubeadm/app/cmd/phases/workflow.(*Runner).Run
+	cmd/kubeadm/app/cmd/phases/workflow/runner.go:232
+k8s.io/kubernetes/cmd/kubeadm/app/cmd.newCmdInit.func1
+	cmd/kubeadm/app/cmd/init.go:111
+github.com/spf13/cobra.(*Command).execute
+	vendor/github.com/spf13/cobra/command.go:916
+github.com/spf13/cobra.(*Command).ExecuteC
+	vendor/github.com/spf13/cobra/command.go:1040
+github.com/spf13/cobra.(*Command).Execute
+	vendor/github.com/spf13/cobra/command.go:968
+k8s.io/kubernetes/cmd/kubeadm/app.Run
+	cmd/kubeadm/app/kubeadm.go:50
+main.main
+	cmd/kubeadm/kubeadm.go:25
+runtime.main
+	/usr/local/go/src/runtime/proc.go:250
+runtime.goexit
+	/usr/local/go/src/runtime/asm_amd64.s:1598
+```
+
+running alone
+```sh
+docker exec --privileged argocd-cluster-control-plane kubeadm init --skip-phases=preflight --config=/kind/kubeadm.conf --skip-token-print --v=6
+```
+```text
+I1021 22:00:44.859666     191 initconfiguration.go:255] loading configuration from "/kind/kubeadm.conf"
+W1021 22:00:44.864574     191 initconfiguration.go:332] [config] WARNING: Ignored YAML document with GroupVersionKind kubeadm.k8s.io/v1beta3, Kind=JoinConfiguration
+I1021 22:00:44.886675     191 certs.go:519] validating certificate period for CA certificate
+I1021 22:00:44.887382     191 certs.go:519] validating certificate period for front-proxy CA certificate
+[init] Using Kubernetes version: v1.27.3
+[certs] Using certificateDir folder "/etc/kubernetes/pki"
+I1021 22:00:44.888251     191 certs.go:519] validating certificate period for ca certificate
+[certs] Using existing ca certificate authority
+I1021 22:00:44.891741     191 certs.go:519] validating certificate period for apiserver certificate
+[certs] Using existing apiserver certificate and key on disk
+I1021 22:00:44.894598     191 certs.go:519] validating certificate period for apiserver-kubelet-client certificate
+[certs] Using existing apiserver-kubelet-client certificate and key on disk
+I1021 22:00:44.896201     191 certs.go:519] validating certificate period for front-proxy-ca certificate
+[certs] Using existing front-proxy-ca certificate authority
+I1021 22:00:44.897238     191 certs.go:519] validating certificate period for front-proxy-client certificate
+[certs] Using existing front-proxy-client certificate and key on disk
+I1021 22:00:44.898293     191 certs.go:519] validating certificate period for etcd/ca certificate
+[certs] Using existing etcd/ca certificate authority
+I1021 22:00:44.899345     191 certs.go:519] validating certificate period for etcd/server certificate
+[certs] Using existing etcd/server certificate and key on disk
+I1021 22:00:44.900547     191 certs.go:519] validating certificate period for etcd/peer certificate
+I1021 22:00:44.901577     191 certs.go:519] validating certificate period for etcd/healthcheck-client certificate
+[certs] Using existing etcd/peer certificate and key on disk
+[certs] Using existing etcd/healthcheck-client certificate and key on disk
+I1021 22:00:44.903067     191 certs.go:519] validating certificate period for apiserver-etcd-client certificate
+[certs] Using existing apiserver-etcd-client certificate and key on disk
+I1021 22:00:44.904021     191 certs.go:78] creating new public/private key files for signing service account users
+[certs] Using the existing "sa" key
+[kubeconfig] Using kubeconfig folder "/etc/kubernetes"
+I1021 22:00:44.904827     191 kubeconfig.go:103] creating kubeconfig file for admin.conf
+I1021 22:00:45.259431     191 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
+[kubeconfig] Using existing kubeconfig file: "/etc/kubernetes/admin.conf"
+I1021 22:00:45.259568     191 kubeconfig.go:103] creating kubeconfig file for kubelet.conf
+[kubeconfig] Using existing kubeconfig file: "/etc/kubernetes/kubelet.conf"
+I1021 22:00:45.638410     191 loader.go:373] Config loaded from file:  /etc/kubernetes/kubelet.conf
+I1021 22:00:45.638460     191 kubeconfig.go:103] creating kubeconfig file for controller-manager.conf
+[kubeconfig] Using existing kubeconfig file: "/etc/kubernetes/controller-manager.conf"
+I1021 22:00:46.011259     191 loader.go:373] Config loaded from file:  /etc/kubernetes/controller-manager.conf
+I1021 22:00:46.011307     191 kubeconfig.go:103] creating kubeconfig file for scheduler.conf
+I1021 22:00:46.526680     191 loader.go:373] Config loaded from file:  /etc/kubernetes/scheduler.conf
+[kubeconfig] Using existing kubeconfig file: "/etc/kubernetes/scheduler.conf"
+I1021 22:00:46.527377     191 kubelet.go:67] Stopping the kubelet
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Starting the kubelet
+[control-plane] Using manifest folder "/etc/kubernetes/manifests"
+[control-plane] Creating static Pod manifest for "kube-apiserver"
+I1021 22:00:47.231378     191 manifests.go:99] [control-plane] getting StaticPodSpecs
+...
+I1021 22:00:47.254076     191 manifests.go:125] [control-plane] adding volume "usr-share-ca-certificates" for component "kube-controller-manager"
+[control-plane] Creating static Pod manifest for "kube-controller-manager"
+I1021 22:00:47.268718     191 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-controller-manager" to "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+I1021 22:00:47.276135     191 manifests.go:99] [control-plane] getting StaticPodSpecs
+I1021 22:00:47.276911     191 manifests.go:125] [control-plane] adding volume "kubeconfig" for component "kube-scheduler"
+[control-plane] Creating static Pod manifest for "kube-scheduler"
+[etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
+I1021 22:00:47.288695     191 manifests.go:154] [control-plane] wrote static Pod manifest for component "kube-scheduler" to "/etc/kubernetes/manifests/kube-scheduler.yaml"
+I1021 22:00:47.298568     191 local.go:65] [etcd] wrote Static Pod manifest for a local etcd member to "/etc/kubernetes/manifests/etcd.yaml"
+I1021 22:00:47.298621     191 waitcontrolplane.go:83] [wait-control-plane] Waiting for the API server to be healthy
+I1021 22:00:47.307952     191 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+I1021 22:00:47.322210     191 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/healthz?timeout=10s  in 4 milliseconds
+...
+I1021 22:00:58.325975     191 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/healthz?timeout=10s 200 OK in 2 milliseconds
+[apiclient] All control plane components are healthy after 11.009545 seconds
+I1021 22:00:58.326923     191 uploadconfig.go:112] [upload-config] Uploading the kubeadm ClusterConfiguration to a ConfigMap
+[upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+I1021 22:00:58.346635     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/api/v1/namespaces/kube-system/configmaps?timeout=10s 201 Created in 12 milliseconds
+...
+I1021 22:00:58.375128     191 uploadconfig.go:126] [upload-config] Uploading the kubelet component config to a ConfigMap
+[kubelet] Creating a ConfigMap "kubelet-config" in namespace kube-system with the configuration for the kubelets in the cluster
+I1021 22:00:58.404528     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/api/v1/namespaces/kube-system/configmaps?timeout=10s 201 Created in 27 milliseconds
+I1021 22:00:58.424460     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/namespaces/kube-system/roles?timeout=10s 201 Created in 16 milliseconds
+I1021 22:00:58.442640     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/namespaces/kube-system/rolebindings?timeout=10s 201 Created in 16 milliseconds
+I1021 22:00:58.443566     191 uploadconfig.go:131] [upload-config] Preserving the CRISocket information for the control-plane node
+I1021 22:00:58.444091     191 patchnode.go:31] [patchnode] Uploading the CRI Socket information "unix:///run/containerd/containerd.sock" to the Node API object "argocd-cluster-control-plane" as an annotation
+I1021 22:00:58.952004     191 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/api/v1/nodes/argocd-cluster-control-plane?timeout=10s 200 OK in 6 milliseconds
+I1021 22:00:58.979586     191 round_trippers.go:553] PATCH https://argocd-cluster-control-plane:6443/api/v1/nodes/argocd-cluster-control-plane?timeout=10s 200 OK in 17 milliseconds
+[upload-certs] Skipping phase. Please see --upload-certs
+[mark-control-plane] Marking the node argocd-cluster-control-plane as control-plane by adding the labels: [node-role.kubernetes.io/control-plane node.kubernetes.io/exclude-from-external-load-balancers]
+[mark-control-plane] Marking the node argocd-cluster-control-plane as control-plane by adding the taints [node-role.kubernetes.io/control-plane:NoSchedule]
+I1021 22:00:59.490215     191 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/api/v1/nodes/argocd-cluster-control-plane?timeout=10s 200 OK in 7 milliseconds
+I1021 22:00:59.506294     191 round_trippers.go:553] PATCH https://argocd-cluster-control-plane:6443/api/v1/nodes/argocd-cluster-control-plane?timeout=10s 200 OK in 12 milliseconds
+[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+I1021 22:00:59.511713     191 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/api/v1/namespaces/kube-system/secrets/bootstrap-token-abcdef?timeout=10s 404 Not Found in 3 milliseconds
+I1021 22:00:59.524519     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/api/v1/namespaces/kube-system/secrets?timeout=10s 201 Created in 11 milliseconds
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to get nodes
+I1021 22:00:59.534188     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/clusterroles?timeout=10s 201 Created in 7 milliseconds
+I1021 22:00:59.543036     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/clusterrolebindings?timeout=10s 201 Created in 7 milliseconds
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+I1021 22:00:59.551543     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/clusterrolebindings?timeout=10s 201 Created in 7 milliseconds
+[bootstrap-token] Configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+I1021 22:00:59.563181     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/clusterrolebindings?timeout=10s 201 Created in 11 milliseconds
+[bootstrap-token] Configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+I1021 22:00:59.574423     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/clusterrolebindings?timeout=10s 201 Created in 6 milliseconds
+I1021 22:00:59.575251     191 clusterinfo.go:47] [bootstrap-token] loading admin kubeconfig
+[bootstrap-token] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+I1021 22:00:59.576189     191 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
+I1021 22:00:59.576274     191 clusterinfo.go:58] [bootstrap-token] copying the cluster from admin.conf to the bootstrap kubeconfig
+I1021 22:00:59.577084     191 clusterinfo.go:70] [bootstrap-token] creating/updating ConfigMap in kube-public namespace
+I1021 22:00:59.586984     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/api/v1/namespaces/kube-public/configmaps?timeout=10s 201 Created in 9 milliseconds
+I1021 22:00:59.587569     191 clusterinfo.go:84] creating the RBAC rules for exposing the cluster-info ConfigMap in the kube-public namespace
+I1021 22:00:59.595183     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/namespaces/kube-public/roles?timeout=10s 201 Created in 7 milliseconds
+I1021 22:00:59.606207     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/namespaces/kube-public/rolebindings?timeout=10s 201 Created in 10 milliseconds
+[kubelet-finalize] Updating "/etc/kubernetes/kubelet.conf" to point to a rotatable kubelet client certificate and key
+I1021 22:00:59.607183     191 kubeletfinalize.go:90] [kubelet-finalize] Assuming that kubelet client certificate rotation is enabled: found "/var/lib/kubelet/pki/kubelet-client-current.pem"
+I1021 22:00:59.608204     191 loader.go:373] Config loaded from file:  /etc/kubernetes/kubelet.conf
+I1021 22:00:59.609142     191 kubeletfinalize.go:134] [kubelet-finalize] Restarting the kubelet to enable client certificate rotation
+I1021 22:01:00.002412     191 round_trippers.go:553] GET https://argocd-cluster-control-plane:6443/apis/apps/v1/namespaces/kube-system/deployments?labelSelector=k8s-app%3Dkube-dns 200 OK in 27 milliseconds
+...
+I1021 22:01:00.129729     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/api/v1/namespaces/kube-system/services?timeout=10s 201 Created in 16 milliseconds
+[addons] Applied essential addon: CoreDNS
+I1021 22:01:00.143270     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/api/v1/namespaces/kube-system/configmaps?timeout=10s 201 Created in 10 milliseconds
+...
+I1021 22:01:00.193211     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/namespaces/kube-system/roles?timeout=10s 201 Created in 9 milliseconds
+I1021 22:01:00.203145     191 round_trippers.go:553] POST https://argocd-cluster-control-plane:6443/apis/rbac.authorization.k8s.io/v1/namespaces/kube-system/rolebindings?timeout=10s 201 Created in 8 milliseconds
+[addons] Applied essential addon: kube-proxy
+I1021 22:01:00.204963     191 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
+I1021 22:01:00.206404     191 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of control-plane nodes by copying certificate authorities
+and service account keys on each node and then running the following as root:
+
+  kubeadm join argocd-cluster-control-plane:6443 --token <value withheld> \
+	--discovery-token-ca-cert-hash sha256:7497ea858ced55655874d7b6a266edb7a8b4c0caab632bd18103710e03929708 \
+	--control-plane 
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join argocd-cluster-control-plane:6443 --token <value withheld> \
+	--discovery-token-ca-cert-hash sha256:7497ea858ced55655874d7b6a266edb7a8b4c0caab632bd18103710e03929708
+```
+
+```sh
+ kind get kubeconfig --name argocd-cluster
+```
+```yaml 
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJMk1UQXlNVEl4TkRVMU9Wb1hEVE0yTVRBeE9ESXhORFUxT1Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTXFsCjAveWI0NDQxRkRGUGlVUlBvNW9oakNQS2E4MlFrRFNKTExjc0pDS0wyVjJoVHlZY2luNFlZa1BQbTNIM1hGa2IKWnY3SHhMRkZLdStGR0xRWmFRZXFzbnlXQncxdW5WUld6bjFwVGlLVFFHRnphcWlrNTQxSDBmZkY2NnkwSnFOSApCblJKWDdoQndINWM1bGFGRlQ4SDZIVERla05lVEFXRXAwcGFENDFlTUx2a3ZyaXZMSFA1aE1tajg5WFZxSWRmCllHdWREUkxrN252NjZpcWk1bVJFRlBrOE15V2l1U0dvUTZ5UkdSUVM4ejJnYjN3WHkrMFNBSmlrY0JPT29YTVEKK3lJTUNRWmpCKzRpYWc2bGF1b2NvdEw5aDdwNmI1TGZGQkd2QUdjbnRpUkpONlFqbGVRd1RlUUZYT3hhZDBBQwplYzBqazEyUms2c2VrM2NIcGdzQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZCVlMrc3V2UmZ4dk82M1k1YXRHNHZyd2swcGpNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBTUF2NngxRkpsYXc1RWYzaVVDQwpsRktjN2FsZm1WR2J5eGFxUzc3MXZxK095YmdLaWptV3lIK2k0OFBKUTlha0pqVGZ4aXRsblpUTnpuVkpBTVlNCnV4a0JmdUNyUlBzWXU2V2hzRG11cXFKdXVqL0FnOUl1L3E3TFY5cDQ0b0R3cDFmWEQ1QzhCZld1RjV1NzFPdngKTjhkcW1Oa2lyZW1UYmlyV0RCZkNwbXVPY3pqZTFVUXpWY0JldFk2M3F2MVZBMnExbnkxdHhKbS9hV0d6a3NHegpVNXBLKzJuRjkzbW9OenVOSUlIeWV4aVhzZDMrY0xFMU0rQzhKS0VCOHVzTW1DTEZBMFhRM3pBeWhtVFVWSTZxCk1TUkFhOHpjRXBDM0daRS8vdW9Db2E1WUlidTBBNm93NkN0eGphMGxUckMrMnFrQWJnT0FZYWM4RE1kbi9tWUYKQldjPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    server: https://127.0.0.1:45543
+  name: kind-argocd-cluster
+contexts:
+- context:
+    cluster: kind-argocd-cluster
+    user: kind-argocd-cluster
+  name: kind-argocd-cluster
+current-context: kind-argocd-cluster
+kind: Config
+preferences: {}
+users:
+- name: kind-argocd-cluster
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURJVENDQWdtZ0F3SUJBZ0lJV2kxREdNMHUzbGt3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TmpFd01qRXlNVFExTlRsYUZ3MHlOekV3TWpFeU1UUTJNRFZhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXU5OHdyZzBpRVg4Q1R6d0EKOWh2bjV1T3FrRWJpVjV6KzhUYzNNL280c01mNFRvSkNpVEorVU13MkU0cVk0dDJXV2JuSmNMTlIyR3ppTm9wOQpKUWgyS2c3RkJaSDJqeXMxRWRvQTYwTklWRTQrTFQ0K0l5NUYyK2FpcUQ1YnFWNFdOZGszZ3lqclBDRkRMaVRDCkQ3M3JDcVNlcjI1SDV1b0x0Z3RxdkEwcTU2Z0F4dDZrbEpWYkNCV3YrV3VUaXFVMDE0Y0dtUTNkRU5mRFg4d3EKbi9sZEdJZVZNRmxlZ0d4T1pVd095OFljSk5CUkVOVW13M2t2a0UxWWwyMG5lRlFPTk1TYXNueE5MRmJRSDBmVQpTc3BlSFVRZm0vRUxmWSsyUitFTVQ0K3FoVHNqMzg1c2pnSXAwVm9qMkxzK1dhclg4eTBkeVFTNStXWFlWeTU5CnI2TXFqd0lEQVFBQm8xWXdWREFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0RBWURWUjBUQVFIL0JBSXdBREFmQmdOVkhTTUVHREFXZ0JRVlV2ckxyMFg4Ynp1dDJPV3JSdUw2OEpOSwpZekFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBVHpGSTFJZmtHR0V2QmFiWlhwYy9NR1dpMXI3MFVSei9FcmpwCmZzcjVQVEhHWDVic01OV0FkTWFwazNDYmxiaFllT3JWWFI3djUwcHZNN21VOEdiS254cDlRN3JkTER0WmQrUk0KZi9pbVhwb29jSnlZYWd3OWo2Z3RoSkNCZ0xmR0o3M0p2YS9hbW9tZlZ1R0xFNHBNNUsremdMaXN1RCsyZ1IyNQpxdmlYOFQ4b3l4THRZY3k5NEwxY1IrZGhad1F6VlREeXNEdVNaVUVSa1lwQncwWnorSGF5RGpJbTdHOWVGSTY4CkpqVHM2dFM0eDlzWm1wYU16WVBJSnM1YXA4Y2NlUkN2MDVnMjM5UGV5STBNckVMUVF5MnVoMjBvWVpkWHJCM1AKTWVpSEZjQ3NJRXpuclkreVZoV0JjZjFZVVN3V3J3czc4YjFjNENLdU8rVFpac0FLc2c9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcFFJQkFBS0NBUUVBdTk4d3JnMGlFWDhDVHp3QTlodm41dU9xa0ViaVY1eis4VGMzTS9vNHNNZjRUb0pDCmlUSitVTXcyRTRxWTR0MldXYm5KY0xOUjJHemlOb3A5SlFoMktnN0ZCWkgyanlzMUVkb0E2ME5JVkU0K0xUNCsKSXk1RjIrYWlxRDVicVY0V05kazNneWpyUENGRExpVENENzNyQ3FTZXIyNUg1dW9MdGd0cXZBMHE1NmdBeHQ2awpsSlZiQ0JXditXdVRpcVUwMTRjR21RM2RFTmZEWDh3cW4vbGRHSWVWTUZsZWdHeE9aVXdPeThZY0pOQlJFTlVtCncza3ZrRTFZbDIwbmVGUU9OTVNhc254TkxGYlFIMGZVU3NwZUhVUWZtL0VMZlkrMlIrRU1UNCtxaFRzajM4NXMKamdJcDBWb2oyTHMrV2FyWDh5MGR5UVM1K1dYWVZ5NTlyNk1xandJREFRQUJBb0lCQUdCeTAzMzNWZzhmWWlNbApUZVVMTElHM1RZQW1NOXNBeVUweXFJOXhuUnI4ZmpobjNScXNKbmI2YjZTV21haVdVN0thazVUZEtsNXVmNis2ClowYlUwajBET2hpQzk4NUdRMGQzNE5MbXhzSXBMUGh6Sk5sUXp5SjJnL2pWa3A4Zm8wMWZ4NFQ1UTlLcHpPQnEKbElvYVdRa3N2QjZhQWlYRTcrQTBla1l5aUYxR1hISEd0d2lPZ25HdWYwNWJ6SG94V3F2SWFQSTFzL1d0cVlrQgpVMFpBZDdwVmg2bWprQUY1blJCRVoyWXBYS28xZW1hM0F5K2pEN3UySURZWGUyOWJubjNRSnRSN0FxSlZBdWRBCmpCTFVlVGgvUS9Id3RIQyt6VmYxQzhacDFpZmMwSC9OVGJnTFhnMm9SMXQwbDBsYnppZDlNUXNiTnZ1OU1PRWQKMUpXd29Ia0NnWUVBM3piZEVJUlBTbjVoNHl1ZGZhOVFQSzlpVHN5a2tuN3orN0sxV0t4V3ZscGRuRUxyMHpmagplQTlxU1gybWpiQVlLQ0lSTnN1eHJTMGpCQ01XZC8xNEdldWdxNzF2U1l0NHJjcmV1RkdSOHhkSjZCZXBzK1pLCjRqWjhKanNFOTFDOC90V0tpSDMzN3FKV25SQXZSRldmQm02V2NyTWtTZDhKSWpkVzdRNFpBOTBDZ1lFQTEzZG4Kei9zelhLMmpzVEZHV2l0TlltWHpGbU1YbC95eXUwNkJKdHJEaXpSdExIKyttS2pQOGc0eUFFVCtsTHlMdi8xbQoxQnRmSnFvUTFVMGFJVk1wMHczMkhaZy9MNlNkTE8xRzFpVG9BZHlQQnd2MlpXK0N2NlBXdnBncHF1UVBTODF5CitIT2xtSCtjbzdFRFV0RzBqRzFnLzcxRkJNbTYwaGVhbHdEV3gxc0NnWUVBaEgyWU1kbVhCdXlGUmNYNXNVU0MKSjhNaVl3dHRFOWR2RXBNOHVPbHlnNEkzMWl5U3RjaVNxQXplVmNqVE4zNnlsLy9Bbi9tLytMNjE3aHExbDN0SAo4bnE5MzdLTmYrWGRONnNYRCtpNjdNT0NCdFVrMGJkNzgxSEwxeFZwR1RNL096T2RDdTlhWHJiVkdsMGs4VGF4Ck1hd3FlT0tFUTZTelV5L3QxTDl0Y2JFQ2dZRUFza1R4Mkd0ZkNJd0Z4bUlkY2hjbnRJVGpSaCtBY3RpNXpDMWMKd0JmNTk5L05nQ2JGUEN0WHVVNnpZZk96cXI0QTVqMHphY1NueWlhbFBNWEpHODloNkdSQndDU3FDcklvOVBYdwpTTmRLT2RnUlltUXNYYXFRUkJ5N1hRQXFZV0RGb3hMOXo4Qm5QekErR2xVbmljdEZsWFlkN2huYjArVlFNK2toCmwxUXpYOGNDZ1lFQTNJN0p5ZENGV0dqK1JsbFVVN3JrQit0N0Q5alVoUEw5WWg0Z1NFZ0xKdEhmY291MFFXNHoKZ1hCU0kwVUF2V0JBaHMvTzNicmM5Q080d254S1lDb2tua0x2Y25uVVNtdE41eFZZajZUZ2xWZWtXZkxLVGw1OQppc3ZzbkpONDdHYkVkd2pCbkw5N2dyUXB0cExtUlBxQndVQmRnYTJoeDBGZ3pWazV0VlBubnFZPQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+
+```
+
+It proves that kubeadm init actually completely succeeds in booting the core API server, etcd, and registering the node [apiclient]. It only crashes at the very end when it attempts to add the control-plane labels to the node API object.
+The reason your kind cluster creation still fails with exit status 137 right at this exact moment is a known conflict between older host operating systems (Ubuntu 18.04) and newer container workloads running systemd inside the container.
+The issue isn't a lack of physical system RAM; rather, the container runtime (containerd inside the kind node) is hitting a kernel cgroup memory leak or an incompatibility with Ubuntu 18.04's older cgroups v1 implementation. When kubeadm modifies the node labels, it causes a sharp context-switching burst that forces the underlying Linux kernel to instantly kill the executor
+
+```sh
+kind delete cluster --name argocd-cluster
+kind create cluster --name argocd-cluster --image kindest/node:v1.24.15
+```
+```text
+Creating cluster "argocd-cluster" ...
+ ✓ Ensuring node image (kindest/node:v1.24.15) 🖼 
+ ✓ Preparing nodes 📦  
+ ✓ Writing configuration 📜 
+ ✓ Starting control-plane 🕹️ 
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾 
+Set kubectl context to "kind-argocd-cluster"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-argocd-cluster
+
+Thanks for using kind! 😊
+```
+```sh
+kubectl cluster-info --context kind-argocd-cluster
+```
+```text
+Kubernetes control plane is running at https://127.0.0.1:41665
+CoreDNS is running at https://127.0.0.1:41665/api/v1/namespaces/k
+```
+
+```sh
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+```text
+customresourcedefinition.apiextensions.k8s.io/applications.argoproj.io serverside-applied
+customresourcedefinition.apiextensions.k8s.io/applicationsets.argoproj.io serverside-applied
+customresourcedefinition.apiextensions.k8s.io/appprojects.argoproj.io serverside-applied
+serviceaccount/argocd-application-controller serverside-applied
+serviceaccount/argocd-applicationset-controller serverside-applied
+serviceaccount/argocd-dex-server serverside-applied
+serviceaccount/argocd-notifications-controller serverside-applied
+serviceaccount/argocd-redis serverside-applied
+serviceaccount/argocd-repo-server serverside-applied
+serviceaccount/argocd-server serverside-applied
+role.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+role.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+role.rbac.authorization.k8s.io/argocd-dex-server serverside-applied
+role.rbac.authorization.k8s.io/argocd-notifications-controller serverside-applied
+role.rbac.authorization.k8s.io/argocd-redis serverside-applied
+role.rbac.authorization.k8s.io/argocd-server serverside-applied
+clusterrole.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+clusterrole.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+clusterrole.rbac.authorization.k8s.io/argocd-server serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-dex-server serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-notifications-controller serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-redis serverside-applied
+rolebinding.rbac.authorization.k8s.io/argocd-server serverside-applied
+clusterrolebinding.rbac.authorization.k8s.io/argocd-application-controller serverside-applied
+clusterrolebinding.rbac.authorization.k8s.io/argocd-applicationset-controller serverside-applied
+clusterrolebinding.rbac.authorization.k8s.io/argocd-server serverside-applied
+configmap/argocd-cm serverside-applied
+configmap/argocd-cmd-params-cm serverside-applied
+configmap/argocd-gpg-keys-cm serverside-applied
+configmap/argocd-notifications-cm serverside-applied
+configmap/argocd-rbac-cm serverside-applied
+configmap/argocd-ssh-known-hosts-cm serverside-applied
+configmap/argocd-tls-certs-cm serverside-applied
+secret/argocd-notifications-secret serverside-applied
+secret/argocd-secret serverside-applied
+service/argocd-applicationset-controller serverside-applied
+service/argocd-dex-server serverside-applied
+service/argocd-metrics serverside-applied
+service/argocd-notifications-controller-metrics serverside-applied
+service/argocd-redis serverside-applied
+service/argocd-repo-server serverside-applied
+service/argocd-server serverside-applied
+service/argocd-server-metrics serverside-applied
+deployment.apps/argocd-applicationset-controller serverside-applied
+deployment.apps/argocd-dex-server serverside-applied
+deployment.apps/argocd-notifications-controller serverside-applied
+deployment.apps/argocd-redis serverside-applied
+deployment.apps/argocd-repo-server serverside-applied
+deployment.apps/argocd-server serverside-applied
+statefulset.apps/argocd-application-controller serverside-applied
+networkpolicy.networking.k8s.io/argocd-application-controller-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-applicationset-controller-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-dex-server-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-notifications-controller-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-redis-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-repo-server-network-policy serverside-applied
+networkpolicy.networking.k8s.io/argocd-server-network-policy serverside-applied
+```
+
+```sh
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+```text
+error: unable to forward port because pod is not running. Current status=Pending
+```
+give a little time to boot
+```sh
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+```text
+Forwarding from 127.0.0.1:8080 -> 8080
+Forwarding from [::1]:8080 -> 8080
+```
+
+```sh
+kubectl --namespace argocd get sin-secret -o jsonpath="{.data.password}"  | base64 -d - | xclip -clip
+8c2hAZqJp33IQ9a3
+```
+
+creating "bad commits" is an amazing way to see how ArgoCD isolates application failures without crashing your underlying kind control plane.
+Here are a few highly educational "bad commit" scenarios you can intentionally introduce in your forked repo, what they teach you, and how to recover them.
+
+Scenario 1: The Out-of-Resource Crash (Memory Limit Exhaustion)
+
+Since your system has 4GB of RAM, this is the most realistic failure you'll face. You want to see what happens when a pod requests or limits more memory than your limited kind node can actually provide.
+• The Bad Commit: In your plain YAML guestbook deployment, intentionally change the resources block to request a ridiculous amount of memory:y
+
+yaml
+resources:
+  limits:
+    memory: "8Gi" # Way higher than your 4GB host!
+  requests:
+    memory: "6Gi"
+    
+• hat ArgoCD will show: ArgoCD will happily sync the manifest because the YAML syntax is valid (the App status will be Synced). However, the health status will flip to a degraded, looping Progressing state. If you click the Pod in the ArgoCD UI, you will see Status: OOMKilled or CrashLoopBackOff.
+• The Recovery: Commit a fix lowering the memory to 64Mi, push it, and watch ArgoCD automatically terminate the broken pod and spin up a healthy one.
+
+
+Scenario 2: The Syntax/Typo Failure (The Invalid Schema)
+
+This simulates a developer making a typo in a Kubernetes API field, which passes Git validation but fails when the Kubernetes API server tries to parse it.
+• The Bad Commit: In a manifest, change a standard field name to a typo, like changing replicas: 2 to replicaaas: 2, or mess up the indentation under spec.
+• What ArgoCD will show: ArgoCD will immediately block the deployment. The App status will switch to SyncFailed. If you open the App details, ArgoCD will explicitly print the exact error message returning from your cluster's API server (e.g., error unmarshaling JSON: unknown field "replicaaas").
+• The Recovery: Fix the spelling mistake in Git, commit, and let ArgoCD auto-sync back to a healthy state.
+
+Scenario 3: The Ghost Image (Missing Container Image Tag)
+
+This simulates a broken CI pipeline where code gets committed, but the corresponding Docker image fails to build or push to the registry.
+• The Bad Commit: Change the container image tag in your deployment manifest to something non-existent, like image: gcr.io/heptio-images/ks-guestbook-demo:does-not-exist.
+• What ArgoCD will show: The application will status as Synced but Degraded. Looking at the pod status tree in ArgoCD, you will visually see the pods turn red with an ErrImagePull or ImagePullBackOff error.
+• The Recovery: Revert the image tag to a valid one (like 0.1), commit, and watch the visual tree instantly clear to green.
+
+Pro-Tip: Experiment with ArgoCD "Self-Heal"
+
+While testing these bad commits, toggle the Self-Heal and Automated Prune features in your ArgoCD Application settings:
+1. Turn Self-Heal ON: Try manually deleting a pod or changing a service port using kubectl directly on your host. Watch how fast ArgoCD fights back and overwrites your manual changes to match Git.
+2. Turn Automated Prune ON/OFF: See how ArgoCD behaves when you completely delete a configuration file from your Git repository.
+Which of these failure scenarios would you like to build out first? If you have your forked repository ready, I can help you write the exact application manifest to link your local ArgoCD instance to your GitHub repository.
+
+• The Recovery: Fix the spelling mistake in Git, commit, and let ArgoCD auto-sync back to a healthy state.
+
+    
+    
 ### See Also
 
 
