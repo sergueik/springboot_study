@@ -88,8 +88,28 @@ start .\minikube\minikube.exe
 >  </assembly>
 >  ```
   
+```cmd
+minikube.exe start
+```
+lists the following version info.
+```text
+* minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+* Using the virtualbox driver based on existing profile
+* Starting control plane node minikube in cluster minikube
+* Restarting existing virtualbox VM for "minikube" ...
+* Found network options:
+  - NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+  - no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+* Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+  - env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+* Verifying Kubernetes components...
+  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
+* Enabled addons: default-storageclass, storage-provisioner
+* kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```
 
-For Ubuntu Centos use binary doanload of debian package
+For Ubuntu Centos use binary download of Debian package
 ```sh
 curl -skLo /tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
 sudo dpkg -i /tmp/minikube_latest_amd64.deb

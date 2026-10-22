@@ -101,7 +101,7 @@ __Redis Cache__: state cache
 
 Initial setup based on [gist](https://gist.github.com/bhimsur/b6c575916883ff7712861beacbe1ff0b)
 
-The install on Windows MiniKube (relatively old version - update suggested):
+The install on Windows __MiniKube__ (relatively old version - update suggested):
 
 #### Windows 11 Host
 
@@ -155,16 +155,22 @@ kubelet: Running
 apiserver: Running
 kubeconfig: Configured
 ```
+
 ```cmd
 minikube.exe kubectl create namespace argocd
 ```
-> NOTE in first (e.g. if recycled prior ) will show downloads
+> NOTE in first run (e.g. if application recycled prior ) will show downloads
 ```text
     > kubectl.exe.sha256: 64 B / 64 B [----------------------] 100.00% ? p/s 0s
     > kubectl.exe: 39.52 MiB / 39.52 MiB [----------] 100.00% 4.91 MiB p/s 8.2s
 namespace/argocd created
 ```
-download __CRD__ to examine and /or customize:
+
+```cmd
+minikub.exe kubectl -- apply --namespace argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.8.4/manifests/install.yaml
+```
+
+alternatively download __CRD__ to examine and /or customize:
 
 ```sh
 curl -skLO https://raw.githubusercontent.com/argoproj/argo-cd/v2.8.4/manifests/install.yaml
@@ -546,84 +552,7 @@ hpet="on"
 chipset="piix3"
 firmware="BIOS"
 cpus=2
-pae="on"
-longmode="on"
-triplefaultreset="off"
-apic="on"
-x2apic="off"
-cpuid-portability-level=0
-bootmenu="disabled"
-boot1="dvd"
-boot2="dvd"
-boot3="disk"
-boot4="none"
-acpi="on"
-ioapic="on"
-biosapic="apic"
-biossystemtimeoffset=0
-rtcuseutc="on"
-hwvirtex="on"
-nestedpaging="on"
-largepages="on"
-vtxvpid="on"
-vtxux="on"
-paravirtprovider="default"
-effparavirtprovider="kvm"
-VMState="running"
-VMStateChangeTime="2026-10-16T21:38:28.851000000"
-monitorcount=1
-accelerate3d="off"
-accelerate2dvideo="off"
-teleporterenabled="off"
-teleporterport=0
-teleporteraddress=""
-teleporterpassword=""
-tracing-enabled="off"
-tracing-allow-vm-access="off"
-tracing-config=""
-autostart-enabled="off"
-autostart-delay=0
-defaultfrontend=""
-storagecontrollername0="SATA"
-storagecontrollertype0="IntelAhci"
-storagecontrollerinstance0="0"
-storagecontrollermaxportcount0="30"
-storagecontrollerportcount0="30"
-storagecontrollerbootable0="on"
-"SATA-0-0"="C:\Users\kouzm\.minikube\machines\minikube\boot2docker.iso"
-"SATA-ImageUUID-0-0"="47c9cbf8-fa66-46f0-ad86-427f59cb1229"
-"SATA-tempeject"="off"
-"SATA-IsEjected"="off"
-"SATA-1-0"="C:\Users\kouzm\.minikube\machines\minikube\disk.vmdk"
-"SATA-ImageUUID-1-0"="f7c31550-964e-4d68-8272-da382605480e"
-"SATA-2-0"="none"
-"SATA-3-0"="none"
-"SATA-4-0"="none"
-"SATA-5-0"="none"
-"SATA-6-0"="none"
-"SATA-7-0"="none"
-"SATA-8-0"="none"
-"SATA-9-0"="none"
-"SATA-10-0"="none"
-"SATA-11-0"="none"
-"SATA-12-0"="none"
-"SATA-13-0"="none"
-"SATA-14-0"="none"
-"SATA-15-0"="none"
-"SATA-16-0"="none"
-"SATA-17-0"="none"
-"SATA-18-0"="none"
-"SATA-19-0"="none"
-"SATA-20-0"="none"
-"SATA-21-0"="none"
-"SATA-22-0"="none"
-"SATA-23-0"="none"
-"SATA-24-0"="none"
-"SATA-25-0"="none"
-"SATA-26-0"="none"
-"SATA-27-0"="none"
-"SATA-28-0"="none"
-"SATA-29-0"="none"
+...
 natnet1="nat"
 macaddress1="080027A84198"
 cableconnected1="on"
@@ -649,25 +578,7 @@ nic5="none"
 nic6="none"
 nic7="none"
 nic8="none"
-hidpointing="ps2mouse"
-hidkeyboard="ps2kbd"
-uart1="off"
-uart2="off"
-uart3="off"
-uart4="off"
-lpt1="off"
-lpt2="off"
-audio="dsound"
-audio_in="false"
-audio_out="false"
-clipboard="disabled"
-draganddrop="disabled"
-SessionName="headless"
-VideoMode="720,400,0"@0,0 1
-vrde="off"
-usb="off"
-ehci="off"
-xhci="off"
+...
 SharedFolderNameMachineMapping1="c/Users"
 SharedFolderPathMachineMapping1="\\?\c:\Users"
 VRDEActiveConnection="off"
@@ -693,7 +604,6 @@ GuestAdditionsFacility_Graphics Mode=0,1792186745797
 ./VBoxManage.exe showvminfo $VM --machinereadable | select-string -pattern 'Forwarding\(.\)'
 ```
 ```text
-
 Forwarding(0)="ssh,tcp,127.0.0.1,60813,,22"
 Forwarding(1)="web,tcp,,8080,,8080"
 ```
@@ -739,6 +649,7 @@ xD5p4Io2b9OE10Ss
 > xD5p4Io2b9OE10Ss/usr/bin/base64: invalid input
 > ```
 
+
 ![Login](screenshots/login-argocd.png)
 
 if run from bash
@@ -746,7 +657,67 @@ if run from bash
 ```sh
 minikube.exe kubectl -- -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 ```
-login as `admin`, will be redirected to initial dashboard:
+
+#### Install the ArgoCD CLI
+
+```sh
+VERSION_TAG=latest
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/$VERSION_TAG/download/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64
+```
+
+On Windows inspect the version shown in dashboard, `v2.8.4+c279299`, confirm asset is available 
+ 
+
+```
+curl -skI https://github.com/argoproj/argo-cd/releases?q=2.8.4
+```
+```text
+HTTP/1.1 200 OK
+```
+or browse through releases to `https://github.com/argoproj/argo-cd/releases?expanded=true&page=4&q=2.8.4#release-v2.8.4`
+> NOTE: the "find the release" button likely will not work
+
+and download the installer
+```powershell
+invoke-webrequest -usebasicparsing -outfile 'argocd.exe' -uri 'https://github.com/argoproj/argo-cd/releases/download/v2.8.4/argocd-windows-amd64.exe'
+```
+The `argocd.exe` is an actual  executable - not an installer
+```powershell
+move-item -literalpath argocd.exe -destination c:\tools
+```
+
+Optionally, log in console
+
+```sh
+PASSWORD=xD5p4Io2b9OE10Ss
+argocd login localhost:8080 --username admin --password "$PASSWORD" --insecure
+```
+or
+```cmd
+set PASSWORD=xD5p4Io2b9OE10Ss
+argocd.exe login localhost:8080 --username admin --password "%PASSWORD%" --insecure
+```
+the console will respond with
+
+```text
+'admin:login' logged in successfully
+Context 'localhost:8080' updated
+```
+the port forward console will log:
+
+```txt
+Handling connection for 8080
+E1022 08:55:56.985069   15796 portforward.go:385] error copying from local connection to remote stream: read tcp6 [::1]:8080->[::1]:52195: wsarecv: An existing connection was forcibly closed by the remote host.
+E1022 08:55:56.988379   15796 portforward.go:372] error copying from remote stream to local connection: readfrom tcp6 [::1]:8080->[::1]:52195: write tcp6 [::1]:8080->[::1]:52195: wsasend: An existing connection was forcibly closed by the remote host.
+```
+
+change the current user password
+```sh
+argocd account update-password --current-password $PASSWORD --new-password $NEW_PASSWORD
+```
+login as `admin`, will be redirected to initial empty dashboard:
 
 ![Login](screenshots/dashbpard-argocd.png)
 
@@ -756,10 +727,12 @@ connect to demo repository `https://github.com/OdabasiMehmet/nginx-kubernetes.gi
 
 create application  as explained.
 
-
 ![Appliction Details](screenshots/application-details-argocd.png)
 
-
+Alternatively, create in console
+```sh
+argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default --sync-policy automated --auto-prune --self-heal
+```
 ```cmd
 minikube.exe kubectl -- scale deployment -n test nginx-deployment --replicas=2
 ```
@@ -767,7 +740,6 @@ minikube.exe kubectl -- scale deployment -n test nginx-deployment --replicas=2
 deployment.apps/nginx-deployment scaled
 ```
 ![Appliction Details](screenshots/application-scaled-argocd.png)
-
 
 Destroy the `nginx` example application and disconnect from the repository.
 
@@ -2031,7 +2003,9 @@ Which of these failure scenarios would you like to build out first? If you have 
    * [hands-on introduction to Argo CD : Kubernetes DevOps CI/CD](https://www.youtube.com/watch?v=2WSJF7d8dUg)
    * another [self Managed Argo CD - App of Everything](https://github.com/bukurt/argocd)
    * [kind](https://kind.sigs.k8s.io/)
-   * https://argo-cd.readthedocs.io/en/latest/try_argo_cd_locally/   
+   * https://argo-cd.readthedocs.io/en/latest/try_argo_cd_locally/
+   * [Argo CD cli](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
+   * https://github.com/argoproj/argo-cd/releases
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
