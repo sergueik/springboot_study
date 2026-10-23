@@ -1,7 +1,7 @@
 ﻿### Install
 
 [Minikube](https://minikube.sigs.k8s.io/docs/start) is orchestrator of K8 configurations running on
-LHC container driver directly or Hypervisor hosting the same 
+LHC container driver directly or Hypervisor hosting the same
 
 ```powershell
 pushd "${env:USERPROFILE}\Downloads"
@@ -11,7 +11,7 @@ $version = 'latest'
 $version = 'v1.39.0'
 $url = ('https://github.com/kubernetes/minikube/releases/{0}/download/minikube-windows-amd64.exe' -f $version)
 $url = ('https://github.com/kubernetes/minikube/releases/download/{0}/minikube-installer.exe'  -f $version)
-invoke-webrequest -usebasicparsing -outfile './minikube/minikube.exe' -uri $url 
+invoke-webrequest -usebasicparsing -outfile './minikube/minikube.exe' -uri $url
 ```
 ```powershell
 get-item .\minikube\minikube.exe | select-object  -property versioninfo,length|format-list
@@ -51,13 +51,13 @@ start .\minikube\minikube.exe
 >     + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
 > ```
 
-> 🤓 The old binary is not simply gone from __v1.39.0__. 
-> The appliction release still lists `minikube-windows-amd64.exe`. 
-> However, a __Minikube__ issue [23770](https://github.com/kubernetes/minikube/issues/23770) from September 20, 2026, explicitly describes the asset-layout change planned for __v1.40.0__. 
-> The new layout uses simplified asset names, and the issue states that the new URL scheme applies to __v1.40.0__ onward. 
-  
-> 😮 The blank VersionInfo fields are a separate issue. Your downloaded file is an installer, not necessarily the standalone CLI executable. 
-> Windows version-resource metadata is optional; blank `FileVersion`,`ProductVersion`, and `OriginalFilename` fields do not mean the download is invalid. 
+> 🤓 The old binary is not simply gone from __v1.39.0__.
+> The appliction release still lists `minikube-windows-amd64.exe`.
+> However, a __Minikube__ issue [23770](https://github.com/kubernetes/minikube/issues/23770) from September 20, 2026, explicitly describes the asset-layout change planned for __v1.40.0__.
+> The new layout uses simplified asset names, and the issue states that the new URL scheme applies to __v1.40.0__ onward.
+
+> 😮 The blank VersionInfo fields are a separate issue. Your downloaded file is an installer, not necessarily the standalone CLI executable.
+> Windows version-resource metadata is optional; blank `FileVersion`,`ProductVersion`, and `OriginalFilename` fields do not mean the download is invalid.
 > The 54,308,621-byte length alone cannot establish its identity or integrity.
 > The `minikube.exe` is an __Nullsoft Scriptable Install System__ ([NSIS](https://nsis.sourceforge.io/Main_Page)) package
 > ```xml
@@ -87,7 +87,7 @@ start .\minikube\minikube.exe
 >    </compatibility>
 >  </assembly>
 >  ```
-  
+
 ```cmd
 minikube.exe start
 ```
@@ -166,12 +166,12 @@ it appears the catalog `https://storage.googleapis.com/minikube/` is still opera
   <Size>65</Size>
 </Contents>
 ```
-      
+
 ```sh
 curl -skLo ~/Downloads/minikube/a.iso https://storage.googleapis.com/minikube/iso/minikube-v1.39.0-amd64.iso
 ```
 ```
-sha256sum ~/Downloads/minikube/a.iso 
+sha256sum ~/Downloads/minikube/a.iso
 ```
 > NOTE: does not appear to match the `sha256` in the release catalog...
 
@@ -261,7 +261,7 @@ Compressed: 414697472
 ```sh
 ls -l ~/Downloads/minikube/initrd-inspect/boot/initrd
 ```
-```text 
+```text
 -rw-r--r-- 1 kouzm 197609 385841768 Sep  1 19:26 /c/Users/kouzm/Downloads/minikube/initrd-inspect/boot/initrd
 ```
 ```
@@ -270,7 +270,7 @@ file  ~/Downloads/minikube/initrd-inspect/boot/initrd
 ```
 /c/Users/kouzm/Downloads/minikube/initrd-inspect/boot/initrd: gzip compressed data, max compression, from Unix, original size modulo 2^32 1048390144 gzip compressed data, unknown method, extra field, encrypted, from FAT filesystem (MS-DOS, OS/2, NT), original size modulo 2^32 1048390144
 ```
-```sh 
+```sh
 /c/Program\ Files/7-Zip/7z.exe l ~/Downloads/minikube/initrd-inspect/boot/initrd
 ```
 ```text
@@ -1285,7 +1285,7 @@ etc\systemd\system\timers.target.wants\fstrim.timer
 etc\systemd\system\timers.target.wants\xfs_scrub_all.timer
 
 ```
-means 
+means
 
 |Entry in listing|What it suggests|
 |------------------------|----------------|
@@ -1316,7 +1316,7 @@ means
 |Kubernetes-related binaries and configuration|How the VM initializes its Kubernetes node|
 
 
-On Windows, copy the `a.iso` to a directory accessible to the Linux VM. 
+On Windows, copy the `a.iso` to a directory accessible to the Linux VM.
 Inside Linux, assuming you have copied the ISO to `/tmp/a.iso`:
 
 ```sh
@@ -1324,7 +1324,7 @@ mkdir -p ~/minikube-inspect/iso
 cd ~/minikube-inspect/iso
 
 # Extract the kernel and initrd from the ISO.
-7z x /tmp/a.iso boot/bzImage boot/initrd
+7z x ~/Downloads/a.iso boot/bzImage boot/initrd
 
 # Decompress and extract the CPIO archive into a Linux filesystem.
 mkdir -p ../rootfs
@@ -1332,8 +1332,435 @@ cd ../rootfs
 
 gzip -dc ../iso/boot/initrd |
   cpio -idm --no-absolute-filenames
-  
+
 ```
+> NOTE: ignore
+> ```text
+> cpio: dev/console: Cannot mknod: Operation not permitted
+> ```
+
+```text
+.
+./sbin
+./root
+./root/.ssh
+./tmp
+./opt
+./opt/cni
+./opt/cni/bin
+./opt/cni/bin/vlan
+./opt/cni/bin/firewall
+./opt/cni/bin/bridge
+./opt/cni/bin/tuning
+./opt/cni/bin/ipvlan
+./opt/cni/bin/bandwidth
+./opt/cni/bin/dhcp
+./opt/cni/bin/loopback
+./opt/cni/bin/portmap
+./opt/cni/bin/macvlan
+./opt/cni/bin/host-local
+./opt/cni/bin/ptp
+./lib
+./boot
+./boot/bzImage
+./mnt
+./libexec
+./libexec/rmt
+./proc
+./home
+./home/docker
+./run
+./CHANGELOG
+./usr
+./usr/sbin
+...
+./usr/share
+./usr/share/dbus-1
+...
+
+./usr/lib
+...
+./usr/libexec
+./usr/libexec/coreutils
+...
+./usr/libexec/git-core/git-get-tar-commit-id
+./usr/libexec/scdaemon
+./usr/bin
+...
+./usr/lib64
+./version.json
+./sys
+./bin
+./var
+./var/tmp
+./var/lib
+...
+./var/lib/systemd/coredump
+./var/empty
+./var/cache
+./var/cache/private
+./var/spool
+./var/run
+./var/log
+./var/log/sa
+./var/log/private
+./var/log/journal
+./var/log/.keep
+./var/lock
+./linuxrc
+./lib64
+./dev
+./dev/stdin
+./dev/fd
+./dev/stdout
+./dev/stderr
+./srv
+./etc
+./etc/profile.d
+./etc/profile.d/umask.sh
+./etc/dbus-1
+./etc/dbus-1/system.conf
+./etc/dbus-1/session.conf
+./etc/os-release
+./etc/tmpfiles.d
+./etc/hosts
+./etc/motd
+./etc/sysconfig
+./etc/sysconfig/sysstat.ioconf
+./etc/sysconfig/crio
+./etc/sysconfig/sysstat
+./etc/xdg
+./etc/xdg/systemd
+./etc/xdg/systemd/user
+./etc/udev
+./etc/udev/udev.conf
+./etc/udev/iocost.conf
+./etc/udev/rules.d
+./etc/udev/rules.d/70-hv_kvp.rules
+./etc/udev/rules.d/70-hv_vss.rules
+./etc/udev/rules.d/80-net-setup-link.rules
+./etc/udev/rules.d/70-hv_fcopy.rules
+./etc/X11
+./etc/X11/xinit
+./etc/X11/xinit/xinitrc.d
+./etc/X11/xinit/xinitrc.d/50-systemd-user.sh
+./etc/sudo.conf
+./etc/lvm
+./etc/lvm/lvm.conf
+./etc/lvm/lvmlocal.conf
+./etc/lvm/profile
+./etc/lvm/profile/lvmdbusd.profile
+./etc/lvm/profile/metadata_profile_template.profile
+./etc/lvm/profile/cache-mq.profile
+./etc/lvm/profile/command_profile_template.profile
+./etc/lvm/profile/thin-generic.profile
+./etc/lvm/profile/cache-smq.profile
+./etc/lvm/profile/vdo-small.profile
+./etc/lvm/profile/thin-performance.profile
+./etc/sudoers
+./etc/nfsmount.conf
+./etc/modules-load.d
+./etc/shadow
+./etc/ethertypes
+./etc/vconsole.conf
+./etc/hostname
+./etc/xattr.conf
+./etc/shells
+./etc/pam.d
+./etc/pam.d/vmtoolsd
+./etc/resolv.conf
+./etc/nsswitch.conf
+./etc/credstore.encrypted
+./etc/sudo_logsrvd.conf
+./etc/issue
+./etc/netconfig
+./etc/crio
+./etc/crio/crio.conf.d
+./etc/crio/crio.conf.d/02-crio.conf
+./etc/crio/crio.conf
+./etc/buildkit
+./etc/buildkit/buildkitd.toml
+./etc/docker
+./etc/docker/daemon.json
+./etc/docker/.keep
+./etc/acpi
+./etc/acpi/events
+./etc/acpi/events/powerbtn
+./etc/timezone
+./etc/mke2fs.conf
+./etc/vmware-tools
+...
+./etc/containerd
+./etc/containerd/config.toml
+./etc/containerd/certs.d
+./etc/containerd/certs.d/docker.io
+./etc/containerd/certs.d/docker.io/hosts.toml
+./etc/credstore
+./etc/lfs-release
+./etc/bindresvport.blacklist
+./etc/cni
+./etc/cni/net.d
+./etc/cni/net.d/.keep
+./etc/cni/net.d/87-podman-bridge.conflist
+./etc/group
+./etc/VERSION
+./etc/mtab
+./etc/containers
+./etc/containers/oci
+./etc/containers/oci/hooks.d
+./etc/containers/policy.json
+./etc/containers/registries.conf
+./etc/exports
+./etc/machine-id
+./etc/ssl
+./etc/ssl/misc
+./etc/ssl/misc/tsget.pl
+./etc/ssl/openssl.cnf
+./etc/ssl/private
+./etc/ssl/ct_log_list.cnf
+./etc/ssl/openssl.cnf.dist
+./etc/ssl/ct_log_list.cnf.dist
+./etc/ssl/certs
+...
+./etc/protocols
+./etc/fuse.conf
+./etc/inputrc
+./etc/passwd
+./etc/sysctl.d
+./etc/sysctl.d/forward.conf
+./etc/sysctl.d/11-tcp-mtu-probing.conf
+./etc/sysctl.d/50-fs-inotify.conf
+./etc/sysctl.d/90-cilium-rp_filter.conf
+./etc/sysctl.d/disable-ipv6.conf
+./etc/init.d
+./etc/init.d/fuse3
+./etc/locale.conf
+./etc/systemd
+./etc/systemd/networkd.conf
+./etc/systemd/resolved.conf.d
+./etc/systemd/resolved.conf.d/50-dnssec.conf
+./etc/systemd/journald.conf
+./etc/systemd/logind.conf
+./etc/systemd/timesyncd.conf
+./etc/systemd/user
+./etc/systemd/user.conf
+./etc/systemd/sleep.conf
+./etc/systemd/system.conf
+./etc/systemd/coredump.conf
+./etc/systemd/resolved.conf
+./etc/systemd/pstore.conf
+./etc/systemd/network
+./etc/systemd/network/eth0.network
+./etc/systemd/network/20-dhcp.network
+./etc/systemd/network/10-eth1.network
+./etc/systemd/system
+./etc/systemd/system/dbus-org.freedesktop.timesync1.service
+./etc/systemd/system/multi-user.target.wants
+./etc/systemd/system/multi-user.target.wants/hv_vss_daemon.service
+./etc/systemd/system/multi-user.target.wants/vmtoolsd.service
+./etc/systemd/system/multi-user.target.wants/crio.service
+./etc/systemd/system/multi-user.target.wants/machines.target
+./etc/systemd/system/multi-user.target.wants/rpcbind.service
+./etc/systemd/system/multi-user.target.wants/remote-fs.target
+./etc/systemd/system/multi-user.target.wants/acpid.service
+./etc/systemd/system/multi-user.target.wants/systemd-networkd.service
+./etc/systemd/system/multi-user.target.wants/lvm-devices-import.path
+./etc/systemd/system/multi-user.target.wants/sshd.service
+./etc/systemd/system/multi-user.target.wants/minikube-scheduled-stop.service
+./etc/systemd/system/multi-user.target.wants/vboxservice.service
+./etc/systemd/system/multi-user.target.wants/hv_kvp_daemon.service
+./etc/systemd/system/multi-user.target.wants/cri-docker.service
+./etc/systemd/system/multi-user.target.wants/hv_fcopy_daemon.service
+./etc/systemd/system/multi-user.target.wants/lvm-devices-import.service
+./etc/systemd/system/multi-user.target.wants/nfs-client.target
+./etc/systemd/system/multi-user.target.wants/nfs-server.service
+./etc/systemd/system/multi-user.target.wants/minikube-automount.service
+./etc/systemd/system/ctrl-alt-del.target
+./etc/systemd/system/remote-fs.target.wants
+./etc/systemd/system/remote-fs.target.wants/nfs-client.target
+./etc/systemd/system/timers.target.wants
+./etc/systemd/system/timers.target.wants/xfs_scrub_all.timer
+./etc/systemd/system/timers.target.wants/fstrim.timer
+./etc/systemd/system/default.target.wants
+./etc/systemd/system/default.target.wants/podman.service
+./etc/systemd/system/nfs-mountd.service.requires
+./etc/systemd/system/nfs-mountd.service.requires/fsidd.service
+./etc/systemd/system/getty.target.wants
+./etc/systemd/system/getty.target.wants/getty@tty1.service
+./etc/systemd/system/systemd-journald.service.wants
+./etc/systemd/system/systemd-journald.service.wants/systemd-journald-audit.socket
+./etc/systemd/system/sockets.target.wants
+./etc/systemd/system/sockets.target.wants/buildkit.socket
+./etc/systemd/system/sockets.target.wants/systemd-networkd.socket
+./etc/systemd/system/sockets.target.wants/podman.socket
+./etc/systemd/system/sockets.target.wants/cri-docker.socket
+./etc/systemd/system/sockets.target.wants/rpcbind.socket
+./etc/systemd/system/sockets.target.wants/dm-event.socket
+./etc/systemd/system/sockets.target.wants/docker.socket
+./etc/systemd/system/sockets.target.wants/systemd-journald-audit.socket
+./etc/systemd/system/system.slice.wants
+./etc/systemd/system/system.slice.wants/system-xfs_scrub.slice
+./etc/systemd/system/systemd-timesyncd.service.d
+./etc/systemd/system/systemd-timesyncd.service.d/disable-virtualbox.conf
+./etc/systemd/system/nfs-server.service.requires
+./etc/systemd/system/nfs-server.service.requires/fsidd.service
+./etc/systemd/system/network-online.target.wants
+./etc/systemd/system/network-online.target.wants/systemd-networkd-wait-online.service
+./etc/systemd/system/sysinit.target.wants
+./etc/systemd/system/sysinit.target.wants/lvm2-monitor.service
+./etc/systemd/system/sysinit.target.wants/blk-availability.service
+./etc/systemd/system/sysinit.target.wants/systemd-timesyncd.service
+./etc/systemd/system/sysinit.target.wants/systemd-udev-load-credentials.service
+./etc/systemd/system/sysinit.target.wants/systemd-pstore.service
+./etc/systemd/system/sysinit.target.wants/systemd-network-generator.service
+./etc/systemd/system/sysinit.target.wants/systemd-resolved.service
+./etc/systemd/system/cri-o.service
+./etc/systemd/system/dbus-org.freedesktop.resolve1.service
+./etc/systemd/system/dbus-org.freedesktop.network1.service
+./etc/ssh
+./etc/ssh/sshd_config
+./etc/ssh/moduli
+./etc/ssh/ssh_config.d
+./etc/ssh/ssh_config.d/20-systemd-ssh-proxy.conf
+./etc/ssh/ssh_config
+./etc/fstab
+./etc/services
+./etc/localtime
+./etc/profile
+./media
+./init
+
+```
+#### Next Steps
+
+Run these from the extracted Linux root filesystem:
+```sh
+printf '%s\n' '--- Image version ---'
+cat etc/VERSION
+cat etc/lfs-release
+cat version.json
+```
+
+```text
+--- Image version ---
+v1.39.0
+NAME=Buildroot
+VERSION=2025.02.16-dirty
+ID=buildroot
+VERSION_ID=2025.02.16
+PRETTY_NAME="Buildroot 2025.02.16"
+{"iso_version": "v1.39.0", "kicbase_version": "v0.0.50-1787739405-23563", "minikube_version": "v1.39.0", "commit": "c25bee0c3f34662cc0c1ff123149379b084b4d8d"}
+
+
+```
+```sh
+printf '%s\n' '--- Initial startup script ---'
+sed -n '1,240p' init
+```
+```text
+--- Initial startup script ---
+#!/bin/sh
+mkdir /sysroot
+# the value 90% borrowed from tcl via boot2docker
+mount -t tmpfs -o size=90% tmpfs /sysroot
+# copy from rootfs, to be able to do switch_root(8)
+tar -C / --exclude=sysroot -cf - . | tar -C /sysroot/ -xf -
+
+# devtmpfs does not get automounted for initramfs
+/bin/mount -t devtmpfs devtmpfs /sysroot/dev
+exec 0</sysroot/dev/console
+exec 1>/sysroot/dev/console
+exec 2>/sysroot/dev/console
+exec /sbin/switch_root /sysroot /sbin/init "$@"
+
+```
+```sh
+printf '%s\n' '--- CRI-O service ---'
+cat $(readlink etc/systemd/system/cri-o.service | sed 's|^/||')
+```
+
+```text
+[Unit]
+Description=Container Runtime Interface for OCI (CRI-O)
+Documentation=https://github.com/cri-o/cri-o
+Wants=network-online.target
+Before=kubelet.service
+After=network-online.target minikube-automount.service
+Requires=minikube-automount.service
+
+[Service]
+Type=notify
+EnvironmentFile=-/etc/sysconfig/crio
+EnvironmentFile=-/etc/sysconfig/crio.minikube
+EnvironmentFile=/var/run/minikube/env
+Environment=GOTRACEBACK=crash
+ExecStart=/usr/bin/crio \
+          $CRIO_OPTIONS \
+          $CRIO_MINIKUBE_OPTIONS
+ExecReload=/bin/kill -s HUP $MAINPID
+TasksMax=8192
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+OOMScoreAdjust=-999
+TimeoutStartSec=0
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+Alias=cri-o.service
+
+```
+Then inspect the Minikube-specific units:
+```sh
+pushd ~/minikube-inspect/rootfs
+readlink ./etc/systemd/system/multi-user.target.wants/minikube-automount.service 
+```
+```text
+/usr/lib/systemd/system/minikube-automount.service
+```
+```
+cat usr/lib/systemd/system/minikube-automount.service
+```
+```text
+[Unit]
+Description=minikube automount
+Requires=systemd-udev-settle.service
+Before=docker.service
+After=systemd-udev-settle.service
+
+[Service]
+ExecStart=/usr/sbin/minikube-automount
+Type=oneshot
+RemainAfterExit=true
+```
+```
+readlink  etc/systemd/system/multi-user.target.wants/minikube-scheduled-stop.service
+```
+```text
+/usr/lib/systemd/system/minikube-scheduled-stop.service
+```
+
+```sh
+cat usr/lib/systemd/system/minikube-scheduled-stop.service
+```
+
+```
+[Unit]
+Description=minikube scheduled stop
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/sbin/minikube-scheduled-stop
+EnvironmentFile=/var/lib/minikube/scheduled-stop/environment
+```
+
+
 ### Older Install Steps
 * follow the [steps](https://phoenixnap.com/kb/install-minikube-on-ubuntu) listed for bionic
 
@@ -1484,7 +1911,7 @@ kubectl get pod nginx-565785f75c-9kp98 --template="{{.status.podIP}}"
 ```
 - but `template` argument does not support array indexing.
 
-NOTE: kubectl will not like the command 
+NOTE: kubectl will not like the command
 ```sh
 kubectl get pod pod/nginx-565785f75c-9v9jm
 ```
@@ -1721,13 +2148,13 @@ Facility "Graphics Mode": not active (last update: 2025/06/20 08:10:36 UTC)
 * Mount Windows Disk on fuse (manual or auto)
 ```
 ```
-* Add minikube VM (only need to do once):  
+* Add minikube VM (only need to do once):
 ```sh
 vboxmanage registervm /media/sergueik/Windows8_OS/Users/Serguei/.minikube/machines/minikube/minikube/minikube.vbox
 ```
 * Create Host-Only network
 ```sh
-vboxmanage hostonlyif create 
+vboxmanage hostonlyif create
 vboxmanage hostonlyif ipconfig "Virtual Box Host-Only Network #3" --ip 192.168.58.1 --netmask 255.255.255.0
 ```
 
@@ -1756,7 +2183,7 @@ sudo install minikube-linux-amd64  /usr/local/bin/minikube
 ```
 this fails wit
 ```text
-<?xml version='1.0' encoding='UTF-8'?><Error><Code>UserProjectAccountProblem</Code><Message>The project to be billed is associated with a closed billing account.</Message><Details>The billing account for the owning project is disabled in state closed</Details></Error>  
+<?xml version='1.0' encoding='UTF-8'?><Error><Code>UserProjectAccountProblem</Code><Message>The project to be billed is associated with a closed billing account.</Message><Details>The billing account for the owning project is disabled in state closed</Details></Error>
 ```
 dowload the release from github
 ```sh
@@ -1822,7 +2249,7 @@ minikube delete
 💀  Removed all traces of the "minikube" cluster.
 ```
 ```sh
-minikube start --driver=virtualbox 
+minikube start --driver=virtualbox
 ```
 ```txt
 😄  minikube v1.36.0 on Ubuntu 18.04
@@ -1832,7 +2259,7 @@ minikube start --driver=virtualbox
     > preloaded-images-k8s-v18-v1...:  366.76 KiB / 347.04 MiB [] 0.10% ? p/s     > preloaded-images-k8s-v18-v1...:  2.00 MiB / 347.04 MiB [>_] 0.58% ? p/s     > preloaded-images-k8s-v18-v1...:  6.84 MiB / 347.04 MiB [>_] 1.97% ? p/s     > preloaded-images-k8s-v18-v1...:  13.31 MiB / 347.04 MiB  3.84% 21.61 MiB    > preloaded-images-k8s-v18-v1...:  18.94 MiB / 347.04 MiB  5.46% 21.61 MiB    > preloaded-images-k8s-v18-v1...:  25.78 MiB / 347.04 MiB  7.43% 21.61 MiB    > preloaded-images-k8s-v18-v1...:  32.53 MiB / 347.04 MiB  9.37% 22.28 MiB    > preloaded-images-k8s-v18-v1...:  39.44 MiB / 347.04 MiB  11.36% 22.28 Mi    > preloaded-images-k8s-v18-v1...:  46.41 MiB / 347.04 MiB  13.37% 22.28 Mi    > preloaded-images-k8s-v18-v1...:  53.31 MiB / 347.04 MiB  15.36% 23.08 Mi    > preloaded-images-k8s-v18-v1...:  60.22 MiB / 347.04 MiB  17.35% 23.08 Mi    > preloaded-images-k8s-v18-v1...:  67.34 MiB / 347.04 MiB  19.41% 23.08 Mi    > preloaded-images-k8s-v18-v1...:  72.84 MiB / 347.04 MiB  20.99% 23.69 Mi    > preloaded-images-k8s-v18-v1...:  79.66 MiB / 347.04 MiB  22.95% 23.69 Mi    > preloaded-images-k8s-v18-v1...:  86.47 MiB / 347.04 MiB  24.92% 23.69 Mi    > preloaded-images-k8s-v18-v1...:  93.69 MiB / 347.04 MiB  27.00% 24.40 Mi    > preloaded-images-k8s-v18-v1...:  100.47 MiB / 347.04 MiB  28.95% 24.40 M    > preloaded-images-k8s-v18-v1...:  107.12 MiB / 347.04 MiB  30.87% 24.40 M    > preloaded-images-k8s-v18-v1...:  114.53 MiB / 347.04 MiB  33.00% 25.07 M    > preloaded-images-k8s-v18-v1...:  121.25 MiB / 347.04 MiB  34.94% 25.07 M    > preloaded-images-k8s-v18-v1...:  127.78 MiB / 347.04 MiB  36.82% 25.07 M    > preloaded-images-k8s-v18-v1...:  132.16 MiB / 347.04 MiB  38.08% 25.34 M    > preloaded-images-k8s-v18-v1...:  137.81 MiB / 347.04 MiB  39.71% 25.34 M    > preloaded-images-k8s-v18-v1...:  143.81 MiB / 347.04 MiB  41.44% 25.34 M    > preloaded-images-k8s-v18-v1...:  149.72 MiB / 347.04 MiB  43.14% 25.60 M    > preloaded-images-k8s-v18-v1...:  153.09 MiB / 347.04 MiB  44.11% 25.60 M    > preloaded-images-k8s-v18-v1...:  156.56 MiB / 347.04 MiB  45.11% 25.60 M    > preloaded-images-k8s-v18-v1...:  163.94 MiB / 347.04 MiB  47.24% 25.48 M    > preloaded-images-k8s-v18-v1...:  170.31 MiB / 347.04 MiB  49.08% 25.48 M    > preloaded-images-k8s-v18-v1...:  176.19 MiB / 347.04 MiB  50.77% 25.48 M    > preloaded-images-k8s-v18-v1...:  182.41 MiB / 347.04 MiB  52.56% 25.82 M    > preloaded-images-k8s-v18-v1...:  189.50 MiB / 347.04 MiB  54.60% 25.82 Mi
 
     > preloaded-images-k8s-v18-v1...:  195.97 MiB / 347.04 MiB  56.47% 25.82 M    > preloaded-images-k8s-v18-v1...:  347.04 MiB / 347.04 MiB  100.00% 19.03     > preloaded-images-k8s-v18-v1...:  347.04 MiB / 347.04 MiB  100.00% 19.03 M
-🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...\ 
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...\
 
 ❗  Image was not built for the current minikube version. To resolve this you can delete and recreate your minikube cluster using the latest images. Expected minikube version: v1.35.0 -> Actual minikube version: v1.36.0
 🐳  Preparing Kubernetes v1.33.1 on Docker 28.0.4 ...
@@ -2466,7 +2893,7 @@ X Exiting due to GUEST_START: cp: NewSession: new client: new client: dial tcp 1
 To innstall `wmic.exe` back on __Windows 11__ version `25H2` use Powershell shell on split token
 a.k.a as administrator and use Windows Feature management cmdlet:
 ```powershell
-Add-WindowsCapability -Online -Name WMIC~~~~ 
+Add-WindowsCapability -Online -Name WMIC~~~~
 ```
 
 ```text
@@ -2486,9 +2913,9 @@ where.exe wmic.*
 
 ```text
 INFO: Could not find files for the given pattern(s).
-``` 
+```
 
-download `wmic_dlc.zip` from [Windows Management Instrumentation Command-line (WMIC) removal from Windows](https://support.microsoft.com/en-us/servicing/os/windows/docs/2025/09/windows-management-instrumentation-command-line-wmic-removal-from-windows)       
+download `wmic_dlc.zip` from [Windows Management Instrumentation Command-line (WMIC) removal from Windows](https://support.microsoft.com/en-us/servicing/os/windows/docs/2025/09/windows-management-instrumentation-command-line-wmic-removal-from-windows)
 article
 
 ```sh
@@ -2520,7 +2947,7 @@ where.exe wmic.*
 ```text
 C:\Windows\System32\wbem\WMIC.exe
 ```
-The Virtual Box Manager shows the VM stuck in *stopping* state. It is possile to recycle the VM from 
+The Virtual Box Manager shows the VM stuck in *stopping* state. It is possile to recycle the VM from
 and recreate:
 ```cmd
 minikube.exe start --driver=virtualbox
@@ -2572,9 +2999,9 @@ kube-system   kube-controller-manager-minikube   1/1     Running   0          16
 kube-system   kube-proxy-lptn9                   1/1     Running   0          8s
 kube-system   kube-scheduler-minikube            1/1     Running   0          16s
 kube-system   storage-provisioner                1/1     Running   0          15s
-``` 
+```
 
-> NOTE: To print Windows version information directly to the console one cannot use `winver.exe` which is compiled into GUI window app. 
+> NOTE: To print Windows version information directly to the console one cannot use `winver.exe` which is compiled into GUI window app.
 > The `ver` command is for it:
 
 ```cmd
@@ -2585,7 +3012,7 @@ Microsoft Windows [Version 10.0.26200.9457]
 ```
 NOTE: this does not print version in Microsoft preferred reference format "Version 25H2".
 
-To *retrieve* Windows version in Microsoft  preferred format (e.g. "Version 25H2"), one must directly 
+To *retrieve* Windows version in Microsoft  preferred format (e.g. "Version 25H2"), one must directly
 query the `DisplayVersion` registry key:
 
 ```powershell
@@ -2715,13 +3142,13 @@ minikube.exe start --driver=virtualbox
    * GKE documentation
 
        + [https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts](https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts)
-       + [https://cloud.google.com/kubernetes-engine/docs/concepts/pod](https://cloud.google.com/kubernetes-engine/docs/concepts/pod)  
-       + [https://cloud.google.com/kubernetes-engine/docs/concepts/deployment](https://cloud.google.com/kubernetes-engine/docs/concepts/deployment) 
+       + [https://cloud.google.com/kubernetes-engine/docs/concepts/pod](https://cloud.google.com/kubernetes-engine/docs/concepts/pod)
+       + [https://cloud.google.com/kubernetes-engine/docs/concepts/deployment](https://cloud.google.com/kubernetes-engine/docs/concepts/deployment)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/service](https://cloud.google.com/kubernetes-engine/docs/concepts/service)
        + [https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps](https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/volumes](https://cloud.google.com/kubernetes-engine/docs/concepts/volumes)
-       + [https://cloud.google.com/kubernetes-engine/docs/concepts/daemonset](https://cloud.google.com/kubernetes-engine/docs/concepts/daemonset) 
-       + [https://cloud.google.com/kubernetes-engine/docs/concepts/statefulset](https://cloud.google.com/kubernetes-engine/docs/concepts/statefulset) 
+       + [https://cloud.google.com/kubernetes-engine/docs/concepts/daemonset](https://cloud.google.com/kubernetes-engine/docs/concepts/daemonset)
+       + [https://cloud.google.com/kubernetes-engine/docs/concepts/statefulset](https://cloud.google.com/kubernetes-engine/docs/concepts/statefulset)
        + [https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
        + [https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/)   (older)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/secret](https://cloud.google.com/kubernetes-engine/docs/concepts/secret)
@@ -2737,7 +3164,6 @@ minikube.exe start --driver=virtualbox
        + [https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/service](https://cloud.google.com/kubernetes-engine/docs/concepts/service)
 
-
    * Misc.
      + Jenkins / K8 (mostly in Russian, possibly translations):
         - [part 1](https://habr.com/ru/post/487922)
@@ -2745,10 +3171,9 @@ minikube.exe start --driver=virtualbox
         - [part 3](https://habr.com/ru/articles/490302)
         - [part 4](https://habr.com/ru/articles/493580)
 
-
      + [k8 minikube docs](https://minikube.sigs.k8s.io/docs/start/)
      + [building a Kubernetes Cluster from Scratch: A Detailed Guide](https://codeproject.com/articles/Building-a-Kubernetes-Cluster-from-Scratch-A-Detai)
-     
-     
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
