@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring Smart Card support"/>
+<meta name="abstract" content="BlueZone supports SSL/TLS authentication using certificates stored on Smart Cards that are Microsoft Crypto API compliant. The certificates from the Smart Card are automatically added to the user’s personal store by Windows, and are available to BlueZone by selecting the Client Certificate in Certificate Store radio button in the Certificate tab of the TN3270 Properties window."/>
+<meta name="description" content="BlueZone supports SSL/TLS authentication using certificates stored on Smart Cards that are Microsoft Crypto API compliant. The certificates from the Smart Card are automatically added to the user’s personal store by Windows, and are available to BlueZone by selecting the Client Certificate in Certificate Store radio button in the Certificate tab of the TN3270 Properties window."/>
+<meta name="DC.subject" content="configuring, Smart Card support"/>
+<meta name="keywords" content="configuring, Smart Card support"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_configuring-smart-card-s"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring Smart Card support</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_configuring-smart-card-s">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring Smart Card support</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">BlueZone supports SSL/TLS authentication using certificates
+stored on Smart Cards that are Microsoft Crypto API compliant.  The
+certificates from the Smart Card are automatically added to the user’s
+personal store by Windows, and are available to BlueZone by selecting
+the <span class="ph uicontrol">Client Certificate in Certificate Store</span> radio
+button in the <span class="ph uicontrol">Certificate</span> tab of the TN3270
+Properties window. </p>
+
+<ol class="ol steps"><li class="li step"><span class="ph cmd">Click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span> from the BlueZone menu bar. </span></li>
+<li class="li step"><span class="ph cmd">Click <span class="ph uicontrol">Properties</span>. </span></li>
+<li class="li step"><span class="ph cmd">Click the <span class="ph uicontrol">Security</span> tab. </span></li>
+<li class="li step"><span class="ph cmd">Enable the desired <span class="ph uicontrol">SSL/TLS</span> security
+type and select the <span class="ph uicontrol">MS-CAPI</span> radio button. </span>
+</li>
+<li class="li step"><span class="ph cmd">Click the <span class="ph uicontrol">Certificate</span> tab. </span>
+</li>
+<li class="li step"><span class="ph cmd">Select the <span class="ph uicontrol">Client Certificate on Smart Card</span> radio
+button. </span></li>
+<li class="li step"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>.</span></li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><div class="note note"><span class="notetitle">Note:</span> The Smart Card must be inserted into its reader in
+order to access the certificate.  Windows will prompt the user to
+insert the Smart Card if an attempt is made to use the certificate
+without the Smart Card being inserted.</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section postreq"> </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring APVUFILE (IND$FILE for DBCS) with DBCS support"/>
+<meta name="abstract" content="Before you can transfer DBCS files, you must properly configure DBCS and translation options."/>
+<meta name="description" content="Before you can transfer DBCS files, you must properly configure DBCS and translation options."/>
+<meta name="DC.subject" content="configuring, DBCS support, APVUFILE, IND$FILE"/>
+<meta name="keywords" content="configuring, DBCS support, APVUFILE, IND$FILE"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="bzdp_htsk_configuring_APVUFILE_with-087D4465"/>
+<meta name="DC.Language" content="en"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring APVUFILE (IND$FILE for DBCS) with DBCS support</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="bzdp_htsk_configuring_APVUFILE_with-087D4465">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring APVUFILE (IND$FILE for DBCS) with DBCS support</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">Before you can transfer DBCS files, you must properly configure
+DBCS and translation options. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p label"><div class="tasklabel"><h2 class="sectiontitle">Prerequisites</h2></div>Before you can configure IND$FILE for
+DBCS support, complete the following steps: <ul class="ul">
+<li class="li"><p class="p"> Ensure that the Windows and BlueZone configuration requirements
+for DBCS support are met. </p>
+</li>
+
+<li class="li"><p class="p">Disable spell checking. If spell checking is enabled, you cannot
+process DBCS files. </p>
+</li>
+
+</ul>
+ </div>
+
+<div class="tasklabel"><h2 class="sectiontitle">Procedure</h2></div><ol class="ol steps label"><li class="li step stepexpand"><span class="ph cmd">From the Mainframe Display session, click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol">Configure</span></span>. </span>
+<div class="itemgroup stepresult">The Host File Transfer window opens. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">DBCS</span> tab.</span></li>
+<li class="li step stepexpand"><span class="ph cmd">Select the <span class="ph uicontrol">Enable DBCS Processing</span> check box. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Select the <span class="ph uicontrol">PC Code Page</span>. </span>
+<div class="itemgroup info"><p class="p">BlueZone reads the header on the file and automatically selects
+the code page for uploads. If the file does not have a header, ANSI
+is the default code page. </p>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Select the appropriate <span class="ph uicontrol">File Options</span>:</span>
+    <div class="itemgroup info">
+     <ul class="ul" id="bzdp_htsk_configuring_APVUFILE_with-087D4465__ul_w4s_5ph_wr">
+      <li class="li">SO - When receiving a text file, SO and SI (hex '0E' and '0F') characters will be
+       converted to RS and US (hex '1E' and '1F')</li>
+
+      <li class="li">NOSO - When sending a text file, SO and SI (hex '0E' and '0F') characters will NOT be
+       inserted before and after DBCS data, and RS and US (hex '1E' and '1F') will NOT be converted
+       to SO and SI (hex '0E' and '0F')</li>
+
+      <li class="li">USER - When receiving a text file with the SO option, SO and SI (hex '0E' and '0F')
+       characters will NOT be converted to RS and US (hex '1E' and '1F')</li>
+
+     </ul>
+
+    </div></li>
+<li class="li step stepexpand">
+    <span class="ph cmd">Click <span class="ph uicontrol">OK</span></span>
+   </li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm" title="The IND$FILE transfer is controlled through the Host File Transfer window. The Host File Transfer window provides an easy-to-use graphical interface. You can send or receive a single file to or from the host. You can also create transfer lists to easily preform batch file transfers.">IND$FILE transfer - IBM Mainframe (3270)</a></div></div></div>
+
+</div></body>
+</html>

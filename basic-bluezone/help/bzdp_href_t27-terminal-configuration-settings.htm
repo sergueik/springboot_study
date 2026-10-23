@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Adding T27 screens"/>
+<meta name="abstract" content="The Edit Screen Settings dialog is used to add and edit the T27 configuration screens. It contains the Screen Connection and Screen Settings tabs."/>
+<meta name="description" content="The Edit Screen Settings dialog is used to add and edit the T27 configuration screens. It contains the Screen Connection and Screen Settings tabs."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_unisys-dca-configuration-t27.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_t27-terminal-configurati"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Adding T27 screens</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_t27-terminal-configurati">
+<div class="topic">
+
+<h1 class="title topictitle1">Adding T27 screens</h1>
+
+
+<div class="body refbody"><p class="shortdesc">The Edit Screen Settings dialog is used to add and edit
+the T27 configuration screens. It contains the <span class="ph uicontrol">Screen Connection</span> and <span class="ph uicontrol">Screen
+Settings</span> tabs. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Screen Connection tab</h2><div class="p">The Screen Connection
+tab defines the screen name and connection route information. <div class="fig fignone"><span class="figcap">Figure 1. Edit Screen Settings dialog</span>
+
+<img class="image" src="graphics/T27_terminal_configuration_settings2_xp.png"/></div>
+</div>
+<dl class="dl">
+
+<dt class="dt dlterm">Name</dt>
+
+<dd class="dd">Type a name for the new screen. Up to 24 screens can be configured. </dd>
+
+
+
+<dt class="dt dlterm">Connection Route</dt>
+
+<dd class="dd">Set the following options: <ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Selected Connection Point</span>: Select a
+connection point to be used when the screen is opened.  </p>
+<p class="p">The
+first time this screen is accessed, the only available option is <span class="ph uicontrol">&lt;NONE&gt;</span>.
+You must configure your host connections by clicking <span class="ph uicontrol">Connections</span>.
+Refer to <a class="xref" href="bzdp_href_configure-connections.htm" title="The T27 Host Connections dialog is used to control the overall operation of the configuration process and to configure virtual destinations.">Configure host connections</a> for more information. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Auto Session Establishment</span>: Enables
+auto session establishment. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Station Name</span>: Type a name for station. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Rows</span>: Type the number of rows allowed
+in the screen.</p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Columns</span>: Type the number of columns
+allowed in the screen. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Pages</span>: Type the number of pages. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Gateway Server Generated Station Name</span>:
+Enables the Gateway server generated station name. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">HGS Connection Point (OpenId)</span>: Type
+the open ID of the Gateway server.</p>
+</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Screen Settings tab</h2><div class="p">The Screen Settings
+tab contains the <span class="ph uicontrol">Basic Options</span>, <span class="ph uicontrol">Datacomm
+Options</span>, and <span class="ph uicontrol">Keyboard Options</span> tabs. <div class="fig fignone">
+<img class="image" src="graphics/T27_terminal_configuration_settings3_xp.png"/></div>
+</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Basic Options tab</h2><dl class="dl">
+
+<dt class="dt dlterm">Visible delimiters</dt>
+
+<dd class="dd">If enabled, field delimiters are displayed when in forms mode.
+Refer to <a class="xref" href="#Bzdp_href_t27-terminal-configurati__toggle">Toggle Forms</a> located in the <span class="ph uicontrol">Datacomm Options</span> tab
+below.</dd>
+
+
+
+<dt class="dt dlterm">Auto-save pages</dt>
+
+<dd class="dd">If enabled, the contents of all pages in an environment are saved
+to disk when the environment is closed.  The pages are then restored
+when the environment is reopened. <div class="note note"><span class="notetitle">Note:</span> As a result of this action,
+page one is overwritten on start up.</div>
+</dd>
+
+
+
+<dt class="dt dlterm">Trace on Start Settings</dt>
+
+<dd class="dd">The controls in this group determine what trace activity is to
+take place, if any, when the screen is first opened. Select one of
+the following options: <ul class="ul">
+<li class="li"><span class="ph uicontrol">None</span>: No tracing activity takes place.</li>
+
+<li class="li"><span class="ph uicontrol">To Window</span>: A separate trace window opens
+to display the trace.</li>
+
+<li class="li"><span class="ph uicontrol">To File</span>: The Emulator Trace File dialog
+opens when the screen is opened.  In the Emulator Trace File dialog,
+type the text file name for the trace file.  The trace file is normally
+stored in <span class="ph filepath">C:\Documents and Settings\<var class="keyword varname">username</var>\Local
+Settings\Temp</span> directory and has a <span class="ph filepath">.txt</span> extension.</li>
+
+<li class="li"><span class="ph uicontrol">To Both</span>: Traces to both a window and file.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Datacomm Options tab</h2><p class="p">The Datacomm Options
+tab governs communications between the host and PC.  Multiple options
+can be selected. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Transmit Full Page in Forms Mode</dt>
+
+<dd class="dd">The full page is transmitted to the host when in forms mode (see <a class="xref" href="#Bzdp_href_t27-terminal-configurati__toggle">Toggle Forms</a> below).  If this box is
+not checked, only the unprotected data from the home position to the
+cursor will be transmitted.  </dd>
+
+
+
+<dt class="dt dlterm">Convert CR to CRLF</dt>
+
+<dd class="dd">A line feed character is appended to any carriage return character
+sent by the host application.  </dd>
+
+
+
+<dt class="dt dlterm">Convert LF to LFCR</dt>
+
+<dd class="dd">A carriage return character is appended to any line feed character
+sent by the host application.  </dd>
+
+
+
+<dt class="dt dlterm">SOH Clears Screen</dt>
+
+<dd class="dd">The screen is cleared upon receipt of an SOH character.</dd>
+
+
+
+<dt class="dt dlterm">SOH Clears Forms Mode</dt>
+
+<dd class="dd">Forms mode is terminated upon receipt of an SOH character. </dd>
+
+
+
+<dt class="dt dlterm">Position to Left of UPF</dt>
+
+<dd class="dd">The effect of the Home function places the text cursor to the
+first character position of a right justified, unprotected field;
+otherwise, the cursor will be moved to the data entry position, or
+right-most position of the field.  </dd>
+
+
+
+<dt class="dt dlterm">Transmit Line at a Time</dt>
+
+<dd class="dd">Forces the normal Transmit to act like the Transmit Line key.
+ </dd>
+
+
+
+<dt class="dt dlterm">Hold in RCV Mode</dt>
+
+<dd class="dd">The screens remain in receive mode after getting a message from
+the host application (see <a class="xref" href="#Bzdp_href_t27-terminal-configurati__rcv">Stay in RCV</a> below).  </dd>
+
+
+
+<dt class="dt dlterm">Beep Alarm Sound</dt>
+
+<dd class="dd">Turns an audible beep on.  If this box is not checked, no audible
+sound is heard.  </dd>
+
+
+
+<dt class="dt dlterm">SO/SI Translation</dt>
+
+<dd class="dd">Enables SO/SI (7-bit to 8-bit/8-bit to 7-bit) character translation
+on data transmitted to the host.  </dd>
+
+
+
+<dt class="dt dlterm">SO/SI Extended Characters</dt>
+
+<dd class="dd">Enables SO/SI (7-bit-to-8-bit/8-bit-to-7-bit) character translation
+on data received from the host.  This option is not required if the
+host transmission is prefixed by ESC SO sequences. </dd>
+
+
+
+<dt class="dt dlterm">DC2 Function</dt>
+
+<dd class="dd">The option in this group instruct BlueZone T27 how to interpret
+the DC2 character when received from the host: <ul class="ul">
+<li class="li" id="Bzdp_href_t27-terminal-configurati__toggle"><span class="ph uicontrol">Toggle Forms</span>: Toggles the to/from
+forms mode upon receipt of the DC2 character.</li>
+
+<li class="li"><span class="ph uicontrol">Advance Page</span>: Stay in the current mode
+(forms or no-forms) and advance the DataComm pointer one position
+to the right upon receipt of the DC2 character.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">DC1 Function</dt>
+
+<dd class="dd">The options in this group instruct BlueZone T27 how to interpret
+the DC1 character when received from the host. These options are mutually
+exclusive: <ul class="ul">
+<li class="li"><span class="ph uicontrol" id="Bzdp_href_t27-terminal-configurati__rcv">Stay in RCV</span>: Choose this option
+to keep the screens in receive mode upon receipt of a DC1 character.
+ This option nullifies the Hold in RCV option (see above).</li>
+
+<li class="li"><span class="ph uicontrol">Line Clear</span>: Choose this option to clear
+the line upon receipt of the DC1 character.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Alternate Delimiters </dt>
+
+<dd class="dd">In this group, type the alternate delimiters sent by the host
+application.  Alternate delimiters are only required when in forms
+mode: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Left Character (hex)</span>: Type the hex character
+sent and interpreted as the beginning delimiter of left-justified
+unprotected fields.  The default is the US character (1F).</li>
+
+<li class="li"><span class="ph uicontrol">Right Character (hex)</span>: Type the hex character
+sent and interpreted as the ending field delimiter.  The default is
+the RS character (1E).</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Keyboard Options tab</h2><div class="p">The Keyboard Options
+tab governs keyboard actions.  Multiple options can be selected. <div class="note note"><span class="notetitle">Note:</span> There
+are additional keyboard options located on the Miscellaneous tab in
+the Keyboard Options dialog.<p class="p">Refer to <a class="xref" href="bzdp_href_keyboard-mapping-t27.htm" title="The Keyboard Options dialog is used to map BlueZone T27 program functions to key sequences on the keyboard.">Keyboard Options dialog</a> for
+information on the additional keyboard options. </p>
+</div>
+</div>
+<dl class="dl">
+
+<dt class="dt dlterm">Start in UPPERCASE Mode</dt>
+
+<dd class="dd">The keyboard automatically starts in UPPERCASE mode.  Enabling
+this feature has the effect of turning on the Caps Lock key when the
+BlueZone T27 session is launched.  The end user can turn off Caps
+Lock by pressing the Caps Lock key.  This feature is useful when your
+host requires that the entire log on process be in uppercase characters
+but, you still want the option to revert to standard case at any time.
+ </dd>
+
+
+
+<dt class="dt dlterm">Force UPPERCASE Only</dt>
+
+<dd class="dd">Converts lowercase characters that are typed to their uppercase
+equivalents.  The Shift Key will reverse the effect of <span class="ph uicontrol">Force
+UPPERCASE Only</span> while it is being held down.  In other
+words, if the <span class="ph uicontrol">Force UPPERCASE Only</span> check box
+is enabled, and the Shift key is held down while pressing a letter
+key, the input will be lower case.  </dd>
+
+
+
+<dt class="dt dlterm">Add LF to Return</dt>
+
+<dd class="dd">A line feed character is appended when the Carriage Return key
+(Enter) is pressed.  If this box is not checked, only the carriage
+return is issued.  </dd>
+
+
+
+<dt class="dt dlterm">Automatic Field Advance</dt>
+
+<dd class="dd">Advances the cursor automatically to the next field when the current
+field becomes full.  </dd>
+
+
+
+<dt class="dt dlterm">Right Justified is Numeric-Only</dt>
+
+<dd class="dd">Only the characters 0-9, space, period (.), and comma (,) will
+be allowed in a right-justified field.  If the box is not checked,
+any character will be accepted.  </dd>
+
+
+
+<dt class="dt dlterm">Insert Space in Insert Mode</dt>
+
+<dd class="dd">A space is inserted whenever the Insert key is pressed.  </dd>
+
+
+
+<dt class="dt dlterm">Specify Sends Page Number</dt>
+
+<dd class="dd">The page number (in addition to the normal column and row designating
+the cursor position) is sent the host application when the Specify
+key is pressed.  </dd>
+
+
+
+<dt class="dt dlterm">Specify Sends Hex</dt>
+
+<dd class="dd">The cursor position (column and row) is sent in hexadecimal when
+the Specify key is pressed.  If this box is not checked, the cursor
+position is reported in ASCII.  </dd>
+
+
+
+<dt class="dt dlterm">Destructive Backspace Key</dt>
+
+<dd class="dd">Erases characters as the Backspace key is pressed.  </dd>
+
+
+
+<dt class="dt dlterm">Ignore Programmed Macros</dt>
+
+<dd class="dd">The emulator ignores any host or manually programmed T27 macro
+keys.  Checking this box does not prevent Enable scripts related to
+action keys from running.  The box is checked by default.</dd>
+
+
+
+<dt class="dt dlterm">CR acts like TAB</dt>
+
+<dd class="dd">Makes the Carriage Return key (Enter) behave like the Tab key. </dd>
+
+
+
+<dt class="dt dlterm">Tab Stops</dt>
+
+<dd class="dd">Type the column positions (separated by commas) of the tab stops.
+ The default is 1,9,17,25,33,41,49,57.</dd>
+
+
+
+<dt class="dt dlterm">Character Translation Table</dt>
+
+<dd class="dd">Select a country that most closely matches your keyboard requirements.<ul class="ul">
+<li class="li"><span class="ph uicontrol">Edit Translation Tables</span>: Opens the Character
+Translation dialog.  This dialog provides the ability to select and
+edit character translation sets for specific countries.</li>
+
+</ul>
+<p class="p">Refer to <a class="xref" href="bzdp_htsk_configuring-character-translation.htm" title="The Character Translation dialog provides the ability to select and edit character translation sets for specific countries.">Configuring character translation</a> for
+more detailed information.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Clear Function </dt>
+
+<dd class="dd">This group specifies what action occurs when the Clear key is
+pressed. These options are mutually exclusive.<ul class="ul">
+<li class="li"><span class="ph uicontrol">Clear Entire Screen</span>: Clears the entire
+screen.</li>
+
+<li class="li"><span class="ph uicontrol">Clear Fields Only</span>: Clears all unprotected
+fields.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_unisys-dca-configuration-t27.htm" title="The T27 Terminal Configuration Settings dialog allows you to create and manage the T27 connection screens. Each screen contains configuration options to assign the communication point to be used when the screen is opened, configure connection settings, datacomm options, and keyboard options for the screen.">Unisys DCA configuration</a></div></div></div>
+
+</div></body>
+</html>

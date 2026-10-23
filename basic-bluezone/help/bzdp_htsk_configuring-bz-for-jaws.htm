@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring BlueZone for JAWS"/>
+<meta name="abstract" content="JAWS is a screen reading software designed to assist visually impaired users. For JAWS to work well with BlueZone, some display settings must be modified."/>
+<meta name="description" content="JAWS is a screen reading software designed to assist visually impaired users. For JAWS to work well with BlueZone, some display settings must be modified."/>
+<meta name="DC.subject" content="JAWS, configuring with BlueZone, screen readers, configuring displays"/>
+<meta name="keywords" content="JAWS, configuring with BlueZone, screen readers, configuring displays"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_display-interface.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="ConfiguringBlueZoneForJAWS-9CD4964C"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring BlueZone for JAWS</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="ConfiguringBlueZoneForJAWS-9CD4964C">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring BlueZone for JAWS</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">JAWS is a screen reading software designed to assist visually
+impaired users. For JAWS to work well with BlueZone, some display
+settings must be modified. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">JAWS and BlueZone can be further enhanced through JAWS scripting.
+Several BlueZone customers have created advanced scripts for their
+visually impaired users to optimize the screen and workflow for them.
+Most of the script functions are host application specific and must
+be developed for individual host screens. Refer to the JAWS scripting
+manual for more information. </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol">Display</span></span> from the BlueZone menu bar. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Font</span> tab, set the following
+options: </span>
+<ol type="a" class="ol substeps">
+<li class="li substep substepexpand"><span class="ph cmd">Select a plain, monospaced font such as Lucida Console
+or Courier New. </span></li>
+
+<li class="li substep substepexpand"><span class="ph cmd">Set the font size between 5 and 12. </span>
+<div class="itemgroup stepresult">JAWS tracks certain font sizes better than others. Excellent
+results have been achieved with a 12 point font. </div>
+</li>
+
+</ol>
+
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Cursor</span> tab, set the following
+options:</span>
+<ol type="a" class="ol substeps">
+<li class="li substep"><span class="ph cmd">Slide the <span class="ph uicontrol">Size</span> scale all the
+way to the left. This changes the cursor to an underline.</span>
+</li>
+
+<li class="li substep"><span class="ph cmd">Slide the <span class="ph uicontrol">Blink Rate</span> all the
+way to the right to make the blink rate as fast as possible. </span>
+</li>
+
+</ol>
+
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Advanced</span> tab, select the <span class="ph uicontrol">Paint
+Nulls as Spaces?</span> check box. </span>
+<div class="itemgroup stepresult">This option ensures that the entire terminal area is filled
+with readable values.</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> to save and close the window.</span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Ensure that the BlueZone screen is maximized when using
+the session with JAWS.</span></li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><h2 class="title sectiontitle">Testing</h2><p class="p">Test the basic functionality using
+the commands described below. If any of these fail, you might need
+to adjust your font size or cursor blink rate.</p>
+<ul class="ul">
+<li class="li"><p class="p">As you move the cursor from line to line with the arrow keys,
+JAWS should read each line.</p>
+</li>
+
+<li class="li"><p class="p">As you move along a line from word to word (Insert+Right Arrow
+or Insert+Left Arrow), JAWS should read each word.</p>
+</li>
+
+<li class="li"><p class="p">Insert+NumPadPlus should move the JAWS cursor to the current
+BlueZone cursor position. JAWS will indicate the move.</p>
+</li>
+
+<li class="li"><p class="p">Insert+NumPadMinus should move the BlueZone cursor to the JAWS
+cursor position. JAWS will indicate the move.</p>
+</li>
+
+</ul>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_display-interface.htm">Customizing the Display and Printer session interface</a></div></div></div>
+
+</div></body>
+</html>

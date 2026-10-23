@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring BlueZone to work with an existing HLLAPI application"/>
+<meta name="abstract" content="Configuring BlueZone to work with a third-party HLLAPI application is really quite simple. Your knowledge of, and your ability to change the configuration of your external HLLAPI application is really the key to making it work with BlueZone."/>
+<meta name="description" content="Configuring BlueZone to work with a third-party HLLAPI application is really quite simple. Your knowledge of, and your ability to change the configuration of your external HLLAPI application is really the key to making it work with BlueZone."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_api-properties-mainframe.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_api-properties-iseries.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_api-properties-vt.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_api-properties-vt.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_api-properties-t27.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_api-properties-uts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="ConfiguringBlueZoneToWorkWithAnExi"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring BlueZone to work with an existing HLLAPI application</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="ConfiguringBlueZoneToWorkWithAnExi">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring BlueZone to work with an existing HLLAPI application</h1>
+
+
+<div class="body taskbody"><p class="shortdesc">Configuring BlueZone to work with a third-party HLLAPI
+application is really quite simple.  Your knowledge of, and your ability
+to change the configuration of your external HLLAPI application is
+really the key to making it work with BlueZone. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><div class="note note"><span class="notetitle">Note:</span> This procedure is provided as a quick reference for configuring BlueZone to work with a HLLAPI
+    application. The <cite class="cite">BlueZone Desktop Administrator's Guide</cite> contains more detailed
+    information on this subject. If you are a BlueZone administrator, we recommend that you read
+    "HLLAPI support" and related topics in Chapter 3, Configuring BlueZone, of the <cite class="cite">BlueZone
+     Desktop Administrator's Guide</cite>. </div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">There are a few things you must know and do in order for
+BlueZone to work properly: <ul class="ul">
+<li class="li">In your HLLAPI application, is there a way you can change the
+name and the location (path) of the HLLAPI program used by your emulator?
+ <br/><p class="p"><strong class="ph b">No</strong>: If not, you must re-name the BlueZone
+HLLAPI DLL and manually copy it to the location where your HLLAPI
+application is expecting to find it.  You may already have a HLLAPI
+DLL in this location.  If you do, temporarily re-name it so that you
+do not over write it with the BlueZone DLL.   </p>
+<p class="p"><strong class="ph b">Yes</strong>: Launch
+the Configuration Interface of your HLLAPI application and change
+the name and location of the HLLAPI DLL to that used by BlueZone.
+ The BlueZone HLLAPI DLL is called WHLLAPI.DLL and can be found in
+the main BlueZone installation directory.  The default installation
+directory for BlueZone is:  <span class="ph filepath">C:\Program Files\BlueZone </span></p>
+</li>
+
+<li class="li">Is there a HLLAPI.DLL from a competitor's product installed on the same workstation that you are
+     using to test the BlueZone HLLAPI interface? <br/><p class="p"><strong class="ph b">Yes</strong>: If so, you may have
+      to temporarily rename that DLL while testing BlueZone to prevent conflicts. </p>
+<p class="p"><strong class="ph b">No</strong>:
+      Proceed to BlueZone Configuration after BlueZone Desktop is installed, and launch a BlueZone
+      Display session. </p>
+</li>
+
+</ul>
+<p class="p">Follow the steps below to configure BlueZone: </p>
+ </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol"> API</span></span>. </span>
+<div class="itemgroup stepresult">The API Properties dialog opens.</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Check the <span class="ph uicontrol">Enable DDE Server Interface</span> check box.  </span>
+<div class="itemgroup stepresult">BlueZone is now listening for a DDE connection.  </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Run the HLLAPI application and check to see if it connects
+to BlueZone.</span></li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_api-properties-mainframe.htm" title="The API Properties dialog is used to configure BlueZone to work with external programs. To launch the API Properties dialog, go to the BlueZone menu bar, and click Options &gt; API .">API Properties dialog</a></div></div></div>
+
+</div></body>
+</html>

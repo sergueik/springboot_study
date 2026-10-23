@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="concept"/>
+<meta name="DC.Title" content="Sx configuration files"/>
+<meta name="abstract" content="If you want to distribute BlueZone preconfigured for more than one BlueZone session, use the following syntax. Instead of creating one file with the name Start.zxx. You can create as many files as you need with the name Sx where x is the session identifier."/>
+<meta name="description" content="If you want to distribute BlueZone preconfigured for more than one BlueZone session, use the following syntax. Instead of creating one file with the name Start.zxx. You can create as many files as you need with the name Sx where x is the session identifier."/>
+<meta name="DC.subject" content="Sx configuration files, configuration files, Sx"/>
+<meta name="keywords" content="Sx configuration files, configuration files, Sx"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_automatically-configure-sessions.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="bzdp_hcon_sx-configuration-files-92083B70"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Sx configuration files</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="bzdp_hcon_sx-configuration-files-92083B70">
+<div class="topic">
+
+<h1 class="title topictitle1">Sx configuration files</h1>
+
+
+
+<div class="body conbody"><p class="shortdesc">If you want to distribute BlueZone preconfigured for more
+than one BlueZone session, use the following syntax.  Instead of creating
+one file with the name <span class="ph filepath">Start.z<var class="keyword varname">xx</var></span>.
+ You can create as many files as you need with the name <span class="ph filepath">S<var class="keyword varname">x</var></span> where <samp class="ph codeph"><var class="keyword varname">x</var></samp> is
+the session identifier.    </p>
+
+<p class="p">For example, to preconfigure two BlueZone Mainframe display sessions,
+create the first configuration file and name it <span class="ph filepath">S1.zmd</span>.
+Then create the second one and name it <span class="ph filepath">S2.zmd</span>.
+  </p>
+
+<p class="p">The same rules that apply to start files apply to <span class="ph filepath">S<var class="keyword varname">x</var></span> files
+except that each <span class="ph filepath">S<var class="keyword varname">x</var></span> file only
+configures one session with that corresponding session number.  </p>
+
+<p class="p">For example, <span class="ph filepath">S1.zmd</span> automatically loads the
+configuration for session S1. <span class="ph filepath">S2.zmd</span> automatically
+loads the configuration for session 2. </p>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_automatically-configure-sessions.htm" title="BlueZone is capable of automatically loading configuration files that are identified using a specific naming convention. Using this method, you can automatically configure all sessions identically, automatically configure multiple sessions differently, and automatically update configurations that are locked from user tampering. In BlueZone, these automatically loading configuration files are universally called Start configuration files.">Automatically configure sessions</a></div></div></div>
+
+</div></body>
+</html>

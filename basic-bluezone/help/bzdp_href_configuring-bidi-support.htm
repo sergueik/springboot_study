@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Configuring BiDi support"/>
+<meta name="abstract" content="Starting with version 5.1, BlueZone has added bidirectional language support (BiDi) to the IBM 3270 and IBM iSeries emulators. Currently, the only BiDi language that is supported is Arabic."/>
+<meta name="description" content="Starting with version 5.1, BlueZone has added bidirectional language support (BiDi) to the IBM 3270 and IBM iSeries emulators. Currently, the only BiDi language that is supported is Arabic."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-iseries.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_configuring-bidi-support"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring BiDi support</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_configuring-bidi-support">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring BiDi support</h1>
+
+
+<div class="body refbody"><p class="shortdesc">Starting with version 5.1, BlueZone has added bidirectional
+language support (BiDi) to the IBM 3270 and IBM iSeries emulators.
+ Currently, the only BiDi language that is supported is Arabic. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Windows configuration requirements</h2><div class="p">To configure
+BlueZone to support Arabic, several Windows settings have to be set. <div class="note note"><span class="notetitle">Note:</span> If
+you have been using this machine with other programs that support
+BiDi for Arabic, you may not have to make any changes to your Windows
+settings.</div>
+</div>
+<ol class="ol">
+<li class="li">Access the Windows Control Panel and launch the Regional and Language
+Options settings dialog. </li>
+
+<li class="li">On the <span class="ph uicontrol">Languages</span> tab, check to see if the
+option to <span class="ph uicontrol">Install files for complex script and right-to-left
+languages</span> is checked. <br/><p class="p">If this item
+is not checked, checking it causes Windows to install some files and
+perform a restart of your computer.  If this is the case, let Windows
+install the files and restart your computer now.  When the restart
+is complete, access the Windows Control Panel and launch the Regional
+and Language Options settings again.  Click the <span class="ph uicontrol">Languages</span> tab
+and proceed to step 3. </p>
+<p class="p">If the item is already checked, proceed
+to step 3. </p>
+</li>
+
+<li class="li">Click <span class="ph uicontrol">Details</span>.  In the Installed Services
+window, there must be an installed service for Arabic.   If not, click <span class="ph uicontrol">Add</span> and
+add one of the input language selections for Arabic.  There must also
+be one for English. </li>
+
+<li class="li">Click the <span class="ph uicontrol">Advanced</span> tab.  Check the <span class="ph uicontrol">Extend
+support of advanced text services to all programs</span> check
+box if it's not already checked. If you make any changes, you receive
+a message to restart Windows.  Restart Windows so that these changes
+take effect. </li>
+
+</ol>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">BlueZone configuration requirements</h2><ol class="ol">
+<li class="li">Launch a BlueZone IBM Mainframe 3270 Display or iSeries 5250 Display
+session. </li>
+
+<li class="li">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </li>
+
+<li class="li">Click the <span class="ph uicontrol">3270 Emulation</span> (or <span class="ph uicontrol">5250
+Emulation</span>) tab. </li>
+
+<li class="li">In the <span class="ph uicontrol">Language (CCSID)</span> list box, set the
+language to <span class="ph uicontrol">Arabic (420)</span> and click <span class="ph uicontrol">OK</span>. </li>
+
+<li class="li">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol"> Display</span></span>. The <span class="ph uicontrol">Font</span> tab
+automatically displays. </li>
+
+<li class="li">Click <span class="ph uicontrol">Font</span>. </li>
+
+<li class="li">Set the font to either <span class="ph uicontrol">BlueZone Arabic Terminal</span> or <span class="ph uicontrol">Farabi
+Multi</span>. </li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> to close the Font Selection window. </li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> to close the Display Options window. </li>
+
+<li class="li">Ensure that the BlueZone character set is set to <span class="ph uicontrol">Unicode</span>,
+on the Font tab in the Print Setup dialog.  Print Setup can be accessed
+by selecting <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Print
+Setup</span></span> from the BlueZone menu bar. </li>
+
+</ol>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Switching between languages</h2><p class="p">There are several
+ways to switch between English input and Arabic input.  One way is
+to use the Windows Language Bar.  Another is to use the Windows Language
+Bar shortcut, left ALT+SHIFT.  Assuming that you only have English
+and Arabic configured, ALT+SHIFT will toggle back and forth between
+these two languages. </p>
+<p class="p">However, using Windows to simply switch
+to Arabic while in a BlueZone session will not change the direction
+of the Arabic input.  We recommend using the following Key commands
+for controlling the input of Arabic characters. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">New BlueZone 3270/5250 key commands for BiDi Arabic</h2><p class="p">Several
+of the BlueZone 3270/5250 Key Commands for BiDi Arabic use keys located
+on the Number Pad area of the keyboard.  For example, the Reverse/Push
+key command is invoked by holding down the Control Key followed by
+pressing the Forward Slash key located on the Number Pad.  In the
+following documentation, this command is expressed as CTRL+(Num Pad
+/).</p>
+<p class="p"><strong class="ph b">Key commands</strong></p>
+<dl class="dl">
+
+<dt class="dt dlterm">Reverse/Push - Ctrl+(Num Pad /)</dt>
+
+<dd class="dd">Reverse/Push changes between left-to-right data entry and right-to-left.
+ It also causes the Windows language bar to switch between English
+and Arabic (if the language settings described above are setup properly).<p class="p">When
+in Reverse Data Entry mode (RDE), invoking this key is the Reverse
+function.  In Reverse Text Entry (RTE) mode, this key is the Push
+function.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Close - Ctrl+(Num Pad *) or Alt+F1</dt>
+
+<dd class="dd">Close closes a field after entering English data on the left and
+Arabic data on the right.  The nulls in the center of the field are
+removed and the field is shifted to the left or right, based on the
+reverse mode.</dd>
+
+
+
+<dt class="dt dlterm">Screen Direction - Ctrl+Shift+F4</dt>
+
+<dd class="dd">Screen Direction (supported in BlueZone Mainframe 3270 only),
+reverses or flips the orientation of the entire screen left-to-right
+and vice-versa.  When the screen orientation is reversed, the language
+is automatically changed to the default language of the new screen
+orientation.  For example, if the screen is reversed to right-to-left,
+the language is changed to Arabic.  If the screen is reversed to left-to-right,
+the language is changed to English.<p class="p">This feature is used when the
+Mainframe application only supports data entry in the left to right
+mode.  By being able to reverse (flip) the screen, Arabic characters
+will be shown in their normal right to left orientation, making easier
+to read, even though the actual data is being stored in the required
+left to right manner.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Toggle RDE/RTE - Alt+(Num Pad *) or Alt+F11</dt>
+
+<dd class="dd">Toggle RDE/RTE switches between Reverse Data Entry and Reverse
+Text Entry modes.</dd>
+
+
+
+<dt class="dt dlterm">Auto Reverse - Alt+Backspace or Alt+(Num Pad /)</dt>
+
+<dd class="dd">Auto Reverse toggles the auto reverse or auto push mode, depending
+on the RDE/RTE setting.  These modes cause reverse or push mode to
+become active automatically upon entering a field, based on whether
+the field contains English or Arabic data.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">BlueZone status bar changes</h2><p class="p">When using BlueZone
+with a supported BiDi language, the BlueZone status bar changes slightly.
+ </p>
+<div class="p">The following is the new BlueZone status bar for BiDi Arabic
+support: <div class="fig fignone"><img class="image" src="graphics/statusbar4.PNG"/></div>
+</div>
+<p class="p">The field that was formerly used
+for the APL/DBCS Mode Indicator, now contains two green arrows as
+shown above in section A. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Left Arrow</dt>
+
+<dd class="dd">The left arrow indicates the current typing direction (Reverse/Push
+key), left-to-right or right-to-left.  An outlined arrow stem <img class="image" src="graphics/arrow_right_open.png"/> or <img class="image" src="graphics/arrow_left_open.png"/> indicates
+RDE mode, a solid arrow stem <img class="image" src="graphics/arrow_right_point_open.png"/> or <img class="image" src="graphics/arrow_left_point_open.png"/> indicates
+RTE mode.</dd>
+
+
+
+<dt class="dt dlterm">Right Arrow</dt>
+
+<dd class="dd">The right arrow indicates the current screen direction (Screen
+Direction key).  The arrow will point to the right when entry is from
+left to right <img class="image" src="graphics/arrow_right_solid.png"/>.  The Arrow will point to the left when entry is from right
+to left <img class="image" src="graphics/arrow_left_solid.png"/>.</dd>
+
+
+
+<dt class="dt dlterm">Caps Lock Indicator</dt>
+
+<dd class="dd">The field that was formerly used for the Caps Lock Indicator,
+now contains a green square cut into four quadrants as shown above
+in section B.  One of the quadrants is always filled, the others are
+empty.<p class="p">The filled quadrant indicates whether the current input setting
+is left-to-right (left side filled) or right-to-left (right side filled),
+and the current Caps Lock setting (bottom part or top part filled). </p>
+<p class="p">Caps
+Lock Off <img class="image" src="graphics/square_lower_left.png"/> Data Entry from Left to Right  </p>
+<p class="p">Caps Lock On <img class="image" src="graphics/square_upper_left.png"/> Data
+Entry from Left to Right  </p>
+<p class="p">Caps Lock Off <img class="image" src="graphics/square_lower_right.png"/> Data
+Entry from Right to Left  </p>
+<p class="p">Caps Lock On <img class="image" src="graphics/square_upper_right.png"/> Data
+Entry from Right to Left </p>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

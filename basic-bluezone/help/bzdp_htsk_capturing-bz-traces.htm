@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Capturing BlueZone traces"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.subject" content="traces, capturing"/>
+<meta name="keywords" content="traces, capturing"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-iseries.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_capturing-bz-traces"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Capturing BlueZone traces</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_capturing-bz-traces">
+<div class="topic">
+
+<h1 class="title topictitle1">Capturing BlueZone traces</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc"/>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Launch the appropriate BlueZone Display or Printer emulator.
+ Disconnect your session if necessary.  You should always start your
+trace with your session disconnected. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Properties</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Trace</span> tab.</span></li>
+<li class="li step stepexpand"><span class="ph cmd">In <span class="ph uicontrol">Trace Options</span>, verify that only
+the <span class="ph uicontrol">Trace Sockets Interface</span> and <span class="ph uicontrol">Trace
+RUI Interface</span> boxes are checked. </span>
+<div class="itemgroup info"><div class="note note"><span class="notetitle">Note:</span> Only check the <span class="ph uicontrol">Trace SSL Connection</span> box
+if you are troubleshooting an SSL related issue.</div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Trace File</span> edit box, ensure
+that there is a valid path and trace file name for the trace data
+to be written to.  You can use any file name you want.  The file extension
+must be <span class="ph filepath">.trc</span>. </span>
+<div class="itemgroup info"><div class="cautiontitle">CAUTION:</div><div class="note caution">This must be a valid path or the trace
+feature does not work.</div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Trace Viewer</span> edit box, ensure
+that you have a valid path to a program that reads your trace file.
+ Notepad or WordPad will work fine. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Start Trace</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> twice. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Connect your host session and perform any steps necessary
+to reproduce the problem or perform the particular function that you
+are tracing.  Once this is accomplished, proceed to the next step. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Properties</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Trace</span> tab. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Stop Trace</span>.</span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">View Trace</span> to view the trace
+file that you just created. </span>
+<div class="itemgroup stepresult">Trace files can be viewed in Notepad or WordPad.  This
+step helps ensure that you have indeed created a valid trace file.
+ If the trace file is extremely short or does not appear to contain
+any valid data, try running another trace and compare the results. </div>
+</li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><div class="note note"><span class="notetitle">Note:</span> When E-mailing trace files for evaluation, please send
+them in their native format.  Do not embed them in Word documents
+or change the file into any other format.  Changing them makes it
+impossible for us to evaluate them properly.</div>
+<div class="note tip"><span class="tiptitle">Tip:</span> If
+the trace files are very large, it’s okay to zip them up using a standard
+zipping utility like WinZip.</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

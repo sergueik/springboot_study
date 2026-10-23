@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Editing the translate tables"/>
+<meta name="abstract" content="Translate tables are used to translate data between the EBCDIC character set and the ASCII character set. EBCDIC is used on IBM mainframe and iSeries systems for character formatting whereas ASCII is used in the PC environment for character formation. When a character arrives from the host it is translated from EBCDIC to ASCII. When a character is sent to the host it is translated from ASCII to EBCDIC."/>
+<meta name="description" content="Translate tables are used to translate data between the EBCDIC character set and the ASCII character set. EBCDIC is used on IBM mainframe and iSeries systems for character formatting whereas ASCII is used in the PC environment for character formation. When a character arrives from the host it is translated from EBCDIC to ASCII. When a character is sent to the host it is translated from ASCII to EBCDIC."/>
+<meta name="DC.subject" content="translate tables, editing"/>
+<meta name="keywords" content="translate tables, editing"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_the-application-desktop-1.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_editing-the-translate-ta"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Editing the translate tables</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_editing-the-translate-ta">
+<div class="topic">
+
+<h1 class="title topictitle1">Editing the translate tables</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">Translate tables are used to translate data between the
+EBCDIC character set and the ASCII character set.  EBCDIC is used
+on IBM mainframe and iSeries systems for character formatting whereas
+ASCII is used in the PC environment for character formation.  When
+a character arrives from the host it is translated from EBCDIC to
+ASCII. When a character is sent to the host it is translated from
+ASCII to EBCDIC. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><div class="note important"><span class="importanttitle">Important:</span> Translate table modifications must
+only be made when problems occur running a host application.</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">To access the translate tables:  </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">3270 Emulation</span> tab. </span>
+<div class="itemgroup stepresult">The 3270 Emulation property sheet displays <span class="ph uicontrol">Translation</span>, <span class="ph uicontrol">LU1
+Print Options</span>, <span class="ph uicontrol">LU3 Print Options</span> and <span class="ph uicontrol">LU1
+/ LU3 Print Options</span>. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Translation</span> section, click <span class="ph uicontrol">Translate
+Tables</span>. </span>
+<div class="itemgroup stepresult">The <span class="ph uicontrol">Translate Tables</span> menu displays
+two tabs: <span class="ph uicontrol">EBCDIC to ASCII</span> and <span class="ph uicontrol">ASCII
+to EBCDIC</span>. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Select the desired translation table. </span></li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><h2 class="title sectiontitle">How the tables work</h2><p class="p">To demonstrate how the
+tables work we will use the character 'A'. Please note that all ASCII
+and EBCDIC values shown below are hexadecimal values. </p>
+<div class="p">In the
+ASCII Code table the character 'A' is represented by the value '41'
+(in hex).  In the EBCDIC Code table the character 'A' is represented
+by the value 'C1'. <ol class="ol">
+<li class="li">Starting on the ASCII to EBCDIC page, look at Column 4x Row x1
+and you will see the character 'A'. Click the Edit button to switch
+to the values mode and will see the EBCDIC value 'C1'.  This is the
+value that will be sent to the host when the 'A' key is pressed on
+the keyboard. </li>
+
+<li class="li">Now to verify that this is the correct value, let's follow the
+same sequence in reverse. Look at the EBCDIC to BUFFER page and examine
+the Column Cx Row x1, you should see the character 'A'. Click the
+Edit button, to switch to the values mode and you will see the ASCII
+value '41'.  This is the value that will be sent from the host when
+an 'A' is requested. </li>
+
+</ol>
+</div>
+<div class="p">This explanation shows the standard sequence of events
+when translating characters. This sequence looks the same in both
+directions, only reversed. For example: <p class="lines">ASCII to EBCDIC<br/>
+     41 -&gt; C1<br/>
+ <br/>
+EBCDIC to ASCII<br/>
+     C1 -&gt; 41</p>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_the-application-desktop-1.htm" title="The BlueZone Printer Emulator is split into three windows. The top window is the Printer Profile window, the center window is the Print Queue window, and the bottom window is the Print Log window.">The application desktop</a></div></div></div>
+
+</div></body>
+</html>

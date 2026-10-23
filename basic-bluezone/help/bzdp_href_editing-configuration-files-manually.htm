@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Editing profiles manually"/>
+<meta name="abstract" content="You can create and edit the BlueZone Tab profiles in a text editor."/>
+<meta name="description" content="You can create and edit the BlueZone Tab profiles in a text editor."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_bz-tab.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_editing-configuration-files-manually"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Editing profiles manually</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_editing-configuration-files-manually">
+<div class="topic">
+
+ <h1 class="title topictitle1">Editing profiles manually</h1>
+
+ 
+ <div class="body refbody"><p class="shortdesc">You can create and edit the BlueZone Tab profiles in a text editor.</p>
+
+  <div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section">
+   <p class="p">If the <span class="ph uicontrol">Hide User Elements</span> check box on the
+     <span class="ph uicontrol">Options</span> tab is selected, you must use a text editor to make changes to
+    the profile.</p>
+
+   <ol class="ol">
+    <li class="li">Navigate to the location of the <span class="ph filepath">.bzt</span> file. The default location is in
+     the working directory at <span class="ph filepath">C:\Users\username\Documents\BlueZone\Config</span>.</li>
+
+    <li class="li">Open the <span class="ph filepath">.bzt</span> file in a text editor.</li>
+
+    <li class="li">In the <samp class="ph codeph">[Settings]</samp> section, edit the following options:<table cellpadding="4" cellspacing="0" summary="" id="Bzdp_href_editing-configuration-files-manually__simpletable_jdf_vsr_35" border="1" class="simpletable"><tr class="sthead">
+       <th valign="bottom" align="left" id="d91585e57" class="stentry">Option</th>
+
+       <th valign="bottom" align="left" id="d91585e60" class="stentry">Values</th>
+
+       <th valign="bottom" align="left" id="d91585e63" class="stentry">Option in the Settings window</th>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">Save=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – Do not save on exit</p>
+
+        <p class="p">1 – Prompt to save on exit</p>
+
+        <p class="p">2 – Always save on exit</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Save on Shutdown</span> options on the
+         <span class="ph uicontrol">Options</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">HideElements=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The user elements are displayed</p>
+
+        <p class="p">1 – The user elements are not displayed</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Hide User Elements</span> check box on the
+         <span class="ph uicontrol">Options</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">DockPos=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">Left</p>
+
+        <p class="p">Top</p>
+
+        <p class="p">Right</p>
+
+        <p class="p">Bottom</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Dock Position</span> menu on the <span class="ph uicontrol">Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">Multiline=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The toolbar cannot span multiple lines</p>
+
+        <p class="p">1 – The toolbar can span multiple lines</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Multi-Line</span> check box on the <span class="ph uicontrol">Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">FixedWidth=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The tabs can be unique widths</p>
+
+        <p class="p">1 – All tabs are the same widths</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Fixed-Width Tabs</span> check box on the <span class="ph uicontrol">Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">TabWidth=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">Numeric value, in pixels, of the width of fixed tabs</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Fixed-Width Tabs</span> check box on the <span class="ph uicontrol">Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">Buttons=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – Tabs are not displayed as buttons</p>
+
+        <p class="p">1 – Tabs are displayed as buttons</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Display Tabs as Buttons</span> check box on the
+         <span class="ph uicontrol">Tabs</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">Stretch=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The tabs are not stretched</p>
+
+        <p class="p">1 – The tabs are stretched to align with the right of the toolbar</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Stretch Tabs to Align Right</span> check box on the
+         <span class="ph uicontrol">Tabs</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">Center=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The tab text is left aligned</p>
+
+        <p class="p">1 – The tab text is centered</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Center Tab Labels</span> check box on the
+         <span class="ph uicontrol">Tabs</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">ShowTabIcons=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The tabs do not contain the program icons</p>
+
+        <p class="p">1 – The tabs contain the program icons</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Show Program Icons</span> check box on the<span class="ph uicontrol">
+         Tabs</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">ShowTabNumbers=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The tabs do not contain a number</p>
+
+        <p class="p">1 – The tabs contain a number</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Show Tab Numbers</span> check box on the<span class="ph uicontrol"> Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">HighlightTab=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The active tab is not highlighted</p>
+
+        <p class="p">1 – The active tab is highlighted</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Highlight Active Tab</span> check box on the
+         <span class="ph uicontrol">Tabs</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">ToolTip=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – ToolTips are not shown </p>
+
+        <p class="p">1 – ToolTips are shown</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Enable ToolTips</span> check box on the <span class="ph uicontrol">Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">TabBorder=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">Numeric value, in pixels, of the tab border</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Tab Border Size</span> field on the <span class="ph uicontrol">Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">TileBorder=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">Numeric value, in pixels, of the tab borders when in tile view</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Tile View Border Size</span> field on the
+         <span class="ph uicontrol">Tabs</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">FlatBorder=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The tab border is not flat </p>
+
+        <p class="p">1 – The tab border is flat</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Flat Borders</span> check box on the <span class="ph uicontrol">Tabs</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e57" class="stentry"><samp class="ph codeph">TileView=</samp></td>
+
+       <td valign="top" headers="d91585e60" class="stentry">
+        <p class="p">0 – The sessions are not shown in tile view</p>
+
+        <p class="p">1 – The sessions are shown in tile view</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e63" class="stentry"><span class="ph uicontrol">Tile View on Startup</span> check box on the
+         <span class="ph uicontrol">Tabs</span> tab</td>
+
+      </tr>
+</table>
+</li>
+
+    <li class="li">In the <samp class="ph codeph">[Colors]</samp> section, edit the following options:<table cellpadding="4" cellspacing="0" summary="" id="Bzdp_href_editing-configuration-files-manually__simpletable_mxn_kwr_35" border="1" class="simpletable"><tr class="sthead">
+       <th valign="bottom" align="left" id="d91585e488" class="stentry">Option</th>
+
+       <th valign="bottom" align="left" id="d91585e491" class="stentry">Values</th>
+
+       <th valign="bottom" align="left" id="d91585e494" class="stentry">Option in the Settings window</th>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e488" class="stentry"><samp class="ph codeph">Custom=</samp>
+       </td>
+
+       <td valign="top" headers="d91585e491" class="stentry">
+        <p class="p">0 – Tabs are all one color</p>
+
+        <p class="p">1 – Custom tab colors are used</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e494" class="stentry"><span class="ph uicontrol">Use Custom Colors</span> check box on the
+         <span class="ph uicontrol">Colors</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e488" class="stentry"><samp class="ph codeph">Color#F=</samp></td>
+
+       <td valign="top" headers="d91585e491" class="stentry">
+        <p class="p">Color in RBG format</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e494" class="stentry">Foreground color of the<span class="ph uicontrol"> Color #</span> selection on the
+         <span class="ph uicontrol">Colors</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e488" class="stentry"><samp class="ph codeph">Color#B=</samp></td>
+
+       <td valign="top" headers="d91585e491" class="stentry">
+        <p class="p">Color in RBG format</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e494" class="stentry">Background color of the <span class="ph uicontrol">Color #</span> selection on the
+         <span class="ph uicontrol">Colors</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e488" class="stentry"><samp class="ph codeph">HighlightF=</samp></td>
+
+       <td valign="top" headers="d91585e491" class="stentry">
+        <p class="p">Color in RBG format</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e494" class="stentry">Foreground color of the <span class="ph uicontrol">Highlight </span>color on the
+         <span class="ph uicontrol">Colors</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e488" class="stentry"><samp class="ph codeph">HighlightB=</samp></td>
+
+       <td valign="top" headers="d91585e491" class="stentry">
+        <p class="p">Color in RBG format</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e494" class="stentry">Background color of the <span class="ph uicontrol">Highlight</span> color on the
+         <span class="ph uicontrol">Colors</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e488" class="stentry"><samp class="ph codeph">Pattern=</samp></td>
+
+       <td valign="top" headers="d91585e491" class="stentry">
+        <p class="p">Numeric pattern of the tab colors, for example, 123456789 or 123123</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e494" class="stentry"><span class="ph uicontrol">Tab Color Pattern </span>field on the <span class="ph uicontrol">Colors</span>
+        tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e488" class="stentry"><samp class="ph codeph">Gradient=</samp></td>
+
+       <td valign="top" headers="d91585e491" class="stentry">
+        <p class="p">0 – Tabs are not shown with a gradient brush effect</p>
+
+        <p class="p">1 – Tabs are shown with a gradient brush effect</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e494" class="stentry"><span class="ph uicontrol">Gradient Brush</span> check box on the <span class="ph uicontrol">Colors</span>
+        tab</td>
+
+      </tr>
+</table>
+</li>
+
+    <li class="li">In the <samp class="ph codeph">[Window]</samp> section, edit the following options:<table cellpadding="4" cellspacing="0" summary="" id="Bzdp_href_editing-configuration-files-manually__simpletable_j4f_txr_35" border="1" class="simpletable"><tr class="sthead">
+       <th valign="bottom" align="left" id="d91585e667" class="stentry">Option</th>
+
+       <th valign="bottom" align="left" id="d91585e670" class="stentry">Values</th>
+
+       <th valign="bottom" align="left" id="d91585e673" class="stentry">Options in the Settings window</th>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">State=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">0 – Minimize</p>
+
+        <p class="p">1 – Normal</p>
+
+        <p class="p">2 – Maximize</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry">n/a</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">ShowProfile=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">0 – The profile name is not displayed on the title bar</p>
+
+        <p class="p">1 – The profile name is displayed on the title bar</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry"><span class="ph uicontrol">Profile Name (%1) </span>check box on the <span class="ph uicontrol">Title
+         Bar</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">ShowProgram=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">0 – BlueZone Tab is not displayed on the title bar</p>
+
+        <p class="p">1 – BlueZone Tab is displayed on the title bar</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry"><span class="ph uicontrol">Program Name (%2)</span> check box on the <span class="ph uicontrol">Title
+         Bar</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry">
+        <samp class="ph codeph">ShowTabTitle=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">0 – The active session profile name is not displayed on the title bar</p>
+
+        <p class="p">1 – The active session profile name is displayed on the title bar</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry"><span class="ph uicontrol">Active Window Title (%3)</span> check box on the <span class="ph uicontrol">Title
+         Bar</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">Separator=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">Any character or characters</td>
+
+       <td valign="top" headers="d91585e673" class="stentry"><span class="ph uicontrol">Separator</span> field on the Title Bar tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">UseCustomTitle=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">0 – Custom title bar text is not used</p>
+
+        <p class="p"> 1 – Custom title bar text is used</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry"><span class="ph uicontrol">Display Custom Title Bar </span>check box on the <span class="ph uicontrol">Title
+         Bar</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">CustomTitle=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">Title bar text. Can contain the %1, %2, and %3 variables.</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry"><span class="ph uicontrol">Display Custom Title Bar</span> field on the <span class="ph uicontrol">Title
+         Bar</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">ShowTabIcon=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">0 – Tabs do not contain the program icons</p>
+
+        <p class="p">1 – Tabs contain the program icon</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry"><span class="ph uicontrol">Display Active Window Icon</span> check box on the <span class="ph uicontrol">Title
+         Bar</span> tab</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">XPos=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">X position of the BlueZone Tab window</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry">n/a</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">YPos=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">Y position of the BlueZone Tab window</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry">n/a</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">Width=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">Width, in pixels, of the BlueZone Tab window</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry">n/a</td>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e667" class="stentry"><samp class="ph codeph">Height=</samp></td>
+
+       <td valign="top" headers="d91585e670" class="stentry">
+        <p class="p">Height, in pixels, of the BlueZone Tab window</p>
+
+       </td>
+
+       <td valign="top" headers="d91585e673" class="stentry">n/a</td>
+
+      </tr>
+</table>
+</li>
+
+    <li class="li">Edit the existing <samp class="ph codeph">[Tab#]</samp> sections or add new <samp class="ph codeph">[Tab#]</samp>
+      sections:<table cellpadding="4" cellspacing="0" summary="" id="Bzdp_href_editing-configuration-files-manually__simpletable_bdk_hzr_35" border="1" class="simpletable"><tr class="sthead">
+       <th valign="bottom" align="left" id="d91585e936" class="stentry">Options</th>
+
+       <th valign="bottom" align="left" id="d91585e939" class="stentry">Values</th>
+
+      </tr>
+<tr class="strow">
+       <td valign="top" headers="d91585e936" class="stentry"><samp class="ph codeph">Profile=</samp></td>
+
+       <td valign="top" headers="d91585e939" class="stentry">Path to and name of the BlueZone Display, Printer, or FTP profile, for example,
+         <span class="ph filepath">Profile=C:\Users\username\Documents\BlueZone\Config\mainframe.zmd</span>.</td>
+
+      </tr>
+</table>
+</li>
+
+    <li class="li"> Save and close file.</li>
+
+   </ol>
+
+   </div>
+
+ </div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_bz-tab.htm" title="The BlueZone Tab component embeds multiple BlueZone Display, Printer, and FTP sessions into a single window. BlueZone Tab is installed with the BlueZone Terminal Emulation Suite.">BlueZone Tab</a></div></div></div>
+
+</div></body>
+</html>

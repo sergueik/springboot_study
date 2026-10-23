@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="5250 Emulation tab"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_printer-session-configuration-iseries.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_5250-emulation-tab-iseri"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>5250 Emulation tab</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_5250-emulation-tab-iseri">
+<div class="topic">
+
+<h1 class="title topictitle1">5250 Emulation tab</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><dl class="dl">
+
+<dt class="dt dlterm">Translation</dt>
+
+<dd class="dd">The Translation group is used to select a translate language and
+if needed to configure the Translate Tables. Choices include: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Language (CCSID)</span>: Selects the translate
+language. <div class="note note"><span class="notetitle">Note:</span> The language must correspond to the Windows operating
+system language.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Euro</span>: Check this box to include support
+for the Euro currency symbol. <br/><p class="p">Refer to <a class="xref" href="bzdp_htsk_configuring-euro-support.htm" title="There are three requirements in order for BlueZone to support the Euro symbol:">Configuring Euro support</a> for more information.</p>
+</li>
+
+<li class="li"><span class="ph uicontrol">Translate Tables</span>: Configures the translate
+tables. <br/><p class="p">Refer to <a class="xref" href="bzdp_htsk_editing-the-translate-tables.htm" title="Translate tables are used to translate data between the EBCDIC character set and the ASCII character set. EBCDIC is used on IBM mainframe and iSeries systems for character formatting whereas ASCII is used in the PC environment for character formation. When a character arrives from the host it is translated from EBCDIC to ASCII. When a character is sent to the host it is translated from ASCII to EBCDIC.">Editing the translate tables</a> for more information.</p>
+</li>
+
+<li class="li"><span class="ph uicontrol">Change DBCS Font</span>: Active only when a DBCS
+(Double Byte Character Set) language page is selected.  This button
+allows you to select the specific DBCS font that you want to use with
+the selected language page. <br/><p class="p">Refer to <a class="xref" href="bzdp_href_configuring-dbcs-support.htm" title="To support double-byte character sets (DBCS), your Windows computer and BlueZone display session must be configured for one or more double-byte languages.">Configuring DBCS support</a> for more information.</p>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Default Printer Model Type</dt>
+
+<dd class="dd">This group is used to configure the IBM Terminal model that you
+want to emulate.  Use the drop-down menu to display the list of IBM
+terminals. <ul class="ul">
+<li class="li"><span class="ph uicontrol">IBM Device</span>: <ul class="ul">
+<li class="li">IBM-3812-1 (single-byte printer) </li>
+
+<li class="li">IBM-5553-B01 (double-byte printer) </li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Use Custom Device</span>: Check to specify a custom
+IBM Printer Device. If checked, the Type and Model settings must be
+specified.  The following two options are active only when the option
+is selected.<ul class="ul">
+<li class="li"><span class="ph uicontrol">Type</span>: Type the printer Type to use.  </li>
+
+<li class="li"><span class="ph uicontrol">Model</span>: Type the printer Model to use. </li>
+
+</ul>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Options </dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Allow Host to Override Language and Set Code Page</span>: If checked, the host is allowed to set the language and code page
+for character translations during the print jobs overriding the above
+settings. <div class="cautiontitle">CAUTION:</div><div class="note caution">If this option is enabled, any customizations
+made to the translate tables are lost.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Use Host Unbind as the End of Job Indicator</span>: If checked, then only host-sent Unbind commands received are used
+in End of Job determination.</li>
+
+<li class="li"><span class="ph uicontrol">Ignore Data in Transparent Blocks</span>: If enabled,
+BlueZone discards any data in SCS 03 and 35 transparent commands.
+ Any data contained in transparent blocks is discarded and not written
+to the BlueZone spool file or the printer.  <p class="p"/>
+<p class="p">From an end
+user perspective: </p>
+<p class="p">This feature is useful when the transparent
+blocks contain printer control codes for specific printers and the
+end user wants to print the job on a different printer.  Discarding
+the transparent blocks results in a print job without any printer
+control characters.  The print formatting features of the BlueZone
+Windows API mode can be used to format the job for the new target
+printer. </p>
+</li>
+
+<li class="li"><span class="ph uicontrol">In Passthrough Mode, Process SCS Horizontal Tab Commands</span>: If enabled (default), BlueZone processes SCS Horizontal Tab commands
+sent from the host.  If disabled, BlueZone sends a Tab character (0x09)
+directly to the printer.  Valid for pass-through mode only. </li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_printer-session-configuration-iseries.htm" title="Prior to establishing an iSeries host system connection, BlueZone users must set Session Configuration parameters. A Session configuration consists of selecting:">Printer session configuration</a></div></div></div>
+
+</div></body>
+</html>

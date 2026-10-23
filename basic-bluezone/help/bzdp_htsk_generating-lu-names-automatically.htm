@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Generating LU names automatically"/>
+<meta name="abstract" content="BlueZone has the capability to generate LU names internally, based on the workstation name. This allows the BlueZone administrator to send a single configuration for BlueZone to the end users and have them automatically request an LU name that contains the first seven characters of their workstation name plus a D for display sessions or P printer sessions then append the session number. BlueZone is configured to create the names based on %1, %2, and %3 values entered in the LU Name field."/>
+<meta name="description" content="BlueZone has the capability to generate LU names internally, based on the workstation name. This allows the BlueZone administrator to send a single configuration for BlueZone to the end users and have them automatically request an LU name that contains the first seven characters of their workstation name plus a D for display sessions or P printer sessions then append the session number. BlueZone is configured to create the names based on %1, %2, and %3 values entered in the LU Name field."/>
+<meta name="DC.subject" content="LU names, generating"/>
+<meta name="keywords" content="LU names, generating"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_generating-lu-names-auto"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Generating LU names automatically</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_generating-lu-names-auto">
+<div class="topic">
+
+<h1 class="title topictitle1">Generating LU names automatically</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">BlueZone has the capability to generate LU names internally,
+based on the workstation name.  This allows the BlueZone administrator
+to send a single configuration for BlueZone to the end users and have
+them automatically request an LU name that contains the first seven
+characters of their workstation name plus a D for display sessions
+or P printer sessions then append the session number.  BlueZone is
+configured to create the names based on %1, %2, and %3 values entered
+in the LU Name field. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><dl class="dl">
+
+<dt class="dt dlterm">Substitution text values </dt>
+
+<dd class="dd"><strong class="ph b">%1</strong> - Uses the first seven characters of the computer name
+as the base device name.</dd>
+
+<dd class="dd"><strong class="ph b">%2</strong> - Appends a D for display sessions or P for printer
+sessions.</dd>
+
+<dd class="dd"><strong class="ph b">%3</strong> - Appends the BlueZone session identifier.  Session
+S1 appends 00, Session S2 appends 01 and so on.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><h2 class="title sectiontitle">Examples</h2><dl class="dl">
+
+<dt class="dt dlterm">Display session using the computer name as the base name</dt>
+
+<dd class="dd">For a computer with computer name WS1234. <p class="p">An LU Name of %1%2%3
+results in WS1234D00 being sent to the mainframe for Session S1. 
+WS1234D01 is sent for Session S2.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Display session using a standard base name</dt>
+
+<dd class="dd">Using a base name of GROUP1. <p class="p">An LU Name of GROUP1%2%3 results
+in GROUP1D00 being sent to the mainframe for Session S1. GROUP1D01
+is sent for Session S2.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Printer session using the computer name as the base name</dt>
+
+<dd class="dd">For a computer with computer name WS1234.<p class="p">An LU Name of %1%2%3
+results in WS1234P00 being sent to the mainframe for Session P1. 
+WS1234P01 is sent for printer Session P2.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Printer using a standard base name</dt>
+
+<dd class="dd">Using a base name of GROUP1. <p class="p">An LU Name of GROUP1%2%3 results
+in GROUP1P00 being sent to the mainframe for printer Session P1. GROUP1P01
+is sent for printer Session P2.</p>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section postreq"><div class="p">Printer association provides an automated means to match
+display LUs with printer LUs.  By enabling Printer association and
+selecting the number of the display session to associate the printer
+with, the host automatically assigns the appropriate printer LU Name
+during the TN3270E negotiation. <div class="note note"><span class="notetitle">Note:</span> If the associated display session
+disconnects, the associated printer also disconnects to prevent another
+user's print job from appearing on the wrong system.</div>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

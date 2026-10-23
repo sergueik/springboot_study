@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="concept"/>
+<meta name="DC.Title" content="Printer setup overview"/>
+<meta name="abstract" content="BlueZone Mainframe and iSeries Printer Emulators connect to their respective hosts and emulate IBM printers, converting the IBM printer data stream into an ASCII printer data stream. This enables any printer connected to a Windows workstation to print IBM host generated print jobs."/>
+<meta name="description" content="BlueZone Mainframe and iSeries Printer Emulators connect to their respective hosts and emulate IBM printers, converting the IBM printer data stream into an ASCII printer data stream. This enables any printer connected to a Windows workstation to print IBM host generated print jobs."/>
+<meta name="DC.subject" content="printer setup"/>
+<meta name="keywords" content="printer setup"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_printer-emulation-interface.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_printer-settings.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_page-settings.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_layout-settings.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_font-settings.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_option-settings.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_print-to-file-settings.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_hcon_printer-setup-overview"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Printer setup overview</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_hcon_printer-setup-overview">
+<div class="topic">
+
+<h1 class="title topictitle1">Printer setup overview</h1>
+
+
+
+<div class="body conbody"><p class="shortdesc">BlueZone Mainframe and iSeries Printer Emulators connect
+to their respective hosts and emulate IBM printers, converting the
+IBM printer data stream into an ASCII printer data stream. This enables
+any printer connected to a Windows workstation to print IBM host generated
+print jobs. </p>
+
+<p class="p">BlueZone supports LU1 SCS, and LU3 DSC/DSE data streams for 3270
+and LU4 SCS for 5250. </p>
+
+<p class="p">The SCS data stream contains formatting commands that are interpreted
+by the print emulator and converted to Windows Print commands. </p>
+
+<p class="p">The formatting commands sent by the host may be viewed in a BlueZone
+spool file using the <span class="ph filepath">SPOOLINF.EXE</span> utility. </p>
+
+<p class="p">The LU3 printer data stream does not contain any formatting commands
+other than form feeds and line feeds. Host control of the print job
+is very limited, so the advanced formatting features of the printer
+emulator may be used to greatly improve the output. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Customizing the BlueZone print emulator settings</h2><p class="p">All of the settings that control how the print job is interpreted
+as it is sent from the host, and how it is formatted when sent the
+to the printer are located in the Print Setup property sheet. From
+the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Print Setup</span></span>. </p>
+<p class="p">The Print
+Setup property sheet displays the <span class="ph uicontrol">Printer</span>, <span class="ph uicontrol">Page</span>, <span class="ph uicontrol">Layout</span>, <span class="ph uicontrol">Fonts</span>, <span class="ph uicontrol">Options</span>, and <span class="ph uicontrol">Print to File</span> tabs depending on which <span class="ph uicontrol">Method of Printing</span> is selected on the <span class="ph uicontrol">Printer</span> tab. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><ul class="ulchildlinks"><li><a class="link" href="bzdp_href_printer-settings.htm" title="The Printer tab contains the following options.">Printer settings</a><div>The <span class="ph uicontrol">Printer</span> tab contains the following options. </div></li><li><a class="link" href="bzdp_href_page-settings.htm" title="The Page tab contains the following options:">Page settings</a><div>The <span class="ph uicontrol">Page</span> tab contains the following options: </div></li><li><a class="link" href="bzdp_href_layout-settings.htm" title="The Layout tab contains the following options:">Layout settings</a><div>The <span class="ph uicontrol">Layout</span> tab contains the following options: </div></li><li><a class="link" href="bzdp_href_font-settings.htm" title="The Fonts tab is used to set the default font and map the font specified by the host to a font available to Windows. This function only works in Windows API mode.">Font settings</a><div>The <span class="ph uicontrol">Fonts</span> tab is used to set the default font and map the font specified by the host to a font available to Windows.  This function only works in Windows API mode. </div></li><li><a class="link" href="bzdp_href_option-settings.htm" title="The Options tab contains the following options:">Option settings</a><div>The <span class="ph uicontrol">Options</span> tab contains the following options: </div></li><li><a class="link" href="bzdp_href_print-to-file-settings.htm" title="Printer output can be redirected to a file. This can be useful when sending print jobs to shared directories to be viewed in a text editor rather than using paper to print multiple copies.">Print to File settings</a><div>Printer output can be redirected to a file.  This can be useful when sending print jobs to shared directories to be viewed in a text editor rather than using paper to print multiple copies. </div></li></ul><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_printer-emulation-interface.htm">Printer emulation interface</a></div></div></div>
+
+</div></body>
+</html>

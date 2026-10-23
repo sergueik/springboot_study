@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="3270 Emulation tab"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_printer-session-configuration-mainframe.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_3270-emulation-tab-mainf"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>3270 Emulation tab</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_3270-emulation-tab-mainf">
+<div class="topic">
+
+<h1 class="title topictitle1">3270 Emulation tab</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><dl class="dl">
+
+<dt class="dt dlterm">Translation</dt>
+
+<dd class="dd">The Translation group is used to select a translate language and
+if needed to configure the Translate Tables. Choices include:<ul class="ul">
+<li class="li"><span class="ph uicontrol">Language (CCSID)</span>: Selects the translate
+language and Code Page.  The Code Page is the number shown in parentheses
+to the right of the language.  Example: English (U.S.) (37) <div class="note note"><span class="notetitle">Note:</span> The language must correspond to the Windows operating system language.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Euro</span>: Check to include support for the
+Euro currency symbol. <br/><p class="p">Refer to <a class="xref" href="bzdp_htsk_configuring-euro-support.htm" title="There are three requirements in order for BlueZone to support the Euro symbol:">Configuring Euro support</a> for more information.</p>
+</li>
+
+<li class="li"><span class="ph uicontrol">Translate Tables</span>: Used to configure
+the translate tables for both EBCDIC to ASCII character translation
+and also for EBCDIC to ASCII IND$FILE transfer translation. <br/><p class="p">Refer to <a class="xref" href="bzdp_htsk_editing-the-translate-tables-mainframe.htm" title="Translate tables are used to translate data between the EBCDIC character set and the ASCII character set. EBCDIC is used on mainframe systems for character formatting whereas ASCII is used in the PC environment for character formation. When a character arrives from the host it is translated from EBCDIC to ASCII. When a character is sent to the host it is translated from ASCII to EBCDIC.">Editing the translate tables</a> for more information.</p>
+</li>
+
+<li class="li"><span class="ph uicontrol">Change DBCS Font</span>: This button is only
+active when a DBCS (Double Byte Character Set) language page is selected.
+ Allows you to select the specific DBCS font that you want to use
+with the selected language page.  DBCS languages have the characters
+DBCS at the end of their name. <br/><p class="p">Refer to <a class="xref" href="bzdp_href_configuring-dbcs-support.htm" title="To support double-byte character sets (DBCS), your Windows computer and BlueZone display session must be configured for one or more double-byte languages.">Configuring DBCS support</a> for more information.</p>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">LU1 Print Options</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">End Bracket Timeout (seconds)</span>: If
+enabled, BlueZone assumes the host print job has completed when no
+data is received from the host for the duration of the time out period
+set in the following box. </li>
+
+<li class="li"><span class="ph uicontrol">Allow Host to Override Language and Set Code Page</span>: If enabled, the host is allowed to set the language and code
+page for character translations during the print jobs. <div class="cautiontitle">CAUTION:</div><div class="note caution">If this option is enabled, any customizations made
+to the translate tables is lost.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Ignore Data in Transparent Blocks</span>: If enabled,
+BlueZone discards any data in SCS 03 and 35 transparent commands.
+ Any data contained in transparent blocks is discarded and not written
+to the BlueZone spool file or the printer.  <br/>From an
+End User Perspective: <br/>This feature is useful when
+the transparent blocks contain printer control codes for specific
+printers and the end user wants to print the job on a different printer.
+ Discarding the transparent blocks results in a print job without
+any printer control characters.  The print formatting features of
+the BlueZone Windows API mode can be used to format the job for the
+new target printer.</li>
+
+<li class="li"><span class="ph uicontrol">In Passthrough Mode, Process SCS Horizontal Tab Commands</span>: If enabled (default), BlueZone processes SCS Horizontal Tab commands
+sent from the host.  If disabled, BlueZone sends a Tab character (0x09)
+directly to the printer.  Valid for pass-through mode only.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">LU3 Print Options</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Wrap text after 132 Characters to the Next Line</span>: If enabled, BlueZone embeds a line feed after the 132nd character
+of each line to force a new line.</li>
+
+<li class="li"><span class="ph uicontrol">In Passthrough Mode, Add CR/LF to Last Line if Unterminated</span>: If enabled, BlueZone adds a CR/LF to the end of the last line
+of a print job if terminating characters are not sent by the host.
+ This option is needed in some cases in order to eject the paper from
+the printer at the end of the print job.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">LU1/LU3 Print Options </dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Use Host Unbind as the End of Job Indicator</span>: If enabled, then only host-sent Unbind commands received are used
+in End of Job determination.</li>
+
+<li class="li"><span class="ph uicontrol">Ignore Form Feeds sent from Host</span>: If enabled,
+then form feeds sent from the host are ignored.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_printer-session-configuration-mainframe.htm" title="Prior to establishing a host system connection, BlueZone users must set Session Configuration parameters. A Session configuration consists of:">Printer session configuration</a></div></div></div>
+
+</div></body>
+</html>

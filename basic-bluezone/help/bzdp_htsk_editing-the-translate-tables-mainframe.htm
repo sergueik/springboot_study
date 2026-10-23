@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Editing the translate tables"/>
+<meta name="abstract" content="Translate tables are used to translate data between the EBCDIC character set and the ASCII character set. EBCDIC is used on mainframe systems for character formatting whereas ASCII is used in the PC environment for character formation. When a character arrives from the host it is translated from EBCDIC to ASCII. When a character is sent to the host it is translated from ASCII to EBCDIC."/>
+<meta name="description" content="Translate tables are used to translate data between the EBCDIC character set and the ASCII character set. EBCDIC is used on mainframe systems for character formatting whereas ASCII is used in the PC environment for character formation. When a character arrives from the host it is translated from EBCDIC to ASCII. When a character is sent to the host it is translated from ASCII to EBCDIC."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-iseries.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_editing-the-translate-ta"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Editing the translate tables</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_editing-the-translate-ta">
+<div class="topic">
+
+<h1 class="title topictitle1">Editing the translate tables</h1>
+
+
+<div class="body taskbody"><p class="shortdesc">Translate tables are used to translate data between the
+EBCDIC character set and the ASCII character set.  EBCDIC is used
+on mainframe systems for character formatting whereas ASCII is used
+in the PC environment for character formation.  When a character arrives
+from the host it is translated from EBCDIC to ASCII. When a character
+is sent to the host it is translated from ASCII to EBCDIC. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><div class="note note"><span class="notetitle">Note:</span> Translate Table modifications must only be made when
+problems occur running a host application.</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">To access the translate tables:  </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">3270 /5250 Emulation</span> tab.
+ </span>
+<div class="itemgroup stepresult">The 3270/5250 Emulation property sheet displays the Translation,
+Default Screen Model Type, Keyboard Type Ahead and Write to Display
+options.  </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Translation</span> section, click <span class="ph uicontrol">Translate
+Tables</span>.  </span></li>
+<li class="li step stepexpand"><span class="ph cmd">From the <span class="ph uicontrol">Translate Tables</span> menu,
+select the desired translation table: </span>
+<ul class="ul choices">
+<li class="li choice"><span class="ph uicontrol">Ebcdic to Ascii</span></li>
+
+<li class="li choice"><span class="ph uicontrol">Ascii to Ebcdic</span></li>
+
+<li class="li choice"><span class="ph uicontrol">IND$FILE Ebcdic to Ascii</span></li>
+
+<li class="li choice"><span class="ph uicontrol">IND$FILE Ascii to Ebcdic</span></li>
+
+</ul>
+
+</li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><h2 class="title sectiontitle">How the tables work</h2><div class="p">To demonstrate how the
+tables work, the character 'A' is used in this example. Please note
+that all ASCII and EBCDIC values shown below are hexadecimal values. <div class="note note"><span class="notetitle">Note:</span> The
+IND$FILE Translate Tables work exactly the same way as the character
+translate tables.  The following example can be applied to either
+set of tables.</div>
+</div>
+<div class="p">In the ASCII code table the character
+'A' is represented by the value '41' (in hex).  In the EBCDIC code
+table the character 'A' is represented by the value 'C1'. <ol class="ol">
+<li class="li">Starting on the ASCII to EBCDIC page, look at Column 4x Row x1
+and you see the character 'A'. Click <span class="ph uicontrol">Edit</span> to
+switch to the values mode and see the EBCDIC value 'C1'.  This is
+the value that is sent to the host when the 'A' key is pressed on
+the keyboard. </li>
+
+<li class="li">Now to verify that this is the correct value, let's follow the
+same sequence in reverse. Look at the EBCDIC to BUFFER page and examine
+the Column Cx Row x1, you should see the character 'A'. Click <span class="ph uicontrol">Edit</span> to
+switch to the values mode and you see the ASCII value '41'.  This
+is the value that is sent from the host when an 'A' is requested. </li>
+
+</ol>
+</div>
+<p class="p">This explanation shows the standard sequence of events
+when translating characters.  This sequence looks the same in both
+directions, only reversed. For example: </p>
+<p class="p">ASCII to EBCDIC   
+  <br/>     <strong class="ph b">41 -&gt; C1  </strong>   </p>
+<p class="p">EBCDIC
+to ASCII      <br/>     <strong class="ph b">C1 -&gt; 41 </strong></p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="BlueZone LIPI host file transfer – iSeries (5250)"/>
+<meta name="abstract" content="Starting with BlueZone version 5.0 a new Host File Transfer utility has been added to BlueZone iSeries Display. BlueZone Host File Transfer supports the LIPI File Transfer (Licensed Internal Program Interface). LIPI is a feature rich and robust file transfer environment that is designed specifically for IBM AS/400 and iSeries host systems. LIPI enables file transfer over TCP/IP."/>
+<meta name="description" content="Starting with BlueZone version 5.0 a new Host File Transfer utility has been added to BlueZone iSeries Display. BlueZone Host File Transfer supports the LIPI File Transfer (Licensed Internal Program Interface). LIPI is a feature rich and robust file transfer environment that is designed specifically for IBM AS/400 and iSeries host systems. LIPI enables file transfer over TCP/IP."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_transfer-menu.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_configuring-host-file-transfer-lipi.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_receiving-files-from-the-host-5250.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_sending-files-to-the-host-5250.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_transfer-lists.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_creating-iseries-database-files.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_bz-host-file-transfer-52"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>BlueZone LIPI host file transfer – iSeries (5250)</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_bz-host-file-transfer-52">
+<div class="topic">
+
+<h1 class="title topictitle1">BlueZone LIPI host file transfer – iSeries (5250)</h1>
+
+
+<div class="body refbody"><p class="shortdesc">Starting with BlueZone version 5.0 a new Host File Transfer
+utility has been added to BlueZone iSeries Display.  BlueZone Host
+File Transfer supports the LIPI File Transfer (Licensed Internal Program
+Interface). LIPI is a feature rich and robust file transfer environment
+that is designed specifically for IBM AS/400 and iSeries host systems.
+ LIPI enables file transfer over TCP/IP. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Enabling the LIPI File servers</h2><p class="p">The LIPI servers must be enabled on the iSeries or AS/400 host, before LIPI file transfers can
+    take place. Consult with your iSeries or AS/400 administrator about enabling the LIPI servers. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">File system differences</h2><p class="p">The file system of an iSeries or AS/400 host is very different than a PC file system. To handle
+    this difference, an additional file is sent down from the host that contains important
+    information that is used by the iSeries or AS/400 host when a file is transferred up to the
+    iSeries or AS/400 host. </p>
+<p class="p">This additional file is called a File Definition File
+(FDF).  BlueZone LIPI automatically gives the FDF the same name as
+the file that is being downloaded, but with a file extension of <span class="ph filepath">.FDF</span>. </p>
+<p class="p">You
+cannot transfer a file to an iSeries or AS/400 host using BlueZone
+LIPI File Transfer unless you have an FDF. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><ul class="ulchildlinks"><li><a class="link" href="bzdp_htsk_configuring-host-file-transfer-lipi.htm" title="You must configure the following host file transfer options.">Configuring the host file transfer</a><div>You must configure the following host file transfer options. </div></li><li><a class="link" href="bzdp_htsk_receiving-files-from-the-host-5250.htm">Receiving files from the host</a><div/></li><li><a class="link" href="bzdp_htsk_sending-files-to-the-host-5250.htm">Sending files to the host</a><div/></li><li><a class="link" href="bzdp_hcon_transfer-lists.htm" title="Transfer lists are used to control batch file transfers. A transfer list can contain files that are being transferred in both directions. Multiple transfer lists can be created, saved, and used again in the future. Each entry in a transfer list can have a customized transfer setup.">Transfer lists</a><div>Transfer lists are used to control batch file transfers. A transfer list can contain files that are being transferred in both directions. Multiple transfer lists can be created, saved, and used again in the future. Each entry in a transfer list can have a customized transfer setup. </div></li><li><a class="link" href="bzdp_htsk_creating-iseries-database-files.htm">Creating iSeries database files</a><div/></li></ul><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_transfer-menu.htm">Transfer menu</a></div></div></div>
+
+</div></body>
+</html>

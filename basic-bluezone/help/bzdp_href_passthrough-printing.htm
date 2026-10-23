@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Pass-through printing"/>
+<meta name="abstract" content="If the Use Pass-through Printing check box is enabled, the Printer Device Selection and Setup dialog changes by displaying the Pass-through Print Settings dialog and eliminating the Windows Print Settings group."/>
+<meta name="description" content="If the Use Pass-through Printing check box is enabled, the Printer Device Selection and Setup dialog changes by displaying the Pass-through Print Settings dialog and eliminating the Windows Print Settings group."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_configuring-printers.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_passthrough-printing"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Pass-through printing</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_passthrough-printing">
+<div class="topic">
+
+<h1 class="title topictitle1">Pass-through printing</h1>
+
+
+<div class="body refbody"><p class="shortdesc">If the <span class="ph uicontrol">Use Pass-through Printing</span> check box is enabled, the Printer Device Selection and Setup dialog
+changes by displaying the Pass-through Print Settings dialog and eliminating
+the Windows Print Settings group.</p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><p class="p">Set the following options for pass-through printing: </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Pass-through Print Settings</dt>
+
+<dd class="dd">The controls in this group are only available when the <span class="ph uicontrol">Use Pass-through Printing</span> check box is checked. <p class="p">Pass-through
+printing prints directly to a printer and may be useful in situations
+where the page oriented nature of Windows print management conflicts
+with the non-page orientation of some older TIP applications. </p>
+<p class="p">Whenever possible, you should print using standard Windows print
+management (the default).  Windows controls all page formatting based
+on property settings for a configured print driver on your PC.  In
+this instance, the host application must not send any page control
+commands (i.e., form feeds) to the printer.</p>
+<p class="p">When you bypass
+Windows print management and print directly to a printer, the host
+application program must supply all page control.  BlueZone UTS simply
+passes all information directly through to a configured printer.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Pass-through Options</dt>
+
+<dd class="dd">The options in this group control special line and form advancement. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Send LF after CR</span>: BlueZone UTS uses CR
+LF at the end of a line.</li>
+
+<li class="li"><span class="ph uicontrol">Send CR after LF</span>: BlueZone UTS uses LF
+CR at the end of a line.</li>
+
+<li class="li"><span class="ph uicontrol">Send CR after FF</span>: BlueZone UTS uses FF
+CR at the end of a line.</li>
+
+<li class="li"><span class="ph uicontrol">Send FF on Close</span>: BlueZone UTS inserts
+an FF at the close of the print.</li>
+
+<li class="li"><span class="ph uicontrol">Send LF at End of Screen</span>: BlueZone UTS
+adds an LF at the end of each screen. <div class="note note"><span class="notetitle">Note:</span> This box should not be
+checked when using MAPPER AUX because MAPPER includes an LF at the
+end of the screen (you would get one more line).  Send LF at End of
+Screen is for transactions that do not put in an LF, thus causing
+the next screen's data to print starting at the end of the last line.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Send FF at End of Screen</span>: BlueZone UTS
+adds a FF at the end of each screen. <div class="note note"><span class="notetitle">Note:</span> This will send a Form Feed
+at the end of each screen or block from the host.  If the host message
+does not include an EOMI status, this action is not taken, allowing
+data from multiple screens to be printed without the form feed.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">No Auto-close Print</span>: BlueZone UTS keeps
+the print open at the end of a print operation.</li>
+
+<li class="li"><span class="ph uicontrol">No Auto Page Feed</span>: BlueZone UTS does not
+perform a page eject after printing.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Character Translations </dt>
+
+<dd class="dd">The entries in this table can be used to specify the ASCII characters
+that BlueZone UTS is to substitute when receiving special ASCII characters
+from the host. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Host Char.</span>: Type the decimal representation
+of the anticipated ASCII host character.</li>
+
+<li class="li"><span class="ph uicontrol">Print Char. 1 through Print Char. 4</span>: In
+each column, type the decimal representation of the ASCII replacement
+character(s) to be sent to the printer.</li>
+
+</ul>
+<p class="p">Example of translating the tilde (~) to the Esc character:</p>
+
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" class="table" frame="border" border="1" rules="all">
+
+
+<tbody class="tbody">
+<tr class="row">
+<td class="cellrowborder" valign="top">Host Char</td>
+
+<td class="cellrowborder" valign="top">Print Char 1</td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top">126      </td>
+
+<td class="cellrowborder" valign="top">27</td>
+
+</tr>
+
+</tbody>
+
+</table>
+</div>
+<div class="note note"><span class="notetitle">Note:</span> If additional rows are needed for translation, press
+the right mouse button over the table and select Add Row from the
+drop-down menu with the left mouse button.  The new row will be inserted
+at the bottom of the table.  The Delete Row item on the drop-down
+menu may be used to delete a selected row.</div>
+</dd>
+
+
+
+<dt class="dt dlterm">Printer Start and End Strings (max 41 chars)</dt>
+
+<dd class="dd">The entries in this box can be used to provide special starting
+and ending strings to be sent to certain printer devices.  Up to 41
+characters may be supplied for each string. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Start String</span>: In this row, type the decimal
+representations of the ASCII characters to be sent to the printer
+as a beginning string.</li>
+
+<li class="li"><span class="ph uicontrol">End Scrn Str</span>: In this row, type the decimal
+representation of the ASCII characters to be sent to the printer as
+an ending string at the end of each screen (when no EOMI present).
+ If the End Screen string is present, the Send LF at end of screen
+and Send FF at end of screen are ignored.</li>
+
+<li class="li"><span class="ph uicontrol">End String</span>: In this row, type the decimal
+representations of the ASCII characters to be sent to the printer
+as an ending string.</li>
+
+<li class="li"><span class="ph uicontrol">Import</span>: Click to import an existing pass-through
+print settings file.</li>
+
+<li class="li"><span class="ph uicontrol">Export</span>: Click to export the pass-through
+settings to a file.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Import</dt>
+
+<dd class="dd">Click to import a text file. </dd>
+
+
+
+<dt class="dt dlterm">Export</dt>
+
+<dd class="dd">Click to export the data as a text file. </dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_htsk_configuring-printers.htm" title="The Printer Device Selection and Setup dialog contains controls to equate an installed printer on the PC to a local printer name, use of a local print object, set special UTS print characteristics such as pass-through printing or assign Windows print settings.">Adding printers</a></div></div></div>
+
+</div></body>
+</html>

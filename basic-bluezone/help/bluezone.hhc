@@ -1,0 +1,1007 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<head>
+<!-- Sitemap 1.0 -->
+</head>
+<body>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="What’s new in this release"/><param name="Local" value="bzdp_href_summary-of-changes.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Introduction"/><param name="Local" value="bzdp_hcon_introduction.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display emulation features"/><param name="Local" value="bzdp_href_display-emulation-features.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer emulation features"/><param name="Local" value="bzdp_href_printer-emulation-features.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="TCP/IP print server features"/><param name="Local" value="bzdp_href_tcp-ip-print-server-features.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone installation"/><param name="Local" value="common-files/bz-installation.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="System requirements"/><param name="Local" value="common-files/minimum-installation-requirements.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Installing BlueZone 7.1"/><param name="Local" value="common-files/installing-bz.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Upgrading to BlueZone 7.1"/><param name="Local" value="common-files/upgrading-to-version-6-1.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Modifying BlueZone"/><param name="Local" value="common-files/modifying-bz.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Uninstalling BlueZone"/><param name="Local" value="common-files/uninstalling-bz.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuration management"/><param name="Local" value="bzdp_hcon_configuration-management.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuration files"/><param name="Local" value="bzdp_hcon_configuration-files.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Exporting BlueZone configuration settings to a file"/><param name="Local" value="bzdp_htsk_exporting-bz-configuration-settings-to-a-file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Importing BlueZone configuration settings from a file"/><param name="Local" value="bzdp_htsk_importing-bz-configuration-settings-from-a-file.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Dialog configuration profiles"/><param name="Local" value="bzdp_hcon_dialog-configuration-profiles.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Exporting dialog configuration settings to a file"/><param name="Local" value="bzdp_htsk_exporting-dialog-configuration-settings-to-a-file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Importing dialog configuration settings from a file"/><param name="Local" value="bzdp_htsk_importing-dialog-configuration-settings-from-a-file.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Profile schemes"/><param name="Local" value="bzdp_hcon_profile-schemes-feature.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring profile schemes"/><param name="Local" value="bzdp_htsk_configuring-profile-schemes.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Automatically configure sessions"/><param name="Local" value="bzdp_href_automatically-configure-sessions.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sx configuration files"/><param name="Local" value="bzdp_hcon_sx-configuration-files.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="SxLOCK configuration files"/><param name="Local" value="bzdp_hcon_sxlock-configuration-files.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Resetting the default configuration"/><param name="Local" value="bzdp_htsk_defaulting-the-configuration.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Session Manager"/><param name="Local" value="bzdp_href_bz-session-manager.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host systems"/><param name="Local" value="bzdp_hcon_connect-to-the-host-system.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Mainframe Display and Printer"/><param name="Local" value="bzdp_hcon_ibm-mainframe.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating BlueZone Mainframe Display or Printer connections"/><param name="Local" value="bzdp_htsk_defining-or-editing-a-3270-connection.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="TN3270E Properties"/><param name="Local" value="bzdp_href_tn3270e-configuration.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connections tab"/><param name="Local" value="bzdp_href_connections-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Device tab"/><param name="Local" value="bzdp_href_device-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Security tab"/><param name="Local" value="bzdp_href_security-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Certificate tab"/><param name="Local" value="bzdp_href_certificate-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keep Alive tab"/><param name="Local" value="bzdp_href_keep-alive-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Trace tab"/><param name="Local" value="bzdp_href_trace-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Firewall tab"/><param name="Local" value="bzdp_href_firewall-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Security Server tab"/><param name="Local" value="bzdp_href_security-server-tab-tn3270e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="About tab"/><param name="Local" value="bzdp_href_about-tab-tn3270e.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display session configuration"/><param name="Local" value="bzdp_href_display-session-configuration-mainframe.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connection tab"/><param name="Local" value="bzdp_href_connection-tab-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="3270 Emulation tab"/><param name="Local" value="bzdp_href_3270-emulation-tab-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Spell Checking tab"/><param name="Local" value="bzdp_href_spell-checking-tab-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Auto Complete tab"/><param name="Local" value="bzdp_href_auto-complete-tab-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="License Server tab"/><param name="Local" value="bzdp_href_license-server-tab-mainframe.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer session configuration"/><param name="Local" value="bzdp_href_printer-session-configuration-mainframe.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connection tab"/><param name="Local" value="bzdp_href_connection-tab-mainframe-printer.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="3270 Emulation tab"/><param name="Local" value="bzdp_href_3270-emulation-tab-mainframe-printer.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="SNA Gateway configuration"/><param name="Local" value="bzdp_href_sna-gateway-configuration.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Microsoft SNA Server"/><param name="Local" value="bzdp_href_microsoft-sna-server.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Express logon feature"/><param name="Local" value="bzdp_hcon_express-logon-feature.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="TN3270 changes"/><param name="Local" value="bzdp_href_tn3270-changes.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="RACF changes"/><param name="Local" value="bzdp_href_racf-changes.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Importing certificates"/><param name="Local" value="bzdp_htsk_importing-the-certificate.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone for express logon"/><param name="Local" value="bzdp_htsk_configuring-bz-for-express-logon.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Recording and modifying an express logon script"/><param name="Local" value="bzdp_htsk_recording-and-modifying-an-express-logon-script.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host sessions"/><param name="Local" value="bzdp_htsk_establishing-host-sessions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Establishing secure host sessions"/><param name="Local" value="bzdp_htsk_establishing-secure-host-sessions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Generating LU names automatically"/><param name="Local" value="bzdp_htsk_generating-lu-names-automatically.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring DBCS support"/><param name="Local" value="bzdp_href_configuring-dbcs-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BiDi support"/><param name="Local" value="bzdp_href_configuring-bidi-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring Thai language support"/><param name="Local" value="bzdp_href_configuring-thai-language-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring Euro support"/><param name="Local" value="bzdp_htsk_configuring-euro-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring Mainframe graphics support"/><param name="Local" value="bzdp_href_configure-mainframe-graphics-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring Smart Card support"/><param name="Local" value="bzdp_htsk_configuring-smart-card-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing the translate tables"/><param name="Local" value="bzdp_htsk_editing-the-translate-tables-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Capturing BlueZone traces"/><param name="Local" value="bzdp_htsk_capturing-bz-traces.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone iSeries Display and Printer"/><param name="Local" value="bzdp_hcon_ibm-iseries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating BlueZone iSeries Display and Printer connections"/><param name="Local" value="bzdp_htsk_defining-or-editing-a-5250-connection.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="TN5250E Properties"/><param name="Local" value="bzdp_href_tn5250e-configuration.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connections tab"/><param name="Local" value="bzdp_href_connections-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display tab - Display session only"/><param name="Local" value="bzdp_href_display-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer tab - Printer session only"/><param name="Local" value="bzdp_href_printer-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Signon tab"/><param name="Local" value="bzdp_href_signon-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Security tab"/><param name="Local" value="bzdp_href_security-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Certificate tab"/><param name="Local" value="bzdp_href_certificate-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keep Alive tab"/><param name="Local" value="bzdp_href_keep-alive-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Trace tab"/><param name="Local" value="bzdp_href_trace-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Firewall tab"/><param name="Local" value="bzdp_href_firewall-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Security Server tab"/><param name="Local" value="bzdp_href_security-server-tab-tn5250e.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="About tab"/><param name="Local" value="bzdp_href_about-tab-tn5250e.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display session configuration"/><param name="Local" value="bzdp_href_display-session-configuration-iseries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connection tab"/><param name="Local" value="bzdp_href_connection-tab-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="5250 Emulation tab"/><param name="Local" value="bzdp_href_5250-emulation-tab-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Spell Checking tab"/><param name="Local" value="bzdp_href_spell-checking-tab-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Auto Complete tab"/><param name="Local" value="bzdp_href_auto-complete-tab-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="License Server tab"/><param name="Local" value="bzdp_href_license-manager-tab-iseries.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer session configuration"/><param name="Local" value="bzdp_href_printer-session-configuration-iseries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connection tab"/><param name="Local" value="bzdp_href_connection-tab-iseries-printer.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="5250 Emulation tab"/><param name="Local" value="bzdp_href_5250-emulation-tab-iseries-printer.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host sessions"/><param name="Local" value="bzdp_htsk_establishing-host-sessions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Establishing secure host sessions"/><param name="Local" value="bzdp_htsk_establishing-secure-host-sessions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Generating device names automatically"/><param name="Local" value="bzdp_htsk_generating-device-names-automatically.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring DBCS support"/><param name="Local" value="bzdp_href_configuring-dbcs-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BiDi support"/><param name="Local" value="bzdp_href_configuring-bidi-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring Thai language support"/><param name="Local" value="bzdp_href_configuring-thai-language-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring Euro support"/><param name="Local" value="bzdp_htsk_configuring-euro-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing the translate tables"/><param name="Local" value="bzdp_htsk_editing-the-translate-tables-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Capturing BlueZone traces"/><param name="Local" value="bzdp_htsk_capturing-bz-traces.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone VT"/><param name="Local" value="bzdp_hcon_vt-host-access.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating BlueZone VT Display connections"/><param name="Local" value="bzdp_href_define-new-connections.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="VT session configuration"/><param name="Local" value="bzdp_href_vt-session-configuration.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connections tab"/><param name="Local" value="bzdp_href_connections-tab-vt.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Quick Connect formatting options"/><param name="Local" value="bzdp_href_vt-quick-connect-formatting-options.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Trace tab"/><param name="Local" value="bzdp_href_trace-tab-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keep Alive tab"/><param name="Local" value="bzdp_href_keep-alive-tab-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Advanced tab"/><param name="Local" value="bzdp_href_advanced-tab-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="License Server tab"/><param name="Local" value="bzdp_href_license-manager-tab-vt.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host sessions"/><param name="Local" value="bzdp_htsk_establishing-host-sessions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring DBCS support - VT"/><param name="Local" value="bzdp_href_configuring-dbcs-support-vt.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone 6530"/><param name="Local" value="bzdp_hcon_bluezone-6530.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating BlueZone 6530 Display connections"/><param name="Local" value="bzdp_href_define-new-connections-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="6530 session configuration"/><param name="Local" value="bzdp_href_6530-session-configuration.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connections tab"/><param name="Local" value="bzdp_href_connections-tab-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Trace tab"/><param name="Local" value="bzdp_href_trace-tab-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keep Alive tab"/><param name="Local" value="bzdp_href_keep-alive-tab-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Advanced tab"/><param name="Local" value="bzdp_href_advanced-tab-6530.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host sessions"/><param name="Local" value="bzdp_htsk_establishing-host-sessions.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone ALC"/><param name="Local" value="bzdp_hcon_bluezone-alc.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating BlueZone ALC Display connections"/><param name="Local" value="bzdp_href_define-new-connections-alc.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="MATIP Properties"/><param name="Local" value="bzdp_href_matip-poperties.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connections tab"/><param name="Local" value="bzdp_href_connections-tab-alc.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Security tab"/><param name="Local" value="bzdp_href_security-tab-alc.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Certificate tab"/><param name="Local" value="bzdp_href_certificate-tab-alc.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keep Alive tab"/><param name="Local" value="bzdp_href_keep-alive-tab-alc.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Trace tab"/><param name="Local" value="bzdp_href_trace-tab-alc.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Firewall tab"/><param name="Local" value="bzdp_href_firewall-tab-alc.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Security Server tab"/><param name="Local" value="bzdp_href_security-server-tab-alc.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="ALC session configuration"/><param name="Local" value="bzdp_href_alc-session-configuration.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host sessions"/><param name="Local" value="bzdp_htsk_establishing-host-sessions.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Unisys T27"/><param name="Local" value="bzdp_hcon_unisys-t27.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Session configuration"/><param name="Local" value="bzdp_href_session-configuration.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connection tab"/><param name="Local" value="bzdp_href_connection-tab-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Spell Checking tab"/><param name="Local" value="bzdp_href_spell-checking-tab-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="License Server tab"/><param name="Local" value="bzdp_href_license-manager-tab-t27.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Unisys DCA configuration"/><param name="Local" value="bzdp_href_unisys-dca-configuration-t27.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the T27 terminal settings"/><param name="Local" value="bzdp_htsk_launching-the-t27-terminal-config-settings-dialog.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding T27 screens"/><param name="Local" value="bzdp_href_t27-terminal-configuration-settings.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configure host connections"/><param name="Local" value="bzdp_href_configure-connections.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Launching the T27 Terminal Configuration Settings window"/><param name="Local" value="bzdp_htsk_launching-the-t27-connection-configuration-dialog.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing the default virtual destination"/><param name="Local" value="bzdp_htsk_editing-a-virtual-destination.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Selecting a connection point"/><param name="Local" value="bzdp_htsk_selecting-a-connection-route.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Managing connections"/><param name="Local" value="bzdp_htsk_managing-connections.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host sessions"/><param name="Local" value="bzdp_htsk_establishing-host-sessions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring character translation"/><param name="Local" value="bzdp_htsk_configuring-character-translation.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Unisys UTS"/><param name="Local" value="bzdp_hcon_unisys-uts.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Session configuration"/><param name="Local" value="bzdp_href_session-configuration.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connection tab"/><param name="Local" value="bzdp_href_connection-tab-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Spell Checking tab"/><param name="Local" value="bzdp_href_spell-checking-tab-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="License Server tab"/><param name="Local" value="bzdp_href_license-manager-tab-uts.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Unisys DCA configuration"/><param name="Local" value="bzdp_href_unisys-dca-configuration-uts.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the UTS terminal settings"/><param name="Local" value="bzdp_htsk_launching-the-uts-terminal-config-settings-dialog.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding UTS screens"/><param name="Local" value="bzdp_href_uts-terminal-configuration-settings.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configure connections"/><param name="Local" value="bzdp_href_configure-connections-uts.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Launching the UTS Host Connections dialog"/><param name="Local" value="bzdp_htsk_launching-the-uts-connection-configuration-dialog.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing the default open ID"/><param name="Local" value="bzdp_htsk_editing-the-default-open-id.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing the default virtual destination"/><param name="Local" value="bzdp_htsk_editing-the-default-virtual-destination.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Selecting a connection point"/><param name="Local" value="bzdp_htsk_selecting-a-connection-route-uts.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Managing connections"/><param name="Local" value="bzdp_htsk_managing-connections-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configure the screen printer"/><param name="Local" value="bzdp_href_configure-the-screen-printer.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding printers"/><param name="Local" value="bzdp_htsk_configuring-printers.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pass-through printing"/><param name="Local" value="bzdp_href_passthrough-printing.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Selecting configured printers"/><param name="Local" value="bzdp_htsk_selecting-configured-printers.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Connecting to host sessions"/><param name="Local" value="bzdp_htsk_establishing-host-sessions.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Customizing the Display and Printer session interface"/><param name="Local" value="bzdp_hcon_display-interface.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="File menu"/><param name="Local" value="bzdp_ucon_file-menu-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="File properties"/><param name="Local" value="bzdp_href_file-properties-display.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Print setup"/><param name="Local" value="bzdp_href_print-screen-setup.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printing the current screen"/><param name="Local" value="bzdp_htsk_printing-the-current-screen.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printing multiple screens"/><param name="Local" value="bzdp_htsk_printing-multiple-screens.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the print area feature"/><param name="Local" value="bzdp_htsk_configuring-the-print-area-feature.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone VT and 6530 host access print setup"/><param name="Local" value="bzdp_href_vt-host-access-printing.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer settings"/><param name="Local" value="bzdp_href_printer-settings-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Page settings"/><param name="Local" value="bzdp_href_page-settings-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Layout settings"/><param name="Local" value="bzdp_href_layout-settings-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font settings"/><param name="Local" value="bzdp_href_font-settings-vt2.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Optional settings"/><param name="Local" value="bzdp_href_optional-settings-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Print to file settings"/><param name="Local" value="bzdp_href_print-to-file-settings-vt.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone VT and 6530 host access logging "/><param name="Local" value="bzdp_href_configuring-logging.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Edit menu"/><param name="Local" value="bzdp_hcon_use-cut-copy-and-paste.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Edit properties – Except BlueZone VT"/><param name="Local" value="bzdp_href_edit-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Edit properties - BlueZone VT"/><param name="Local" value="bzdp_href_edit-properties-bz-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Use Undo and Redo"/><param name="Local" value="bzdp_href_use-undo-and-redo.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Cutting text to the clipboard"/><param name="Local" value="bzdp_htsk_cutting-text-to-the-clipboard.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Copying text to the clipboard"/><param name="Local" value="bzdp_htsk_copying-text-to-the-clipboard.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Copying text to a file"/><param name="Local" value="bzdp_htsk_copying-text-to-a-file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Copying text to the printer"/><param name="Local" value="bzdp_htsk_copying-text-to-the-printer.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pasting text in display sessions"/><param name="Local" value="bzdp_htsk_pasting-text-in-display-sessions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Select options"/><param name="Local" value="bzdp_href_select-options.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Copying and dragging text"/><param name="Local" value="bzdp_htsk_copying-and-dragging-text.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Using BlueZone VT and 6530 OLE drag-and-drop"/><param name="Local" value="bzdp_htsk_using-bz-vt-ole-drag-and-drop.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Options menu"/><param name="Local" value="bzdp_hcon_display-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="IBM Mainframe display options"/><param name="Local" value="bzdp_hcon_ibm-mainframe-dipslay-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display Options dialog"/><param name="Local" value="bzdp_hcon_display-mainframe.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font tab"/><param name="Local" value="bzdp_href_font-settings-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Cursor tab"/><param name="Local" value="bzdp_href_cursor-settings-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Colors tab"/><param name="Local" value="bzdp_href_color-settings-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="HotSpots and GUI mode"/><param name="Local" value="bzdp_href_hotspots-and-gui-mode-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Watermark tab"/><param name="Local" value="bzdp_href_watermark-feature-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Advanced tab"/><param name="Local" value="bzdp_href_advanced-options-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Bidirectional language support"/><param name="Local" value="bzdp_href_bidirectional-language-support-mainframe.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keyboard Options dialog"/><param name="Local" value="bzdp_href_keyboard-mapping-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mouse Options dialog"/><param name="Local" value="bzdp_href_mouse-options-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sounds Options dialog"/><param name="Local" value="bzdp_href_sounds-options-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="API Properties dialog"/><param name="Local" value="bzdp_href_api-properties-mainframe.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone HLLAPI support"/><param name="Local" value="bzdp_href_bz-hllapi-support-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone DDE support"/><param name="Local" value="bzdp_href_bz-dde-support-mainframe.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone to work with an existing HLLAPI application"/><param name="Local" value="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="IBM iSeries display options"/><param name="Local" value="bzdp_hcon_ibm-iseries-display-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display Options dialog"/><param name="Local" value="bzdp_hcon_display-iseries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font tab"/><param name="Local" value="bzdp_href_font-settings-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Cursor tab"/><param name="Local" value="bzdp_href_cursor-settings-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Colors tab"/><param name="Local" value="bzdp_href_color-settings-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="HotSpots and GUI mode"/><param name="Local" value="bzdp_href_hotspots-and-gui-mode-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Watermark tab"/><param name="Local" value="bzdp_href_watermark-feature-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Bidirectional language support"/><param name="Local" value="bzdp_href_bidirectional-language-support-iseries.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keyboard Options dialog"/><param name="Local" value="bzdp_href_keyboard-mapping-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mouse Options dialog"/><param name="Local" value="bzdp_href_mouse-options-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sounds Options dialog"/><param name="Local" value="bzdp_href_sounds-options-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="API Properties dialog"/><param name="Local" value="bzdp_href_api-properties-iseries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone HLLAPI support"/><param name="Local" value="bzdp_href_bz-hllapi-support-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone DDE support"/><param name="Local" value="bzdp_href_bz-dde-support-iseries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone to work with an existing HLLAPI application"/><param name="Local" value="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="VT host access display options"/><param name="Local" value="bzdp_hcon_vt-host-access-display-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display Options dialog"/><param name="Local" value="bzdp_hcon_display-vt.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font tab"/><param name="Local" value="bzdp_href_font-settings-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Cursor tab"/><param name="Local" value="bzdp_href_cursor-settings-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Colors tab"/><param name="Local" value="bzdp_href_color-settings-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="HotSpots tab"/><param name="Local" value="bzdp_href_hotspots-and-gui-mode-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Watermark tab"/><param name="Local" value="bzdp_href_watermark-feature-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Scrollback tab"/><param name="Local" value="bzdp_href_scrollback-buffer-settings-vt.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keyboard Options dialog"/><param name="Local" value="bzdp_href_keyboard-mapping-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mouse Options dialog"/><param name="Local" value="bzdp_href_mouse-options-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sounds Options dialog"/><param name="Local" value="bzdp_href_sounds-options-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="API Properties dialog"/><param name="Local" value="bzdp_href_api-properties-vt.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone HLLAPI support"/><param name="Local" value="bzdp_href_bz-hllapi-support-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone DDE support"/><param name="Local" value="bzdp_href_bz-dde-support-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone to work with an existing HLLAPI application"/><param name="Local" value="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone 6530 display options"/><param name="Local" value="bzdp_hcon_bz-6530-display-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display Options dialog"/><param name="Local" value="bzdp_hcon_display-6530.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font tab"/><param name="Local" value="bzdp_href_font-settings-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Cursor tab"/><param name="Local" value="bzdp_href_cursor-settings-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Colors tab"/><param name="Local" value="bzdp_href_color-settings-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="HotSpots tab"/><param name="Local" value="bzdp_href_hotspots-and-gui-mode-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Watermark tab"/><param name="Local" value="bzdp_href_watermark-feature-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Scrollback tab"/><param name="Local" value="bzdp_href_scrollback-buffer-settings-6530.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keyboard Options dialog"/><param name="Local" value="bzdp_href_keyboard-mapping-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mouse Options dialog"/><param name="Local" value="bzdp_href_mouse-options-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sounds Options dialog"/><param name="Local" value="bzdp_href_sounds-options-6530.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="API Properties dialog"/><param name="Local" value="bzdp_href_api-properties-vt.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone HLLAPI support"/><param name="Local" value="bzdp_href_bz-hllapi-support-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone DDE support"/><param name="Local" value="bzdp_href_bz-dde-support-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone to work with an existing HLLAPI application"/><param name="Local" value="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Unisys T27 display options"/><param name="Local" value="bzdp_hcon_unisys-t27-display-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display Options dialog"/><param name="Local" value="bzdp_hcon_display-t27.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font tab"/><param name="Local" value="bzdp_href_font-settings-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Cursor tab"/><param name="Local" value="bzdp_href_cursor-settings-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Colors tab"/><param name="Local" value="bzdp_href_color-settings-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Watermark tab"/><param name="Local" value="bzdp_href_watermark-feature-t27.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keyboard Options dialog"/><param name="Local" value="bzdp_href_keyboard-mapping-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mouse Options dialog"/><param name="Local" value="bzdp_href_mouse-options-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sounds Options dialog"/><param name="Local" value="bzdp_href_sounds-options-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="API Properties dialog"/><param name="Local" value="bzdp_href_api-properties-t27.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone HLLAPI support"/><param name="Local" value="bzdp_href_bz-hllapi-support-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone DDE support"/><param name="Local" value="bzdp_href_bz-dde-support-t27.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone to work with an existing HLLAPI application"/><param name="Local" value="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Unisys UTS display options"/><param name="Local" value="bzdp_hcon_unisys-uts-display-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Display Options dialog"/><param name="Local" value="bzdp_hcon_display-uts.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font tab"/><param name="Local" value="bzdp_href_font-settings-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Cursor tab"/><param name="Local" value="bzdp_href_cursor-settings-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Colors tab"/><param name="Local" value="bzdp_href_color-settings-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Watermark tab"/><param name="Local" value="bzdp_href_watermark-feature-uts.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keyboard Options dialog"/><param name="Local" value="bzdp_href_keyboard-mapping-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mouse Options dialog"/><param name="Local" value="bzdp_href_mouse-options-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sounds Options dialog"/><param name="Local" value="bzdp_href_sounds-options-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="API Properties dialog"/><param name="Local" value="bzdp_href_api-properties-uts.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone HLLAPI support"/><param name="Local" value="bzdp_href_bz-hllapi-support-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone DDE support"/><param name="Local" value="bzdp_href_bz-dde-support-uts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone to work with an existing HLLAPI application"/><param name="Local" value="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Changing the display font"/><param name="Local" value="bzdp_htsk_changing-the-display-font.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Changing the display colors"/><param name="Local" value="bzdp_htsk_changing-the-display-colors.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Scripting a HotSpot"/><param name="Local" value="bzdp_htsk_scripting-a-hotspot.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Transfer menu"/><param name="Local" value="bzdp_hcon_transfer-menu.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Secure FTP"/><param name="Local" value="bzdp_hcon_bz-secure-ftp.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Launching BlueZone Secure FTP from a BlueZone Session"/><param name="Local" value="bzdp_htsk_launching-bz-secure-ftp-from-a-bz-session.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="IND$FILE transfer - IBM Mainframe (3270)"/><param name="Local" value="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring IND$FILE transfer setup"/><param name="Local" value="bzdp_htsk_configuring-transfer-setup.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Setting file options"/><param name="Local" value="bzdp_htsk_setting-file-options-ind$file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Receiving files from the host"/><param name="Local" value="bzdp_htsk_receiving-files-from-the-host.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sending files to the host"/><param name="Local" value="bzdp_htsk_sending-files-to-the-host.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Transfer lists"/><param name="Local" value="bzdp_hcon_transfer-lists.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating and saving transfer lists"/><param name="Local" value="bzdp_htsk_creating-and-saving-transfer-lists.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Running transfer lists"/><param name="Local" value="bzdp_htsk_running-the-transfer-list.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Using the Transfer Properties window"/><param name="Local" value="bzdp_utsk_configuring-the-transfer-properties.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring IND$FILE with Arabic support"/><param name="Local" value="bzdp_htsk_configuring-ftp-with-arabic-support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring APVUFILE (IND$FILE for DBCS) with DBCS support"/><param name="Local" value="bzdp_htsk_configuring_APVUFILE_with_DBCS_support.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Technical reference"/><param name="Local" value="bzdp_href_technical-reference.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone LIPI host file transfer – iSeries (5250)"/><param name="Local" value="bzdp_href_bz-host-file-transfer-5250.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the host file transfer"/><param name="Local" value="bzdp_htsk_configuring-host-file-transfer-lipi.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the transfer setup options"/><param name="Local" value="bzdp_htsk_configuring-lipi-host-file-transfer.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the data format options"/><param name="Local" value="bzdp_htsk_configuring-the-data-format-options.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Building SQL queries"/><param name="Local" value="bzdp_htsk_creating-sql-queries.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding the transfer icon to the toolbar"/><param name="Local" value="bzdp_htsk_adding-transfer-icons-to-the-toolbar.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Setting the file and tracing options"/><param name="Local" value="bzdp_htsk_setting-file-options.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding libraries to the host pane"/><param name="Local" value="bzdp_htsk_adding-libraries-to-the-host-pane.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Removing libraries from the host pane"/><param name="Local" value="bzdp_htsk_removing-libraries-from-the-host-pane.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Saving configuration settings"/><param name="Local" value="bzdp_htsk_saving-configuration-settings.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Receiving files from the host"/><param name="Local" value="bzdp_htsk_receiving-files-from-the-host-5250.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sending files to the host"/><param name="Local" value="bzdp_htsk_sending-files-to-the-host-5250.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Transfer lists"/><param name="Local" value="bzdp_hcon_transfer-lists.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating and saving transfer lists"/><param name="Local" value="bzdp_htsk_creating-and-saving-transfer-lists-lipi.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Manually adding file transfer entries"/><param name="Local" value="bzdp_htsk_manually-adding-file-transfer-entries-lipi.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Running transfer lists"/><param name="Local" value="bzdp_htsk_running-the-transfer-list-lipi.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Saving the transfer list"/><param name="Local" value="bzdp_htsk_saving-the-transfer-log-lipi.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating iSeries database files"/><param name="Local" value="bzdp_htsk_creating-iseries-database-files.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Kermit file transfer (VT and 6530)"/><param name="Local" value="bzdp_href_kermit-file-transfer-vt.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Transferring files"/><param name="Local" value="bzdp_htsk_transferring-files-vt.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Sending files to the host (host receive)"/><param name="Local" value="bzdp_htsk_sending-files-to-the-host-vt.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Receiving files from the host (host send)"/><param name="Local" value="bzdp_htsk_receiving-files-from-the-host-vt.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Batch file transfers"/><param name="Local" value="bzdp_hcon_batch-file-transfers.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring batch file transfers"/><param name="Local" value="bzdp_htsk_configuring-batch-file-transfers.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Saving batch file transfer configurations to a file"/><param name="Local" value="bzdp_htsk_saving-batch-file-transfer-config-to-a-file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Importing batch file transfer configuration files"/><param name="Local" value="bzdp_htsk_importing-batch-file-transfer-config-files.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="View menu"/><param name="Local" value="bzdp_hcon_view-menu-options.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="View properties"/><param name="Local" value="bzdp_href_toolbar-settings.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Showing or hiding the menu bar"/><param name="Local" value="bzdp_htsk_showing-or-hiding-the-menu-bar.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Mainframe and iSeries toolbars"/><param name="Local" value="bzdp_href_toolbars-tab.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone VT and 6530 toolbars"/><param name="Local" value="bzdp_href_bz-vt-toolbars.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone ALC toolbars"/><param name="Local" value="bzdp_href_bz-alc-toolbars.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Unisys T27 or UTS toolbars"/><param name="Local" value="bzdp_href_unisys-toolbars.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Power pad properties"/><param name="Local" value="bzdp_href_power-pads-ibm.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="IBM 3270 Mainframe status bar indicators"/><param name="Local" value="bzdp_href_ibm-3270-mainframe-status-bar-indicators.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="IBM 5250 iSeries status bar indicators"/><param name="Local" value="bzdp_href_ibm-5250-iseries-status-bar-indicators.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone VT and 6530 status bar indicators"/><param name="Local" value="bzdp_href_bz-vt-status-bar-indicators.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone ALC status bar indicators"/><param name="Local" value="bzdp_href_bz-alc-status-bar-indicators.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="T27 status bar indicators"/><param name="Local" value="bzdp_href_t27-status-bar-indicators.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="UTS status bar indicators"/><param name="Local" value="bzdp_href_uts-status-bar-indicators.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Color schemes"/><param name="Local" value="bzdp_href_desktop-colors.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Screen history"/><param name="Local" value="bzdp_href_screen-history.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring screen history"/><param name="Local" value="bzdp_htsk_configuring-screen-history.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the history pad"/><param name="Local" value="bzdp_htsk_configuring-the-history-pad.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Viewing screen history"/><param name="Local" value="bzdp_htsk_viewing-historical-screens.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Returning to the active screen"/><param name="Local" value="bzdp_htsk_returning-to-the-active-screen.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Scratch pad"/><param name="Local" value="bzdp_href_scratch-pad.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Auto-Size features"/><param name="Local" value="bzdp_href_auto-size-features.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Script menu"/><param name="Local" value="bzdp_hcon_script-menu.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone scripts"/><param name="Local" value="bzdp_href_bz-scripts.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Script Editor"/><param name="Local" value="bzdp_hcon_bz-script-editor.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing scripts"/><param name="Local" value="bzdp_htsk_editing-scripts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Script events"/><param name="Local" value="bzdp_href_script-events.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="LU functions"/><param name="Local" value="bzdp_href_lu-functions.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Menu commands"/><param name="Local" value="bzdp_href_menu-commands.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Recording scripts"/><param name="Local" value="bzdp_htsk_recording-scripts.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Playing back scripts"/><param name="Local" value="bzdp_htsk_playing-back-scripts.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Playing scripts"/><param name="Local" value="bzdp_htsk_playing-scripts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Auto-playing scripts"/><param name="Local" value="bzdp_htsk_auto-playing-scripts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Script properties"/><param name="Local" value="bzdp_href_script-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mapping scripts to power pads"/><param name="Local" value="bzdp_htsk_mapping-scripts-to-power-keys.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mapping scripts to the keyboard"/><param name="Local" value="bzdp_htsk_mapping-scripts-to-the-keyboard.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Use the Wait_For script event"/><param name="Local" value="bzdp_href_use-the-wait_for-script-event.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Use variables in scripts"/><param name="Local" value="bzdp_href_use-variables-in-scripts.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Keyboards"/><param name="Local" value="bzdp_hcon_keyboards.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Mapping keyboards"/><param name="Local" value="bzdp_htsk_mapping-keyboards.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Saving keyboard maps"/><param name="Local" value="bzdp_htsk_saving-keyboard-maps.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Importing keyboard maps"/><param name="Local" value="bzdp_htsk_importing-keyboard-maps.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configure IME options"/><param name="Local" value="bzdp_href_configure-ime-options.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring BlueZone for JAWS"/><param name="Local" value="bzdp_htsk_configuring-bz-for-jaws.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Power pads"/><param name="Local" value="bzdp_hcon_power-pad-editor.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating and configuring power pads"/><param name="Local" value="bzdp_htsk_launching-the-editor.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the layout options"/><param name="Local" value="bzdp_href_layout-options.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the power pad properties"/><param name="Local" value="bzdp_href_power-pad-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding power pad objects"/><param name="Local" value="bzdp_href_power-pad-objects.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring button object properties"/><param name="Local" value="bzdp_href_button-properties.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding toolbar icons to button objects"/><param name="Local" value="bzdp_htsk_auto-loading-toolbar-icons.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring group box object properties"/><param name="Local" value="bzdp_href_groupbox-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring text object properties"/><param name="Local" value="bzdp_href_text-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring picture object properties"/><param name="Local" value="bzdp_href_picture-properties.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing the layout of the objects"/><param name="Local" value="bzdp_htsk_editing-objects.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Setting tab order"/><param name="Local" value="bzdp_htsk_setting-tab-order.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Previewing power pads"/><param name="Local" value="bzdp_htsk_testing-power-pads.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Docking and stacking power pads"/><param name="Local" value="bzdp_htsk_docking-power-pads.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer emulation interface"/><param name="Local" value="bzdp_hcon_printer-emulation-interface.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer setup overview"/><param name="Local" value="bzdp_hcon_printer-setup-overview.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer settings"/><param name="Local" value="bzdp_href_printer-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Page settings"/><param name="Local" value="bzdp_href_page-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Layout settings"/><param name="Local" value="bzdp_href_layout-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font settings"/><param name="Local" value="bzdp_href_font-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Option settings"/><param name="Local" value="bzdp_href_option-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Print to File settings"/><param name="Local" value="bzdp_href_print-to-file-settings.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Print queue settings"/><param name="Local" value="bzdp_href_print-queue-settings.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding files to the print queue"/><param name="Local" value="bzdp_htsk_adding-files-to-the-print-queue.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Submitting print log jobs to the print queue"/><param name="Local" value="bzdp_htsk_submitting-print-log-jobs-to-the-print-queue-1.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Submitting print queue jobs to the print log"/><param name="Local" value="bzdp_htsk_submitting-print-queue-jobs-to-the-print-log-1.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="The application desktop"/><param name="Local" value="bzdp_hcon_the-application-desktop-1.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="File properties"/><param name="Local" value="bzdp_href_file-properties-1.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Customizing the toolbar colors"/><param name="Local" value="bzdp_htsk_customizing-the-toolbar-colors.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Customizing the toolbar"/><param name="Local" value="bzdp_htsk_customizing-the-toolbar-1.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Customizing the toolbar colors"/><param name="Local" value="bzdp_htsk_customizing-the-toolbar-colors.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing the translate tables"/><param name="Local" value="bzdp_htsk_editing-the-translate-tables.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Status bar indicators"/><param name="Local" value="bzdp_href_status-bar-indicators-1.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printing types"/><param name="Local" value="bzdp_hcon_printing-types.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="iSeries printing using host print transform"/><param name="Local" value="bzdp_htsk_iseries-printing-using-host-print-transform.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pass-through printing using ASCII transparent printing"/><param name="Local" value="bzdp_htsk_passthrough-printing-ascii-transparent-printing.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pass-through printing using the printer definition file"/><param name="Local" value="bzdp_htsk_passthrough-printing-printer-definition-file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pass-through printing without a printer definition file"/><param name="Local" value="bzdp_htsk_passthrough-printing-without-a-printer-definition-file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printing using the Windows API print driver"/><param name="Local" value="bzdp_htsk_printing-using-the-windows-api-print-driver.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Work with printer profiles"/><param name="Local" value="bzdp_hcon_work-with-printer-profiles.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding printer profiles"/><param name="Local" value="bzdp_htsk_adding-printer-profiles.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Deleting printer profiles"/><param name="Local" value="bzdp_htsk_deleting-printer-profiles.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing printer profiles"/><param name="Local" value="bzdp_htsk_editing-printer-profiles.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Renaming printer profiles"/><param name="Local" value="bzdp_htsk_renaming-printer-profiles.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Work with print job entries"/><param name="Local" value="bzdp_hcon_work-with-print-job-entries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Job properties"/><param name="Local" value="bzdp_href_job-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pausing print jobs"/><param name="Local" value="bzdp_htsk_pausing-print-jobs.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Resuming print jobs"/><param name="Local" value="bzdp_htsk_resuming-print-jobs.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Deleting print jobs"/><param name="Local" value="bzdp_htsk_deleting-print-jobs.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Work with print log entries"/><param name="Local" value="bzdp_hcon_work-with-print-log-entries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding print log jobs to the print queue"/><param name="Local" value="bzdp_htsk_adding-print-log-jobs-to-the-print-queue.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Renaming print jobs"/><param name="Local" value="bzdp_htsk_renaming-print-jobs.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Tab"/><param name="Local" value="bzdp_hcon_bz-tab.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating BlueZone Tab profiles"/><param name="Local" value="bzdp_htsk_creating-bz-tab-configuration-files.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding, viewing, and deleting tabs"/><param name="Local" value="bzdp_htsk_adding-viewing-and-deleting-tabs.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring tabs"/><param name="Local" value="bzdp_htsk_configuring-tabs.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Changing the tab colors"/><param name="Local" value="bzdp_htsk_changing-the-tab-colors.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Changing the window title"/><param name="Local" value="bzdp_htsk_changing-the-window-title.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring the save options"/><param name="Local" value="bzdp_htsk_configuring-the-save-options.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Saving BlueZone Tab profiles"/><param name="Local" value="bzdp_htsk_saving-bz-tab-configuration-files.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing profiles manually"/><param name="Local" value="bzdp_href_editing-configuration-files-manually.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone TCP/IP print server"/><param name="Local" value="bzdp_hcon_bz-tcp-ip-print-server.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="TCP/IP Print Server installation"/><param name="Local" value="bzdp_href_tcp-ip-print-server-installation.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Launching sessions"/><param name="Local" value="bzdp_htsk_launching-a-session.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Configuring sessions"/><param name="Local" value="bzdp_htsk_configuring-a-session.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Starting sessions"/><param name="Local" value="bzdp_htsk_starting-a-session.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Stopping sessions"/><param name="Local" value="bzdp_htsk_stopping-a-session.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Ending sessions"/><param name="Local" value="bzdp_htsk_ending-a-session.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Print setup"/><param name="Local" value="bzdp_href_print-setup.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printer settings"/><param name="Local" value="bzdp_href_printer-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Page settings"/><param name="Local" value="bzdp_href_page-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Layout settings"/><param name="Local" value="bzdp_href_layout-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Font settings"/><param name="Local" value="bzdp_href_font-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Option settings"/><param name="Local" value="bzdp_href_option-settings.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Print to File settings"/><param name="Local" value="bzdp_href_print-to-file-settings.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Job queue settings"/><param name="Local" value="bzdp_href_job-queue-settings.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding files to the print job queue"/><param name="Local" value="bzdp_htsk_adding-files-to-the-print-job-queue.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Submitting print queue jobs to the print log"/><param name="Local" value="bzdp_htsk_submitting-print-queue-jobs-to-the-print-log.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Submitting print log jobs to the print queue"/><param name="Local" value="bzdp_htsk_submitting-print-log-jobs-to-the-print-queue.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="The application desktop"/><param name="Local" value="bzdp_hcon_the-application-desktop.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="File properties"/><param name="Local" value="bzdp_href_file-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="View properties"/><param name="Local" value="bzdp_href_view-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Customizing the toolbar"/><param name="Local" value="bzdp_htsk_customizing-the-toolbar-print.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Customizing desktop colors"/><param name="Local" value="bzdp_htsk_customizing-desktop-colors.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Status bar indicators"/><param name="Local" value="bzdp_href_status-bar-indicators.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Work with printer queues"/><param name="Local" value="bzdp_hcon_work-with-printer-queues.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding a printer queue"/><param name="Local" value="bzdp_htsk_adding-a-printer-queue.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Deleting a printer queue"/><param name="Local" value="bzdp_htsk_deleting-a-printer-queue.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Editing a printer queue"/><param name="Local" value="bzdp_htsk_editing-a-printer-queue.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Renaming a printer queue"/><param name="Local" value="bzdp_htsk_renaming-a-printer-queue.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Printing types"/><param name="Local" value="bzdp_hcon_printing-types.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pass-through printing"/><param name="Local" value="bzdp_hcon_passthrough-printing.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pass-through printing using the printer definition file"/><param name="Local" value="bzdp_hcon_passthrough-printing-using-the-printer-definition-file.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Windows API print driver"/><param name="Local" value="bzdp_hcon_windows-api-print-driver.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Work with print job entries"/><param name="Local" value="bzdp_hcon_work-with-print-job-entries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Job properties"/><param name="Local" value="bzdp_href_job-properties.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Pausing print jobs"/><param name="Local" value="bzdp_htsk_pausing-print-jobs.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Resuming print jobs"/><param name="Local" value="bzdp_htsk_resuming-print-jobs.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Deleting print jobs"/><param name="Local" value="bzdp_htsk_deleting-print-jobs.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Work with print log entries"/><param name="Local" value="bzdp_hcon_work-with-print-log-entries.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Adding print log jobs to the print queue"/><param name="Local" value="bzdp_htsk_adding-print-log-jobs-to-the-print-queue.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Renaming print jobs"/><param name="Local" value="bzdp_htsk_renaming-print-jobs.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone scripting"/><param name="Local" value="bzdp_hcon_bz-scripting.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone recorded scripts"/><param name="Local" value="bzdp_href_bz-recorded-scripts.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Script Host"/><param name="Local" value="bzdp_href_bz-script-host.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Basic"/><param name="Local" value="bzdp_href_bz-basic.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="OLE automation"/><param name="Local" value="bzdp_hcon_ole-automation.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Host Automation Object"/><param name="Local" value="bzdp_hcon_bz-host-automation-object.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Using OLE/DDE to link BlueZone to other applications"/><param name="Local" value="bzdp_htsk_usingole-dde-to-link-bz-to-other-apps.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Plus VBA"/><param name="Local" value="bzdp_hcon_bz-plus-vba.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Plus VBA installation"/><param name="Local" value="bzdp_href_install-bz-plus-vba.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="BlueZone Plus VBA toolbar"/><param name="Local" value="bzdp_href_bz-plus-vba-toolbar.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Playing macros from the toolbar"/><param name="Local" value="bzdp_htsk_playing-macros-from-the-toolbar.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Customizing the toolbar"/><param name="Local" value="bzdp_htsk_customizing-the-toolbar.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Use BlueZone Plus VBA"/><param name="Local" value="bzdp_href_use-bz-plus-vba.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Menu items"/><param name="Local" value="bzdp_href_menu-items.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Creating new macro projects"/><param name="Local" value="bzdp_htsk_creating-a-new-macro-project.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Macros window"/><param name="Local" value="bzdp_href_macro-dialog.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Recording macros"/><param name="Local" value="bzdp_htsk_recording-a-macro.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Assign macros to power pad buttons"/><param name="Local" value="bzdp_hcon_power-pad-buttons.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Visual Basic Editor"/><param name="Local" value="bzdp_hcon_visual-basic-editor.htm"/></OBJECT>
+</LI></UL>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Reference tables"/><param name="Local" value="bzdp_href_appendix-a-tables.htm"/></OBJECT><UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="3270 overstrike sequences"/><param name="Local" value="bzdp_href_3270-overstrike-sequences.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="ASCII character set"/><param name="Local" value="bzdp_href_ascii-character-set.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="EBCDIC character set"/><param name="Local" value="bzdp_href_ebcdic-character-set.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Top level configuration profile extensions"/><param name="Local" value="bzdp_href_top-level-configuration-profile.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Dialog level configuration profiles"/><param name="Local" value="bzdp_href_dialog-level-configuration-profile.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Host file transfer configuration profile"/><param name="Local" value="bzdp_href_host-file-transfer-configuration-profile.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Command line switches"/><param name="Local" value="bzdp_href_command-line-switch.htm"/></OBJECT>
+</LI></UL>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Help options"/><param name="Local" value="bzdp_href_help-options.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Related information"/><param name="Local" value="common-files/bz-bibliography.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Notices"/><param name="Local" value="notices-topic-rs.htm"/></OBJECT>
+</LI>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Corporate information"/><param name="Local" value="corporate-info.htm"/></OBJECT>
+</LI></UL>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Printing using the Windows API print driver"/>
+<meta name="abstract" content="The Windows API print driver is used by most Windows programs when printing documents and graphics. It provides extensive formatting, graphics, and printer control capabilities. This is the default setting for BlueZone Printer Emulators."/>
+<meta name="description" content="The Windows API print driver is used by most Windows programs when printing documents and graphics. It provides extensive formatting, graphics, and printer control capabilities. This is the default setting for BlueZone Printer Emulators."/>
+<meta name="DC.subject" content="printing, with Windows API print driver, Windows API print driver"/>
+<meta name="keywords" content="printing, with Windows API print driver, Windows API print driver"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_printing-types.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_printing-using-the-windo"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Printing using the Windows API print driver</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_printing-using-the-windo">
+<div class="topic">
+
+<h1 class="title topictitle1">Printing using the Windows API print driver</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">The Windows API print driver is used by most Windows programs
+when printing documents and graphics.  It provides extensive formatting,
+graphics, and printer control capabilities.  This is the default setting
+for BlueZone Printer Emulators. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><div class="p">When to use: <ul class="ul">
+<li class="li">Use with any EBCDIC printer data stream when auto-sizing the font
+and a nearly perfect fit is required.  </li>
+
+<li class="li">Use when printing a Windows True Type Font.  </li>
+
+<li class="li">Use by default when the target printer is unknown.  Check the <span class="ph uicontrol">Use Default Windows Printer on Startup</span> check box. </li>
+
+</ul>
+</div>
+<div class="p">When not to use: <ul class="ul">
+<li class="li">When exact font size is necessary to print on preprinted forms.
+Windows scales True Type fonts to the nearest pixel resulting in slight
+misalignments when compared to fixed CPI fonts resident in the printers.
+ </li>
+
+<li class="li">Draft mode printing on dot matrix printers.  </li>
+
+<li class="li">ASCII Transparent Printing  </li>
+
+<li class="li">iSeries Host Print Transform </li>
+
+</ul>
+</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">Settings required in the Print Setup property sheet are necessary
+to properly configure the emulator for this feature.  </div>
+
+<ol class="ol steps"><li class="li step"><span class="ph cmd">Click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Print Setup</span></span> from the menu bar.</span></li>
+<li class="li step"><span class="ph cmd">Click the <span class="ph uicontrol">Passthrough</span> tab and define
+the following: </span>
+<ol type="a" class="ol substeps">
+<li class="li substep"><span class="ph cmd">Clear the <span class="ph uicontrol">Send all Data Directly to the Printer</span> check box. </span></li>
+
+</ol>
+
+</li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><h2 class="title sectiontitle">Ignored emulator settings</h2><p class="p">All ignored settings
+are disabled when the Mandatory Settings are set properly. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_printing-types.htm">Printing types</a></div></div></div>
+
+</div></body>
+</html>

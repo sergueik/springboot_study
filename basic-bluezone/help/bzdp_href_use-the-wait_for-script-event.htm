@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Use the Wait_For script event"/>
+<meta name="abstract" content="BlueZone scripts support the ability to wait for a specific text string or LU Function to appear in the host session screen. Wait_For is one of the more versatile BlueZone script functions."/>
+<meta name="description" content="BlueZone scripts support the ability to wait for a specific text string or LU Function to appear in the host session screen. Wait_For is one of the more versatile BlueZone script functions."/>
+<meta name="DC.subject" content="script events, Wait_For, Wait_For script event"/>
+<meta name="keywords" content="script events, Wait_For, Wait_For script event"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_bz-scripts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_use-the-wait_for-script-"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Use the Wait_For script event</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_use-the-wait_for-script-">
+<div class="topic">
+
+<h1 class="title topictitle1">Use the Wait_For script event</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">BlueZone scripts support the ability to wait for a specific
+text string or LU Function to appear in the host session screen. 
+Wait_For is one of the more versatile BlueZone script functions. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><p class="p">The purpose of using Wait_For in a BlueZone script is
+to cause the script execution to suspend until the specified text
+string is found in the host session window.  This feature is useful
+if you are running a script that automatically logs the user into
+an application and you don't want the script to enter the user name
+and password until the host is ready. </p>
+<p class="p">Also, this feature is
+useful if you want to be absolutely certain that the host is on a
+specific screen before the script continues. </p>
+<p class="p">In addition, you
+can set a time out value so that if the text string is not found within
+the desired time, you can script a predicable outcome. </p>
+<div class="p">The
+following screen shot shows the Wait_For dialog configured to wait
+for the text string "Username" at the exact location of row 19, column
+17 with case sensitive search and a time out of 3 seconds. <div class="fig fignone"><img class="image" src="graphics/wait_for_xp.png"/></div>
+</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><h2 class="title sectiontitle">Examples</h2><p class="p">For example, you can wait for the
+desired text string starting from the very upper left hand corner
+of the host screen and search to the very end of the screen.  Or,
+if desired, you can wait for the desired text string starting at a
+specific row and column location, or you can wait for the desired
+string only when found at a specific row and column on the host screen. </p>
+<div class="p">In
+the following example, the text string "Username" is being used as
+the Wait_For value. <p class="lines">Wait_For "Username" starting at position 1,1 to the end of the screen<br/>
+<br/>
+Wait_For "Username" starting at position 12,6 to the end of the screen<br/>
+<br/>
+Wait_For "Username" at exactly position 24,1</p>
+</div>
+<div class="p">In addition
+to the Wait_For options above, you can also make the search case sensitive
+and add an optional "Timeout" value.  The advantage to using the Timeout
+value is that you can invoke boolean logic to branch the script based
+on the result of the Timeout value.  For example, if the Timeout value
+is reached and the desired string is not found, you can branch to
+a specific part of the script or to a specific outcome, like ending
+the script.  On the other hand, if the desired string is found within
+the Timeout value period, you can branch to a specific part of the
+script with a completely different outcome, like continuing the script. <div class="note note"><span class="notetitle">Note:</span> Wait_For
+can also be used to wait for LU Functions specified in angle brackets.
+ LU Functions are host commands that are typically sent from the keyboard.
+ Examples are the "Enter" key, the "Tab" key and other host specific
+commands like "Function" keys.  The LU functions will vary depending
+on the particular host that the script was written for.</div>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_bz-scripts.htm" title="BlueZone scripts can be recorded in either a proprietary format or in a text-based format recorded in either VBScript or JavaScript.">BlueZone scripts</a></div></div></div>
+
+</div></body>
+</html>

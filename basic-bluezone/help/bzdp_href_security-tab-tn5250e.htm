@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Security tab"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_tn5250e-configuration.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdphrefsecurity-tab-tn5250e"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Security tab</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdphrefsecurity-tab-tn5250e">
+<div class="topic">
+
+<h1 class="title topictitle1">Security tab</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section" id="Bzdphrefsecurity-tab-tn5250e__security">
+      <p class="p">All BlueZone emulator clients support the SSL v3, TLS v1.0, TLS v1.1, or TLS
+        v1.2 protocol through the BlueZone Security Server or any SSL enabled Telnet connection
+        including IBM Communications Server for NT (SSL v3 only), OS/390, z/OS, and the iSeries V4R4
+        or higher. BlueZone clients can be preconfigured for distribution with SSL/TLS enabled,
+        eliminating the need for any end-user intervention in the installation or configuration
+        process. The options for configuration include:</p>
+<dl class="dl">
+
+<dt class="dt dlterm">Security Options</dt>
+
+<dd class="dd">
+            <dl class="dl">
+              
+                <dt class="dt dlterm">Security Type</dt>
+
+                <dd class="dd">If you want to encrypt your session, select one of the following encryption
+                  methods from the drop-down list box. The method is dictated by the secure Telnet
+                  host that you are connecting to.<ul class="ul">
+                    <li class="li"><span class="ph uicontrol">None</span>: Indicates that no encryption is being used. </li>
+
+                    <li class="li"><span class="ph uicontrol">Implicit TLS</span>: Negotiates a secure connection to
+                      the host first, then negotiates the Telnet connection. </li>
+
+                    <li class="li"><span class="ph uicontrol">Explicit TLS</span>: Encryption is negotiated during the
+                      Telnet negotiation.</li>
+
+                  </ul>
+</dd>
+
+              
+              
+              
+                
+                <dt class="dt dlterm">Minimum TLS Version</dt>
+
+                
+                <dd class="dd">Specifies the minimum allowable TLS protocol version. A higher
+                  version may be negotiated if the server supports it: <ul class="ul">
+                    <li class="li"><span class="ph uicontrol">SSL v3</span>: Allows SSLv3 to be used. SSLv3 has numerous
+                      vulnerabilities and is no longer considered secure. This setting is NOT
+                      RECOMMENDED.</li>
+
+                    <li class="li"><span class="ph uicontrol">TLS v1.0</span> (Default): Specifies that at least TLS
+                      version 1.0 is used. This is the default value.</li>
+
+                    <li class="li"><span class="ph uicontrol">TLS v1.1</span>: Specifies that at least TLS version 1.1 is
+                      used. </li>
+
+                    <li class="li"><span class="ph uicontrol">TLS v1.2</span>: Specifies that at least TLS version 1.2 is
+                      used. </li>
+
+                    
+                  </ul>
+</dd>
+
+              
+              
+                <dt class="dt dlterm">Preferred Cipher Suite</dt>
+
+                <dd class="dd">Specifies a specific SSL/TLS cipher suite (encryption algorithm) to use. To
+                  allow the client and server to negotiate the cipher suite, select
+                    <span class="ph uicontrol">Strong only</span>.</dd>
+
+              
+              
+                <dt class="dt dlterm">Invalid Certificates</dt>
+
+                <dd class="dd">Specifies how to handle an invalid server certificate. <ul class="ul">
+                    <li class="li"><span class="ph uicontrol">Always Reject</span>: Specifies that an invalid server
+                      certificate must always be rejected.</li>
+
+                    <li class="li"><span class="ph uicontrol">Ask Before Accepting</span> (Default):  Specifies that the
+                      user must be asked whether to accept an invalid server certificate.</li>
+
+                    <li class="li"><span class="ph uicontrol">Always Accept</span>: Specifies that an invalid server
+                      certificate must always be accepted.</li>
+
+                  </ul>
+</dd>
+
+              
+              
+              
+                <dt class="dt dlterm">Check for Certificate Revocation</dt>
+
+                <dd class="dd">Specifies how to perform revocation checking on the server certificate chain at
+                  connect time, which will result in a connection failure if a certificate has been
+                  revoked, if the revocation server cannot be contacted, or if revocation
+                  information is not listed in the certificate. <ul class="ul">
+                    <li class="li"><span class="ph uicontrol">Do Not Check</span>: Performs no certificate revocation
+                      checking.</li>
+
+                    <li class="li"><span class="ph uicontrol">Server Certificate Only</span>: Performs revocation checking
+                      on the end server certificate only.</li>
+
+                    <li class="li"><span class="ph uicontrol">Server and Chain Certificates</span>: Performs revocation
+                      checking on the end server certificate and the intermediate certificates in
+                      the chain.</li>
+
+                    <li class="li"><span class="ph uicontrol">Server, Chain, and Root Certificates</span>: Performs
+                      revocation checking on the end server certificate, the intermediate
+                      certificates in the chain, and the root certificate.</li>
+
+                  </ul>
+</dd>
+
+              
+              
+                <dt class="dt dlterm">Alternate Principal Name</dt>
+
+                <dd class="dd">Type a valid address in this field to use to validate the server certificate.
+                    <br/><p class="p">When a host site's server certificate's Common Name (CN) or
+                    AltSubjectName does not match the address used to connect to the host, a
+                    certificate error occurs, stating that the host address does not match the
+                    common name. If it is not possible to connect to the host address listed in the
+                    certificate, the address from the certificate can be typed into the
+                      <span class="ph uicontrol">Alternate Principal Name</span> field. This address, rather
+                    than the host connection address, will then be used to validate the server
+                    certificate.</p>
+</dd>
+
+              
+            </dl>
+
+          </dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_tn5250e-configuration.htm" title="The RTN5250E.DLL file provides complete TN5250E connectivity for BlueZone allowing connection to hosts, servers, and gateways that are TN5250E compliant. TN5250E is the enhanced version of TN5250, providing more SNA information to the client for improved operation. Optionally, Secure Sockets Layer security is available to insure privacy, message integrity and provide authentication.">TN5250E Properties</a></div></div></div>
+
+</div></body>
+</html>

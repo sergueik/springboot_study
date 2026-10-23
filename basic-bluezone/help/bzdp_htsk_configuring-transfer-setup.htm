@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring IND$FILE transfer setup"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.subject" content="configuring, IND$FILE transfer"/>
+<meta name="keywords" content="configuring, IND$FILE transfer"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="bzdp_htsk_configuring-transfer-setu-33DB8342"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring IND$FILE transfer setup</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="bzdp_htsk_configuring-transfer-setu-33DB8342">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring IND$FILE transfer setup</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc"/>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">From a Mainframe Display session, click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol"> Configure</span></span>. </span>
+<div class="itemgroup stepresult">The Transfer Setup window opens. This window contains
+the <span class="ph uicontrol">Settings</span> and <span class="ph uicontrol">Advanced</span> tabs.
+If the display is configured for Arabic, the <span class="ph uicontrol">Arabic</span> tab
+is also available. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Settings</span> tab, configure the
+following options: </span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">Host System</dt>
+
+<dd class="dd">Select the type of mainframe operating environment. Depending
+on your selection, the options in this window can change. The <ul class="ul">
+<li class="li"><span class="ph uicontrol">VM/CMS</span>: Virtual Machine/Conversational
+Monitor System</li>
+
+<li class="li"><span class="ph uicontrol">TSO</span>: Time Sharing Options</li>
+
+<li class="li"><span class="ph uicontrol">CICS/VS</span>: Customer Information Control System
+for Virtual Storage</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Host File Options</dt>
+
+<dd class="dd">Enter the following host file information: <ul class="ul">
+<li class="li"><span class="ph uicontrol">File Type</span>: The VM file type.</li>
+
+<li class="li"><span class="ph uicontrol">File Mode</span>: The VM file mode.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">File Options</dt>
+
+<dd class="dd">Configure the following additional file settings: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Text</span>: Select if the file is a text file. </li>
+
+<li class="li"><span class="ph uicontrol">Binary</span>: Select if the file is a binary
+file. </li>
+
+<li class="li"><span class="ph uicontrol">CR/LF</span>: Specifies that carriage return and
+line feed characters are recognized and deleted before storage within
+the host or inserted before storage to the PC. </li>
+
+<li class="li"><span class="ph uicontrol">Append</span>: Specifies that the file data is
+appended to the end of an existing file.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Transfer Options</dt>
+
+<dd class="dd">Configure the following additional transfer options: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Use local Translate Tables</span>: If selected,
+BlueZone translates characters in the file using the currently selected
+translate table.  The translate table is based on the currently selected
+language (CCSID) that is selected in the <span class="ph uicontrol">3270 Emulation</span> tab
+of the Session Configuration window. <div class="note note"><span class="notetitle">Note:</span> A separate configurable
+translate table is available for IND$FILE transfers.  By default,
+the settings start out identical to the character translation table.
+ </div>
+ </li>
+
+<li class="li"><p class="p">For VM/CMS host systems: <span class="ph uicontrol">Send &lt;Clear&gt; before
+Transfer</span>: if select, the host screen is cleared before
+the file transfer is performed. </p>
+<p class="p">For TSO or CICS/VS host systems: <span class="ph uicontrol">Auto &lt;Erase
+Input&gt; before Transfer</span>: If selected, all unprotected fields
+are cleared before the file transfer is performed.</p>
+</li>
+
+<li class="li"><span class="ph uicontrol">Packet Size</span>: Select the packet size for
+Write Structure fields file transfers.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Advanced</span> tab and set the
+following options: </span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">Record Format </dt>
+
+<dd class="dd">Configure the following file record format settings for a VM/CMS
+or TSO file transfer upload: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Default</span>: Select to use the host default
+record format. </li>
+
+<li class="li"><span class="ph uicontrol">Variable</span>: Select to specify whether the
+record length of the data file is variable. </li>
+
+<li class="li"><span class="ph uicontrol">Fixed</span>: Select to specify that the record
+length of the data file is fixed. </li>
+
+<li class="li"><span class="ph uicontrol">Undefined</span>: Select to specify that the record
+length of the data file is undefined. </li>
+
+<li class="li"><span class="ph uicontrol">Record Length</span>: Specifies the length of
+each logical record stored within the host. </li>
+
+<li class="li"><span class="ph uicontrol">Block Size</span>: Indicates the length in bytes
+of a data block to be stored within the host. If Block Size is omitted
+then the default is Record Length.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Space</dt>
+
+<dd class="dd">Configure the following allocation parameters for a TSO file transfer
+upload: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Allocate Size</span>: Specifies the amount of
+space to allocate for the new data set. If Allocate Size is zero,
+no space parameters are sent to the host system.</li>
+
+<li class="li"><span class="ph uicontrol">Increment</span>: Specifies the amount of additional
+space allocated each time more space is necessary. </li>
+
+<li class="li"><span class="ph uicontrol">Unspecified</span>: Select to not specify an allocation
+method. </li>
+
+<li class="li"><span class="ph uicontrol">Avg. Blocks</span>: Select to specify a block
+size to store in blocks. </li>
+
+<li class="li"><span class="ph uicontrol">Cylinders</span>: Select to specify that transfers
+are stored in pairs of tracks that are the same distance from the
+center of the storage diskette. </li>
+
+<li class="li"><span class="ph uicontrol">Tracks</span>: Select to store in concentric circles.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Options</dt>
+
+<dd class="dd">Configure the following additional file transfer operating parameters: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Host File Password</span>: Required only if password
+protect is specified for a particular data set. </li>
+
+<li class="li"><span class="ph uicontrol">Transfer Program Name</span>: Specifies the transfer
+program name on host system. The default program name is IND$FILE. </li>
+
+<li class="li"><span class="ph uicontrol">Include Left Parenthesis</span>: Select if the
+host requires left parenthesis on the command line. </li>
+
+<li class="li"><span class="ph uicontrol">Include Right Parenthesis</span>: Select if the
+host requires right parenthesis on the command line. </li>
+
+<li class="li"><span class="ph uicontrol">Additional Parameters</span>: Type any additional
+data. This data will be appended to the transfer command.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">If your display is configured for Arabic, the <span class="ph uicontrol">Arabic</span> tab
+is available. Refer to <a class="xref" href="bzdp_htsk_configuring-ftp-with-arabic-support.htm" title="Before you can transfer Arabic files, you must properly configure the bidirectional language and translation options.">Configuring IND$FILE with Arabic support</a> for more
+information. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>.</span>
+<div class="itemgroup stepresult">The Host File Transfer window opens. </div>
+</li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm" title="The IND$FILE transfer is controlled through the Host File Transfer window. The Host File Transfer window provides an easy-to-use graphical interface. You can send or receive a single file to or from the host. You can also create transfer lists to easily preform batch file transfers.">IND$FILE transfer - IBM Mainframe (3270)</a></div></div></div>
+
+</div></body>
+</html>

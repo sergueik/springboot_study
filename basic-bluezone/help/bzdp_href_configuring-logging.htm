@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="BlueZone VT and 6530 host access logging"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.subject" content="Bluezone VT, logging, BlueZone 6530, screen data, capturing"/>
+<meta name="keywords" content="Bluezone VT, logging, BlueZone 6530, screen data, capturing"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_ucon_file-menu-options.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="ConfigureLogging"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>BlueZone VT and 6530 host access logging</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="ConfigureLogging">
+<div class="topic">
+
+<h1 class="title topictitle1">BlueZone VT<span class="ph"> and 6530</span> host access
+logging </h1>
+
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><p class="p">You can capture the screen data in a log file. This log
+file can be sent to a printer or saved to a specific location and
+viewed later in a text editor. </p>
+<p class="p">To configure your logging options,
+click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Logging</span></span>. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Enable Logging</dt>
+
+<dd class="dd">Select to enable the logging feature.</dd>
+
+
+
+<dt class="dt dlterm">Direct to</dt>
+
+<dd class="dd">This group defines where the log is directed. There are the following
+three options: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Printer</span>: Sends the log file to the defined
+printer. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Change Printer</span>: Click to change the default
+printer. </li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">File</span>: Saves the log file, with a name of your choosing, to the defined
+         location.<div class="note note"><span class="notetitle">Note:</span> As an option, when you are naming the log file, you can manually add a
+         string of date/time formatting codes to the name, that will automatically add the current
+         date and or time to the file name. The exact format is determined by the codes that are
+         used. For example, the following formatting codes,
+         C:\Users\&lt;username&gt;\Documents\BlueZone\Session Log %H.%M.%S %m-%d-%Y.txt, will result in
+         a file name that looks like this: Session Log 12.15.23 04-08-2015. Please refer to the Date
+         and Time Formatting Code Table below for all the code options.</div>
+<ul class="ul">
+         <li class="li"><span class="ph uicontrol">Browse</span>: Click to change the location where the log file is
+          saved. </li>
+
+        </ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Serial</span>: Redirects the output to serial
+device/port. You cannot configure this option through this dialog
+and it is disabled. To enable the Serial option, you must configure
+the Host Automation Object. Refer to the <cite class="cite">BlueZone Advanced Automation
+Developer's Guide</cite> for more information. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Change</span>: Click to change the serial device/port
+where the log is directed. </li>
+
+</ul>
+</li>
+
+</ul>
+</dd>
+
+
+</dl>
+<p class="p">After you configure the logging options, you can start logging.
+From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Start Logging</span></span>. </p>
+<p class="p">When logging
+is started, the menu bar option changes to <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Stop Logging</span></span>. </p>
+<p class="p">When you
+are finished logging, click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Stop Logging</span></span>. </p>
+ </div>
+
+  <div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section">Date and Time Formatting Code Table
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" id="ConfigureLogging__table_vp2_tgl_qr" class="table" frame="border" border="1" rules="all"><caption><span class="tablecap">Table 1: Date and Time Formatting Code Table</span></caption>
+     
+     
+     <thead class="thead" align="left">
+      <tr class="row">
+       <th class="cellrowborder" valign="top" id="d54221e162">Code</th>
+
+       <th class="cellrowborder" valign="top" id="d54221e165">Description</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%a</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Abbreviated weekday name</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%A</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Full weekday name</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%b</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Abbreviated month name</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%B</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Full month name</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%c</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Date and time representation appropriate for local</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%d</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Day of month as decimal number (01 – 31)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%H</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Hour in 24-hour format (00 – 23)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%I</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Hour in 12-hour format (01 – 12)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%j</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Day of year as decimal number (001 – 366)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%m</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Month as decimal number (01 – 12)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%M</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Minute as decimal number (00 – 59)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%p</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Current locale's A.M./P.M. indicator for 12-hour clock</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%S</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Second as decimal number (00 – 59)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%U</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Week of year as decimal number, with Sunday as first day of week (00 – 53)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%w</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Weekday as decimal number (0 – 6; Sunday is 0)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%W</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Week of year as decimal number, with Monday as first day of week (00 – 53)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%x</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Date representation for current locale</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%X</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Time representation for current locale</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%y</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Year without century, as decimal number (00 – 99)</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%Y</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Year with century, as decimal number</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%z, %Z</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Either the time-zone name or time zone abbreviation, depending on registry settings;
+        no characters if time zone is unknown</td>
+
+      </tr>
+
+      <tr class="row">
+       <td class="cellrowborder" valign="top" headers="d54221e162 ">%%</td>
+
+       <td class="cellrowborder" valign="top" headers="d54221e165 ">Percent sign</td>
+
+      </tr>
+
+     </tbody>
+
+    </table>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_ucon_file-menu-options.htm">File menu</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Editing the default open ID"/>
+<meta name="abstract" content="You must edit the default open ID."/>
+<meta name="description" content="You must edit the default open ID."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_configure-connections-uts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_editing-the-default-open"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Editing the default open ID</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_editing-the-default-open">
+<div class="topic">
+
+<h1 class="title topictitle1">Editing the default open ID</h1>
+
+
+<div class="body taskbody"><p class="shortdesc">You must edit the default open ID. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"> </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context"> </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Select the desired open ID. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Edit selected Open Id</span> icon.
+You can also double-click the desired open ID. </span>
+<div class="itemgroup stepresult">The Edit Connection Point (Open Id.) dialog opens. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Edit the following information: </span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">Open Id.</dt>
+
+<dd class="dd">This required name is used to define a connection, IP Address
+(see Virtual Destination) and Session Type (TIP, DEMAND, NMS, and
+so on), to a host.  This name is user-defined and can be anything
+meaningful to the user. <p class="p">The open ID name specified here has no
+required relationship to the "$$OPEN open-id" required for non communications;
+however, using the same name as required on the "$$OPEN open-id" for
+non communications may be the best option when converting users to
+TCP/IP.  Using the same name will allow users to continue using familiar
+$$OPEN statements. </p>
+<div class="p">The open ID name will be used by selected
+routes for default session establishment. <div class="note note"><span class="notetitle">Note:</span> Just because a Route
+is visually connected to an Open Id on the UTS Connection Configuration
+dialog, it does not prevent the user from performing a $$OPEN to another
+Open Id.</div>
+</div>
+</dd>
+
+
+
+<dt class="dt dlterm">Selected CMS Process or Telcon XEU</dt>
+
+<dd class="dd">Indicates the remote TSAP of a connection.<p class="p">BlueZone UTS uses
+the CMS Process or Telcon XEU Name, along with the IP Address, to
+link to a DEMAND or TIP session (or any other valid termination system). </p>
+<p class="p">If the Open Id connects to a virtual destination that has a Connect
+Type of <span class="ph uicontrol">TP0 to HLC, or through DCP as IP Router</span>, the Selected CMS Process or Telcon XEU is the PROCESS name in the
+CMS1100 configuration. </p>
+<div class="p">Typical values are: <ul class="ul">
+<li class="li">CMS Process  </li>
+
+<li class="li">TIPCSU for TIP  </li>
+
+<li class="li">RSDCSU for DEMAND  </li>
+
+<li class="li">CSACSU for CMS1100 network administration </li>
+
+</ul>
+</div>
+<p class="p">If the Open Id connects to a virtual destination that
+has a Connect Type of <span class="ph uicontrol">TP0 to a DCP as a DCA TS</span>, this is the name of an XEU statement in the Telcon configuration.
+ The XEU statements can indicate a connection to destinations on various
+hosts and DCPs.  The DCP destinations can include DCP/OS, TOMF, and
+System 80, as well as more common ones like TIP and DEMAND. </p>
+</dd>
+
+
+
+<dt class="dt dlterm">Manage Prcs/XEU</dt>
+
+<dd class="dd">Click to open the Manage CMS Process/Telcon XEU dialog. Edit the
+following information: <dl class="dl">
+
+<dt class="dt dlterm">Add New</dt>
+
+<dd class="dd">Click to add a new CMS process or Telcon XEU.</dd>
+
+
+
+<dt class="dt dlterm">Rename Selected</dt>
+
+<dd class="dd">Click to rename the selected CMS process or Telcon XEU.</dd>
+
+
+
+<dt class="dt dlterm">Delete Selected</dt>
+
+<dd class="dd">Click to delete the CMS process or Telcon XEU.</dd>
+
+
+
+<dt class="dt dlterm">Available CMS Processes or Telcon XEUs</dt>
+
+<dd class="dd">Lists the available CMS processes or Telcon XEUs.</dd>
+
+
+</dl>
+</dd>
+
+
+
+<dt class="dt dlterm">App. Name</dt>
+
+<dd class="dd">This is the name of the application to be accessed when the session
+is to TIPCSU or CSACSU.  This name is the name of an APPLICATION statement
+in the CMS1100 configuration (this field is only valid for PROCESS
+TIPCSU and CSACSU — it is ignored for other PROCESSes and XEUs).</dd>
+
+
+
+<dt class="dt dlterm">Use SPSO Config.</dt>
+
+<dd class="dd">Select a configured SPSO from the drop-down menu. </dd>
+
+
+
+<dt class="dt dlterm">Manage SPSO</dt>
+
+<dd class="dd">Click to open the Manage Single Point SignOn (SPSO) Configurations
+dialog. Edit the following information: <dl class="dl">
+
+<dt class="dt dlterm">Configuration name</dt>
+
+<dd class="dd">Type a name for the SPSO configuration. </dd>
+
+
+
+<dt class="dt dlterm">Authentication Mode</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Binary Ticket</span>: </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Legacy (Userid/Password)</span>:</p>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Ticket Type</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Module 2 – Negotiation (Kerberos and NTLM)</span>: </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Module 2 – Kerberos Only</span>: </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Target 2200 account</span>: </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Module 3 NTLM Only</span>: </p>
+</li>
+
+</ul>
+</dd>
+
+
+</dl>
+</dd>
+
+
+
+<dt class="dt dlterm">Selected Virtual Destination </dt>
+
+<dd class="dd">Select a virtual destination from the drop-down list box to link
+this connection point to a configured virtual destination.  Selecting <span class="ph uicontrol">&lt;None&gt;</span> disconnects the connection point from the virtual
+destination.</dd>
+
+
+
+<dt class="dt dlterm">Available CMS Processes or Telcon XEUs</dt>
+
+<dd class="dd">Use the mouse to select from this list and change the Selected
+CMS Process or Telcon XEU parameter.</dd>
+
+
+
+<dt class="dt dlterm">Session Type</dt>
+
+<dd class="dd">The controls in this group are only required if your site is using
+the Unisys Single Point Sign-on feature. <ul class="ul">
+<li class="li"><span class="ph uicontrol">TIP</span>: Select this option if the Open Id
+will be used to access TIP sessions with the Single Point Sign-on
+feature. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Application Group Use TIP Session Control</span>: Check this box if your site has TIP Session Control and you are
+utilizing the Single Sign-On feature. </li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Demand</span>: Select this option if the Open
+Id will be used to access DEMAND sessions utilizing the Single Point
+Sign-on feature. </li>
+
+<li class="li"><span class="ph uicontrol">Other</span>: Select this option if the Open Id
+will be used to access other session types utilizing the Single Point
+Sign-on feature.  Currently, the only other type supported is for
+a console. </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Allow TEXTL</dt>
+
+<dd class="dd">Leave this check box selected unless access is set to a SYSTEM
+80.</dd>
+
+
+
+<dt class="dt dlterm">Special SITA Gabriel Handling</dt>
+
+<dd class="dd">Select this check box only if you are connecting to a SITA Gabriel
+host.</dd>
+
+
+</dl>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> to exit the dialog. </span>
+</li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_configure-connections-uts.htm" title="The UTS Host Connections dialog is used to control the overall operation of the configuration process and to configure points to a host visually. The dialog contains a work area where connection points and virtual destinations (hosts) can be easily linked together.">Configure connections</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="TN3270 changes"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_express-logon-feature.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_tn3270-changes"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>TN3270 changes</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_tn3270-changes">
+<div class="topic">
+
+<h1 class="title topictitle1">TN3270 changes</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><div class="p">In <samp class="ph codeph">TelnetParms</samp>, add the lines in red: <pre class="pre codeblock">TelnetParms
+
+;     DEBUG TRACE JOBLOG
+
+      SECUREPORT 993
+
+      KEYRING SAF  <var class="keyword varname">RACF keyring name</var>
+
+      ENCRYPTION DEFAULT ENDENCRYPTION
+
+      EXPRESSLOGON
+
+      CLIENTAUTH SAFCERT
+
+      CONNTYPE ANY
+
+      SSLTIMEOUT 120
+
+      NOSEQUENTIALLU
+
+EndTelnetParms</pre>
+<div class="note note"><span class="notetitle">Note:</span> For more information, refer to the
+following IBM publications:  <ul class="ul">
+<li class="li"><a class="xref" href="http://publibz.boulder.ibm.com/cgi-bin/bookmgr_OS390/BOOKS/f1a1b371/APPENDIX1.3?ACTION=MATCHES&amp;REQUEST=express+logon&amp;TYPE=FUZZY&amp;SHELF=F1A1BK91.bks&amp;DT=20080117151851&amp;CASE=&amp;searchTopic=TOPIC&amp;searchText=TEXT&amp;searchIndex=INDEX&amp;rank=RANK&amp;ScrollTOP=FIRSTHIT" target="_blank">APPENDIX1.3 Appendix C - Express Logon Feature  </a></li>
+
+<li class="li"><a class="xref" href="http://publibz.boulder.ibm.com/cgi-bin/bookmgr_OS390/BOOKS/F1A1B471/CCONTENTS?SHELF=F1A1BK91&amp;DN=SC31-8776-13&amp;DT=20080122114206" target="_blank">z/OS V1R9.0 Comm Svr: IP Configuration Reference</a></li>
+
+</ul>
+</div>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_express-logon-feature.htm" title="Beginning with BlueZone version 5.1, the BlueZone Mainframe Display emulator has support for the IBM express logon feature, known as Certificate Express Logon. The BlueZone express logon feature allows you to configure BlueZone Mainframe Display sessions that automatically connect to an IBM Mainframe without requiring a user ID and password. When this feature is enabled, the Telnet server on the Mainframe uses certificate information from an SSL connection and the application ID supplied by BlueZone to request a user ID and a PassTicket (a temporary password) from the IBM host access control program RACF.">Express logon feature</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring the print area feature"/>
+<meta name="abstract" content="This dialog is used to configure the print area feature. Print area is a very powerful feature that allows you to create and store definitions that uniquely identify multiple screens of data so that these screens can be automatically printed out in a semi-custom report like format."/>
+<meta name="description" content="This dialog is used to configure the print area feature. Print area is a very powerful feature that allows you to create and store definitions that uniquely identify multiple screens of data so that these screens can be automatically printed out in a semi-custom report like format."/>
+<meta name="DC.subject" content="features, print area, print area feature, configuring"/>
+<meta name="keywords" content="features, print area, print area feature, configuring"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_print-screen-setup.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_configuring-the-print-ar"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring the print area feature</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_configuring-the-print-ar">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring the print area feature</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">This dialog is used to configure the print area feature.
+ Print area is a very powerful feature that allows you to create and
+store definitions that uniquely identify multiple screens of data
+so that these screens can be automatically printed out in a semi-custom
+report like format. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p">When you are not using the print area feature, invoking the
+Print Screen command results in the current screen being printed.
+ However, if you are using the print area feature, and the current
+screen meets the criteria of an exiting print area definition, invoking
+the Print Screen command results in the printing of the defined screen
+data even if the data exists on multiple screens.  </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">To turn off or suspend this feature, from the menu bar, click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Print Setup</span></span> and click the <span class="ph uicontrol">Options</span> tab. 
+Enable the <span class="ph uicontrol">Suspend Print Area Functionality</span> check box. <p class="p">For example, you want to print the results of a multiple
+screen query in an easy to read continuous format without having to
+manually navigate to each screen. </p>
+ </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Add</span> to create a new Print
+Area Definition. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Run the query and choose text strings to be used as the
+screen identifiers.  This is accomplished by looking at your screen
+data and entering the a text string along with row numbers where the
+text string resides on the screen.  All three Screen Identifiers are
+required:</span>
+<ul class="ul choices">
+<li class="li choice"><span class="ph uicontrol">All Screens</span>: (Required) Type a text
+string that displays on every screen like the title of the page. </li>
+
+<li class="li choice"><span class="ph uicontrol">First Screen</span>: (Required) Type a text
+string that displays on the first screen of the query. </li>
+
+<li class="li choice"><span class="ph uicontrol">Last Screen</span>: (Required) Type a text
+string that displays on the last screen of the query like "End of
+File", and so on. </li>
+
+</ul>
+
+<div class="itemgroup info"><div class="note note"><span class="notetitle">Note:</span> If you are using something like "End of  File" or "Bottom
+of Data" as the Last Screen identifier, enter a 0 (zero) for Row number
+since it is likely that this text does not always land on the same
+line number.  Using a 0 signals BlueZone to look for this text anywhere
+on the last screen.</div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Set up the Print Range.  This feature allows you to eliminate
+undesired or repeated text from the printout. </span>
+<ul class="ul choices">
+<li class="li choice"><span class="ph uicontrol">First Screen</span>: Type the Row and Column
+where you want the print capture to start and the Row and Column where
+you want the print to end on the first screen.  You may want to include
+the column headings on the first screen to make the report easier
+to read.  Also, if there are control keys at the bottom of the screen,
+you may want to eliminate them from the printout. </li>
+
+<li class="li choice"><span class="ph uicontrol">Remaining Screens</span>: Type the Row and
+Column where you want the print capture to start and the Row and Column
+where you want the print to end on all the remaining screens.  On
+the remaining screens, you probably don't want to include the column
+headings.  Also, as above, if there are control keys at the bottom
+of the screen, you may want to eliminate them from the printout. </li>
+
+</ul>
+
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Verify that the function keys used for Page Up and Page
+Down are correct. </span></li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section postreq">To test, invoke the BlueZone Print Screen command, click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Print Screen</span></span> from the menu bar. <p class="p">Keep in mind that once the Print
+Area definition has been created, you don't have to do anything special
+to "turn on" this feature.  All you have to do is navigate to the
+screen that applies to this definition, and invoke the Print Screen
+command. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_print-screen-setup.htm" title="The Print Setup property page displays the currently configured printer and page settings. These parameters determine what happens when a user invokes BlueZone’s Copy to Printer function under the Edit menu. This feature is commonly referred to as Print Screen.">Print setup</a></div></div></div>
+
+</div></body>
+</html>

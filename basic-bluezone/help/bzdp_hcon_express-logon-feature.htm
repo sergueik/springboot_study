@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="concept"/>
+<meta name="DC.Title" content="Express logon feature"/>
+<meta name="abstract" content="Beginning with BlueZone version 5.1, the BlueZone Mainframe Display emulator has support for the IBM express logon feature, known as Certificate Express Logon. The BlueZone express logon feature allows you to configure BlueZone Mainframe Display sessions that automatically connect to an IBM Mainframe without requiring a user ID and password. When this feature is enabled, the Telnet server on the Mainframe uses certificate information from an SSL connection and the application ID supplied by BlueZone to request a user ID and a PassTicket (a temporary password) from the IBM host access control program RACF."/>
+<meta name="description" content="Beginning with BlueZone version 5.1, the BlueZone Mainframe Display emulator has support for the IBM express logon feature, known as Certificate Express Logon. The BlueZone express logon feature allows you to configure BlueZone Mainframe Display sessions that automatically connect to an IBM Mainframe without requiring a user ID and password. When this feature is enabled, the Telnet server on the Mainframe uses certificate information from an SSL connection and the application ID supplied by BlueZone to request a user ID and a PassTicket (a temporary password) from the IBM host access control program RACF."/>
+<meta name="DC.subject" content="features, express logon, express logon feature"/>
+<meta name="keywords" content="features, express logon, express logon feature"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_tn3270-changes.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_racf-changes.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_importing-the-certificate.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_configuring-bz-for-express-logon.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_recording-and-modifying-an-express-logon-script.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_hcon_express-logon-feature"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Express logon feature</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_hcon_express-logon-feature">
+<div class="topic">
+
+<h1 class="title topictitle1">Express logon feature</h1>
+
+
+
+<div class="body conbody"><p class="shortdesc">Beginning with BlueZone version 5.1, the BlueZone Mainframe
+Display emulator has support for the IBM express logon feature, known
+as Certificate Express Logon.  The BlueZone express logon feature
+allows you to configure BlueZone Mainframe Display sessions that automatically
+connect to an IBM Mainframe without requiring a user ID and password.
+ When this feature is enabled, the Telnet server on the Mainframe
+uses certificate information from an SSL connection and the application
+ID supplied by BlueZone to request a user ID and a PassTicket (a temporary
+password) from the IBM host access control program RACF. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Implementing express logon</h2><p class="p">In order to use
+this feature, an administrator must configure the host, install certificates
+if necessary on user computers, configure BlueZone connection settings,
+and create and modify a BlueZone connection script (<span class="ph filepath">.bzs</span>). </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><ul class="ulchildlinks"><li><a class="link" href="bzdp_href_tn3270-changes.htm">TN3270 changes</a><div/></li><li><a class="link" href="bzdp_href_racf-changes.htm">RACF changes</a><div/></li><li><a class="link" href="bzdp_htsk_importing-the-certificate.htm">Importing certificates</a><div/></li><li><a class="link" href="bzdp_htsk_configuring-bz-for-express-logon.htm">Configuring BlueZone for express logon</a><div/></li><li><a class="link" href="bzdp_htsk_recording-and-modifying-an-express-logon-script.htm" title="You have the choice of starting the script when the session is either disconnected or connected, so it may or may not start with a Connect event.">Recording and modifying an express logon script</a><div>You have the choice of starting the script when the session is either disconnected or connected, so it may or may not start with a Connect event. </div></li></ul><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Receiving files from the host"/>
+<meta name="abstract" content="BlueZone has the ability to transfer files to and from the PC and the host system. During the transfer, BlueZone performs the file translation between the ASCII (PC) and EBCDIC (Host) character sets. BlueZone supports Write Structured fields file transfers as well as screen-based file transfers."/>
+<meta name="description" content="BlueZone has the ability to transfer files to and from the PC and the host system. During the transfer, BlueZone performs the file translation between the ASCII (PC) and EBCDIC (Host) character sets. BlueZone supports Write Structured fields file transfers as well as screen-based file transfers."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_receiving-files-from-the"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Receiving files from the host</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_receiving-files-from-the">
+<div class="topic">
+
+<h1 class="title topictitle1">Receiving files from the host</h1>
+
+
+<div class="body taskbody"><p class="shortdesc">BlueZone has the ability to transfer files to and from
+the PC and the host system.  During the transfer, BlueZone performs
+the file translation between the ASCII (PC) and EBCDIC (Host) character
+sets.  BlueZone supports Write Structured fields file transfers as
+well as screen-based file transfers. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context"><p class="p">This procedure assumes that you have already configured
+IND$FILE transfer to meet your file transfer requirements. For more
+information on configuring IND$FILE transfer, refer to <a class="xref" href="bzdp_htsk_configuring-transfer-setup.htm">Configuring IND$FILE transfer setup</a>. </p>
+<p class="p"/>
+ </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">From the BlueZone mainframe display, click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol"> Receive</span></span>. </span>
+<div class="itemgroup stepresult">The Host File Transfer - Receive window opens. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Local Files</span> pane, select
+the location where you want to receive the host file. By default,
+this is the <span class="ph filepath">\Transfer</span> folder. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Host Files</span> pane, select the
+file you want to receive. If no files are displayed, click <span class="ph uicontrol">Refresh</span>. </span>
+<div class="itemgroup info"><div class="note note"><span class="notetitle">Note:</span> If you selected the <span class="ph uicontrol">TSO</span> host system
+type during configuration, your session must be at a READY prompt
+or the ISPF command shell. If it is not, you cannot view the host
+files and you will receive an error when you click <span class="ph uicontrol">Refresh</span>. </div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">From the menu bar, select <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol">Receive</span></span> or click the <span class="ph uicontrol">Receive</span> icon in the center pane. </span>
+<div class="itemgroup info"><div class="note note"><span class="notetitle">Note:</span> To receive multiple files, see <a class="xref" href="bzdp_htsk_creating-and-saving-transfer-lists.htm">Creating and saving transfer lists</a>. </div>
+</div>
+</li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm" title="The IND$FILE transfer is controlled through the Host File Transfer window. The Host File Transfer window provides an easy-to-use graphical interface. You can send or receive a single file to or from the host. You can also create transfer lists to easily preform batch file transfers.">IND$FILE transfer - IBM Mainframe (3270)</a></div></div></div>
+
+</div></body>
+</html>

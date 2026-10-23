@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Scripting a HotSpot"/>
+<meta name="abstract" content="In the Customize HotSpots window, one of the available options that can be selected is Play Script. This feature allows you to identify an existing or custom text string that displays on the screen, and associate a script with that string."/>
+<meta name="description" content="In the Customize HotSpots window, one of the available options that can be selected is Play Script. This feature allows you to identify an existing or custom text string that displays on the screen, and associate a script with that string."/>
+<meta name="DC.subject" content="hotspots, scripting"/>
+<meta name="keywords" content="hotspots, scripting"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_display-options.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_scripting-a-hotspot"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Scripting a HotSpot</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_scripting-a-hotspot">
+<div class="topic">
+
+<h1 class="title topictitle1">Scripting a HotSpot</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">In the Customize HotSpots window, one of the available
+options that can be selected is Play Script.  This feature allows
+you to identify an existing or custom text string that displays on
+the screen, and associate a script with that string. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p">Here's an example.  Suppose that critical customer information,
+like account balance, is located on a different host.  Also, let's
+suppose that you developed a BlueZone script that automatically launches
+a new BlueZone session that retrieves the customer's account balance
+and displays it to the user.  </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">Now, you can create a custom Search String that will be used
+to launch the script. <p class="p">This procedure uses BlueZone Mainframe Display
+as an example.  </p>
+ </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol"> Display</span></span> or
+click the <span class="ph uicontrol">Display</span> icon on the BlueZone toolbar.
+ </span>
+<div class="itemgroup stepresult">The Display Options dialog displays. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">GUI</span> tab.  </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Verify that the <span class="ph uicontrol">Enable HotSpots</span> check
+box is selected. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Customize</span>.  </span>
+<div class="itemgroup stepresult">The Customize HotSpots dialog displays. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">New</span>.  </span>
+<div class="itemgroup stepresult">The Define Custom Search dialog opens. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Type the string of characters that is used to create a
+HotSpot that is used to launch the script. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>.  </span>
+<div class="itemgroup stepresult">The new Custom Search String opens.</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">With the new Custom Search String selected, go to the <span class="ph uicontrol">Action / 3270 Function</span> edit box and select <span class="ph uicontrol">Play Script</span>.  </span>
+<div class="itemgroup stepresult">A field displays. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Type the name of the script that you want to be associated
+with your new Custom Search String. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>. </span></li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section result">Whenever the defined string displays on the screen, it will
+be turned into a button or highlighted when you mouse over the string.
+ This behavior is controlled by the options selected on the GUI tab
+in Display Options.  <p class="p">When the HotSpot is clicked, it launches the
+associated script defined above. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_display-options.htm">Options menu</a></div></div></div>
+
+</div></body>
+</html>

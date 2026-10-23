@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Creating BlueZone 6530 Display connections"/>
+<meta name="abstract" content="Prior to establishing a host system connection, you must define a host connection."/>
+<meta name="description" content="Prior to establishing a host system connection, you must define a host connection."/>
+<meta name="DC.subject" content="BlueZone 6530 Display connections, creating, 6530 Display connections"/>
+<meta name="keywords" content="BlueZone 6530 Display connections, creating, 6530 Display connections"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_bluezone-6530.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_define-new-connections"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Creating BlueZone 6530 Display connections</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_define-new-connections">
+<div class="topic">
+
+<h1 class="title topictitle1">Creating BlueZone 6530 Display connections</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">Prior to establishing a host system connection, you must
+define a host connection. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><ol class="ol">
+<li class="li">Click <span class="ph menucascade"><span class="ph uicontrol">Start</span> → <span class="ph uicontrol">All Programs</span> → <span class="ph uicontrol">BlueZone <span class="keyword">7.1</span></span> → <span class="ph uicontrol">BlueZone 6530</span></span>. <p class="p">The first time that you create a BlueZone 6530 Display session, the
+       <span class="keyword wintitle">Define New Connection</span> window opens. </p>
+<p class="p">To open this window on
+      subsequent connections, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol">Configure</span></span>, and then click <span class="ph uicontrol">New</span> or <span class="ph uicontrol">Edit</span>.
+     </p>
+</li>
+
+<li class="li">In the <span class="ph uicontrol">Connection</span> tab, complete the following fields: <dl class="dl">
+      
+       <dt class="dt dlterm">Telnet Connection</dt>
+
+       <dd class="dd">
+        <ul class="ul">
+         <li class="li"><span class="ph uicontrol">Connection Name</span>: A unique name used to identify this collection
+          of Connection settings.</li>
+
+         <li class="li"><span class="ph uicontrol">Host Address</span>: Specifies the computer name (in Internet format,
+          known as DNS Name) or the IP address in either IPv4 or IPv6 format, of the host
+          system.</li>
+
+         <li class="li"><span class="ph uicontrol">TCP Port</span>: Specifies the TCP port number. The default is 23.</li>
+
+         <li class="li"><span class="ph uicontrol">Backup Host</span>: Specifies the backup host to which BlueZone
+          connects if the primary host is not available. Backup hosts are selected from the
+          Connection List.</li>
+
+        </ul>
+
+       </dd>
+
+      
+     </dl>
+</li>
+
+    <li class="li">In the <span class="ph uicontrol">Emulation</span> tab, complete the following fields: <dl class="dl">
+      
+       <dt class="dt dlterm">Emulation Options</dt>
+
+       <dd class="dd">
+        <ul class="ul">
+         <li class="li"><span class="ph uicontrol">Terminal</span>: : Select the terminal type that you want to emulate
+          from the menu. For BlueZone 6530, <span class="ph uicontrol">TANDEM</span> is the only available
+          terminal type.</li>
+
+         <li class="li"><span class="ph uicontrol">Terminal ID</span>: The Terminal ID automatically changes with the
+          chosen Terminal setting above; however, you can override this value with the setting of
+          your choice.</li>
+
+        </ul>
+
+       </dd>
+
+      
+      
+       <dt class="dt dlterm">Default Screen Size</dt>
+
+       <dd class="dd">
+        <ul class="ul">
+         <li class="li"><span class="ph uicontrol">Rows</span>: Sets the number of viewable rows used by the
+          host.</li>
+
+         <li class="li"><span class="ph uicontrol">Columns</span>: Sets the number of viewable columns used by the
+          host.</li>
+
+        </ul>
+
+       </dd>
+
+      
+     </dl>
+</li>
+
+<li class="li">In the <span class="ph uicontrol">Firewall</span> tab, you can configure the firewall and proxy server sign
+     on systems. Complete the following fields: <dl class="dl">
+      
+       <dt class="dt dlterm">Firewall Options </dt>
+
+       <dd class="dd">
+        <ul class="ul">
+         <li class="li"><span class="ph uicontrol">Use Firewall/Proxy Server</span>: Select to enable this feature. </li>
+
+         <li class="li">
+          <p class="p"><span class="ph uicontrol">Use Browser Settings</span>: Select to use the firewall settings in
+           your default web browser. </p>
+
+         </li>
+
+         <li class="li"><span class="ph uicontrol">Firewall Type</span>: Select the firewall type from the menu: <ul class="ul">
+           <li class="li">SOCKS4 Proxy</li>
+
+           <li class="li">SOCKS4A Proxy</li>
+
+           <li class="li">SOCKS5 Proxy</li>
+
+           <li class="li">NVT Proxy or Firewall</li>
+
+           <li class="li">HTTP Tunnelling Proxy</li>
+
+          </ul>
+</li>
+
+         <li class="li"><span class="ph uicontrol">Firewall Address</span>: Type the IP address of the firewall.</li>
+
+         <li class="li"><span class="ph uicontrol">Port</span>: Type the port number used by the firewall.</li>
+
+         <li class="li"><span class="ph uicontrol">Timeout</span>: Type the appropriate time out value.</li>
+
+         <li class="li"><span class="ph uicontrol">User Name</span>: Type the user name.</li>
+
+         <li class="li"><span class="ph uicontrol">Password</span>: Type the password. </li>
+
+         <li class="li">
+          <div class="p"><span class="ph uicontrol">Domain</span>: Type the domain name. <div class="note note"><span class="notetitle">Note:</span> If you selected
+             <span class="ph uicontrol">NVT Proxy or Firewall</span>, then you must provide the following prompts:<ul class="ul">
+             <li class="li"><span class="ph uicontrol">Host Name Prompt</span>: Type the firewall prompt, or a unique
+              portion of the prompt, of the host name that BlueZone is expecting. For example,
+               <kbd class="ph userinput">Enter host name</kbd>. If this prompt is detected, the Host Address
+              from the <span class="ph uicontrol">Connections</span> tab is sent. </li>
+
+             <li class="li"><span class="ph uicontrol">User Name Prompt</span>: Type the firewall prompt, or a unique
+              portion of the prompt, of the user name that the firewall is expecting. For example,
+               <kbd class="ph userinput">Enter user name</kbd>. If this prompt is detected, the User Name
+              Prompt field is sent. </li>
+
+             <li class="li"><span class="ph uicontrol">Password Prompt</span>: Type the firewall prompt, or a unique
+              portion of the prompt, of the password that the firewall is expecting. For example,
+               <kbd class="ph userinput">Enter password</kbd>. If this prompt is detected, the Password
+              Prompt field is sent. </li>
+
+             <li class="li"><span class="ph uicontrol">Connected Prompt</span>: Type the firewall prompt, or a unique
+              portion of the prompt, of the connection message. For example,
+               <kbd class="ph userinput">Connected</kbd> or <kbd class="ph userinput">Connected to host</kbd>. If this
+              prompt is detected, the firewall connection is considered to be complete and the
+              Telnet negotiation begins. </li>
+
+            </ul>
+</div>
+</div>
+
+         </li>
+
+        </ul>
+
+       </dd>
+
+      
+     </dl>
+</li>
+
+<li class="li">In the <span class="ph uicontrol">Security</span> tab, configure the SSL, TLS, or SSH options. BlueZone
+     6530 can be preconfigured for distribution with encryption configured and enabled eliminating
+     the need for any end user intervention in the installation or configuration process. <div class="note note"><span class="notetitle">Note:</span> The
+      available <span class="ph uicontrol">Security Options</span> change depending on the type of encryption
+      selected. This document covers all possible settings</div>
+<div class="p">Complete the following fields: <dl class="dl">
+       
+        <dt class="dt dlterm">Security Options </dt>
+
+        <dd class="dd">
+         <ul class="ul">
+          
+          
+          <li class="li"><span class="ph uicontrol">Security Type</span>: If you want to encrypt your
+           session, select one of the following encryption methods from the drop-down list box. The
+           method is dictated by the secure Telnet host that you are connecting to.<ul class="ul">
+            <li class="li"><span class="ph uicontrol">None</span>: Indicates that no encryption is being used. </li>
+
+            <li class="li"><span class="ph uicontrol">Implicit TLS</span>: Negotiates a secure connection to the host
+             first, then negotiates the Telnet connection. </li>
+
+            <li class="li"><span class="ph uicontrol">Explicit TLS</span>: Encryption is negotiated during the Telnet
+             negotiation.</li>
+
+            <li class="li"><span class="ph uicontrol">SSH</span></li>
+
+           </ul>
+</li>
+
+          <li class="li"><span class="ph uicontrol">Minimum TLS Version</span>: Specifies the minimum
+           allowable TLS protocol version. A higher version may be negotiated if the server supports
+           it: <ul class="ul">
+            <li class="li"><span class="ph uicontrol">SSL v3</span>: Allows SSLv3 to be used. SSLv3 has numerous
+             vulnerabilities and is no longer considered secure. This setting is NOT
+             RECOMMENDED.</li>
+
+            <li class="li"><span class="ph uicontrol">TLS v1.0</span> (Default): Specifies that at least TLS version 1.0
+             is used. This is the default value.</li>
+
+            <li class="li"><span class="ph uicontrol">TLS v1.1</span>: Specifies that at least TLS version 1.1 is used. </li>
+
+            <li class="li"><span class="ph uicontrol">TLS v1.2</span>: Specifies that at least TLS version 1.2 is used. </li>
+
+            
+           </ul>
+</li>
+
+          
+          <li class="li"><span class="ph uicontrol">Preferred Cipher Suite</span>: Specifies a specific SSL/TLS or SSH
+           cipher suite (encryption algorithm) to use. To allow the client and server to negotiate
+           the cipher suite, select <span class="ph uicontrol">Strong only</span>.<div class="note note"><span class="notetitle">Note:</span> The cipher suite
+            choices will change depending on if you are using SSL/TLS or SSH.</div>
+
+           <span class="ph uicontrol">Strong only</span> is not available in SSH.</li>
+
+          <li class="li"><span class="ph uicontrol">Invalid Certificates</span>: Specifies how to handle an
+           invalid server certificate.<ul class="ul">
+            <li class="li"><span class="ph uicontrol">Always Reject</span>: Specifies that an invalid server certificate
+             must always be rejected.</li>
+
+            <li class="li"><span class="ph uicontrol">Ask Before Accepting</span>: Specifies that the user must be asked
+             whether to accept an invalid server certificate.</li>
+
+            <li class="li"><span class="ph uicontrol">Always Accept</span>: (Default) Specifies that an invalid server
+             certificate must always be accepted.</li>
+
+           </ul>
+</li>
+
+          <li class="li"><span class="ph uicontrol">Check for Certificate Revocation</span>: Specifies how
+           to perform revocation checking on the server certificate chain at connect time, which
+           will result in a connection failure if a certificate has been revoked, if the revocation
+           server cannot be contacted, or if revocation information is not listed in the
+           certificate. <ul class="ul">
+            <li class="li"><span class="ph uicontrol">Do Not Check</span>: Performs no certificate revocation
+             checking.</li>
+
+            <li class="li"><span class="ph uicontrol">Server Certificate Only</span>: Performs revocation checking on the
+             end server certificate only.</li>
+
+            <li class="li"><span class="ph uicontrol">Server and Chain Certificates</span>: Performs revocation checking
+             on the end server certificate and the intermediate certificates in the chain.</li>
+
+            <li class="li"><span class="ph uicontrol">Server, Chain, and Root Certificates</span>: Performs revocation
+             checking on the end server certificate, the intermediate certificates in the chain, and
+             the root certificate.</li>
+
+           </ul>
+</li>
+
+          <li class="li"><span class="ph uicontrol">Alternate Principal Name</span>: Type a valid address in this field to
+           use to validate the server certificate. <br/><p class="p">When a host site's server
+            certificate's Common Name (CN) or AltSubjectName does not match the address used to
+            connect to the host, a certificate error occurs, stating that the host address does not
+            match the common name. If it is not possible to connect to the host address listed in
+            the certificate, the address from the certificate can be typed into the
+             <span class="ph uicontrol">Alternate Principal Name</span> field. This address, rather than the
+            host connection address, is used to validate the server certificate.</p>
+</li>
+
+          <li class="li"><span class="ph uicontrol">Remote Command</span>: Remote Command will take the
+           place of Alternate Principal Name when SSH is selected. You can use this text box to send
+           remote commands to your SSH connected host. This feature is popular with Linux hosts.
+          </li>
+
+         </ul>
+
+        </dd>
+
+       
+      </dl>
+</div>
+</li>
+
+    <li class="li">In the <span class="ph uicontrol">Certificate</span> tab, complete the following fields: <dl class="dl">
+      
+       <dt class="dt dlterm">Client Certificate </dt>
+
+       <dd class="dd">These parameters specify the type of client certificate to use if any. <ul class="ul">
+         <li class="li"><span class="ph uicontrol">No Client Certificate</span>: Specifies that a client certificate must
+          not be presented. </li>
+
+         <li class="li"><span class="ph uicontrol">Client Certificate in Certificate Store</span>: Specifies that a client
+          certificate must be presented that is located in the certificate store.<ul class="ul">
+           <li class="li"><span class="ph uicontrol">Common Name</span>: Specifies the Common Name (CN) of the certificate
+            to be presented. <ul class="ul">
+             <li class="li"><span class="ph uicontrol">View</span>: Click to view the certificate. </li>
+
+             <li class="li"><span class="ph uicontrol">Browse</span>: Click to display a list of certificates in the
+              certificate store. </li>
+
+            </ul>
+</li>
+
+          </ul>
+</li>
+
+        </ul>
+</dd>
+
+      
+      
+      
+     </dl>
+</li>
+
+<li class="li">In the <span class="ph uicontrol">Kerberos</span> tab, you can configure the optional Kerberos
+     Authentication Protocol component. If the <span class="ph uicontrol">Kerberos</span> tab is not available,
+     the Kerberos component was not installed. Refer to the <cite class="cite">BlueZone Desktop Administrator's
+      Guide</cite> in Chapter 2: Installing BlueZone - Optional installation features - Enabling
+     Kerberos for information about installing the Kerberos Authentication feature. <div class="p">Complete the
+      following fields: <dl class="dl">
+       
+        <dt class="dt dlterm">Kerberos options</dt>
+
+        <dd class="dd">
+         <ul class="ul">
+          <li class="li"><span class="ph uicontrol">Enable Kerberos Authentication</span>: To enable Kerberos
+           Authentication for this session, place a check in this check box.</li>
+
+          <li class="li"><span class="ph uicontrol">Use Windows Credentials</span>: If enabled, your Windows
+           credentials (User Name and Domain) are used in lieu of Principal and Realm. Your User
+           Name is used as the Principal name and your Domain name is used as the Realm name.</li>
+
+          <li class="li"><span class="ph uicontrol">Forward Credentials</span>: If enabled, your credentials are forwarded
+           to the remote session. The credentials are passed as a Kerberos message which includes,
+           among other things, the forwarded Kerberos ticket and a session key associated with the
+           ticket.</li>
+
+          <li class="li"><span class="ph uicontrol">Principal</span>: If you are not using your Windows credentials,
+           type your Principal name here.</li>
+
+          <li class="li"><span class="ph uicontrol">Realm</span>: If you are not using your Windows credentials, type the
+           Realm name here. The Realm name must be typed entirely in uppercase.</li>
+
+          <li class="li"><span class="ph uicontrol">Target</span>: Type the name of the Kerberos database.</li>
+
+          <li class="li"><span class="ph uicontrol">Manage Tickets</span>: Click to manage Kerberos tickets. The Kerberos
+           Ticket Manager opens.</li>
+
+         </ul>
+
+        </dd>
+
+       
+      </dl>
+</div>
+</li>
+
+    <li class="li">The <span class="ph uicontrol">Tunneling</span> tab will only appear when SSH is
+     selected on the <span class="ph uicontrol">Security</span> tab.<p class="p">Complete the following fields:</p>
+<dl class="dl">
+      
+       <dt class="dt dlterm">Tunneling Options</dt>
+
+       <dd class="dd">
+        <ul class="ul" id="Bzdp_href_define-new-connections__ul_onj_zsn_fs">
+         <li class="li"><span class="ph uicontrol">Enable X11 forwarding</span>: Select to enable X11 forwarding</li>
+
+         <li class="li"><span class="ph uicontrol">Allow Remote Connections</span>: If enabled, you are allowing remote IP
+          addresses to connect to the local listening port used in tunneling.</li>
+
+         <li class="li"><span class="ph uicontrol">Add, Edit or Delete</span>: Used to add, edit or delete port forwarding
+          rules.</li>
+
+         <li class="li"><span class="ph uicontrol">Add</span>: When adding a rule, you have to choose either
+           <span class="ph uicontrol">Local Port</span> or <span class="ph uicontrol">Remote Port</span>, then enter the
+          port number you want to forward. Then you have to add the host name in the
+           <span class="ph uicontrol">Name</span> field with the port number on that host.</li>
+
+         <li class="li"><span class="ph uicontrol">Edit</span>: Allows you edit an existing rule.</li>
+
+         <li class="li"><span class="ph uicontrol">Delete</span>: Allows you delete an existing rule.</li>
+
+        </ul>
+
+       </dd>
+
+      
+     </dl>
+</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span>.</li>
+
+</ol>
+
+   <div class="note note"><span class="notetitle">Note:</span> If you enable the Direct/Modem feature in the global.ini file, you can
+    change the connection type from <span class="ph uicontrol">Telnet</span> to <span class="ph uicontrol">Direct</span>
+    or <span class="ph uicontrol">Modem</span> using the <span class="ph uicontrol">Connection Type</span> list that
+    appears in the <span class="ph uicontrol">Connection</span> tab. If you select either
+     <span class="ph uicontrol">Direct</span> or <span class="ph uicontrol">Modem</span> connections, you will have the
+    option to select your desired <span class="ph uicontrol">Baud Rate</span>, <span class="ph uicontrol">Data
+    Bits</span>, <span class="ph uicontrol">Parity</span>, <span class="ph uicontrol">Stop Bits</span>,
+     <span class="ph uicontrol">Flow Control</span>, and <span class="ph uicontrol">Phone Number</span> (modem only). For
+    more information on enabling the Direct/Modem feature, refer to the <em class="ph i">Rocket BlueZone Desktop
+     Adminitrator's Guide</em>.</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_bluezone-6530.htm">BlueZone 6530</a></div></div></div>
+
+</div></body>
+</html>

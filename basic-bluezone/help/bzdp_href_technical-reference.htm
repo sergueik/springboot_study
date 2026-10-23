@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Technical reference"/>
+<meta name="abstract" content="This technical reference describes the free form text that may be entered into the custom file type parameters input field for file transfer options. The valid text that may be entered depends on the file transfer operation (Send or Receive) and the mainframe operating system (CICS, MVS/TSO or VM/CMS)."/>
+<meta name="description" content="This technical reference describes the free form text that may be entered into the custom file type parameters input field for file transfer options. The valid text that may be entered depends on the file transfer operation (Send or Receive) and the mainframe operating system (CICS, MVS/TSO or VM/CMS)."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_technical-reference"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Technical reference</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_technical-reference">
+<div class="topic">
+
+<h1 class="title topictitle1">Technical reference</h1>
+
+
+<div class="body refbody"><p class="shortdesc">This technical reference describes the free form text that
+may be entered into the custom file type parameters input field for
+file transfer options. The valid text that may be entered depends
+on the file transfer operation (Send or Receive) and the mainframe
+operating system (CICS, MVS/TSO or VM/CMS). </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Mainframe system requirements</h2><p class="p">Depending
+on the IBM host system that is used, one of the following IBM host-supported
+file transfer programs must be installed at your host site. The <span class="ph uicontrol">Options</span> tab on the File Transfer window is used to configure
+the mainframe operating system and the file transfer program name. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">MVS/TSO Mainframe operating system</dt>
+
+<dd class="dd">IBM 3270-PC File Transfer Program Release 1 (5665-311) <p class="p">At the
+TSO command level, type: <kbd class="ph userinput">IND$FILE</kbd>. If the program
+is not installed, you receive the message: <samp class="ph systemoutput">[IKJ56500I]
+COMMAND IND$FILE NOT FOUND</samp></p>
+</dd>
+
+
+
+<dt class="dt dlterm">VM/CMS Mainframe operating system</dt>
+
+<dd class="dd">IBM 3270-PC File Transfer Program Release 1 (5664-281) <p class="p">The
+installation and support of the IBM host-supported file transfer program
+is outside the scope of this documentation. A quick way to determine
+if the IBM file transfer product is installed on your host, is to
+do the following: In the CMS environment, type: <kbd class="ph userinput">IND$FILE</kbd>. If the program is not installed, you will receive the message: <samp class="ph systemoutput">UNKNOWN CP/CMS COMMAND</samp></p>
+</dd>
+
+
+
+<dt class="dt dlterm">CICS Mainframe operating system</dt>
+
+<dd class="dd">Ask your systems administrator if the IBM IND$FILE host file transfer
+program is installed.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">CMS send parameters</h2><div class="p">Send parameters are
+optional and are passed as parameters to the host IND$FILE program.
+The following parameters are valid for the VM/CMS send file transfer
+operation. When using the following parameters, an open parenthesis
+character "(" must precede the actual parameter string and a close
+parenthesis character “)” must follow the parameter string. For example: <pre class="pre codeblock">( ASCII RECFM F LRECL 125 )</pre>
+</div>
+<dl class="dl">
+
+<dt class="dt dlterm">ASCII</dt>
+
+<dd class="dd">If the PC file consists of character data only, specify ASCII.
+This causes the translation of all graphic and control characters
+from ASCII to EBCDIC during the transfer so that it is usable on the
+host computer.</dd>
+
+
+
+<dt class="dt dlterm">CRLF</dt>
+
+<dd class="dd">Following the convention for ASCII text files, &lt;CR&gt; &lt;LF&gt;
+pairs are used to terminate records in the PC file, and a CTRL-Z (x'1A')
+marks the end of file. If the PC file consists of data other than
+text such as binary format data, do not specify either ASCII or CRLF.</dd>
+
+
+
+<dt class="dt dlterm">APPEND</dt>
+
+<dd class="dd">If the CMS file already exists and is not empty, APPEND specifies
+that the contents of the PC file are to be appended to the file.</dd>
+
+
+
+<dt class="dt dlterm">RECFM x</dt>
+
+<dd class="dd">Specifies the record format of the CMS file. Replace x with either
+F, V, or U. F specifies that the data set contains fixed length records.
+V specifies that the data set contains variable length records. U
+specifies that the data set contains undefined length records. For
+existing CMS files the default value is the record format of the CMS
+file.</dd>
+
+
+
+<dt class="dt dlterm">LRECL n</dt>
+
+<dd class="dd">Specifies the logical record length n for a CMS file consisting
+of fixed length records or the maximum logical record length for a
+CMS file consisting of variable length records. Values permitted are
+1 to 32760. For new CMS files the default value is 80. This parameter
+is ignored if APPEND is specified. For CMS files consisting of variable
+length records, the actual logical record length (for example, the
+value stored in the Data Set Control Block) following the file transfer
+is set to the minimum of the value of LRECL and the longest record
+in the CMS file.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">CMS receive parameters</h2><p class="p">Receive parameters
+are optional and are passed as parameters to the host IND$FILE program.
+ When using the following parameters, an open parenthesis character
+"(" must precede the actual parameter string. The close parenthesis
+character ")" must terminate the parameter string. The following parameters
+are valid for the VM/CMS receive file transfer operation: </p>
+<dl class="dl">
+
+<dt class="dt dlterm">APPEND</dt>
+
+<dd class="dd">APPEND specifies that if the file exists, the CMS file contents
+are to be appended to it. Unless APPEND is specified, the PC file
+is replaced by the contents of the CMS file.</dd>
+
+
+
+<dt class="dt dlterm">ASCII</dt>
+
+<dd class="dd">If the CMS file consists of character data only, specify ASCII.
+This causes the translation of all graphic and control characters
+from ASCII to EBCDIC during the transfer.</dd>
+
+
+
+<dt class="dt dlterm">CRLF</dt>
+
+<dd class="dd">Following the convention for ASCII text files, &lt;CR&gt; &lt;LF&gt;
+pairs are used to terminate records in the PC file, and a CTRL-Z (x'1A')
+marks the end of file.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">TSO send parameters</h2><p class="p">Send parameters are
+optional and are passed as parameters to the host IND$FILE program.
+The following parameters are valid for the MVS/TSO send file transfer
+operation: </p>
+<dl class="dl">
+
+<dt class="dt dlterm">ASCII</dt>
+
+<dd class="dd">If the PC file consists of character data only, specify ASCII.
+This will cause the translation of all graphic and control characters
+from ASCII to EBCDIC during the transfer.</dd>
+
+
+
+<dt class="dt dlterm">CRLF</dt>
+
+<dd class="dd">Following the convention for ASCII text files, &lt;CR&gt; &lt;LF&gt;
+pairs are used to terminate records in the PC file, and a CTRL-Z (x'1A')
+marks the end of file. If the PC file consists of data other than
+text, such as binary format data, do not specify either ASCII or CRLF.</dd>
+
+
+
+<dt class="dt dlterm">APPEND</dt>
+
+<dd class="dd">If the data set already exists and is not empty, APPEND specifies
+that the contents of the PC file are to be appended to the data set.
+APPEND cannot be specified for members of a partitioned data set.</dd>
+
+
+
+<dt class="dt dlterm">RECFM(x)</dt>
+
+<dd class="dd">Specifies the record format of the data set. Replace x with either
+F, V, or U. F specifies that the data set contains fixed length records.
+V specifies that the data set contains variable length records. U
+specifies that the data set contains undefined length records. For
+existing data sets, the default value is the existing record format.</dd>
+
+
+
+<dt class="dt dlterm">LRECL(n)</dt>
+
+<dd class="dd">Specifies the logical record length (n) for a data set consisting
+of fixed length records or the maximum logical record length for a
+data set consisting of variable length records. Values permitted are
+1 to 32760. For new data sets the default value is 80. This parameter
+is ignored if APPEND is specified. For data sets consisting of variable
+length records, the actual logical record length (i.e. the value stored
+in the Data Set Control Block) following the file transfer is set
+to the minimum of the value of LRECL and the longest record in the
+data set.</dd>
+
+
+
+<dt class="dt dlterm">BLKSIZE(n)</dt>
+
+<dd class="dd">Specifies the block size (n) for a new data set. For data sets
+containing fixed-length records, the block size must be a multiple
+of the record length. For data sets containing variable-length records,
+the block size must be greater than or equal to the record length
+plus four bytes. The block size must not exceed the track length of
+the device on which the data set resides. The block size must also
+not exceed 32,760 bytes. The default value is 3120. This parameter
+is ignored if the data set already exists.</dd>
+
+
+
+<dt class="dt dlterm">SPACE(quantity[,increment])</dt>
+
+<dd class="dd">Specifies the amount of disk space to be allocated for a new data
+set. If the SPACE parameter is used, you can use one of the three
+following options to specify the units used for quantity and increment: <ul class="ul">
+<li class="li">SAVBLOCK(value) </li>
+
+<li class="li">TRACKS </li>
+
+<li class="li">CYLINDERS</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">TSO receive parameters</h2><div class="p">Receive parameters
+are optional and are passed as parameters to the host IND$FILE program.
+When using the following positional parameters, care should be taken
+to include the "(" open parenthesis character and ")" parentheses
+character in describing RECFM, LRECL, and BLKSIZE. For example: <pre class="pre codeblock">ASCII CRLF RECFM(F) LRECL(80) BLKSIZE(6160)</pre>
+In the MVS/TSO,
+Receive Parameters include the following:  </div>
+<p class="p">The following parameters
+are valid for the MVS/TSO receive file transfer operation:</p>
+<dl class="dl">
+
+<dt class="dt dlterm">ASCII</dt>
+
+<dd class="dd">If the PC file consists of character data only, specify ASCII.
+This causes the translation of all graphic and control characters
+from EBCDIC to ASCII during the transfer.</dd>
+
+
+
+<dt class="dt dlterm">CRLF</dt>
+
+<dd class="dd">Following the convention for ASCII text files, &lt;CR&gt; &lt;LF&gt;
+pairs are used to terminate records in the PC file, and a CTRL-Z (x'1A')
+marks the end of file. If the PC file consists of data other than
+text, such as binary format data, do not specify either ASCII or CRLF.</dd>
+
+
+
+<dt class="dt dlterm">APPEND</dt>
+
+<dd class="dd">If the data set already exists and is not empty, APPEND specifies
+that the contents of the Mainframe file are to be appended to the
+data set. APPEND cannot be specified for members of a partitioned
+data set.</dd>
+
+
+
+<dt class="dt dlterm">RECFM(x)</dt>
+
+<dd class="dd">Specifies the record format of the data set. Replace x with either
+F, V, or U. F specifies that the data set contains fixed length records.
+V specifies that the data set contains variable length records. U
+specifies that the data set contains undefined length records. For
+existing data sets, the default value is the existing record format.</dd>
+
+
+
+<dt class="dt dlterm">LRECL(n)</dt>
+
+<dd class="dd">Specifies the logical record length (n) for a data set consisting
+of fixed length records or the maximum logical record length for a
+data set consisting of variable length records. Values permitted at
+1 to 32760. For new data sets, the default value is 80. This parameter
+is ignored if APPEND is specified. For data sets consisting of variable-length
+records, the actual logical record length (i.e., the value stored
+in the Data Set Control Block) following the file transfer, is set
+to the minimum of the value of LRECL and the longest record in the
+data set.</dd>
+
+
+
+<dt class="dt dlterm">BLKSIZE(n)</dt>
+
+<dd class="dd">Specifies the block size (n) of the data set. For data sets containing
+fixed-length records, the block size must be a multiple of the record
+length. For data sets containing variable-length records, the block
+size must be greater than or equal to the record length plus four
+bytes. The block size must not exceed the track length of the device
+on which the data set resides. The block size must also not exceed
+32,760 bytes. The default value is 3120.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">CICS send parameters</h2><p class="p">Send parameters are
+optional and are passed as parameters to the host IND$FILE program.
+The following parameters are valid for the CICS send file transfer
+operation: </p>
+<dl class="dl">
+
+<dt class="dt dlterm">ASCII</dt>
+
+<dd class="dd">If the PC file consists of character data only, specify ASCII.
+This causes the translation of all graphic and control characters
+from ASCII to EBCDIC during the transfer so that it is usable on the
+host computer.</dd>
+
+
+
+<dt class="dt dlterm">BINARY</dt>
+
+<dd class="dd">If the PC file consists of binary data, specify BINARY.</dd>
+
+
+
+<dt class="dt dlterm">CRLF</dt>
+
+<dd class="dd">Following the convention for ASCII text files, &lt;CR&gt; &lt;LF&gt;
+pairs are used to terminate records in the PC file, and a CTRL-Z (x'1A')
+marks the end of file. CRLF is a default option.</dd>
+
+
+
+<dt class="dt dlterm">NOCRLF</dt>
+
+<dd class="dd">Do not use &lt;CR&gt; &lt;LF&gt; pairs to terminate records in the CICS
+file.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">CICS receive parameters</h2><p class="p">Receive parameters
+are optional and are passed as parameters to the host IND$FILE program.
+The following parameters are valid for the CICS receive file transfer
+operation: </p>
+<dl class="dl">
+
+<dt class="dt dlterm">APPEND</dt>
+
+<dd class="dd">APPEND specifies that if the PC file exists, the CICS file contents
+are to be appended to it. Unless APPEND is specified, the PC file
+is replaced by the contents of the CICS file.</dd>
+
+
+
+<dt class="dt dlterm">ASCII</dt>
+
+<dd class="dd">If the CICS file consists of character data only, specify ASCII.
+This causes the translation of all graphic and control characters
+from ASCII to EBCDIC during the transfer.</dd>
+
+
+
+<dt class="dt dlterm">BINARY</dt>
+
+<dd class="dd">If the PC file consists of binary data, specify BINARY.</dd>
+
+
+
+<dt class="dt dlterm">CRLF</dt>
+
+<dd class="dd">Following the convention for ASCII text files, &lt;CR&gt; &lt;LF&gt;
+pairs are used to terminate records in the PC file, and a CTRL-Z (x'1A')
+marks the end of file.</dd>
+
+
+
+<dt class="dt dlterm">NOCRLF</dt>
+
+<dd class="dd">Do not use &lt;CR&gt; &lt;LF&gt; pairs to terminate records in the PC
+file.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">File Transfer - Host Error Messages</h2><dl class="dl">
+
+<dt class="dt dlterm">TRANS00 - Error in file transfer: file transfer canceled</dt>
+
+<dd class="dd">An error occurred in the file transfer, which can be an error
+in the data being transferred, or an unidentified system error.</dd>
+
+
+
+
+<dt class="dt dlterm">TRANS03 - File transfer complete</dt>
+
+<dd class="dd">The file transfer operation has been successfully completed.</dd>
+
+
+
+<dt class="dt dlterm">TRANS04 - File transfer complete with records segmented</dt>
+
+<dd class="dd">The file transfer operation has been completed, and any record
+greater than the logical record length (LRECL) of the file being appended
+has been divided and becomes multiple records.</dd>
+
+
+
+<dt class="dt dlterm">TRANS05 - Personal computer filespec incorrect: file transfer
+canceled</dt>
+
+<dd class="dd">An error exists in the PC's file name.</dd>
+
+
+
+<dt class="dt dlterm">TRANS06 - Command incomplete: file transfer canceled</dt>
+
+<dd class="dd">You did not enter the required parameters after a SEND or RECEIVE
+command.</dd>
+
+
+
+<dt class="dt dlterm">TRANS13 - Error writing file to host: file transfer canceled</dt>
+
+<dd class="dd">The host program has detected an error in the file data during
+a RECEIVE operation.</dd>
+
+
+
+<dt class="dt dlterm">TRANS14 - Error reading file from host: file transfer canceled</dt>
+
+<dd class="dd">The host program has detected an error in the file data during
+a RECEIVE operation.</dd>
+
+
+
+<dt class="dt dlterm">TRANS15 - Required host storage unavailable: file transfer canceled</dt>
+
+<dd class="dd">You need 30 KB of main storage (not disk space) on the host for
+the file transfer, in addition to the host requirement.</dd>
+
+
+
+<dt class="dt dlterm">TRANS16 - Incorrect request code: file transfer canceled</dt>
+
+<dd class="dd">An invalid SEND or RECEIVE parameter was sent to the host.</dd>
+
+
+
+<dt class="dt dlterm">TRANS17 - Missing or incorrect TSO data set name: file transfer
+canceled</dt>
+
+<dd class="dd">You did not specify the TSO data set name, or the specified TSO
+data set name is not a sequential or partitioned data set.</dd>
+
+
+
+<dt class="dt dlterm">TRANS17 - Invalid file name: file transfer canceled</dt>
+
+<dd class="dd">The command that started the file transfer specified a file name
+that is not a valid file name for the host. Correct CICS file names
+must be 1 to 8 characters, composed of letters and numbers.</dd>
+
+
+
+<dt class="dt dlterm">TRANS17 - Missing or incorrect CMS data set name: file transfer
+canceled</dt>
+
+<dd class="dd">You did not specify the CMS data set name, or the specified CMS
+data set name is incorrect.</dd>
+
+
+
+<dt class="dt dlterm">TRANS18 - Incorrect option specified: file transfer canceled</dt>
+
+<dd class="dd">You specified an option that is invalid.</dd>
+
+
+
+<dt class="dt dlterm">TRANS19 - Error while reading or writing to host disk: file transfer
+canceled</dt>
+
+<dd class="dd">There is not enough space available for data on the host.</dd>
+
+
+
+<dt class="dt dlterm">TRANS28 - Invalid option xxxxxxxx: file transfer canceled</dt>
+
+<dd class="dd">You selected an option that is either not recognized, is specified
+as a positional keyword, or has an associated value that is incorrect.</dd>
+
+
+
+<dt class="dt dlterm">TRANS29 - Invalid option xxxxxxxx with RECEIVE: file transfer
+canceled</dt>
+
+<dd class="dd">You selected an option that is not valid with RECEIVE, but can
+be used with SEND.</dd>
+
+
+
+<dt class="dt dlterm">TRANS30 - Invalid option xxxxxxxx with APPEND: file transfer canceled</dt>
+
+<dd class="dd">You selected an option that is not valid with APPEND, but otherwise
+may be used.</dd>
+
+
+
+<dt class="dt dlterm">TRANS31 - Invalid option xxxxxxxx without SPACE: file transfer
+canceled</dt>
+
+<dd class="dd">You selected an option that can only be used if SPACE is also
+specified.</dd>
+
+
+
+<dt class="dt dlterm">TRANS32 - Invalid option xxxxxxxx with PDS: file transfer canceled</dt>
+
+<dd class="dd">You selected an option that is invalid with a host-partitioned
+data set.</dd>
+
+
+
+<dt class="dt dlterm">TRANS33 - Only one of TRACKS, CYLINDERS, AVBLOCK allowed: file
+transfer canceled</dt>
+
+<dd class="dd">SPACE can be specified in units of TRACKS, CYLINDERS, or AVBLOCK,
+and only one option can be used.</dd>
+
+
+
+<dt class="dt dlterm">TRANS34 - CMS file not found: file transfer canceled</dt>
+
+<dd class="dd">You did not specify an existing CMS file for RECEIVE.</dd>
+
+
+
+<dt class="dt dlterm">TRANS35 - CMS disk is read-only: file transfer canceled</dt>
+
+<dd class="dd">You specified a CMS file mode for the SEND key that does not allow
+write access.</dd>
+
+
+
+<dt class="dt dlterm">TRANS36 - CMS disk is not accessed: file transfer canceled</dt>
+
+<dd class="dd">You specified a CMS file mode that is not in the CMS search order.</dd>
+
+
+
+<dt class="dt dlterm">TRANS37 - CMS disk is full: file transfer canceled</dt>
+
+<dd class="dd">The CMS disk is full, or the maximum number of files on the minidisk
+(3400) has been reached, or the maximum number of data blocks per
+file (16060) has been reached.</dd>
+
+
+
+<dt class="dt dlterm">TRANS99 - Host program error code xxxxxxxxxx: file transfer canceled</dt>
+
+<dd class="dd">This is a host program error.</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_ind$file-transfer-ibm-mainframe-3270.htm" title="The IND$FILE transfer is controlled through the Host File Transfer window. The Host File Transfer window provides an easy-to-use graphical interface. You can send or receive a single file to or from the host. You can also create transfer lists to easily preform batch file transfers.">IND$FILE transfer - IBM Mainframe (3270)</a></div></div></div>
+
+</div></body>
+</html>

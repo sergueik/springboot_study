@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Recording scripts"/>
+<meta name="abstract" content="This procedure is intended to provide a step-by-step outline to demonstrate how an end user can use BlueZone to record a script that can then be used over and over again."/>
+<meta name="description" content="This procedure is intended to provide a step-by-step outline to demonstrate how an end user can use BlueZone to record a script that can then be used over and over again."/>
+<meta name="DC.subject" content="scripts, recording"/>
+<meta name="keywords" content="scripts, recording"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_bz-scripts.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_playing-back-scripts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_recording-scripts"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Recording scripts</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_recording-scripts">
+<div class="topic">
+
+<h1 class="title topictitle1">Recording scripts</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">This procedure is intended to provide a step-by-step outline
+to demonstrate how an end user can use BlueZone to record a script
+that can then be used over and over again. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">The example used in this script shows how you can automate
+the process of logging on to TSO on an IBM 3270 Mainframe and automatically
+navigating to the ISPF Primary Option menu.  Note that logging on
+to TSO requires a password.  There are more on how passwords are treated
+during script recording later in this procedure.  </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Launch a BlueZone Mainframe Display session and connect
+to your host. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Form the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Record</span></span> or click the <span class="ph uicontrol">Record
+Script</span> icon on the toolbar. </span>
+<div class="itemgroup stepresult">A standard Windows file dialog opens.</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Give the script a name like TSO Logon and click <span class="ph uicontrol">Save</span> . </span>
+<div class="itemgroup info"><div class="note attention"><span class="attentiontitle">Attention:</span> From this point forward everything you
+do is recorded by BlueZone.</div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Log on to TSO and navigate to the place where you want
+the script to stop recording.  This can be as many or few screens
+as you like.  The following example stops on the ISPF Primary Option
+Menu: </span>
+<div class="itemgroup info"><div class="fig fignone">
+      <img class="image" width="500" src="graphics/stop_script_screen.PNG"/>
+     </div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Stop</span></span> to stop the script recording
+or click on the <span class="ph uicontrol">Stop Script</span> icon on the toolbar. </span>
+<div class="itemgroup stepresult">Your script is recorded. </div>
+</li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><ul class="ulchildlinks"><li><a class="link" href="bzdp_htsk_playing-back-scripts.htm" title="To play your script, follow these steps. Ensure that you are logged off the host before proceeding.">Playing back scripts</a><div>To play your script, follow these steps.  Ensure that you are logged off the host before proceeding. </div></li></ul><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_bz-scripts.htm" title="BlueZone scripts can be recorded in either a proprietary format or in a text-based format recorded in either VBScript or JavaScript.">BlueZone scripts</a></div></div></div>
+
+</div></body>
+</html>

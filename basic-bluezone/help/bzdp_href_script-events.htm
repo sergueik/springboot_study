@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Script events"/>
+<meta name="abstract" content="A BlueZone script has the ability to execute all menu commands from the BlueZone Display and has the ability to send all host key sequences to the host system. Script events are used to add flow control and user input to BlueZone scripts. In addition, script events can be used to gain the attention of the user, add comments to a script file, and to execute programs on the workstation."/>
+<meta name="description" content="A BlueZone script has the ability to execute all menu commands from the BlueZone Display and has the ability to send all host key sequences to the host system. Script events are used to add flow control and user input to BlueZone scripts. In addition, script events can be used to gain the attention of the user, add comments to a script file, and to execute programs on the workstation."/>
+<meta name="DC.subject" content="script events, events, scripts"/>
+<meta name="keywords" content="script events, events, scripts"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_bz-scripts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_script-events"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Script events</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_script-events">
+<div class="topic">
+
+<h1 class="title topictitle1">Script events</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">A BlueZone script has the ability to execute all menu commands
+from the BlueZone Display and has the ability to send all host key
+sequences to the host system.  Script events are used to add flow
+control and user input to BlueZone scripts.  In addition, script events
+can be used to gain the attention of the user, add comments to a script
+file, and to execute programs on the workstation. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><p class="p">The examples following the script event statements below,
+reflect what displays in the script view window in BlueZone Script
+Editor.  BlueZone Scripting is a GUI scripting language, meaning that
+there is no syntax to learn or text files to maintain.  Scripts are
+created by adding, editing, and deleting script statements.  BlueZone
+script files are small because they are a binary representation of
+the script.  BlueZone script files can only be viewed and modified
+by using the BlueZone Script Editor. </p>
+<p class="p">The following is a list
+of the currently supported Script Events in BlueZone Scripting: </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Beep</dt>
+
+<dd class="dd">Causes the PC speaker to produce a sound.  Place the Beep Script
+Event in your script at the point where you want a beep to be heard. <p class="p">Example:
+Place the Beep Script Event immediately before the Input Script Event
+if you want a beep to be sounded when the Input Dialog is displayed
+to the user to get their attention.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Clear_Watch</dt>
+
+<dd class="dd">Halts all previous Watch_For statements.  See Watch_For for more
+information. <p class="p">Example: Clear_Watch</p>
+</dd>
+
+
+
+<dt class="dt dlterm">;Comment</dt>
+
+<dd class="dd">Used to add remarks and/or blank lines to the script file.  Using
+comments is good practice because it makes it easier for you or others
+to know what that part of the script is doing. <p class="p">Example: ;Comment
+This is where we start the logon process.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Goto</dt>
+
+<dd class="dd">Causes script execution to begin at the specified label.  See
+the Label command for more information. <p class="p">Example: Goto SignOn</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Input </dt>
+
+<dd class="dd">Displays a customized User Input dialog during script execution. The Input Script Event can be
+      used as a simple dialog that captures the characters typed by the user such as their
+      "Username". In this case Input must be followed by the Type Script Event in order to "pass"
+      the captured characters to the host screen. See Example 1 below. <p class="p">Or, the Input Script Event
+       can provide a mechanism for decision making based on user input and in this case is used in
+       conjunction with the If_Input_Is Script Event. See Example 2 below.</p>
+<div class="p">The following
+       options are available for the Input dialog: <ul class="ul">
+        <li class="li"><span class="ph uicontrol">Input a Character</span>
+         <br/>or</li>
+
+        <li class="li"><span class="ph uicontrol">Input a String of Characters</span>
+        </li>
+
+        <li class="li"><span class="ph uicontrol">Hide Input as User Types</span>: This is important for hiding the End
+         User's password during entry.</li>
+
+        <li class="li"><span class="ph uicontrol">Maximum String Length</span>: If desired, you can enter a value from 1
+         to 255 which will limit the number of characters the End User can enter into the input
+         field. This is particularly helpful if the number of characters being correct is critical
+         to the proper operation of the script. Like when you are expecting a two character state
+         code and not the state name spelled out.</li>
+
+       </ul>
+</div>
+<div class="p">Example 1: In this example, the script will prompt the user for their Username.
+       In order for the characters to be passed on to the screen, the Type Script Event must be
+       placed into the script with the special characters "InputStr1". "InputStr1" is actually a
+       special variable name that is automatically assigned internally to the first Input Script
+       Event in the script which happens to be "Input Enter Username". <div class="fig fignone">
+        <img class="image" width="500" src="graphics/script_example1_vista.PNG"/>
+       </div>
+</div>
+<p class="p">Here's how it works. When the first Input Script Event is used in a script,
+       characters that are entered into the dialog by the user, are automatically assigned to the
+       variable "InputStr1". When the Type Script Event is encountered with the value of
+       "InputStr1", the character string assigned to the "InputStr1" variable, is sent to the host
+       screen. </p>
+<p class="p">Refer to <a class="xref" href="bzdp_href_use-variables-in-scripts.htm" title="BlueZone Scripts support the ability to create up to four variables that can be utilized in a BlueZone script.">Use variables in scripts</a>
+       for more detailed information on using variables. </p>
+<p class="p">In the above script, there are two
+       Input Script Events. The second Input Script Event, "Input Enter Password" is automatically
+       assigned to the variable "InputStr2". So after the user enters their password, the Type
+       "InputStr2" will pass the user's captured password to the host screen. </p>
+<p class="p">Example 2: In
+       this example, the script is using the If_Input_Is Script Event in conjunction with the Input
+       Script Event. In this script, the user is prompted to type the word "Connect" if they want to
+       connect to the host. "Input Connect" captures the characters typed by the user. The
+       If_Input_Is Script Event compares the captured characters to the characters "Connect". If the
+       characters match, then the command Session:Connect will be issued. If the characters do not
+       match, then nothing happens. </p>
+<div class="fig fignone">
+       <img class="image" width="500" src="graphics/script_example2_vista.PNG"/>
+      </div>
+</dd>
+
+
+
+<dt class="dt dlterm">If_Input_Is</dt>
+
+<dd class="dd">Provides for the ability to determine user input.  Used in conjunction
+with the Input Script Event. <p class="p">Example: If_Input_Is Quit  Then Goto
+End</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Label</dt>
+
+<dd class="dd">Used to specify a position in the script file where a Goto Script
+Event command can be used to continue script execution.<p class="p">Example:
+Label SignOn</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Message</dt>
+
+<dd class="dd">Displays a message box with a "Ok" button containing some specified
+text to the user. <p class="p">Example: Message Script completed successfully</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Return</dt>
+
+<dd class="dd">Causes script execution to continue with the statement following
+the last Goto Script Event command. <p class="p">Example: Return</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Run</dt>
+
+<dd class="dd">Executes a program. <p class="p">Example: Run NotePad.exe</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Set_Cursor</dt>
+
+<dd class="dd">Used to move the cursor to an exact position on the display by
+entering in the Row and Column number where you want the cursor to
+be placed.  Using this feature, as opposed to using the Cursor positioning
+functions, can save valuable script execution time. <p class="p">Example: Row
+8   Column 18</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Type</dt>
+
+<dd class="dd">Used to type characters into the host session window starting
+at the current cursor position. <p class="p">Example: Type UserId</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Wait</dt>
+
+<dd class="dd">Causes script execution to pause for the specified number of seconds. <p class="p">Example:
+Wait 3</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Wait_For</dt>
+
+<dd class="dd">Causes script execution to suspend until the specified text string
+is found in the host session window.  For example, you can wait for
+the desired string starting from the very upper left hand corner of
+the screen and searching to the very end of the screen.  You can wait
+for the desired string starting at a specific row and column or you
+can wait for the desired string only when found at a specific location
+on the screen. <p class="p">In addition, you can also make the search case sensitive
+and add an optional "Timeout" value. </p>
+<p class="p">Refer to <a class="xref" href="bzdp_href_use-the-wait_for-script-event.htm" title="BlueZone scripts support the ability to wait for a specific text string or LU Function to appear in the host session screen. Wait_For is one of the more versatile BlueZone script functions.">Use the Wait_For script event</a> for
+more detailed information on using this feature.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Wait_Ready</dt>
+
+<dd class="dd">Causes the script execution to suspend until the specified number
+of keyboard restores have been sent by the host.  This prevents the
+scripts from sending data to the host between keyboard restores, when
+the host is actually not ready.  The number of keyboard restores on
+a host screen is consistent and a more reliable means of controlling
+script execution than inserting timers after each script event.  The
+keyboard restore counter is on by default and is located adjacent
+to the "Ready" on the status line.<p class="p">Example: Wait_Ready 3  Waits
+for 3 keyboard restores from the host before proceeding.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Wait_Until</dt>
+
+<dd class="dd">Causes script execution to suspend until the specified time and
+date. <p class="p">Example: Wait_Until 09-23-1999 17:30:28</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Watch_For</dt>
+
+<dd class="dd">Causes the script to search for the specified text in the host
+session window each time a host write occurs.  If the text is found
+then the associated statement is then executed. Execution of the script
+continues after the Watch_For statement. Watch_For statements stay
+in effect until a Clear_Watch statement is encountered in the script. <p class="p">Example:
+Watch_For Error  Then Goto End</p>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_bz-scripts.htm" title="BlueZone scripts can be recorded in either a proprietary format or in a text-based format recorded in either VBScript or JavaScript.">BlueZone scripts</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring the transfer setup options"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.subject" content="LIPI host file transfer, configuring"/>
+<meta name="keywords" content="LIPI host file transfer, configuring"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_configuring-host-file-transfer-lipi.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_configuring-lipi-host-fi"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring the transfer setup options</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_configuring-lipi-host-fi">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring the transfer setup options</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc"/>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Start a BlueZone iSeries Display session. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol"> Send/Receive</span></span>.  </span></li>
+<li class="li step stepexpand"><span class="ph cmd">From the Host File Transfer menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol"> Transfer Setup</span></span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Connection</span> tab, set the following
+options: </span>
+<div class="itemgroup info"><p class="p">Transfers can be configured for the host that you are currently
+connect to or you can select a different host. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Host Address</dt>
+
+<dd class="dd">Type the IP address of the host that you want to send or receive
+files.  The format can be IPv4, IPv6, or DNS name.  It can be the
+same host that started this session or it can be a different host. <div class="note note"><span class="notetitle">Note:</span> If
+you leave the <span class="ph uicontrol">Host Address</span> field blank, BlueZone
+Host File Transfer automatically uses the current host connection.</div>
+</dd>
+
+
+
+<dt class="dt dlterm">Language (CCSID)</dt>
+
+<dd class="dd">Sets your coded character set identifier.  This setting is also
+sometimes referred to as a code page setting.  Each language has its
+own CCSID. </dd>
+
+
+
+<dt class="dt dlterm">Username</dt>
+
+<dd class="dd">This field is optional. If you do not type a user name, you are
+prompted when you begin the transfer. </dd>
+
+
+
+<dt class="dt dlterm">Password</dt>
+
+<dd class="dd">This field is optional. If you do not type a password, you are
+prompted when you begin the transfer. </dd>
+
+
+
+<dt class="dt dlterm">Use Windows Credentials</dt>
+
+<dd class="dd">Select this check box if the host credentials are the same as
+your Windows credentials. </dd>
+
+
+</dl>
+</div>
+<ol type="a" class="ol substeps">
+<li class="li substep substepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Security</span>. </span></li>
+
+<li class="li substep substepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Security</span> tab, set the
+following options: </span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">SSL Version </dt>
+
+
+         <dd class="dd">Select the necessary encryption option: <span class="ph uicontrol">SSL v3</span>,
+           <span class="ph uicontrol">TLS v1</span>, <span class="ph uicontrol">TLS v1.1</span>, or <span class="ph uicontrol">TLS
+           v1.2</span>. </dd>
+
+
+
+<dt class="dt dlterm">Invalid Certificates </dt>
+
+<dd class="dd">Configure how invalid certificates are handled.  The available
+options are: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Always Reject</span> </li>
+
+<li class="li"><span class="ph uicontrol">Ask before Accepting </span></li>
+
+<li class="li"><span class="ph uicontrol">Always Accept </span></li>
+
+<li class="li"><span class="ph uicontrol">Preferred Cypher Suite</span>: You can select
+a specific Cypher Suite or let BlueZone and the host negotiate the
+highest level of encryption that both BlueZone and the host system
+have in common.  </li>
+
+</ul>
+</dd>
+
+
+</dl>
+</div>
+</li>
+
+<li class="li substep substepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Certificate</span> tab and
+set the following options: </span>
+<div class="itemgroup info"><div class="note note"><span class="notetitle">Note:</span> Certificates are optional.  You do not need to use a certificate
+in order to encrypt your data.  Certificates are used when it is important
+or required to prove the identity of the client. </div>
+<dl class="dl">
+
+<dt class="dt dlterm">Client Certificate</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">No Client Certificate</span>: Turns off the client
+certificate feature. </li>
+
+<li class="li"><span class="ph uicontrol">Client Certificate in Disk File</span>: If your
+client certificate is stored on a disk drive, click <span class="ph uicontrol">Browse</span> to
+select the file and <span class="ph uicontrol">View</span> to view the certificate.
+ Click the second <span class="ph uicontrol">Browse</span> button to open your
+Private Key file. </li>
+
+<li class="li"><span class="ph uicontrol">Client Certificate in Certificate Store</span>:
+If your client certificate is stored in the Windows Certificate Store,
+click <span class="ph uicontrol">Browse</span> to open the file and <span class="ph uicontrol">View</span> to
+view the certificate.</li>
+
+<li class="li"><span class="ph uicontrol">Client Certificate on Smart Card</span>: This
+feature is not currently implemented.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Root Certificates</dt>
+
+<dd class="dd">Select the necessary type of root certificate: <span class="ph uicontrol">Use
+OpenSSL Root Certificates</span> or <span class="ph uicontrol">Use Windows Root
+Certificates</span>. </dd>
+
+
+</dl>
+</div>
+</li>
+
+<li class="li substep substepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> to close the Security
+window.</span></li>
+
+</ol>
+
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Transfer</span> tab and set the
+following options: </span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">Transfer Method </dt>
+
+<dd class="dd">Select the file transfer method: <ul class="ul">
+<li class="li">ASCII </li>
+
+<li class="li">Basic Sequential </li>
+
+<li class="li">BIFF8</li>
+
+<li class="li">CSV </li>
+
+<li class="li">DIF </li>
+
+<li class="li">DOS Random </li>
+
+<li class="li">No Conversion </li>
+
+<li class="li">Tab Delimited </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Output to</dt>
+
+<dd class="dd">Select the place where to transfer the data.  <ul class="ul">
+<li class="li"><span class="ph uicontrol">Display</span>: Displays the data in the Query
+Results window. </li>
+
+<li class="li"><span class="ph uicontrol">File</span> </li>
+
+<li class="li"><span class="ph uicontrol">Spreadsheet</span>: Saves the data to a <span class="ph filepath">.DIF</span> file.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Show Transfer Status Window</dt>
+
+<dd class="dd">Sets the Transfer Status Window on or off when you are downloading
+a file from the host. When this check box is cleared, transfers take
+less time because the host does not have to count the number of selected
+records before transferring them.</dd>
+
+
+</dl>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">If you want to configure the data format options, click <span class="ph uicontrol">Fields</span>. </span>
+<div class="itemgroup stepresult">Refer to <a class="xref" href="bzdp_htsk_configuring-the-data-format-options.htm" title="You can specify the data format options of the transferred files.">Configuring the data format options</a> for
+more information. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Local</span> tab and set the
+following options: </span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">If File Exists</dt>
+
+<dd class="dd">Select how existing files are treated: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Abort</span> </li>
+
+<li class="li"><span class="ph uicontrol">Append</span> </li>
+
+<li class="li"><span class="ph uicontrol">Overwrite</span> </li>
+
+<li class="li"><span class="ph uicontrol">Prompt before Overwrite</span>: Select this check
+box if you do not want the file to be accidentally overwritten.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Save Description File</dt>
+
+<dd class="dd">If selected, the description file that is downloaded from the
+host is saved locally on your machine with the same name as the file
+that you are receiving. </dd>
+
+
+
+<dt class="dt dlterm">Delete Trailing Spaces (ASCII Only)</dt>
+
+<dd class="dd">If selected, any trailing spaces that were used to "pad" the file
+that you are receiving, are deleted.</dd>
+
+
+</dl>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Host</span> tab and set the following
+options:</span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">File Creation</dt>
+
+<dd class="dd">Select how you want existing files on the host to be treated.
+ The available options are:<ul class="ul">
+<li class="li"><span class="ph uicontrol">Create File and Member </span></li>
+
+<li class="li"><span class="ph uicontrol">Create Member</span> </li>
+
+<li class="li"><span class="ph uicontrol">Replace Member </span></li>
+
+<li class="li"><span class="ph uicontrol">Append to Member</span></li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Prompt before Replace</dt>
+
+<dd class="dd">Select this check box if you do not want the file to be accidentally
+overwritten. This option is available only when <span class="ph uicontrol">Replace
+Member</span> is selected.  </dd>
+
+
+
+<dt class="dt dlterm">Use Description File</dt>
+
+<dd class="dd">Select this check box if you want to use a description file. If
+selected, a file extension must be entered in this field. For example, <kbd class="ph userinput">*.FDF</kbd>.</dd>
+
+
+
+<dt class="dt dlterm"/>
+
+<dd class="dd"><div class="note note"><span class="notetitle">Note:</span> The remaining options are only available when <span class="ph uicontrol">Create
+File and Member</span> is selected from the <span class="ph uicontrol">File Creation</span> menu. </div>
+</dd>
+
+
+
+<dt class="dt dlterm">File Type</dt>
+
+<dd class="dd">Select the type of file to create on the Host.<ul class="ul">
+<li class="li"><span class="ph uicontrol">Data</span>: Creates a physical data file and
+member. </li>
+
+<li class="li"><span class="ph uicontrol">Source</span>: Creates a physical source file
+and member. </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Authority</dt>
+
+<dd class="dd">Select the permissions for the host file.<ul class="ul">
+<li class="li"><span class="ph uicontrol">All</span> </li>
+
+<li class="li"><span class="ph uicontrol">None</span> </li>
+
+<li class="li"><span class="ph uicontrol">Read</span> </li>
+
+<li class="li"><span class="ph uicontrol">Read/Write</span></li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">File Text</dt>
+
+<dd class="dd">Type a description of the host file. </dd>
+
+
+
+<dt class="dt dlterm">Member Text</dt>
+
+<dd class="dd">Type a description of the new member that is being created.</dd>
+
+
+
+<dt class="dt dlterm">Record Length</dt>
+
+<dd class="dd">Set the record length, in bytes.  The default is 92 bytes. </dd>
+
+
+
+<dt class="dt dlterm">Reference File</dt>
+
+<dd class="dd">Assign a reference file to the file that you are sending to the
+host.  The new file is created by using the field names in the description
+file and the definitions of the fields in the reference file.</dd>
+
+
+</dl>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">SQL</span> tab. </span>
+<div class="itemgroup stepresult"><p class="p">SQL queries are used when downloading one or more files
+to your PC.  An SQL query allows you to select specific records, how
+they are sorted, and how they are grouped.  Click <span class="ph uicontrol">Options</span> to
+connect to the server to retrieve the field information for each file
+selected.  You can type the SQL query directly into the field or click <span class="ph uicontrol">Options</span> to
+use the SQL Query Options window to create SQL queries.  </p>
+<p class="p">Refer
+to <a class="xref" href="bzdp_htsk_creating-sql-queries.htm" title="SQL queries are used when downloading one or more files to your PC. An SQL query allows you to select specific records, how they are sorted, and how they are grouped. You can enter the SQL query directly into the edit box or use the SQL Query Options dialog to create SQL queries.">Building SQL queries</a> for
+more information. </p>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>.</span></li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_htsk_configuring-host-file-transfer-lipi.htm" title="You must configure the following host file transfer options.">Configuring the host file transfer</a></div></div></div>
+
+</div></body>
+</html>

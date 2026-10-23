@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="3270 Emulation tab"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_display-session-configuration-mainframe.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_3270-emulation-tab-mainf"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>3270 Emulation tab</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_3270-emulation-tab-mainf">
+<div class="topic">
+
+<h1 class="title topictitle1">3270 Emulation tab</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section" id="Bzdp_href_3270-emulation-tab-mainf__emulation"><dl class="dl">
+
+<dt class="dt dlterm">Translation</dt>
+
+<dd class="dd">The Translation group is used to select a translate language and
+if needed to configure the translate tables. You can select the following
+options: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Language (CCSID)</span>: Select the translate
+language and code page.  The code page is the number shown in parentheses
+to the right of the language, for example, <span class="ph uicontrol">English (U.S.)
+(37) </span>.<div class="note note"><span class="notetitle">Note:</span> The language must correspond to the Windows
+operating system language.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Euro</span>: Select to include support for the
+Euro currency symbol. <p class="p">For more information, see <a class="xref" href="bzdp_htsk_configuring-euro-support.htm" title="There are three requirements in order for BlueZone to support the Euro symbol:">Configuring Euro support</a>. </p>
+</li>
+
+<li class="li"><span class="ph uicontrol">Translate Tables</span>: Configures the translate
+tables for EBCDIC to ASCII character translation and for EBCDIC to
+ASCII IND$FILE transfer translation. <p class="p">For more information, see <a class="xref" href="bzdp_htsk_editing-the-translate-tables-mainframe.htm" title="Translate tables are used to translate data between the EBCDIC character set and the ASCII character set. EBCDIC is used on mainframe systems for character formatting whereas ASCII is used in the PC environment for character formation. When a character arrives from the host it is translated from EBCDIC to ASCII. When a character is sent to the host it is translated from ASCII to EBCDIC.">Editing the translate tables</a>.</p>
+</li>
+
+<li class="li"><span class="ph uicontrol">Change DBCS Font</span>: Active when a DBCS (double-byte
+character set) language page is selected.  You can select the specific
+DBCS font that you want to use with the selected language page.  DBCS
+languages have the characters DBCS at the end of their name. <p class="p">For
+more information, see <a class="xref" href="bzdp_href_configuring-dbcs-support.htm" title="To support double-byte character sets (DBCS), your Windows computer and BlueZone display session must be configured for one or more double-byte languages.">Configuring DBCS support</a>. </p>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Default Screen Model Type</dt>
+
+<dd class="dd">The Default Screen Model Type group is used to select the default
+IBM terminal model for 3270 emulation. Select one of the following
+options: <div class="note note"><span class="notetitle">Note:</span>  If this option is disabled, the <span class="ph uicontrol">Override
+3270 Emulation Model Type</span> check box, located on the <span class="ph uicontrol">Device</span> tab,
+in the TN3270E Properties window, is selected. The override feature
+must be disabled to select a model type.  For more information, see <a class="xref" href="bzdp_href_device-tab-tn3270e.htm#Bzdp_href_device-tab-tn3270e__override">Device tab: Override 3270 Emulation Model
+Type</a>. </div>
+<div class="p">The available choices are:<ul class="ul">
+<li class="li">Model 2 (24 X 80)</li>
+
+<li class="li">Model 3 (32 X 80)</li>
+
+<li class="li">Model 4 (43 X 80)</li>
+
+<li class="li">Model 5 (27 X 132)</li>
+
+<li class="li">Model 3290 (62 X 160)</li>
+
+<li class="li">Custom Size (the display shows the currently selected custom values)</li>
+
+</ul>
+</div>
+<div class="note note"><span class="notetitle">Note:</span> To set a default or alternate custom model size, select <span class="ph uicontrol">Custom
+Size</span> from the Default Screen Model Type drop-down list.
+ A pop-up dialog opens, allowing you to independently set both the
+Default and Alternate screen sizes.  The maximum custom screen size
+is 98 X 160.</div>
+</dd>
+
+
+
+<dt class="dt dlterm">Features</dt>
+
+<dd class="dd">Enables control over 3270 Display features:<ul class="ul">
+<li class="li"><span class="ph uicontrol">Use Extended Attributes</span>: If enabled, allows
+support for extended colors, underlining, blinking, and so on. </li>
+
+<li class="li"><span class="ph uicontrol">Use Multiple Explicit Partitions</span>: If enabled,
+BlueZone supports explicit screen partitioning.  Can only be enabled
+if <span class="ph uicontrol">Use Extended Attributes</span> is selected.</li>
+
+<li class="li"><span class="ph uicontrol">Enable Field Validation</span>: If enabled, allows
+the validation of the following three field validation types:<ul class="ul">
+<li class="li">Mandatory Fill</li>
+
+<li class="li">Mandatory Entry</li>
+
+<li class="li">Trigger</li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Enable Vector Graphics</span>: If enabled, allows
+support for host graphics terminal support.</li>
+
+<li class="li"><span class="ph uicontrol">Graphics Cell Size</span>: Determines the graphics
+cell size. A specific cell size is required if Programmed Symbols
+graphics are used. A setting of <span class="ph uicontrol">Automatic</span> enables
+only vector graphics, but gives the best resolution. The default setting
+is <span class="ph uicontrol">Automatic</span>. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Automatic</span>: BlueZone reports the actual
+character cell size in use at the time, based on the window size and
+font size settings. Using this setting, with the largest window size,
+yields the best resolution graphics. </li>
+
+<li class="li"><span class="ph uicontrol">9 x 12</span>: BlueZone reports its cell size
+as 9x12. </li>
+
+<li class="li"><span class="ph uicontrol">9 x 16</span>: BlueZone reports its cell size
+as 9x16. </li>
+
+<li class="li"><span class="ph uicontrol">9 x 21</span>: BlueZone reports its cell size
+as 9x21. </li>
+
+<li class="li"><span class="ph uicontrol">13 x 22</span>: BlueZone reports its cell size
+as 13x22. </li>
+
+<li class="li"><span class="ph uicontrol">13 x 29</span>: BlueZone reports its cell size
+as 13x29. </li>
+
+</ul>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">3270 Numeric Field Options</dt>
+
+<dd class="dd">Selects the way that BlueZone handles 3270 Numeric fields: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Allow All Characters</span>: If enabled, all characters
+are allowed in 3270 Numeric fields.</li>
+
+<li class="li"><span class="ph uicontrol">Numeric and Shifted Only</span>: If enabled, only
+numeric and shifted characters are allowed in 3270 Numeric fields.</li>
+
+<li class="li"><span class="ph uicontrol">Numeric Characters Only</span>: If enabled, only
+numeric characters are allowed in 3270 Numeric fields. </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Keyboard Type Ahead</dt>
+
+<dd class="dd">Controls Keyboard Type Ahead features and functions. <ul class="ul">
+<li class="li"><p class="p">Select one of the following options from the menu: </p>
+<ul class="ul">
+<li class="li"><span class="ph uicontrol">Disabled</span>: If selected, disables the Type-Ahead
+buffer feature.</li>
+
+<li class="li"><span class="ph uicontrol">Normal - Next Screen</span>: If selected, keystrokes
+can be typed continuously.  All screens received from the host are
+displayed.</li>
+
+<li class="li"><span class="ph uicontrol">Advanced - Last Screen</span>: If selected, keystrokes
+can be typed continuously.  Only the last host screen is displayed.</li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">TN3270/E Flush Buffer Delay</span>: Defines the
+amount of time to wait after a keyboard restore is received from the
+host system before releasing the typed-ahead data into the next host
+screen. Each tick mark on the slider control represents 50 milliseconds;
+the delay time can range from 0 to 2 seconds.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Options</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Smart Screen Updates</span>: If enabled, BlueZone
+does a comparison of the current host screen and only updates what
+has changed.  If disabled, BlueZone paints the entire new host screen.</li>
+
+<li class="li"><span class="ph uicontrol">Ignore X Prog Errors</span>: If enabled, BlueZone
+suspends notifications of host program errors.</li>
+
+<li class="li"><span class="ph uicontrol">Word Wrap</span>: If enabled, BlueZone performs
+a word wrap from one field to another field directly beneath it and
+of the same length, or in long, multi-line fields.</li>
+
+<li class="li"><span class="ph uicontrol">Line Wrap on Delete</span>: If enabled, when editing
+multi-line data, BlueZone moves data from the lines below to fill
+the editing line.  With this feature disabled, BlueZone only moves
+data on the editing line.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_display-session-configuration-mainframe.htm" title="Prior to establishing a host system connection, BlueZone users must set session configuration parameters. A session configuration consists of:">Display session configuration</a></div></div></div>
+
+</div></body>
+</html>

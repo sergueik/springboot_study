@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Signon tab"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_tn5250e-configuration.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_signon-tab-tn5250e"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Signon tab</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_signon-tab-tn5250e">
+<div class="topic">
+
+<h1 class="title topictitle1">Signon tab</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section" id="Bzdp_href_signon-tab-tn5250e__signon">This feature can be used in several ways.  Here
+are some suggestions:<ul class="ul">
+<li class="li">When you want to automatically send your user name and password,
+and possibly a specific program to run, or an initial menu or a specific
+library to use, upon connection to your iSeries host.  <div class="cautiontitle">CAUTION:</div><div class="note caution">If you use this feature to automatically send your
+User Name and Password, you should be aware that anyone who uses your
+machine to launch this iSeries Display session, will be automatically
+logged in to your account.  </div>
+</li>
+
+<li class="li">When your iSeries operates as a public host, and you want to by-pass
+the main iSeries Sign On screen.  You can configure a generic User
+Name and Password, as well as a specific program to call, Initial
+Menu and the Current Library to use, so that when a connection is
+made to the host, the information provided will be automatically passed
+to, and acted upon by the iSeries host.  </li>
+
+<li class="li">When you want to force all passwords to be encrypted so that they
+are not sent in the clear.  This feature is called Encrypted Substitute
+Password.  This feature is enabled on the iSeries (by the iSeries
+Administrator) by setting QRMTSGN to *Verify.  </li>
+
+<li class="li">When you want to enable Kerberos Single Signon to log on to an
+iSeries host using the end user's Windows credentials. </li>
+
+</ul>
+<p class="p">TN5250E Signon Information</p>
+<dl class="dl">
+
+<dt class="dt dlterm">Force Encrypted Signon</dt>
+
+<dd class="dd">If selected, the end user is presented a special user name and
+password dialog which encrypts the password before sending it to the
+host.<div class="cautiontitle">CAUTION:</div><div class="note caution">If the sign on bypass fails or the end user
+signs off, the normal iSeries log on screen will be presented.  This
+will defeat the purpose of Force Encrypted Signon feature because
+at this point, the end user will be able to sign on as they normally
+would, sending their password in the clear.  To prevent this, an "exit"
+program should be used so that when an end user signs off, BlueZone
+will automatically disconnect from the host.</div>
+<ul class="ul">
+<li class="li"><span class="ph uicontrol">User Name</span>: Type the desired user name.
+ </li>
+
+<li class="li"><span class="ph uicontrol">Password</span>: Type the desired password. <div class="note note"><span class="notetitle">Note:</span> When the <span class="ph uicontrol">Force Encrypted Signon</span> check box
+is selected, the <span class="ph uicontrol">User Name</span> and <span class="ph uicontrol">Password</span> fields are disabled.  </div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Program to Call</span>: Type the desired program
+to call. (Optional)  </li>
+
+<li class="li"><span class="ph uicontrol">Initial Menu</span>: Type the desired Initial
+Menu to display. (Optional)  </li>
+
+<li class="li"><span class="ph uicontrol">Current Library</span>: Type the desired Library
+to use. (Optional) </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Signon Type</dt>
+
+<dd class="dd">Select the sign on type: <ul class="ul">
+<li class="li"><span class="ph uicontrol">DES Signon Bypass</span>  </li>
+
+<li class="li"><span class="ph uicontrol">SHA-1 Signon Bypass</span><div class="note note"><span class="notetitle">Note:</span> This feature requires
+OS/400 version V5R1 or higher.  Also, your iSeries Administrator must
+set the end user's password level (QPWDLVL) to level 2 or 3.  </div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Kerberos Single Signon</span>: Enables Kerberos
+single sign on to the iSeries using the end user's Windows credentials.
+ <div class="note note"><span class="notetitle">Note:</span> This feature requires OS/400 V5R2M0 or higher and must be properly
+configured for Kerberos SSO to work. </div>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Fully-Qualified System Name</dt>
+
+<dd class="dd">The fully-qualified name of the iSeries, such as <kbd class="ph userinput">myiseries.mycompany.com</kbd>.  This is required only when <span class="ph uicontrol">Kerberos Single Signon</span> is selected.</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_tn5250e-configuration.htm" title="The RTN5250E.DLL file provides complete TN5250E connectivity for BlueZone allowing connection to hosts, servers, and gateways that are TN5250E compliant. TN5250E is the enhanced version of TN5250, providing more SNA information to the client for improved operation. Optionally, Secure Sockets Layer security is available to insure privacy, message integrity and provide authentication.">TN5250E Properties</a></div></div></div>
+
+</div></body>
+</html>

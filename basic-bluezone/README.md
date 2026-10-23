@@ -325,6 +325,459 @@ Rocket's older BlueZone documentation explicitly identifies BlueZone VBA as an a
 
 There is also HLLAPI, a different integration mechanism commonly used by legacy terminal automation tools. BlueZone's documented HLLAPI DLL is WHLAPI32.dll, with hllapi as its entry point
 
+### Installed
+
+Windows 7 Registry entries added by installing (bulk, partial dump - see `Bluezone_reg.txt`):
+
+```text
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZone.System]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZone.System\CLSID]
+@="{4EB971C3-01D0-11D5-903D-00105AABADD3}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZone.System.7.1]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZone.System.7.1\CLSID]
+@="{4EB971C3-01D0-11D5-903D-00105AABADD3}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZoneFTP.ShellExtension]
+@="ShellExtension Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZoneFTP.ShellExtension\CLSID]
+@="{6C1A71B3-9F55-11D4-873F-00E0B816AA07}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZoneFTP.ShellExtension.7.1]
+@="ShellExtension Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BlueZoneFTP.ShellExtension.7.1\CLSID]
+@="{6C1A71B3-9F55-11D4-873F-00E0B816AA07}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BZWhll.WhllObj]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BZWhll.WhllObj\CLSID]
+@="{4EB971C3-00D0-11D5-903D-00105AABADD3}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BZWhll.WhllObj.7.1]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\BZWhll.WhllObj.7.1\CLSID]
+@="{4EB971C3-00D0-11D5-903D-00105AABADD3}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0d0871b4-00c9-4a21-85c5-b7d1e4ef8261}]
+@="AutPS Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0d0871b4-00c9-4a21-85c5-b7d1e4ef8261}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0d0871b4-03c9-4a21-85c5-b7d1e4ef8261}]
+@="AutPS Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0d0871b4-03c9-4a21-85c5-b7d1e4ef8261}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0EB971C3-A2D0-11D5-903D-10105AABADD3}]
+@="LIPI Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0EB971C3-A2D0-11D5-903D-10105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzlipiobj.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0EB971C3-A2D0-11D5-903D-10105AABADD3}\ProgID]
+@="BlueZone.LIPI.7.1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0EB971C3-A2D0-11D5-903D-10105AABADD3}\VersionIndependentProgID]
+@="BlueZone.LIPI"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0EB971C3-A2D0-11D5-903D-20105AABADD3}]
+@="Fields Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0EB971C3-A2D0-11D5-903D-20105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzlipiobj.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-003C-11D5-903D-00105AABADD3}]
+@="Field Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-003C-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-013C-11D5-903D-00105AABADD3}]
+@="Field Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-013C-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-023C-11D5-903D-00105AABADD3}]
+@="Field Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-023C-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-033C-11D5-903D-00105AABADD3}]
+@="Field Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{0FB971C2-033C-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{128c7123-f37f-4034-b078-abe78f23e5c2}]
+@="View Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{128c7123-f37f-4034-b078-abe78f23e5c2}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{2d9971f9-978b-4ee3-8cdd-470f617509d8}]
+@="IbmScreen Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{2d9971f9-978b-4ee3-8cdd-470f617509d8}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{2F887196-0015-426D-A582-F3BCF749E9C1}]
+@="Vector Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{2F887196-0015-426D-A582-F3BCF749E9C1}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{2F887196-0215-426D-A582-F3BCF749E9C1}]
+@="Vector Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{2F887196-0215-426D-A582-F3BCF749E9C1}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{449B2A22-B7BF-4846-BEEA-4A00D610B75F}]
+@="FtpSession Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{449B2A22-B7BF-4846-BEEA-4A00D610B75F}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\Ftpcom.dll"
+"ThreadingModel"="Apartment"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{449B2A22-B7BF-4846-BEEA-4A00D610B75F}\ProgID]
+@="RocketFTP.FtpSession.1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{449B2A22-B7BF-4846-BEEA-4A00D610B75F}\Programmable]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{449B2A22-B7BF-4846-BEEA-4A00D610B75F}\TypeLib]
+@="{A382E7D7-7939-4077-ABA8-DEFB0B8466C4}"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{449B2A22-B7BF-4846-BEEA-4A00D610B75F}\VersionIndependentProgID]
+@="RocketFTP.FtpSession"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-00D0-11D5-903D-00105AABADD3}]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-00D0-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-00D0-11D5-903D-00105AABADD3}\ProgID]
+@="BZWhll.WhllObj.7.1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-00D0-11D5-903D-00105AABADD3}\VersionIndependentProgID]
+@="BZWhll.WhllObj"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-01D0-11D5-903D-00105AABADD3}]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-01D0-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-01D0-11D5-903D-00105AABADD3}\ProgID]
+@="BlueZone.System.7.1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-01D0-11D5-903D-00105AABADD3}\VersionIndependentProgID]
+@="BlueZone.System"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-02D0-11D5-903D-00105AABADD3}]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-02D0-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-02D0-11D5-903D-00105AABADD3}\ProgID]
+@="BlueZone.Application.7.1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-02D0-11D5-903D-00105AABADD3}\VersionIndependentProgID]
+@="BlueZone.Application"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-03D0-11D5-903D-00105AABADD3}]
+@="WhllObj Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-03D0-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-03D0-11D5-903D-00105AABADD3}\ProgID]
+@="BlueZone.autECL.7.1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4EB971C3-03D0-11D5-903D-00105AABADD3}\VersionIndependentProgID]
+@="BlueZone.autECL"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4F147161-00F0-11D6-903D-00105AABADD3}]
+@="Sessions Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4F147161-00F0-11D6-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4F147161-01F0-11D6-903D-00105AABADD3}]
+@="Sessions Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{4F147161-01F0-11D6-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{5061712a-00a5-45e2-90b8-4584b196c7dd}]
+@="AutConnInfo Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{5061712a-00a5-45e2-90b8-4584b196c7dd}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{5061712a-03a5-45e2-90b8-4584b196c7dd}]
+@="AutConnInfo Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{5061712a-03a5-45e2-90b8-4584b196c7dd}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{51A37181-00F0-11D6-903D-00105AABADD3}]
+@="Session Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{51A37181-00F0-11D6-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{51A37181-01F0-11D6-903D-00105AABADD3}]
+@="Session Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{51A37181-01F0-11D6-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{56B57161-00F0-11D6-903D-00105AABADD3}]
+@="OIA Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{56B57161-00F0-11D6-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{56B57161-01F0-11D6-903D-00105AABADD3}]
+@="OIA Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{56B57161-01F0-11D6-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{6C1A71B3-9F55-11D4-873F-00E0B816AA07}]
+@="ShellExtension Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{6C1A71B3-9F55-11D4-873F-00E0B816AA07}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzftp.dll"
+"ThreadingModel"="Apartment"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{6C1A71B3-9F55-11D4-873F-00E0B816AA07}\ProgID]
+@="BlueZoneFTP.ShellExtension.7.1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{6C1A71B3-9F55-11D4-873F-00E0B816AA07}\VersionIndependentProgID]
+@="BlueZoneFTP.ShellExtension"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{72227143-00F2-4CC7-938F-8B610DB93AB1}]
+@="Area Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{72227143-00F2-4CC7-938F-8B610DB93AB1}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{72227143-01F2-4CC7-938F-8B610DB93AB1}]
+@="Area Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{72227143-01F2-4CC7-938F-8B610DB93AB1}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-000D-11D5-903D-00105AABADD3}]
+@="EmuWnd Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-000D-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-010D-11D5-903D-00105AABADD3}]
+@="EmuWnd Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-010D-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-020D-11D5-903D-00105AABADD3}]
+@="EmuWnd Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-020D-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-030D-11D5-903D-00105AABADD3}]
+@="EmuWnd Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{78A471A2-030D-11D5-903D-00105AABADD3}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{7d2371fb-7d16-44e3-9cfc-4800aa45daf8}]
+@="Terminal Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{7d2371fb-7d16-44e3-9cfc-4800aa45daf8}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{9a4571e5-599e-4f98-a494-989480d88b29}]
+@="IbmTerminal Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{9a4571e5-599e-4f98-a494-989480d88b29}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b3d47113-003b-4d4a-be78-bbae5f55f6ff}]
+@="AutConnList Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b3d47113-003b-4d4a-be78-bbae5f55f6ff}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b3d47113-033b-4d4a-be78-bbae5f55f6ff}]
+@="AutConnList Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b3d47113-033b-4d4a-be78-bbae5f55f6ff}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b83471c9-0091-483b-96ab-4849e192d37c}]
+@="AutSess Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b83471c9-0091-483b-96ab-4849e192d37c}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b83471c9-0391-483b-96ab-4849e192d37c}]
+@="AutSess Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{b83471c9-0391-483b-96ab-4849e192d37c}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{B84271C1-0030-4DF7-B5B0-68E03729E24D}]
+@="QuickPad Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{B84271C1-0030-4DF7-B5B0-68E03729E24D}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{B84271C1-0130-4DF7-B5B0-68E03729E24D}]
+@="QuickPad Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{B84271C1-0130-4DF7-B5B0-68E03729E24D}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{BEAD717E-00E3-4EC0-AB7C-EB8D5166EEC8}]
+@="QuickPads Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{BEAD717E-00E3-4EC0-AB7C-EB8D5166EEC8}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{BEAD717E-01E3-4EC0-AB7C-EB8D5166EEC8}]
+@="QuickPads Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{BEAD717E-01E3-4EC0-AB7C-EB8D5166EEC8}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZExtr.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{c6aa7169-2323-4427-aca3-18afec1a890e}]
+@="Screen Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{c6aa7169-2323-4427-aca3-18afec1a890e}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{db0971c2-0019-4152-91cf-41f9d63dc8a9}]
+@="AutOIA Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{db0971c2-0019-4152-91cf-41f9d63dc8a9}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\bzwhll.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{db0971c2-0319-4152-91cf-41f9d63dc8a9}]
+@="AutOIA Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{db0971c2-0319-4152-91cf-41f9d63dc8a9}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZPcom.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{f526710f-55e4-4b20-aeab-df145198594f}]
+@="Frame Class"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID\{f526710f-55e4-4b20-aeab-df145198594f}\InprocServer32]
+@="C:\\Program Files\\BlueZone\\7.1\\BZRefl.dll"
+"ThreadingModel"="both"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\shellex\ContextMenuHandlers\BlueZoneFTP.7.1]
+@="{6C1A71B3-9F55-11D4-873F-00E0B816AA07}"
+```
+contents of compiled help file (500+ files and directories):
+```cmd
+/c/Program\ Files/7-Zip/7z.exe x BlueZone.chm
+```
+Files of interest:
+
+|Help topic|What it may establish|
+|`bzdp_hcon_bz-host-automation-object.htm`|The BlueZone Host Automation Object (BHAO/BZHAO) and its object model|
+|`bzdp_hcon_ole-automation.htm`|The broader OLE Automation integration mechanism|
+|`bzdp_hcon_bz-plus-vba.htm`|VBA integration and its prerequisites|
+|`bzdp_href_api-properties-mainframe.htm`|API properties specific to mainframe sessions|
+|`bzdp_href_api-properties-iseries.htm`|API properties specific to IBM i sessions|
+|`bzdp_href_bz-scripts.htm`|The scripting interface and its capabilities|
+|`bzdp_href_script-events.htm`|Events available to scripts|
+|`bzdp_href_bz-hllapi-support-mainframe.htm`|HLLAPI support for mainframe sessions|
+|`bzdp_hcon_bz-script-editor.htm`|The built-in script editor|
+
+BlueZone exposes a substantial in-process COM automation object model, not merely a terminal window that an external script clicks and types into.
+
+A few findings stand out:
+- Primary automation entry point: `BZWhll.WhllObj` maps to `CLSID` `{4EB971C3-00D0-11D5-903D-00105AABADD3}`, implemented by `bzwhll.dll`. The version-independent `ProgID` is explicitly registered.
+- Multiple automation interfaces: the registrations include classes named `Session`, `Sessions`, `Field`, `Screen`, `OIA`, `IbmTerminal`, `IbmScreen`, `Terminal`, `Area`, `Frame`, and `Vector`. These names suggest a richer object model for interacting with terminal state and fields.
+- Separate components: `BZExtr.dll`, `BZRefl.dll`, and `BZPcom.dll` register additional classes, including alternate implementations of similarly named objects. The dump fragment alone doesn't establish the precise differences between them.
+- Additional integration surfaces: RocketFTP.FtpSession and the BlueZone FTP shell extension indicate that the installation includes FTP-related COM integration as well.
+- The compiled help file is a different subsystem: Bzsm.Chm documents the BlueZone Session Manager—creating and launching sessions, arranging session layouts, filtering sessions, and changing the desktop appearance. Its contents do not, by themselves, document the COM automation API.
+The strongest technical takeaway is that BlueZone appears to provide an automation abstraction over terminal sessions and their contents. That is more structured than raw keystroke injection, although it still doesn't establish that the host exposes business-level APIs.
+
+One important distinction: the registry's `InprocServer32` entries mean these `COM` classes are registered as DLL-based, in-process components. They are not, based on these entries, standalone COM server processes.
+
+The next useful artifact would be the COM type library or the `BZWhll.h` / `BZWhll_i.c` headers from the installation archive. Those can help establish the actual interfaces, method names, parameter types, and GUIDs, rather than inferring capabilities from class names. The `Bzsm.Chm` listing is mainly evidence about the session-manager UI, not the automation API.
+
+
+![License Dialog Blocking access to some functionality](screenshots/bluezone-license.png)
+
+![Standalone Script Editor](screenshots/bluezone-script-editor.png)
+
+![Start Menu Programs (Windows 7)](screenshots/bluezone-start-menu.png)
+
+
+
 ### See Also
 
 

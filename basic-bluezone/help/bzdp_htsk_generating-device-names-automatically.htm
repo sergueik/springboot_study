@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Generating device names automatically"/>
+<meta name="abstract" content="BlueZone has the capability to automatically create iSeries device names dynamically and retry the devices until the iSeries host determines that the requested device is not in use. BlueZone is configured to create the names based on %1, %2, and %3 values entered in the device name field."/>
+<meta name="description" content="BlueZone has the capability to automatically create iSeries device names dynamically and retry the devices until the iSeries host determines that the requested device is not in use. BlueZone is configured to create the names based on %1, %2, and %3 values entered in the device name field."/>
+<meta name="DC.subject" content="generating, device names"/>
+<meta name="keywords" content="generating, device names"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-iseries.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_generating-device-names-"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Generating device names automatically</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_generating-device-names-">
+<div class="topic">
+
+<h1 class="title topictitle1">Generating device names automatically</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">BlueZone has the capability to automatically create iSeries
+device names dynamically and retry the devices until the iSeries host
+determines that the requested device is not in use.  BlueZone is configured
+to create the names based on %1, %2, and %3 values entered in the
+device name field. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><dl class="dl">
+
+<dt class="dt dlterm">Substitution text values</dt>
+
+<dd class="dd"><strong class="ph b">%1</strong> - Uses the first seven characters of the computer name
+as the base device name.  </dd>
+
+<dd class="dd"><strong class="ph b">%2</strong> - Appends a D for display sessions or P for printer
+sessions.  </dd>
+
+<dd class="dd"><strong class="ph b">%3</strong> - Appends an automatically incrementing number beginning
+with 00 and ending with 99. </dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example"><h2 class="title sectiontitle">Examples</h2><dl class="dl">
+
+<dt class="dt dlterm">Display session using the computer name as the base name</dt>
+
+<dd class="dd">For a computer with computer name WS1234. <p class="p">A device name of
+%1%2%3 results in WS1234D00 being sent to the iSeries.  If the requested
+device name is in use, WS1234D01 is requested.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Display session using a standard base name</dt>
+
+<dd class="dd">Using a base name of GROUP1. <p class="p">A device name of GROUP1%2%3 results
+in GROUP1D00 being sent to the iSeries.  If the requested device name
+is in use, GROUP1D01 is requested.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Printer session using the computer name as the base name</dt>
+
+<dd class="dd">For a computer with computer name WS1234.<p class="p">A device name of %1%2%3
+results in WS1234P00 being sent to the iSeries.  If the requested
+device name is in use, WS1234P01 is requested.</p>
+</dd>
+
+
+
+<dt class="dt dlterm">Printer session using a standard base name</dt>
+
+<dd class="dd">Using a base name of GROUP1. <p class="p">A device name of GROUP1%2%3 results
+in GROUP1P00 being sent to the iSeries.  If the requested device name
+is in use, GROUP1P01 is requested.</p>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section postreq"><p class="p">Printer association provides a mechanism to automatically
+request a printer device name based on the existing display device
+name.  By predefining pairs of printer and display devices in the
+iSeries, users can dynamically request a display device using a base
+name plus %2%3 and automatically get a matching printer device. </p>
+<div class="p">For
+example, use a base name of GROUP1 and the associated printer with
+display feature. A device name of GROUP1%2%3 configured in the display
+results in GROUP1D00 being sent to the iSeries.  If the requested
+device name is in use, GROUP1D01 is requested. After the display successfully
+obtains a device name, the printer is assigned the matching device
+name by the display emulator.  If the display gets GROUP1D01, it gives
+the printer GROUP1P01. <div class="note note"><span class="notetitle">Note:</span> This feature only works with predefined
+display and printer device name pairs where the printer device is
+assigned to the display device rather than the user.</div>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-iseries.htm" title="The following sections detail the configuration of BlueZone iSeries Display and Printer connections.">BlueZone iSeries Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

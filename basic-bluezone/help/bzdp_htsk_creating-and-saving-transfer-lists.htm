@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Creating and saving transfer lists"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.subject" content="creating, transfer lists, saving"/>
+<meta name="keywords" content="creating, transfer lists, saving"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_transfer-lists.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="bzdp_htsk_creating-and-saving-transfer-lists"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Creating and saving transfer lists</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="bzdp_htsk_creating-and-saving-transfer-lists">
+<div class="topic">
+
+<h1 class="title topictitle1">Creating and saving transfer lists</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p">You can create a transfer list using the method below or you can manually add each transfer
+   entry using the Transfer Properties window. Refer to <a class="xref" href="bzdp_utsk_configuring-the-transfer-properties.htm">Using the Transfer Properties window</a> for more
+   information. </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">To create and save a transfer list:  </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Connect to the desired Mainframe session. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol">Configure</span></span>.</span></li>
+<li class="li step stepexpand"><span class="ph cmd">Configure the IND$FILE transfer. </span>
+<div class="itemgroup stepresult">Refer to <a class="xref" href="bzdp_htsk_configuring-transfer-setup.htm">Configuring IND$FILE transfer setup</a> for more information.</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Local Files</span> pane, select
+the desired local file.</span></li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Host Files</span> pane, select the
+desired host file. If no files are displayed in the list, click <span class="ph uicontrol">Refresh</span>. </span>
+<div class="itemgroup info"><div class="note note"><span class="notetitle">Note:</span> If you selected the <span class="ph uicontrol">TSO</span> host system
+type during configuration, your session must be at a READY prompt
+or the ISPF command shell. If it is not, you cannot view the host
+files and you will receive an error when you click <span class="ph uicontrol">Refresh</span>. </div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Add to List</span> icon in the
+center pane. </span>
+<div class="itemgroup stepresult">The file entry displays in the <span class="ph uicontrol">Transfer List</span> pane.</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd"><em class="ph i">Optional</em>: Set the entry’s transfer properties: </span>
+<ol type="a" class="ol substeps">
+<li class="li substep substepexpand"><span class="ph cmd">Highlight the desired file entry and click the <span class="ph uicontrol">Properties</span> icon.</span></li>
+
+<li class="li substep substepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Transfer Direction</span> drop-down
+menu, select <span class="ph uicontrol">&lt;- Receive</span> or <span class="ph uicontrol">Send
+-&gt;</span>.</span>
+<div class="itemgroup stepresult">If you leave the <span class="ph uicontrol">Transfer Direction</span> set to <span class="ph uicontrol">None</span>, the entry transfer is dependent
+on the window: <ul class="ul">
+<li class="li"><p class="p">From the Host File Transfer - Send window, the entry will be
+sent to the host. </p>
+</li>
+
+<li class="li"><p class="p">From the Host File Transfer - Receive window, the entry will
+be received from the host. </p>
+</li>
+
+<li class="li"><p class="p">From the Host File Transfer window, the entry will be bypassed.</p>
+</li>
+
+</ul>
+</div>
+</li>
+
+<li class="li substep substepexpand"><span class="ph cmd">To change the setup options, click <span class="ph uicontrol">Transfer
+Setup</span>. </span>
+<div class="itemgroup stepresult">The Transfer Setup - Entry # window opens. These are the
+same options set in the initial setup but will be applied to this
+particular transfer entry. Refer to <a class="xref" href="bzdp_htsk_configuring-transfer-setup.htm">Configuring IND$FILE transfer setup</a> for more information on these settings. <p class="p">Make the desired
+changes and click <span class="ph uicontrol">OK</span>.</p>
+</div>
+</li>
+
+<li class="li substep substepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>.</span></li>
+
+</ol>
+
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Repeat steps 4–7 until all of the desired files are in
+the transfer list. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Save the transfer list using one of the following two options: </span>
+<ul class="ul choices">
+<li class="li choice">Select <span class="ph menucascade"><span class="ph uicontrol">List</span> → <span class="ph uicontrol">Save</span></span> from the menu bar or click the <span class="ph uicontrol">Save</span> icon in the transfer list toolbar. This saves the
+transfer list with the current display session. The next time this
+session is opened, the transfer list is displayed in the <span class="ph uicontrol">Transfer List</span> pane. </li>
+
+<li class="li choice">Select <span class="ph menucascade"><span class="ph uicontrol">List</span> → <span class="ph uicontrol">Save As</span></span> from the menu bar or click the <span class="ph uicontrol">Save As</span> icon from the
+      transfer list toolbar. This saves the transfer list as a <span class="ph filepath">.mdl</span> file for
+      future use. <div class="note note"><span class="notetitle">Note:</span> When saving a .mdl text-based transfer list, the following settings are only
+       saved until the next transfer:<ul class="ul">
+        <li class="li">Local File</li>
+
+        <li class="li">Local File Path</li>
+
+        <li class="li">Transfer Direction</li>
+
+        <li class="li">File Options: Binary/ Text, CRFL, and Append</li>
+
+        <li class="li">Host File</li>
+
+       </ul>
+To save all settings for each transfer, save the transfer list in mainframe display
+       binary transfer list (.mdlb) file format. </div>
+</li>
+
+</ul>
+
+</li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_transfer-lists.htm" title="Transfer lists are used to control batch file transfers. A transfer list can contain files that are being transferred in both directions. Multiple transfer lists can be created, saved, and used again in the future. Each entry in a transfer list can have a customized transfer setup.">Transfer lists</a></div></div></div>
+
+</div></body>
+</html>

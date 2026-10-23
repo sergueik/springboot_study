@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Configuring Euro support"/>
+<meta name="abstract" content="There are three requirements in order for BlueZone to support the Euro symbol:"/>
+<meta name="description" content="There are three requirements in order for BlueZone to support the Euro symbol:"/>
+<meta name="DC.subject" content="configuring, Euro support"/>
+<meta name="keywords" content="configuring, Euro support"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-iseries.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_configuring-euro-support"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring Euro support</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_configuring-euro-support">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring Euro support</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">There are three requirements in order for BlueZone to support
+the Euro symbol: </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><ul class="ul">
+<li class="li">Check the <span class="ph uicontrol">Euro</span> check box on the <span class="ph uicontrol">3270 /5250 Emulation</span> tab.  </li>
+
+<li class="li">Select a <span class="ph uicontrol">Language</span> (code page) that supports
+the Euro symbol. For English, the code page must be 1140 rather than
+37.  </li>
+
+<li class="li">Map a key sequence to the Euro symbol. </li>
+
+</ul>
+ </div>
+
+<ol class="ol steps"><li class="li step"><span class="ph cmd">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </span></li>
+<li class="li step"><span class="ph cmd">Click the <span class="ph uicontrol">3270/5250 Emulation</span> tab. </span>
+</li>
+<li class="li step"><span class="ph cmd">Check the <span class="ph uicontrol">Euro</span> check box. </span>
+</li>
+<li class="li step"><span class="ph cmd">In the <span class="ph uicontrol">Language  (CCSID)</span> list box,
+select a language (code page) that supports the Euro. </span></li>
+<li class="li step"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>. </span></li>
+<li class="li step"><span class="ph cmd">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol"> Keyboard</span></span>. </span></li>
+<li class="li step"><span class="ph cmd">In the <span class="ph uicontrol">Functions Groups</span> list box,
+select <span class="ph uicontrol">PC Data Keys</span>. </span></li>
+<li class="li step"><span class="ph cmd">In the <span class="ph uicontrol">Functions</span> list box, select <span class="ph uicontrol">Euro Currency Symbol</span> (it's near the bottom of the list). </span>
+</li>
+<li class="li step"><span class="ph cmd">Under <span class="ph uicontrol">Key Mappings</span>, if there is
+already a key mapped to the Euro symbol, it displays. </span></li>
+<li class="li step"><span class="ph cmd">If not, click <span class="ph uicontrol">New</span> and map a keystroke
+sequence like Alt+E, for example. </span></li>
+<li class="li step"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> to save the key mapping
+you just created. </span></li>
+<li class="li step"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> again to close the Keyboard
+Options dialog. </span></li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section postreq">Connect to your host and open the application where you want
+to place the Euro symbol.  Type the keystrokes you assigned to the
+Euro symbol (Alt+E), or whatever you mapped the Euro symbol to.  The
+Euro symbol displays on your screen. <div class="note note"><span class="notetitle">Note:</span> If you want to enable Euro
+Support for printing, launch your BlueZone Printer Emulator, and follow
+steps 1 through 4 above.</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

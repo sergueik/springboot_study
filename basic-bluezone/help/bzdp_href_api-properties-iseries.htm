@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="API Properties dialog"/>
+<meta name="abstract" content="The API Properties dialog is used to configure BlueZone to work with external programs. To launch the API Properties dialog, go to the BlueZone menu bar, and click Options &gt; API."/>
+<meta name="description" content="The API Properties dialog is used to configure BlueZone to work with external programs. To launch the API Properties dialog, go to the BlueZone menu bar, and click Options &gt; API."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-iseries-display-options.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_bz-hllapi-support-iseries.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_bz-dde-support-iseries.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_api-properties-mainframe"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>API Properties dialog</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_api-properties-mainframe">
+<div class="topic">
+
+<h1 class="title topictitle1">API Properties dialog</h1>
+
+
+<div class="body refbody"><p class="shortdesc">The API Properties dialog is used to configure BlueZone
+to work with external programs.  To launch the API Properties dialog,
+go to the BlueZone menu bar, and click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol"> API</span></span>. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><p class="p">Typical applications that use the BlueZone API interface
+use a HLLAPI interface to communicate with BlueZone.  In order for
+BlueZone to communicate with a HLLAPI application through the BlueZone
+DDE Interface, you must enable the BlueZone DDE Interface. Refer to <a class="xref" href="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm" title="Configuring BlueZone to work with a third-party HLLAPI application is really quite simple. Your knowledge of, and your ability to change the configuration of your external HLLAPI application is really the key to making it work with BlueZone.">Configuring BlueZone to work with an existing HLLAPI application</a> for more information. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Options tab</h2><p class="p">The API (Application Program
+Interface) Properties, Options tab allows the configuration of DDE
+and HLLAPI items. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Dynamic Data Exchange (DDE)</dt>
+
+<dd class="dd">The Dynamic Data Exchange Group is used to configure DDE operating
+parameters: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Enable DDE Interface</span>: Enable to allow the
+BlueZone session to function as a DDE Server.  DDE client applications
+can communicate with DDE servers to exchange data.  This option must
+be enabled in order for BlueZone to communicate with HLLAPI client
+applications.<ul class="ul">
+<li class="li"><span class="ph uicontrol">Server / Service Name</span>: Displays the Server
+/ Service Name as “BlueZone”.</li>
+
+<li class="li"><span class="ph uicontrol">Topic Name</span>: Displays the session’s DDE
+Topic Name.  The Topic Name can be changed by configuring the HLLAPI
+Short Name Session Identifier.</li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Enable Network DDE Initialization</span>: If checked,
+BlueZone modifies registry settings and invoke NETDDE.EXE to enable
+DDE client applications to communicate with BlueZone over a Local
+Area Network (LAN). <div class="note note"><span class="notetitle">Note:</span> Only use this option when the HLLAPI application
+is on a computer separate from the computer that BlueZone is running
+on.</div>
+<ul class="ul">
+<li class="li"><span class="ph uicontrol">DDE Share</span>: Displays the DDE Share Name
+that NETDDE uses to establish a DDE connection over the Local Area
+Network (LAN).</li>
+
+</ul>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">High Level Language API (HLLAPI)</dt>
+
+<dd class="dd">The High Level Language API group is used to configure HLLAPI
+operating parameters: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Short Name Session Identifier</span>: Used to
+set the HLLAPI identifier for the BlueZone session.  The HLLAPI Short
+Name Session Identifier is also used as the DDE Topic Name.</li>
+
+<li class="li"><span class="ph uicontrol">Session Long Name</span>: Used to set the HLLAPI
+description name for the BlueZone session.</li>
+
+<li class="li"><span class="ph uicontrol">Auto Assign HLLAPI Names ('A' for S1, 'B' for S2, etc.)</span>: If enabled, BlueZone automatically associates the Short Name Identifier
+to a session number 'A' for S1, 'B' for S2 and so on.</li>
+
+<li class="li"><span class="ph uicontrol">Auto-Launch the BlueZone DOS HLLAPI Redirector</span>: If enabled, BlueZone runs/closes the BlueZone DOS HLLAPI Redirector
+program each time the BlueZone DDE Server initializes/de-initializes.</li>
+
+<li class="li"><span class="ph uicontrol">Allow Multiple Simultaneous Connections</span>: If enabled, the BlueZone HLLAPI allows connection requests from
+a single application tread to the same BlueZone session as long as
+it is using the same HLLAPI Short Name Session Identifier.  If disabled
+(default), the session only allows multiple simultaneous connections
+to its presentation space if the first HLLAPI application connecting
+had specified WRITE_WRITE when calling HLLAPI SetSessionParameters.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Trace tab</h2><p class="p">The API Properties Trace tab allows
+the user to trace problems encountered while using the DDE and HLLAPI
+interfaces. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Trace Options</dt>
+
+<dd class="dd">The Trace Options group is used to create API trace files: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Trace DDE Interface</span>: Enable to trace DDE
+conversation transactions. </li>
+
+<li class="li"><span class="ph uicontrol">Trace HLLAPI Interface</span>: Enable to trace
+HLLAPI function calls and return values.</li>
+
+<li class="li"><span class="ph uicontrol">Trace RUI Interface</span>: Enable to trace RUI
+conversation transactions.</li>
+
+<li class="li"><span class="ph uicontrol">Trace File</span>: Used to specify a trace file name for API tracing. <ul class="ul">
+         <li class="li"><span class="ph uicontrol">Browse</span>: Displays a dialog used to select the directory and file
+          name. BlueZone provides a Traces directory in the BlueZone installation directory.</li>
+
+        </ul>
+<div class="cautiontitle">CAUTION:</div><div class="note caution">This must be a valid path or the trace feature will not
+         work.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Start Trace</span>: Used to start the API trace.</li>
+
+<li class="li"><span class="ph uicontrol">Stop Trace</span>: Used to stop the API trace.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><ul class="ulchildlinks"><li><a class="link" href="bzdp_href_bz-hllapi-support-iseries.htm" title="BlueZone is fully 32-bit WHLLAPI and EHLLAPI 1.1 compatible allowing easy migration to BlueZone of many custom or third-party applications used with other emulators. BlueZone HLLAPI is compatible with third-party HLLAPI applications including (but not limited to) those from Shared Medical (Siemens), Neasi-Webber, Real Vision, and Decision Technology.">BlueZone HLLAPI support</a><div>BlueZone is fully 32-bit WHLLAPI and EHLLAPI 1.1 compatible allowing easy migration to   BlueZone of many custom or third-party applications used with other emulators. BlueZone HLLAPI is   compatible with third-party HLLAPI applications including (but not limited to) those from Shared   Medical (Siemens), Neasi-Webber, Real Vision, and Decision Technology.</div></li><li><a class="link" href="bzdp_href_bz-dde-support-iseries.htm" title="BlueZone is a DDE server and uses DDE to communicate with the HLLAPI interface. BlueZone also uses Network DDE to allow communication across a network between a DDE application running on one system and BlueZone running on another. DDE calls supported in BlueZone are detailed in the BZDDE.H file supplied on the BlueZone CD image.">BlueZone DDE support</a><div>BlueZone is a DDE server and uses DDE to communicate with the HLLAPI interface.  BlueZone also uses Network DDE to allow communication across a network between a DDE application running on one system and BlueZone running on another.  DDE calls supported in BlueZone are detailed in the <span class="ph filepath">BZDDE.H</span> file supplied on the BlueZone CD image. </div></li><li><a class="link" href="bzdp_htsk_configuring-bz-to-work-with-hllapi-application.htm" title="Configuring BlueZone to work with a third-party HLLAPI application is really quite simple. Your knowledge of, and your ability to change the configuration of your external HLLAPI application is really the key to making it work with BlueZone.">Configuring BlueZone to work with an existing HLLAPI application</a><div>Configuring BlueZone to work with a third-party HLLAPI application is really quite simple.  Your knowledge of, and your ability to change the configuration of your external HLLAPI application is really the key to making it work with BlueZone. </div></li></ul><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-iseries-display-options.htm">IBM iSeries display options</a></div></div></div>
+
+</div></body>
+</html>

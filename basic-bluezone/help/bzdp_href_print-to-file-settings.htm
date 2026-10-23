@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Print to File settings"/>
+<meta name="abstract" content="Printer output can be redirected to a file. This can be useful when sending print jobs to shared directories to be viewed in a text editor rather than using paper to print multiple copies."/>
+<meta name="description" content="Printer output can be redirected to a file. This can be useful when sending print jobs to shared directories to be viewed in a text editor rather than using paper to print multiple copies."/>
+<meta name="DC.subject" content="print to file, settings"/>
+<meta name="keywords" content="print to file, settings"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_printer-setup-overview.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_print-setup.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_print-to-file-settings"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Print to File settings</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_print-to-file-settings">
+<div class="topic">
+
+<h1 class="title topictitle1">Print to File settings</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">Printer output can be redirected to a file.  This can be
+useful when sending print jobs to shared directories to be viewed
+in a text editor rather than using paper to print multiple copies. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section">The <span class="ph uicontrol">Print to File</span> tab is only available
+if you select the <span class="ph uicontrol">Print to File - Redirect Print Output
+to File</span> check box on the <span class="ph uicontrol">Printer</span> tab. <div class="p">The <span class="ph uicontrol">Print
+to File</span> tab contains the following options: <dl class="dl">
+
+<dt class="dt dlterm">Output Filename</dt>
+
+<dd class="dd">If selected, allows the user to enter a target file name in the
+adjacent field.  </dd>
+
+
+
+<dt class="dt dlterm">Prompt for Filename</dt>
+
+<dd class="dd">If selected, prompts the user for a target file name when the
+job is printed.</dd>
+
+
+
+<dt class="dt dlterm">Base Output Filename</dt>
+
+<dd class="dd">If selected, BlueZone automatically creates target file names
+based on the base name entered in the adjacent field. <p class="p">Starting
+in version 6.1, the base name field supports eight characters, a period,
+and a configurable number of incrementing digits that are defined
+with question marks. This field also supports asterisks (*) wildcard
+characters. </p>
+<p class="p">A question mark specifies a wrapping
+increment and can be placed anywhere, in any order, in the base name.
+When a question mark is used, the next Print to File job number is
+stored in the session's profile on shutdown so it is affected by the <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol">Properties Save on Exit </span></span> options.  The number of question marks used determines
+the wrapping limit. For example ? is 9, ?? is 99, and so on.  </p>
+<p class="p">This
+new feature is backwards compatible with earlier base name functionality,
+which behaves as &lt;basename&gt;*. </p>
+<p class="p">An asterisk defines a non-wrapping
+job number increment and can be placed anywhere in the base name.
+When an asterisk is used, the next Print to File job number is auto-generated
+so the output files are guaranteed to be unique.  </p>
+</dd>
+
+
+
+<dt class="dt dlterm">Output Directory</dt>
+
+<dd class="dd">Displays the destination name for print output. Click <span class="ph uicontrol">Browse</span> to
+specify the directory and path where the print files are to be written. </dd>
+
+
+
+<dt class="dt dlterm">Append Data to File</dt>
+
+<dd class="dd">If selected, BlueZone appends new print data to the end of the
+specified file rather than overwriting it. </dd>
+
+
+
+<dt class="dt dlterm">Clear Print File Daily</dt>
+
+<dd class="dd">Clears the data from the text file daily. <p class="p">This option is only
+available if the <span class="ph uicontrol">Output Filename</span> and <span class="ph uicontrol">Append
+Data to File</span> check boxes are selected. </p>
+</dd>
+
+
+</dl>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_printer-setup-overview.htm" title="BlueZone Mainframe and iSeries Printer Emulators connect to their respective hosts and emulate IBM printers, converting the IBM printer data stream into an ASCII printer data stream. This enables any printer connected to a Windows workstation to print IBM host generated print jobs.">Printer setup overview</a></div></div></div>
+
+</div></body>
+</html>

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="BlueZone scripts"/>
+<meta name="abstract" content="BlueZone scripts can be recorded in either a proprietary format or in a text-based format recorded in either VBScript or JavaScript."/>
+<meta name="description" content="BlueZone scripts can be recorded in either a proprietary format or in a text-based format recorded in either VBScript or JavaScript."/>
+<meta name="DC.subject" content="BlueZone scripts, scripts, macros"/>
+<meta name="keywords" content="BlueZone scripts, scripts, macros"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_script-menu.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_bz-script-editor.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_editing-scripts.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_script-events.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_lu-functions.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_menu-commands.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_recording-scripts.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_playing-scripts.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_auto-playing-scripts.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_script-properties.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_mapping-scripts-to-power-keys.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_mapping-scripts-to-the-keyboard.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_use-the-wait_for-script-event.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_use-variables-in-scripts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_bz-scripts"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>BlueZone scripts</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_bz-scripts">
+<div class="topic">
+
+<h1 class="title topictitle1">BlueZone scripts</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">BlueZone scripts can be recorded in either a proprietary
+format or in a text-based format recorded in either VBScript or JavaScript. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><div class="note note"><span class="notetitle">Note:</span> Some applications refer to the function used to automate
+tasks as a macro. BlueZone refers to this function as a script and
+offers several automation technologies from the <span class="ph uicontrol">Script</span> menu
+in the BlueZone emulators.</div>
+<p class="p">BlueZone proprietary scripts are
+targeted at users with a basic understanding of scripting and logic
+but without skill sets required to write and edit VBScripts or JavaScripts. </p>
+<p class="p">BlueZone
+text-based scripts are targeted at users who wish to leverage their
+proficiency with either VBScript or JavaScript and want to take advantage
+of being able to write and edit BlueZone scripts in a scripting language
+that they already know. </p>
+<div class="p">The type of script desired is selected
+at the time when the script is created by selecting the desired file
+extension. 
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" class="table" frame="border" border="1" rules="all"><caption><span class="tablecap">Table 1: BlueZone script types</span></caption>
+<thead class="thead" align="left">
+<tr class="row">
+<th class="cellrowborder" valign="top" id="d43548e58">File extension  </th>
+
+<th class="cellrowborder" valign="top" id="d43548e61">Script type   </th>
+
+</tr>
+
+</thead>
+
+<tbody class="tbody">
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e58 "><span class="ph filepath">.BZS  </span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e61 ">BlueZone proprietary script   </td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e58 "><span class="ph filepath">.BBS</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e61 ">BlueZone proprietary script</td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e58 "><span class="ph filepath">.VBS  </span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e61 ">VBScript   </td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e58 "><span class="ph filepath">.JS   </span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e61 ">JavaScript</td>
+
+</tr>
+
+</tbody>
+
+</table>
+</div>
+</div>
+<p class="p">If you are migrating from another terminal emulator
+application, BlueZone provides support to convert your existing scripts
+to BlueZone scripts. For more information about converting scripts,
+see the <cite class="cite">BlueZone Migration Toolkit</cite>. </p>
+<div class="p">The following
+table lists the competitor’s scripts and the BlueZone scripts that
+they map to. 
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" id="Bzdp_href_bz-scripts__competitor" class="table" frame="border" border="1" rules="all"><caption><span class="tablecap">Table 2:  Mappings of competitor’s script to BlueZone scripts</span></caption>
+<thead class="thead" align="left">
+<tr class="row">
+<th class="cellrowborder" valign="top" id="d43548e130">Competitor’s script</th>
+
+<th class="cellrowborder" valign="top" id="d43548e133">BlueZone script</th>
+
+</tr>
+
+</thead>
+
+<tbody class="tbody">
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e130 ">EXTRA <span class="ph filepath">.EBM</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e133 ">BlueZone <span class="ph filepath">.BBS</span></td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e130 ">Reflection <span class="ph filepath">.RBS</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e133 ">BlueZone <span class="ph filepath">.BBS</span></td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e130 ">Reflection VBA <span class="ph filepath">.RVS</span>, <span class="ph filepath">.R2W</span>,
+and <span class="ph filepath">.R4W</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e133 ">BlueZone Plus VBA <span class="ph filepath">.BVP</span></td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e130 ">Rumba <span class="ph filepath">.RMC</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e133 ">BlueZone <span class="ph filepath">.BZS</span></td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e130 ">Pcom <span class="ph filepath">.MAC</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e133 ">BlueZone <span class="ph filepath">.VBS</span></td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e130 ">Pcom <span class="ph filepath">.VBS</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e133 ">BlueZone <span class="ph filepath">.VBS</span></td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d43548e130 ">Hummingbird <span class="ph filepath">.EBS</span></td>
+
+<td class="cellrowborder" valign="top" headers="d43548e133 ">BlueZone <span class="ph filepath">.BBS</span></td>
+
+</tr>
+
+</tbody>
+
+</table>
+</div>
+</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">BlueZone proprietary script format</h2><p class="p">BlueZone
+proprietary scripts are recorded and played back using a proprietary
+method.  Scripts are typically created by recording keystrokes, but
+can be edited later to change the desired playback.  Scripts are edited
+using the BlueZone Script Editor (<span class="ph filepath">bzse.exe</span>) application
+which is launched from the BlueZone menu bar by selecting <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol">Edit</span></span> and
+selecting the desired script.  Choosing a script that ends in <span class="ph filepath">.bbs</span> or <span class="ph filepath">.bzs</span> starts
+the BlueZone Script Editor application with the requested script displayed
+in the editing region. </p>
+<p class="p">BlueZone Script Editor is a GUI tool
+allowing users to drag Script Events into the Script flow, change
+the order of events, and delete previously recorded events.  BlueZone
+Scripts support a proprietary mechanism called Wait_Ready that ensures
+the host is ready to accept input, even when using TN3270 or TN3270E
+. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Advantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">They are easy to record.  </li>
+
+<li class="li">They are easy to edit with BlueZone Script Editor.  </li>
+
+<li class="li">They are keyboard lock state aware.  </li>
+
+<li class="li">They support advanced functions like wait for, watch for, text
+input, and so on.  </li>
+
+<li class="li">They can execute other programs using the Run command.  </li>
+
+<li class="li">They can run BlueZone Menu commands, ex; Copy, Paste, Print Screen.
+ </li>
+
+<li class="li">They can accept variables passed from a BlueZone Web to Host Object
+Tag.  ex: Login ID and Password generated dynamically by the web application
+and used to sign the user into the mainframe.  </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Disadvantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">They do not support text input variables.  </li>
+
+<li class="li">They do not support file I/O.  </li>
+
+<li class="li">There is no external application integration. </li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">BlueZone text-based scripts</h2><p class="p">BlueZone text-based
+scripts can be written or recorded in either VBScript or JavaScript.
+ Scripts are typically created by recording keystrokes, but can be
+edited later to change the playback.  Scripts are edited using the
+BlueZone Script Host and Debugger (<span class="ph filepath">bsh.exe</span>) application
+which is launched from the BlueZone menu bar by clicking <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Edit</span></span> and
+selecting the script.  Selecting a script that ends in either <span class="ph filepath">.vbs</span> or <span class="ph filepath">.js</span> script
+starts the BlueZone Script Host and Debugger application with the
+requested script displayed in the editing region. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Advantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">They are easy to record or can be written from scratch.  </li>
+
+<li class="li">They can be written in VBScript or JavaScript  </li>
+
+<li class="li">They are easy to edit with BlueZone Script Host  Debugger.  </li>
+
+<li class="li">They support unique BlueZone methods which control the behavior
+of BlueZone.  </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Disadvantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">They require a working knowledge of VBScript or JavaScript. </li>
+
+</ul>
+</dd>
+
+
+</dl>
+<p class="p">For more information on the BlueZone Script Host, BlueZone
+Script Host and Debugger, and the BlueZone Dialog Editor, see the <cite class="cite">BlueZone
+Advanced Automation Developer's Guide</cite>. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><ul class="ulchildlinks"><li><a class="link" href="bzdp_hcon_bz-script-editor.htm" title="BlueZone scripting is a powerful and flexible scripting language which uses a built-in GUI (Graphical User Interface) designed for the easy automation of tasks on host systems using the BlueZone family of host emulation products.">BlueZone Script Editor</a><div>BlueZone scripting is a powerful and flexible scripting language which uses a built-in GUI (Graphical User Interface) designed for the easy automation of tasks on host systems using the BlueZone family of host emulation products. </div></li><li><a class="link" href="bzdp_htsk_editing-scripts.htm" title="After you create a BlueZone script, you can return to the script and edit it in the BlueZone Script Editor application. In the Script Editor, you can add, delete, move, and edit items, and resolve syntax errors.">Editing scripts</a><div>After you create a BlueZone script, you can return to the script and edit it in the BlueZone Script Editor application. In the Script Editor, you can add, delete, move, and edit items, and resolve syntax errors. </div></li><li><a class="link" href="bzdp_href_script-events.htm" title="A BlueZone script has the ability to execute all menu commands from the BlueZone Display and has the ability to send all host key sequences to the host system. Script events are used to add flow control and user input to BlueZone scripts. In addition, script events can be used to gain the attention of the user, add comments to a script file, and to execute programs on the workstation.">Script events</a><div>A BlueZone script has the ability to execute all menu commands from the BlueZone Display and has the ability to send all host key sequences to the host system.  Script events are used to add flow control and user input to BlueZone scripts.  In addition, script events can be used to gain the attention of the user, add comments to a script file, and to execute programs on the workstation. </div></li><li><a class="link" href="bzdp_href_lu-functions.htm" title="BlueZone scripts have the ability to send all host specific key sequences or commands to the host system. We refer to these host specific commands as LU Functions.">LU functions</a><div>BlueZone scripts have the ability to send all host specific key sequences or commands to the host system.  We refer to these host specific commands as LU Functions. </div></li><li><a class="link" href="bzdp_href_menu-commands.htm" title="BlueZone scripts have the ability to execute all BlueZone menu commands. This includes everything from opening configuration files to launching sessions to executing host file transfers.">Menu commands</a><div>BlueZone scripts have the ability to execute all BlueZone menu commands.  This includes everything from opening configuration files to launching sessions to executing host file transfers. </div></li><li><a class="link" href="bzdp_htsk_recording-scripts.htm" title="This procedure is intended to provide a step-by-step outline to demonstrate how an end user can use BlueZone to record a script that can then be used over and over again.">Recording scripts</a><div>This procedure is intended to provide a step-by-step outline to demonstrate how an end user can use BlueZone to record a script that can then be used over and over again. </div></li><li><a class="link" href="bzdp_htsk_playing-scripts.htm" title="BlueZone end users can record keyboard events and save the results to a file for later playback. The process of playing back the resulting file is called playing a Script.">Playing scripts</a><div>BlueZone end users can record keyboard events and save the results to a file for later playback.  The process of playing back the resulting file is called playing a Script. </div></li><li><a class="link" href="bzdp_htsk_auto-playing-scripts.htm" title="In order to Auto-Play a script, you must first create the script that you want to automatically play. Auto-Play simply means that a BlueZone script will automatically start to play when one of three events takes place. The three events are:">Auto-playing scripts</a><div>In order to Auto-Play a script, you must first create the script that you want to automatically play.  Auto-Play simply means that a BlueZone script will automatically start to play when one of three events takes place.  The three events are: </div></li><li><a class="link" href="bzdp_href_script-properties.htm" title="The Script Properties property sheet is used to configure BlueZone Script playback settings. From the BlueZone menu bar, click Script &gt; Properties . The Script Property Sheet opens displaying the following:">Script properties</a><div>The Script Properties property sheet is used to configure BlueZone Script playback settings.  From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Script </span> → <span class="ph uicontrol"> Properties</span></span>. The Script Property Sheet opens displaying the following: </div></li><li><a class="link" href="bzdp_htsk_mapping-scripts-to-power-keys.htm" title="After a script has been created and tested, it can be mapped to a power pad to make it instantly accessible with a single click.">Mapping scripts to power pads</a><div>After a script has been created and tested, it can be mapped to a power pad to make it instantly accessible with a single click. </div></li><li><a class="link" href="bzdp_htsk_mapping-scripts-to-the-keyboard.htm" title="After a script has been created and tested, it can be mapped to a keyboard key to make it instantly accessible from the keyboard.">Mapping scripts to the keyboard</a><div>After a script has been created and tested, it can be mapped to a keyboard key to make it instantly accessible from the keyboard. </div></li><li><a class="link" href="bzdp_href_use-the-wait_for-script-event.htm" title="BlueZone scripts support the ability to wait for a specific text string or LU Function to appear in the host session screen. Wait_For is one of the more versatile BlueZone script functions.">Use the Wait_For script event</a><div>BlueZone scripts support the ability to wait for a specific text string or LU Function to appear in the host session screen.  Wait_For is one of the more versatile BlueZone script functions. </div></li><li><a class="link" href="bzdp_href_use-variables-in-scripts.htm" title="BlueZone Scripts support the ability to create up to four variables that can be utilized in a BlueZone script.">Use variables in scripts</a><div>BlueZone Scripts support the ability to create up to four variables that can be utilized in a BlueZone script. </div></li></ul><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_script-menu.htm">Script menu</a></div></div></div>
+
+</div></body>
+</html>

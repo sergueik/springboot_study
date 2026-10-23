@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Advanced tab"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_vt-session-configuration.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_advanced-tab-vt"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Advanced tab</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_advanced-tab-vt">
+<div class="topic">
+
+<h1 class="title topictitle1">Advanced tab</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section" id="Bzdp_href_advanced-tab-vt__advanced"><p class="p">The Advanced tab is used for enabling or
+disabling Nagle's Algorithm and setting the a National Replacement
+Character Set if so desired. </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Nagle Algorithm</dt>
+
+<dd class="dd">Nagle's Algorithm provides a means of dealing with the small packet
+problem that is created when an application generates data one byte
+at a time, causing the network to be overloaded with packets.  A single
+character - one byte of data - originating from a keyboard could result
+in the transmission of a 41 byte packet consisting of one byte of
+useful information and 40 bytes of header data.  Most networks have
+support for Nagle's Algorithm tuned on by default.  This feature can
+be turned off through use of the TCP_NODELAY sockets option.  When
+TCP_NODELAY is selected, Nagle's Algorithm is disabled. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Disable (TCP_NODELAY On)</span>: Selecting this
+option results in Nagle's Algorithm being turned off.</li>
+
+<li class="li"><span class="ph uicontrol">Enable (TCP_NODELAY Off)</span>: Selecting this
+options results in Nagle's Algorithm being turned on.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">National Replacement Character Set </dt>
+
+<dd class="dd">Manually sets the National Replacement Character Set.  Most host
+applications automatically set the correct National Replacement Character
+Set to match the required language.  In some cases the host application
+assumes that the character set is already selected.<p class="p">If the wrong
+National Replacement Character Set is selected, you notice that certain
+characters, like accented characters, are displayed incorrectly. 
+If this happens, select the desired country's National Replacement
+Character Set from the drop-down list box.</p>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_vt-session-configuration.htm" title="Prior to establishing a host system connection, you must set Session Configuration parameters.">VT session configuration</a></div></div></div>
+
+</div></body>
+</html>

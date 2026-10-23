@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Printer settings"/>
+<meta name="abstract" content="The Printer tab contains the following options."/>
+<meta name="description" content="The Printer tab contains the following options."/>
+<meta name="DC.subject" content="printer, settings"/>
+<meta name="keywords" content="printer, settings"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_printer-setup-overview.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_print-setup.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_printer-settings"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Printer settings</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_printer-settings">
+<div class="topic">
+
+<h1 class="title topictitle1">Printer settings</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">The <span class="ph uicontrol">Printer</span> tab contains the following
+options. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><dl class="dl">
+
+<dt class="dt dlterm">Printer</dt>
+
+<dd class="dd">Displays and sets information about the Windows printer on which
+the host print jobs are printed: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Device Name</span>: Displays the name of the currently
+defined Windows printer. (display only field)  </li>
+
+<li class="li"><span class="ph uicontrol">Output Port</span>: Displays the port that is
+being used by the above printer. (display only field)  </li>
+
+<li class="li"><span class="ph uicontrol">Always use Windows Default Printer on Startup</span>:
+If checked, BlueZone automatically uses the Windows default printer
+upon startup.  <div class="note tip"><span class="tiptitle">Tip:</span> When using the <span class="ph uicontrol">Always Use
+Default Windows Printer on Startup</span> feature, edit printer
+names in the Printer Definition File for the known target printers
+to automatically match the printer definition file to the printer.</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Change Printer</span>: Click to change the current
+printer shown in the Device Name window above.  </li>
+
+<li class="li"><span class="ph uicontrol">Printer Info</span>: Click to display detailed
+information about the currently selected printer. </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Method of Printing </dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Windows API (Application Program Interface)</span>:
+When this option is selected, the settings on the Page tab, Layout
+tab, Fonts tab and Options tab are the settings that control print
+output.  In other words, the BlueZone application interfaces with
+the Windows print driver to control the print output.  This option
+gives you complete control over print output.</li>
+
+<li class="li"><span class="ph uicontrol">Passthrough - Send All Data Directly to the Printer</span>:
+If selected, BlueZone bypasses the Windows print driver and sends
+the data directly to the printer.  When this option is selected, the
+Page, Layout, Fonts, and Options tabs are removed; all printer controls
+are contained in the data steam of the print job. Select one of the
+following formatting options: <ul class="ul">
+
+<li class="li"><p class="p"><span class="ph uicontrol">Normal</span>: Uses EBCDIC host data with SCS
+formatting.</p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">AFP Support</span>: Advanced Function Printing,
+ASCII data within SCS Transparent blocks.</p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">No EBCDIC Conversion</span>: Uses ASCII data
+with no SCS formatting.</p>
+</li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Passthrough using Printer Definition - Convert Host
+Commands to Escapes</span>: Selecting this option, allows direct
+control of the printer by the printer emulator.  Host SCS printer
+control information is converted to ASCII printer escape sequences
+contained in the supplied Printer Definition File. When this option
+is selected, the Font tab is removed.<ul class="ul">
+<li class="li">Printer Definition List Box: Displays the currently selected printer
+definition. This is automatically selected using the closest match
+to the name of the selected Windows printer. If necessary, select
+a printer or printer family that is close to the target printer. A
+small subset of ASCII escape sequences are supported because only
+a limited set of functions are available in the SCS data stream. </li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Print to File - Redirect Print output to File</span>:
+Select to enable the print to file feature.  Note that selecting this
+option causes only the Print to File tab to appear. </li>
+
+<li class="li"><span class="ph uicontrol">Suppress Form Feed at End of Job</span>: If selected,
+BlueZone eliminates the form feed sent by the host to prevent the
+printing of an extra blank page at the end of the print job. </li>
+
+</ul>
+<div class="note tip"><span class="tiptitle">Tip:</span> When printing preprinted forms or specially
+formatted print jobs, use passthrough printing and a printer definition
+file. These settings ensures that the font selections are not scaled
+and are the proper pitch and line density.</div>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_printer-setup-overview.htm" title="BlueZone Mainframe and iSeries Printer Emulators connect to their respective hosts and emulate IBM printers, converting the IBM printer data stream into an ASCII printer data stream. This enables any printer connected to a Windows workstation to print IBM host generated print jobs.">Printer setup overview</a></div></div></div>
+
+</div></body>
+</html>

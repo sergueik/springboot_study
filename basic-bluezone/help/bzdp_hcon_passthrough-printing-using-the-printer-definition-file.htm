@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="concept"/>
+<meta name="DC.Title" content="Pass-through printing using the printer definition file"/>
+<meta name="abstract" content="The printer definition file contains ASCII control codes used to control several different ASCII printers directly, bypassing the Windows print driver. The BlueZone Printer emulators convert SCS printer control commands to the selected ASCII printer control codes. This may be desirable when printing on preprinted forms where the font size and style used is embedded in the printer."/>
+<meta name="description" content="The printer definition file contains ASCII control codes used to control several different ASCII printers directly, bypassing the Windows print driver. The BlueZone Printer emulators convert SCS printer control commands to the selected ASCII printer control codes. This may be desirable when printing on preprinted forms where the font size and style used is embedded in the printer."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_printing-types.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_hcon_passthrough-printing-usi"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Pass-through printing using the printer definition file</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_hcon_passthrough-printing-usi">
+<div class="topic">
+
+<h1 class="title topictitle1">Pass-through printing using the printer definition file</h1>
+
+
+<div class="body conbody"><p class="shortdesc">The printer definition file contains ASCII control codes
+used to control several different ASCII printers directly, bypassing
+the Windows print driver.  The BlueZone Printer emulators convert
+SCS printer control commands to the selected ASCII printer control
+codes.  This may be desirable when printing on preprinted forms where
+the font size and style used is embedded in the printer. </p>
+
+<p class="p">If fast, draft mode printing on dot matrix printers is required,
+the fonts embedded in the target dot matrix printers must be used.
+ Dot matrix printers cannot print True Type fonts in draft mode. </p>
+
+<p class="p">If your printer is not listed in the Printer Definition File, select
+a model that is close.  Many printers emulate other printers, therefore,
+selecting an emulated model instead will work. </p>
+
+<p class="p">The existing Printer Definition File may be modified to add a new
+printer or edit an existing printer.  Refer to the documentation for
+your printer for the appropriate ASCII escape sequences. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">When to use</h2><ul class="ul">
+<li class="li">Use with EBCDIC LU1 and LU4 SCS printer data streams where printer
+control commands sent by the host are converted to ASCII printer escape
+sequences.  </li>
+
+<li class="li">Standard SCS printing to a 3812 or 3287 type printer emulator.
+ </li>
+
+<li class="li">Draft mode printing on dot matrix printers.  </li>
+
+<li class="li">Printing using the fonts built into the printer. </li>
+
+</ul>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">When not to use</h2><ul class="ul">
+<li class="li">Do not use with LU3 print jobs.  The lack of SCS printer control
+codes in the data stream will produce unpredictable results.  Use
+the Windows API mode or pass-through without a printer definition
+file for LU3 printing.  </li>
+
+<li class="li">Do not use with Host Print Transform or ASCII transparent printing.
+ </li>
+
+<li class="li">When auto-sizing the font to fit the page must scale the font
+exactly.  This method will only choose the nearest resident printer
+font, usually 10, 12, 17, or 20 characters per inch (CPI).  </li>
+
+<li class="li">When the printed output must be printed using a Windows font rather
+than a printer resident font. </li>
+
+</ul>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Required emulator settings</h2><div class="p">Settings required
+in the Print Setup property sheet (click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Print Setup</span></span> from the menu bar)
+necessary to properly configure the emulator for this feature. <ol class="ol">
+<li class="li">Click the <span class="ph uicontrol">Passthrough</span> tab and check the
+following check boxes: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Send all Data Directly to the Printer</span></li>
+
+<li class="li"><span class="ph uicontrol">Use Printer Definition to Convert Formatting Commands
+to Printer Escapes</span></li>
+
+</ul>
+</li>
+
+<li class="li">Select a printer from the list box.  Select one that is close
+or create a custom printer definition.</li>
+
+<li class="li">Select a target printer, the Use default Windows Printer check
+box, or Print to File. </li>
+
+</ol>
+</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Ignored emulator settings</h2><p class="p">Settings that
+are have no affect once the required settings are made.  All settings
+are ignored except those specified because the emulation is completely
+bypassed. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_printing-types.htm">Printing types</a></div></div></div>
+
+</div></body>
+</html>

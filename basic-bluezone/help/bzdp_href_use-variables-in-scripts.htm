@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Use variables in scripts"/>
+<meta name="abstract" content="BlueZone Scripts support the ability to create up to four variables that can be utilized in a BlueZone script."/>
+<meta name="description" content="BlueZone Scripts support the ability to create up to four variables that can be utilized in a BlueZone script."/>
+<meta name="DC.subject" content="variables, using in scripts, scripts, using variables"/>
+<meta name="keywords" content="variables, using in scripts, scripts, using variables"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_bz-scripts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_use-variables-in-scripts"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Use variables in scripts</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_use-variables-in-scripts">
+<div class="topic">
+
+<h1 class="title topictitle1">Use variables in scripts</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">BlueZone Scripts support the ability to create up to four
+variables that can be utilized in a BlueZone script. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><p class="p">There can be many uses for variables.  For example, if
+you want to create a BlueZone script (<span class="ph filepath">.bzs</span>) to
+automate the log on process for several host systems, or log on to
+several sessions on the same host, you can create a BlueZone script
+with a variable for user name (<samp class="ph codeph">InputStr1</samp>) and a variable
+for password (<samp class="ph codeph">InputStr2</samp>) by using the BlueZone "Input"
+script event.  Then the script passes the values of <samp class="ph codeph">InputStr1</samp> and <samp class="ph codeph">InputStr2</samp> to
+additional host sessions through the BlueZone command line switch
+feature and uses the stored values to automatically log on to additional
+hosts. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">BlueZone script exercise</h2><p class="p">The following BlueZone
+scripting exercise assumes that you are already familiar with BlueZone
+and somewhat familiar with BlueZone scripting. </p>
+<p class="p">This exercise
+creates a BlueZone script that prompts the end user for user name
+and password, then uses the values of user name and password to log
+onto an iSeries host.  Then, the script automatically launches a second
+iSeries host session and passes the values of user name and password
+to the second iSeries host session.  A script automatically runs on
+the second iSeries host which uses the values of user name and password
+to log onto the second host.  </p>
+<p class="p">By using this technique, the
+end user is prompted to enter their user name and password only once,
+at the very beginning of the script, and the script inserts the user
+name and password values at the correct point for each host. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Preparing two BlueZone iSeries Display sessions</h2><ol class="ol">
+<li class="li">Launch two BlueZone iSeries display sessions.  </li>
+
+<li class="li">Configure the sessions to connect to the same or two different
+iSeries hosts.  </li>
+
+<li class="li">Save the first session to a file called <span class="ph filepath">session1.zad</span>.
+ </li>
+
+<li class="li">Save the second session to a file called <span class="ph filepath">session2.zad</span>.. </li>
+
+</ol>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Creating the first BlueZone script</h2><ol class="ol">
+<li class="li">Launch the BlueZone Script Editor and start creating a new script
+as follows. </li>
+
+<li class="li">In the Script Events list, double-click the <span class="ph uicontrol">Input</span> event.
+ <br/><p class="p">The Input dialog opens. </p>
+</li>
+
+<li class="li">Type <kbd class="ph userinput">InputStr1</kbd> in the Title field, followed
+by the text that you want to appear when the end user is prompted.
+For example, type <kbd class="ph userinput">Enter your user name. </kbd><div class="fig fignone">
+<img class="image" src="graphics/bz_script_input1_xp.png"/>
+</div>
+</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> to enter this event into the script. </li>
+
+<li class="li">Repeat the process to create an input box for the end users password
+as shown here.  For the password event, check the <span class="ph uicontrol">Hide
+Input as User Types</span> check box. <div class="fig fignone"><img class="image" src="graphics/bz_script_input2_xp.png"/></div>
+</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span>. So far, your script looks like this: <div class="fig fignone">
+      <img class="image" width="600" src="graphics/bz_script_input3_vista.PNG"/>
+     </div>
+</li>
+
+<li class="li">In order to send the value of <span class="ph uicontrol">InputStr1</span> to
+the host, use the Type event.  In the <span class="ph uicontrol">Script Events</span> list,
+double-click the <span class="ph uicontrol">Type</span> event. <br/><p class="p">The
+Type dialog displays. </p>
+</li>
+
+<li class="li">Type <kbd class="ph userinput">InputStr1</kbd> and click <span class="ph uicontrol">OK</span> to
+add it to the script as shown above. </li>
+
+<li class="li">The next step in the log on process is to send a Tab function.
+ This advances the cursor to the <span class="ph uicontrol">Password</span> field.
+ <ol class="ol" type="a">
+<li class="li">To add a Tab to the script, in the <span class="ph uicontrol">LU Functions</span> list,
+double-click the <span class="ph uicontrol">Tab / Field Advance</span> function. <br/><p class="p">This adds the Tab / Field Advance function to the script.
+ </p>
+</li>
+
+</ol>
+</li>
+
+<li class="li">The next event is to pass the value of the end user's password.
+ This is accomplished by sending a Type <span class="ph uicontrol">InputStr2</span> to
+the host, in the same way we sent the value of user name above.  <ol class="ol" type="a">
+<li class="li">In the <span class="ph uicontrol">Script Events</span> list, double-click
+the <span class="ph uicontrol">Type</span> event. <br/><p class="p">The Type
+dialog displays. </p>
+</li>
+
+<li class="li">Type <kbd class="ph userinput">InputStr2</kbd>. </li>
+
+<li class="li">Check the <span class="ph uicontrol">Encrypt and Hide</span> check box.</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> to add it to the script.</li>
+
+</ol>
+</li>
+
+<li class="li">The final step in the log on process is to send an Enter function.
+ This completes the log on sequence: <ol class="ol" type="a">
+<li class="li">In the <span class="ph uicontrol">LU Functions</span> list, double-click
+the <span class="ph uicontrol">Enter</span> function. <br/><p class="p">The
+Enter function is added to the script. </p>
+</li>
+
+</ol>
+</li>
+
+<li class="li">Launch a second iSeries display session.  This is accomplished
+by using the <span class="ph uicontrol">Run</span> event.  We will create a Run
+event that calls the correct program, and uses command line switches
+to set the configuration file to use, and to pass along the InputStr1
+and InputStr2 values to the second iSeries session. </li>
+
+<li class="li">In the <span class="ph uicontrol">Script Events</span> list, double-click
+the <span class="ph uicontrol">Run</span> event.  <br/><p class="p">The Run
+dialog displays. </p>
+</li>
+
+<li class="li">Type the following in the command line: <pre class="pre codeblock">C:\Program Files\BlueZone\BZAD.EXE /Fsession2.zad /1InputStr1 /2InputStr2</pre>
+</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> to enter this event into the script. <br/><p class="p">This command line launches a BlueZone iSeries display
+session, use the configuration file named <span class="ph filepath">session2.zad</span>,
+and send the values of InputStr1 and InputStr2 to the new iSeries
+session. </p>
+</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span>.</li>
+
+<li class="li">Save the script and name it <span class="ph filepath">script1.bzs</span>. </li>
+
+</ol>
+<p class="p">So far, we have created a script that prompts the end user
+for user name and password, automatically logs on to an iSeries session
+using the stored values of user name and password, and automatically
+launches a second iSeries session.  </p>
+<p class="p">The next step is to create
+a second BlueZone script that uses the values of <samp class="ph codeph">InputStr1</samp> and <samp class="ph codeph">InputStr2</samp> from
+the first script, to automatically log on to the second iSeries host. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Creating the second BlueZone script </h2><ol class="ol">
+<li class="li">Create a second BlueZone script by selecting <span class="ph uicontrol">New</span> from
+the BlueZone Script Editor menu.  <br/><p class="p">You now have
+a blank screen in which you can create a new script.  </p>
+</li>
+
+<li class="li">It is recommended to start with a Wait event in order to give
+the new session some time to bring up the main log in screen. <ol class="ol" type="a">
+<li class="li">In the Script Events list, double-click the <span class="ph uicontrol">Wait</span> event. </li>
+
+<li class="li">Type the number of seconds to wait. For example, <kbd class="ph userinput">2</kbd>.</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span>.</li>
+
+</ol>
+</li>
+
+<li class="li">Add a Type event: <ol class="ol" type="a">
+<li class="li">In the Script Events list, double-click the <span class="ph uicontrol">Type</span> event.
+ <br/><p class="p">The Type dialog displays. </p>
+ </li>
+
+<li class="li">Type <kbd class="ph userinput">Var1</kbd>. </li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> to add this to the script.</li>
+
+</ol>
+<div class="p">So far, your script looks like this: <div class="fig fignone">
+       <img class="image" width="600" src="graphics/bz_script5_vista.PNG"/>
+      </div>
+</div>
+</li>
+
+<li class="li">In the LU Functions list, double-click the <span class="ph uicontrol">Tab / Field
+Advance</span> function.</li>
+
+<li class="li">Add a Type event: <ol class="ol" type="a">
+<li class="li">In the Script Events list, double-click the <span class="ph uicontrol">Type</span> event. </li>
+
+<li class="li">Type <kbd class="ph userinput">Var2</kbd>.</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span>.</li>
+
+</ol>
+</li>
+
+<li class="li">In the LU Functions list, double-click the <span class="ph uicontrol">Enter</span> function. <br/><div class="p">Your script now looks like this: <div class="fig fignone">
+       <img class="image" width="600" src="graphics/bz_script6_vista.PNG"/>
+      </div>
+</div>
+</li>
+
+<li class="li">Save this script and name it <span class="ph filepath">script2.bzs</span>. </li>
+
+</ol>
+<div class="p">You must now configure the second iSeries session to automatically
+launch this script upon connection to the host, which uses the value
+of <span class="ph uicontrol">Var1</span> for the user name, and the value of <span class="ph uicontrol">Var2</span> for
+the password. <div class="note note"><span class="notetitle">Note:</span> Var1 relates to the \1InputStr1 and Var2 relates
+to the \2InputStr2 that is used in the command line switch that launched
+the second iSeries display session.</div>
+</div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Configuring the second iSeries session to automatically
+launch Scritpt2.bzs</h2><ol class="ol">
+<li class="li">Launch the second iSeries display session.  </li>
+
+<li class="li">Click <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Properties</span></span> from the BlueZone menu bar.  </li>
+
+<li class="li">Check the <span class="ph uicontrol">Auto-Play Script on Connect</span> check
+box.  </li>
+
+<li class="li">Click <span class="ph uicontrol">Browse</span>.  </li>
+
+<li class="li">Select the <span class="ph filepath">script2.bzs</span> file and click <span class="ph uicontrol">Open</span>.
+ </li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> to exit this dialog.  </li>
+
+<li class="li">Save the iSeries configuration.  Make sure you save it as <span class="ph filepath">session2.zad</span>. </li>
+
+</ol>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Testing the script</h2><div class="p">At this point you are
+ready to test the completed script. <ol class="ol">
+<li class="li">To test the script, start the first iSeries session and connect
+to the host.  </li>
+
+<li class="li">Click <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Play</span></span> from the BlueZone menu bar.  </li>
+
+<li class="li">Select the <span class="ph filepath">script1.bzs</span> file and click <span class="ph uicontrol">Open</span>.
+ <br/><div class="p">The script immediately starts running.  The Enter
+Username dialog opens: <div class="fig fignone"><img class="image" src="graphics/bz_script_username_xp.png"/></div>
+</div>
+</li>
+
+<li class="li">Type your user name and press the Enter key.  <br/><div class="p">The
+Enter Password dialog opens: <div class="fig fignone"><img class="image" src="graphics/bz_script_password_xp.png"/></div>
+</div>
+</li>
+
+<li class="li">Type your password and press the Enter key.  <br/><p class="p">The
+script continues to run and you are logged onto the host. Then the
+second iSeries session launches and you are logged onto the second
+host. </p>
+</li>
+
+</ol>
+<div class="note note"><span class="notetitle">Tips:</span> <p class="p">You can assign the script1
+to a BlueZone power key which makes it much easier for the end user
+to launch a script. Refer to <a class="xref" href="bzdp_htsk_mapping-scripts-to-power-keys.htm" title="After a script has been created and tested, it can be mapped to a power pad to make it instantly accessible with a single click.">Mapping scripts to power pads</a> for
+more information. </p>
+<p class="p">You can adjust the speed of the script playback.
+When you are developing a script, sometimes it's helpful if the script
+runs at a slow speed so you can see exactly what is happening.  </p>
+<p class="p">Speed
+up the script and turn off the Script Status Window. Once the script
+is completely debugged and working properly, you may want to speed
+up the script execution speed and also turn off the Script Status
+Window.  This is done by selecting <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Properties</span></span> from the BlueZone
+menu bar and making any desired changes.  Refer to <a class="xref" href="bzdp_href_script-properties.htm" title="The Script Properties property sheet is used to configure BlueZone Script playback settings. From the BlueZone menu bar, click Script &gt; Properties . The Script Property Sheet opens displaying the following:">Script properties</a> for more information. </p>
+</div>
+</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_bz-scripts.htm" title="BlueZone scripts can be recorded in either a proprietary format or in a text-based format recorded in either VBScript or JavaScript.">BlueZone scripts</a></div></div></div>
+
+</div></body>
+</html>

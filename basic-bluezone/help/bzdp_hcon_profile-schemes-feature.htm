@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="concept"/>
+<meta name="DC.Title" content="Profile schemes"/>
+<meta name="abstract" content="The profile schemes feature is used to automatically import dialog configuration profiles. When this feature is enabled, the values stored in the dialog configuration profile override certain values stored in the main BlueZone configuration file that was used to start the session."/>
+<meta name="description" content="The profile schemes feature is used to automatically import dialog configuration profiles. When this feature is enabled, the values stored in the dialog configuration profile override certain values stored in the main BlueZone configuration file that was used to start the session."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_configuration-management.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_htsk_configuring-profile-schemes.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_hcon_profile-schemes-feature"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Profile schemes</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_hcon_profile-schemes-feature">
+<div class="topic">
+
+<h1 class="title topictitle1">Profile schemes</h1>
+
+
+<div class="body conbody"><p class="shortdesc">The profile schemes feature is used to automatically import
+dialog configuration profiles.  When this feature is enabled, the
+values stored in the dialog configuration profile override certain
+values stored in the main BlueZone configuration file that was used
+to start the session. </p>
+
+<div class="p">By definition, dialog configuration profiles are subsets of the
+main BlueZone configuration file.  There are up to eight types of
+dialog configuration profiles that can be used in any combination
+along with the main BlueZone configuration file. <div class="note note"><span class="notetitle">Note:</span> This feature
+is used primarily by BlueZone administrators that use a push technology,
+like Microsoft's SMS, to install and update BlueZone files on their
+user's machines.<p class="p">This feature can be also be useful to end users.
+ </p>
+</div>
+</div>
+
+<p class="p">If you require many BlueZone configuration files and you make many
+modifications to those configuration files, you can use the profile
+schemes feature to share dialog configuration profiles that are common
+to all BlueZone configurations.  </p>
+
+<p class="p">For example, if you regularly use ten different BlueZone configuration
+files and the BlueZone keyboard map configuration is the same for
+all ten configuration files, you can make your specific keyboard map
+changes to all ten configuration files. You can then make the keyboard
+map changes once and export the keyboard map to a dialog configuration
+profile. Then you open the <span class="ph uicontrol">Profile Schemes</span> tab,
+select the <span class="ph uicontrol">Keyboard</span> check box, and browse to
+the keyboard map file you just created. </p>
+
+<p class="p">You now have a keyboard map profile that can be shared among all
+ten BlueZone configuration files.  You also have the added benefit
+of only having to make any future keyboard map changes once.  You
+do not have to update all ten configurations. </p>
+
+</div>
+
+<div><div class="related-links"><ul class="ulchildlinks"><li><a class="link" href="bzdp_htsk_configuring-profile-schemes.htm">Configuring profile schemes</a><div/></li></ul><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_configuration-management.htm">Configuration management</a></div></div></div>
+
+</div></body>
+</html>

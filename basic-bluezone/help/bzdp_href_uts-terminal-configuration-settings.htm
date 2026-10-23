@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Adding UTS screens"/>
+<meta name="abstract" content="The Edit Screen Settings dialog is used to add and edit the UTS configuration screens. It contains the Screen Connection and Screen Settings tabs."/>
+<meta name="description" content="The Edit Screen Settings dialog is used to add and edit the UTS configuration screens. It contains the Screen Connection and Screen Settings tabs."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_unisys-dca-configuration-uts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_uts-terminal-configurati"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Adding UTS screens</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_uts-terminal-configurati">
+<div class="topic">
+
+<h1 class="title topictitle1">Adding UTS screens</h1>
+
+
+<div class="body refbody"><p class="shortdesc">The Edit Screen Settings dialog is used to add and edit
+the UTS configuration screens. It contains the <span class="ph uicontrol">Screen Connection</span> and <span class="ph uicontrol">Screen
+Settings</span> tabs. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Screen Connection tab</h2><p class="p">The Screen Connection
+tab defines the screen name and connection route information. </p>
+<div class="fig fignone"><img class="image" src="graphics/UTS_terminal_configuration_settings2_xp.png"/></div>
+<dl class="dl">
+
+<dt class="dt dlterm">Name</dt>
+
+<dd class="dd">Type a name for the screen you want to configure.  Up to 24 screens
+can be configured.  </dd>
+
+
+
+<dt class="dt dlterm">Connection Route</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Selected Connection Point</span>: Select a
+configured route to be used when the screen is opened. </p>
+<p class="p">The
+first time this screen is accessed, the only available option is <span class="ph uicontrol">&lt;NONE&gt;</span>.
+You must configure your host connections by clicking <span class="ph uicontrol">Host
+Connections</span>. Refer to <a class="xref" href="bzdp_href_configure-connections-uts.htm" title="The UTS Host Connections dialog is used to control the overall operation of the configuration process and to configure points to a host visually. The dialog contains a work area where connection points and virtual destinations (hosts) can be easily linked together.">Configure connections</a> for
+more information. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Auto Session Establishment</span>: Enables
+auto session establishment. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Station Name</span>: Type the name of the station. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Gateway Server Generated Station Name</span>:
+Enables the Gateway server generated station name. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Terminal Type</span>: Select the terminal type. </p>
+<div class="p">Options
+include:<ul class="ul">
+<li class="li"><p class="p">UTS20</p>
+</li>
+
+<li class="li"><p class="p">UTS30 (and UTS40)</p>
+</li>
+
+<li class="li"><p class="p">UTS60</p>
+</li>
+
+</ul>
+</div>
+<p class="p">The default is UTS20.</p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Rows</span>: Type the number of rows allowed
+in a screen. </p>
+<p class="p">The default is 24 rows.</p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Columns</span>: Type the number of columns
+allowed in a screen. </p>
+<p class="p">The default is 80 columns.</p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Aux DIDs (Hex)</span></p>
+<p class="p">The default is
+73, 74, 75.</p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Aux TCS DIDs (Hex)</span></p>
+<p class="p">The default
+is 7B, 49.</p>
+</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Screen Settings tab</h2><p class="p">The Screen Settings
+tab controls the screen, trace, and printer options. </p>
+<div class="fig fignone"><img class="image" src="graphics/UTS_terminal_configuration_settings3_xp.png"/></div>
+<dl class="dl">
+
+<dt class="dt dlterm">Screen Options</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Initial Transmit Type</span>: BlueZone UTS
+emulation provides three modes of transferring data from the terminal
+screen to the host processor.  The current transmission mode is set
+in the XMIT() field in the terminal control page.  Most host programs
+expect the terminal to be operated in the VAR transmit mode.  If your
+application requires an initial mode other than VAR, set it here and
+BlueZone UTS will initialize the XMIT() field with that value.</p>
+<div class="p">The
+three available modes are: <ul class="ul">
+<li class="li">VAR (Variable)</li>
+
+<li class="li">ALL</li>
+
+<li class="li">CHAN (Changed)</li>
+
+</ul>
+</div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Force UPPERCASE</span>: BlueZone UTS translates
+lower case characters that are typed to their uppercase equivalents.</li>
+
+<li class="li"><span class="ph uicontrol">Mapper Look</span>: BlueZone UTS is set to Mapper
+Look and Feel processing.  With Mapper Look checked, four of the display
+characteristics of BlueZone UTS change as follows:<ol class="ol">
+<li class="li">If a line contains an ASCII Tab Code in the first column, that
+line is considered a “Tab Line”.  Tab codes are displayed using the
+graphic vertical bar (|) that produces a visual column separator for
+your report.</li>
+
+<li class="li">The only control characters displayed are the Start-of-Entry (SOE),
+the standard Tab Code, and the Mapper Tab Code.  Characters such as
+Form-Feed and Line-Feed are displayed as spaces.</li>
+
+<li class="li">A protected field (function key name on the last row of the Mapper
+screen) can be transmitted by clicking.  This is compatible with the
+function key lines produced by Mapper 2200 level 35.</li>
+
+<li class="li">BlueZone UTS also supports special Mapper box drawing sequences
+sent from the host. <div class="note note"><span class="notetitle">Note:</span> When Mapper Look is enabled, the Mapper
+station must be configured as a terminal type of “PCE” with an option
+of “S” (Mapper Look and Feel), or as a terminal type of “6S”.</div>
+</li>
+
+</ol>
+</li>
+
+<li class="li"><div class="p"><span class="ph uicontrol">Trace on Start Options</span>: The options
+in this group determine what trace activity is to take place, if any,
+when the screen is first opened: <ul class="ul">
+<li class="li"><span class="ph uicontrol">None</span>: No tracing activity takes place.</li>
+
+<li class="li"><span class="ph uicontrol">To Window</span>: A separate trace window opens
+to display the trace.</li>
+
+<li class="li"><span class="ph uicontrol">To File</span>: The Emulator Trace File dialog
+opens when the screen is opened.  In this dialog, type the text file
+name for the trace file.  The trace file is normally stored in <span class="ph filepath">C:\Documents
+and Settings\<var class="keyword varname">username</var>\Local Settings\Temp</span> directory
+and has a <span class="ph filepath">.txt</span> extension. </li>
+
+<li class="li"><span class="ph uicontrol">To Both</span>: Traces to both a window and file.</li>
+
+</ul>
+</div>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Printer Setup</dt>
+
+<dd class="dd"><span class="ph uicontrol">Configure Printers</span>: Opens the Select Configured
+Printers dialog. In this dialog, you can select a configured printer
+in the printer pool to be assigned to one of three printer DIDs for
+the screen.<p class="p">Refer to <a class="xref" href="bzdp_href_configure-the-screen-printer.htm" title="You can configure the following:">Configure the screen printer</a> for
+more information. </p>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_unisys-dca-configuration-uts.htm" title="The UTS Terminal Configuration Settings dialog allows you to create and manage the UTS connection screens. Each screen contains configuration options to assign the communication route to be used when the screen is opened, assign printers to, and set general appearance options for the screen">Unisys DCA configuration</a></div></div></div>
+
+</div></body>
+</html>

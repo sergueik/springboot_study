@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="File properties"/>
+<meta name="abstract" content="The File Properties window controls BlueZone’s operating parameters. From the BlueZone menu bar, click File &gt; Properties. The File Properties window opens. It contains the Program, Title Bar, Auto-Launch, Profile Schemes, and Options tabs."/>
+<meta name="description" content="The File Properties window controls BlueZone’s operating parameters. From the BlueZone menu bar, click File &gt; Properties. The File Properties window opens. It contains the Program, Title Bar, Auto-Launch, Profile Schemes, and Options tabs."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_ucon_file-menu-options.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_file-properties-display"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>File properties</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_file-properties-display">
+<div class="topic">
+
+<h1 class="title topictitle1">File properties</h1>
+
+
+<div class="body refbody"><p class="shortdesc">The File Properties window controls BlueZone’s operating
+parameters.  From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol"> Properties</span></span>. The File Properties
+window opens. It contains the <span class="ph uicontrol">Program</span>, <span class="ph uicontrol">Title
+Bar</span>, <span class="ph uicontrol">Auto-Launch</span>, <span class="ph uicontrol">Profile
+Schemes</span>, and <span class="ph uicontrol">Options</span> tabs. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section" id="Bzdp_href_file-properties-display__program-tab"><h2 class="title sectiontitle">Program tab</h2><dl class="dl">
+
+<dt class="dt dlterm">Session Description</dt>
+
+<dd class="dd">This is an optional field. Enter a unique session description.
+This description displays in the window title bar, after the program
+and connection names. The session description can help to identify
+a session when multiple sessions are active. </dd>
+
+
+
+<dt class="dt dlterm">Main Window Always on Top</dt>
+
+<dd class="dd">If selected, the BlueZone program window always remains above
+all non-topmost windows.</dd>
+
+
+
+<dt class="dt dlterm">Minimize Window on Startup</dt>
+
+<dd class="dd">If selected, BlueZone runs minimized on startup.  This can be
+used when using BlueZone in conjunction with WinJa or JWalk.</dd>
+
+
+</dl>
+<p class="p">The following items are read-only: </p>
+<dl class="dl">
+
+<dt class="dt dlterm">Command-Line Switches</dt>
+
+<dd class="dd">Displays any command line parameters used when launching the session.</dd>
+
+
+
+<dt class="dt dlterm">Program Group</dt>
+
+<dd class="dd">Displays the BlueZone program group. For example, <span class="ph uicontrol">BlueZone <span class="keyword">7.1</span></span>. </dd>
+
+
+
+<dt class="dt dlterm">Installation Directory</dt>
+
+<dd class="dd">Displays the BlueZone installation directory.</dd>
+
+
+
+<dt class="dt dlterm">Working Directory</dt>
+
+<dd class="dd">Displays the BlueZone working directory.</dd>
+
+
+
+<dt class="dt dlterm">Preferred Connection Type</dt>
+
+<dd class="dd">Displays the BlueZone preferred connection type. The preferred
+connection type is used to determine how BlueZone connects to the
+host system the first time a session is launched.</dd>
+
+
+
+<dt class="dt dlterm">Global Configuration Lock</dt>
+
+<dd class="dd">If selected, the global configuration lock option is active.</dd>
+
+
+
+<dt class="dt dlterm">Session Configuration Lock</dt>
+
+<dd class="dd">If selected, the session configuration lock option is active.</dd>
+
+
+</dl>
+
+   <p class="p">The following item is selectable by the user:</p>
+<dl class="dl">
+
+
+<dt class="dt dlterm">Use the Consolidated Settings Viewer</dt>
+
+<dd class="dd">If selected, all of the properties, options, and configuration
+windows contain a left navigation pane. The Settings Viewer allows
+you to easily navigate and set multiple options through one window. </dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Title Bar tab</h2>This group is used to configure
+the text that displays on the BlueZone title bar.  By default, the
+Session Identifier, Profile Name, Session Description, and Program
+Name are displayed on the BlueZone title bar.  You have the option
+of turning off these items or you can create you own custom title
+bar by using the desired variable (%1, %2, %3 and so on) in the <span class="ph uicontrol">Display
+Custom Title Bar</span> field: <dl class="dl">
+
+<dt class="dt dlterm">Session Identifier (%1)</dt>
+
+<dd class="dd">If selected, the standard BlueZone session identifier is displayed
+on the title bar.  For example, S1, S2, S3 and so on.</dd>
+
+
+
+<dt class="dt dlterm">HLLAPI Short Name (%2)</dt>
+
+<dd class="dd">If selected, the standard BlueZone HLLAPI short name session identifier
+is displayed on the title bar.</dd>
+
+
+
+<dt class="dt dlterm">Profile Name (%3)</dt>
+
+<dd class="dd">If selected, the name of the current BlueZone profile that was
+used to launch this session is displayed on the title bar.</dd>
+
+
+
+<dt class="dt dlterm">Session Description (%4)</dt>
+
+<dd class="dd">If selected, the value of the <span class="ph uicontrol">Session Description</span> field
+located on the <span class="ph uicontrol">Program</span> tab (see <a class="xref" href="#Bzdp_href_file-properties-display__program-tab">Program tab</a> above)
+is used, unless the <span class="ph uicontrol">Use Connection Name as Session Description</span> check
+box located on the <span class="ph uicontrol">Connections</span> tab (<span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span> → <span class="ph uicontrol"> Properties</span></span> from the BlueZone
+menu bar), is checked.  Then the connection name that was used to
+create the session is displayed on the title bar.</dd>
+
+
+
+<dt class="dt dlterm">Connection Name (%6)</dt>
+
+<dd class="dd">If selected, the value of the <span class="ph uicontrol">Connection Name</span> field
+located on the <span class="ph menucascade"><span class="ph uicontrol">Connections</span> → <span class="ph uicontrol"> Edit Connection</span></span> dialog is displayed
+on the title bar. <div class="note note"><span class="notetitle">Note:</span> If the <span class="ph uicontrol">Use Connection Name as Session
+Description</span> check box located on the <span class="ph uicontrol">Connections</span> tab
+(<span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span> → <span class="ph uicontrol"> Properties</span></span> from the BlueZone
+menu bar), is checked, the connection name is displayed twice on the
+title bar.</div>
+</dd>
+
+
+
+<dt class="dt dlterm">Program Name (%5)</dt>
+
+<dd class="dd">If enabled, the standard BlueZone program name is displayed on
+the title bar.  For example, BlueZone Mainframe Display, BlueZone
+iSeries Display, and so on.</dd>
+
+
+
+<dt class="dt dlterm">3270 Application Name (%7)</dt>
+
+
+<dd class="dd">Available in Mainframe Displays only.<p class="p">Select this check box
+to display the 3270 application name, for example, TELNET, CICS, or
+TSO. To display the application name, the session must be connected
+to the host using TN3270E. </p>
+</dd>
+
+
+
+<dt class="dt dlterm">Separator</dt>
+
+<dd class="dd">Type a character to be used to separate the above values.  Spaces
+are valid separators and can be used in conjunction with other characters.
+ The default separator is “ - ” (space hyphen space).</dd>
+
+
+
+<dt class="dt dlterm">Display Custom TitleBar</dt>
+
+<dd class="dd">If enabled, any text in this field is displayed on the title bar
+instead of the selected values above.  This feature overrides any
+of the above options.  Also, you can build a custom title bar in any
+order you want by placing the desired variable values (%1, %2, %3,
+and so on) in the field in the order in which you want them to appear
+on the title bar.  You can also mix in your own text as well.  <div class="p">For
+example, if you want the Session Description followed by the Session
+Identifier followed by the words "Claims Application" to display in
+the title bar, type the following in this field:  <kbd class="ph userinput">%4 -
+%1 - Claims Application </kbd> <div class="cautiontitle">CAUTION:</div><div class="note caution">If the Display
+Custom Title Bar check box is selected and the field is left blank,
+the result is a blank title bar. </div>
+</div>
+</dd>
+
+
+
+<dt class="dt dlterm">Display Custom Icon</dt>
+
+<dd class="dd">If you would like to change the icon that displays on the BlueZone
+title bar, select this check box and browse to the location where
+the desired icon is located.  We suggest keeping the icon in a predicable
+location like the BlueZone installation directory.</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Auto-Launch tab</h2><dl class="dl">
+
+<dt class="dt dlterm">Run Sessions on Startup</dt>
+
+<dd class="dd">This group is used to configure up to four additional BlueZone
+sessions to launch along with this session.  This feature can be used
+to launch a BlueZone Printer session along with a BlueZone Display
+session.<div class="p">To launch an additional session or sessions:<ol class="ol">
+<li class="li">Select a check box.</li>
+
+<li class="li">From the <span class="ph uicontrol">Session Type</span> menu, select the
+session type: <ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Mainframe Display</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Mainframe Printer</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">iSeries Display</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">iSeries Printer</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">VT Display</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">6530 Display</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">ALC Display</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">TCP/IP Print Server</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">UTS Display</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">T27 Display</span></p>
+</li>
+
+
+</ul>
+</li>
+
+<li class="li"><strong class="ph b">Optional</strong>: Type any command line switches. </li>
+
+</ol>
+</div>
+<p class="p">The next time that you open this BlueZone Display session,
+any additional sessions that have been configured, will automatically
+open at the same time. </p>
+</dd>
+
+
+
+<dt class="dt dlterm">Run Program on Connect</dt>
+
+<dd class="dd">This group is used to launch and run external programs when BlueZone
+makes a host connection: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Launch the WinJa (TM) Windows Client on Connect</span>:
+If selected, the WinJa (or JWalk) client launches as soon as BlueZone
+makes the host connection. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Switches</span>: Specifies any additional program
+command line parameters when launching.</li>
+
+</ul>
+</li>
+
+<li class="li"><span class="ph uicontrol">Run Custom Command</span>: If selected, you can
+specify an external program to launch when BlueZone makes the host
+connection. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Browse</span>: Click to locate the external program.</li>
+
+</ul>
+</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Profile Schemes tab</h2><p class="p">The profile schemes
+feature is covered in detail in the Configuration Management section.
+Refer to <a class="xref" href="bzdp_hcon_profile-schemes-feature.htm" title="The profile schemes feature is used to automatically import dialog configuration profiles. When this feature is enabled, the values stored in the dialog configuration profile override certain values stored in the main BlueZone configuration file that was used to start the session.">Profile schemes</a> for more information. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section" id="Bzdp_href_file-properties-display__options"><h2 class="title sectiontitle">Options tab</h2><dl class="dl">
+
+<dt class="dt dlterm">Save</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Ask to save configuration settings on exit</span>:
+If selected, the user is prompted whether or not to save the configuration
+settings on program shutdown.</li>
+
+<li class="li"><span class="ph uicontrol">Always save configuration settings on exit</span>:
+If selected, the configuration settings are always saved on program
+shutdown.</li>
+
+<li class="li"><span class="ph uicontrol">Do not save configuration settings on exit</span>:
+If selected, the configuration settings are not saved on program shutdown. </li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Auto-Backup settings in Profile Mode</span>:
+If selected, a backup of the configuration file is automatically saved
+whenever a change is made. </p>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Open/Save As</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">File Description</span>: This field configures
+the text that displays in the Common File window, describing the type
+of files to list.</li>
+
+<li class="li"><span class="ph uicontrol">Default Extension</span>: Limits the initial list
+for the Common File window, the extension is limited to three characters.</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Profile Format</span>: Select the
+format of the configuration file: <span class="ph uicontrol">Binary</span> or <span class="ph uicontrol">Text</span>.
+If you select <span class="ph uicontrol">Text</span>, you can edit the configuration
+file in any text editor. </p>
+</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Open/Close All Sessions</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Enable Opening of New Sessions</span>: Controls
+whether or not this session can be used to start additional sessions.</li>
+
+<li class="li"><span class="ph uicontrol">Prompt before Closing All Sessions</span>: If
+selected, the user is prompted before closing all sessions.</li>
+
+<li class="li"><span class="ph uicontrol">Display Profile List when Opening Sessions</span>:
+If selected, you are prompted with a list of available configuration
+files to choose from when opening sessions.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_ucon_file-menu-options.htm">File menu</a></div></div></div>
+
+</div></body>
+</html>

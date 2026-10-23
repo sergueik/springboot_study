@@ -1,0 +1,145 @@
+html, body {
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+}
+
+body {
+	font-family: Verdana;
+	font-size: 10pt;
+}
+
+li {
+	margin: 0.7em 0;
+}
+
+.ts_title {
+	font-weight: normal;
+	color: rgb(28, 63, 148);
+	font-size: 12pt;
+}
+
+.related-links {
+	margin-top: 1.5em;
+}
+
+.related-links-title {
+	font-weight: bold;
+}
+
+.ulchildlink {
+	margin: 0px;
+}
+
+.ulchildlink>strong {
+	font-weight: normal;
+}
+
+dl dd {
+	margin-bottom: .5em;
+}
+
+.tablecap {
+	color: rgb(28, 63, 148);
+	font-size: .95em;
+}
+
+table caption {
+	text-align: left;
+}
+
+table thead {
+	font-weight: bold;
+	color: rgb(60, 61, 63);
+	background-color: rgb(233, 233, 233);
+}
+
+.topictitle1 {
+	color: rgb(28, 63, 148);
+	font-weight: normal;
+	font-size: 18pt;
+}
+
+.sectiontitle {
+	font-weight: normal;
+	color: rgb(28, 63, 148);
+	font-size: 12pt;
+}
+
+a {
+	color: rgb(28, 63, 148);
+}
+.figcap {
+	font-size: 9pt;
+	margin: 1.5em 0 0.8em;
+}
+.msg {
+	border-top: 1px solid black;
+	padding-top: 3pt;
+}
+
+.msg-number {
+	font-weight: bold;
+}
+
+.msg-text {
+	font-weight: bold;
+	margin-bottom: .5em;
+}
+
+.msg-title {
+	font-weight: bold;
+}
+
+.msg-value {
+	
+}
+
+.msg-p {
+	margin-bottom: .5em;
+}
+.defoption { font-weight: bold; text-decoration: underline; }
+.option { font-family: monospace;}
+.parmname { font-style: italic; font-weight: normal;}
+.kwd { font-family: monospace; font-weight: normal;}
+.synph { font-family: monospace; }
+.synph .oper { font-weight: bold; }
+.synph .var { font-style: italic; }
+.synph .kwd .defoption { text-decoration: underline; }
+.synph .option .defoption { text-decoration: underline; }
+.synph .kwd {}
+.synph .option {}
+
+.internal-copyright-footer {
+	position: relative;
+	width: 100%;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	padding: 15px 0 20px;
+	background: white;
+	text-align: center;
+	font-size: 10pt;
+	box-shadow: 0px -1px rgb(0, 0, 102);
+}
+
+.internal-copyright-footer-space-before {
+	position: relative;
+	height: 92px;
+}
+
+.topic {
+	position: relative;
+	margin-bottom: -52px;
+	padding-left: 10px;
+	padding-right: 10px;
+	min-height: 100%;
+}
+
+.cmdname { font-family: monospace; }
+
+.subheading {
+	font-size: 11pt;
+	margin: 1em 0 0.2em 0;
+	font-weight: normal;
+}

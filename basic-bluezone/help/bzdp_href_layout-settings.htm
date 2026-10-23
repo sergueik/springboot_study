@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Layout settings"/>
+<meta name="abstract" content="The Layout tab contains the following options:"/>
+<meta name="description" content="The Layout tab contains the following options:"/>
+<meta name="DC.subject" content="printer layout, settings"/>
+<meta name="keywords" content="printer layout, settings"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_printer-setup-overview.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_print-setup.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_layout-settings"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Layout settings</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_layout-settings">
+<div class="topic">
+
+<h1 class="title topictitle1">Layout settings</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">The <span class="ph uicontrol">Layout</span> tab contains the following
+options: </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><dl class="dl">
+
+<dt class="dt dlterm">Spacing</dt>
+
+<dd class="dd">Spacing settings are used for two purposes: during LU1 print jobs
+to tell the emulation when to insert form feeds and during font auto-sizing
+to instruct the printer emulator how to scale the font to fit the
+page. <ul class="ul">
+<li class="li"><span class="ph uicontrol">Lines Per Page</span>:  Tells the emulation
+or font auto-sizing how long the page is in lines.</li>
+
+<li class="li"><span class="ph uicontrol">Lines Per Inch</span>:  Sets the number of
+lines per inch to set for the printed output if not specified by the
+host or overridden by the user.</li>
+
+<li class="li"><span class="ph uicontrol">Characters Per Line</span>:  Sets the maximum
+characters printed on a line before the emulator inserts a carriage
+return/line feed.</li>
+
+<li class="li"><span class="ph uicontrol">Characters Per Inch</span>:  Sets font size
+based on characters per inch.<div class="note note"><span class="notetitle">Note:</span> Characters per inch combined with
+lines per inch determines how many characters fit on a line and how
+many lines to a printed page. </div>
+</li>
+
+<li class="li"><span class="ph uicontrol">Double Space Lines</span>:  If checked, BlueZone
+double spaces between lines when printing.</li>
+
+<li class="li"><span class="ph uicontrol">Override Host Spacing Settings</span>: If checked,
+BlueZone is forced to ignore spacing settings sent from the host and
+use these spacing settings.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Presentation</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><span class="ph uicontrol">Print Quality</span>: Select Draft mode or Near
+Letter Quality mode when in Pass Through Mode using a printer definition
+file that supports draft or NLQ modes.  </li>
+
+<li class="li"><span class="ph uicontrol">Duplex Mode</span>:  Select to control single
+or double-sided printing.  Only works in Windows API mode.  </li>
+
+<li class="li"><span class="ph uicontrol">Override Host Presentation Settings</span>:  If
+checked, BlueZone is forced to ignore presentation settings sent from
+the host and use these presentation settings. </li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Print Scaling</dt>
+
+<dd class="dd"><span class="ph uicontrol">Scale Factor</span>: This edit box allows enlarging
+or reducing the printed output by the selected percentage.  Only works
+in Windows API mode.  <p class="p"><span class="ph uicontrol">Auto-Size Fonts to fit the Paper
+Size</span>: If checked, BlueZone fits the font to the page based
+on the spacing settings set by the host or set by the emulator.  </p>
+<p class="p"><span class="ph uicontrol">Scale Fonts to Closest Point Size</span>: This
+feature is useful when auto-sizing fonts yields different font sizes
+for normal and bold text. </p>
+</dd>
+
+
+</dl>
+<div class="note note"><span class="notetitle">Note:</span> In Windows API mode, the auto-size font option scales to
+fit the page exactly.  In pass-through mode, a printer definition
+file is required, and scales to the nearest fixed font size supported
+by the printer.</div>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_printer-setup-overview.htm" title="BlueZone Mainframe and iSeries Printer Emulators connect to their respective hosts and emulate IBM printers, converting the IBM printer data stream into an ASCII printer data stream. This enables any printer connected to a Windows workstation to print IBM host generated print jobs.">Printer setup overview</a></div></div></div>
+
+</div></body>
+</html>

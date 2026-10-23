@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Creating iSeries database files"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.subject" content="creating, iSeries database files, iSeries database files, database files"/>
+<meta name="keywords" content="creating, iSeries database files, iSeries database files, database files"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_bz-host-file-transfer-5250.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_creating-iseries-databas"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Creating iSeries database files</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_creating-iseries-databas">
+<div class="topic">
+
+<h1 class="title topictitle1">Creating iSeries database files</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc"/>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Start a BlueZone iSeries Display session. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol"> Send/Receive</span></span>.  </span></li>
+<li class="li step stepexpand"><span class="ph cmd">From the Host File Transfer menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Transfer</span> → <span class="ph uicontrol"> Create iSeries Database
+File</span></span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Browse</span> and locate the local
+file that contains the data from which the iSeries file is created
+and click <span class="ph uicontrol">Next</span>. </span>
+<div class="itemgroup stepresult">The File Type dialog opens. BlueZone automatically chooses
+the File Type based on the file structure of the database file you
+chose in the previous step.  For example, if you chose an Excel spreadsheet,
+the File Type is BIFF8. <div class="p">Supported file types: <ul class="ul">
+<li class="li"><span class="ph uicontrol">ASCII</span>: A simple text file format where
+the records are separated by CRLF. </li>
+
+<li class="li"><span class="ph uicontrol">Basic Sequential</span>: Fixed-length records;
+text-based file format. </li>
+
+<li class="li"><span class="ph uicontrol">BIFF8</span>: The Office Open XML Spreadsheet (<span class="ph filepath">.XLSX</span>); file
+        format. </li>
+
+<li class="li"><span class="ph uicontrol">CSV</span>: Comma-Separated Values; text-based
+file format; fields separated by comma; rows are separated by CRLF.</li>
+
+<li class="li"><span class="ph uicontrol">DIF</span>: Data Interchange Format; text-based
+file format.</li>
+
+<li class="li"><span class="ph uicontrol">DOS Random</span>: Fixed-length records; text-based
+file format.  </li>
+
+<li class="li"><span class="ph uicontrol">No Conversion</span>: The host data is stored
+as-is on the PC.  </li>
+
+<li class="li"><span class="ph uicontrol">Tab Delimited</span>: Text-based file format;
+fields separated by tab; rows are separated by CRLF.</li>
+
+</ul>
+</div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Next</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Change the name of the FDF or use the default name and
+click <span class="ph uicontrol">Next</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">If necessary, change the <span class="ph uicontrol">Date</span>, <span class="ph uicontrol">Time</span>,
+and <span class="ph uicontrol">Decimal</span> data options to match the data
+in your file. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Next</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Start Scan</span>.  </span>
+<div class="itemgroup stepresult">BlueZone scans the PC data file to determine its contents.
+ A progress bar shows the progress of the scan.<p class="p">The check box <span class="ph uicontrol">First
+row of data contains field names</span> must be selected to use
+the first row as field names and the second row is used as the first
+row of data.  If cleared, the first row in the PC File is used as
+the first row of data.</p>
+<p class="p">You can skip the scan but you are prompted
+to continue. </p>
+<p class="p">If any errors are detected, you receive an error
+message with a description of the error.  Fix any errors and scan
+the file again.  Keep fixing errors until the file has been scanned
+successfully. </p>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Next</span>. </span>
+<div class="itemgroup stepresult">If the file was scanned successfully, a list of configured
+fields displays in the File Contents window.<p class="p">You can right-click
+a field to edit, delete, or move the field. You can also insert new
+fields. </p>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">To edit a field, select the field and click <span class="ph uicontrol">Details</span>.
+You can edit the following options: </span>
+<ul class="ul choices">
+<li class="li choice"><span class="ph uicontrol">Name</span>: Field name  </li>
+
+<li class="li choice"><span class="ph uicontrol">Description</span>: Optional description for
+the field</li>
+
+<li class="li choice"><span class="ph uicontrol">Type</span>: Field type </li>
+
+<li class="li choice"><span class="ph uicontrol">Length</span>: Number of digits or number
+of characters for the field  </li>
+
+<li class="li choice"><span class="ph uicontrol">Allocate</span>: Fixed length space allocated
+for the field for VARCHAR and VARGRAPHICS  </li>
+
+<li class="li choice"><span class="ph uicontrol">Scale</span>: Number of digits after the decimal
+ </li>
+
+<li class="li choice"><span class="ph uicontrol">Padding</span>: Allows for extra space in
+a CHARACTER or GRAPHIC field  </li>
+
+<li class="li choice"><span class="ph uicontrol">CCSID</span>: The host CCSID for the field
+ </li>
+
+<li class="li choice"><span class="ph uicontrol">Default</span>: The default value of the field
+when empty  </li>
+
+<li class="li choice"><span class="ph uicontrol">Null Capable</span>: The field can contain
+null values </li>
+
+</ul>
+
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> to save and close the Field
+Details window. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">When you have the necessary fields and settings, click <span class="ph uicontrol">Next</span>. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Type the iSeries file that will be created.  You must have
+authority in the specific library.  Click <span class="ph uicontrol">Next</span>. </span>
+</li>
+<li class="li step stepexpand"><strong>Optional: </strong><span class="ph cmd">Type an description of the iSeries
+file on the host.  Click <span class="ph uicontrol">Next</span> to continue. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Review the settings and click <span class="ph uicontrol">Back</span> to
+make any necessary changes. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">When the settings are complete, click <span class="ph uicontrol">Finish.</span></span>
+</li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_bz-host-file-transfer-5250.htm" title="Starting with BlueZone version 5.0 a new Host File Transfer utility has been added to BlueZone iSeries Display. BlueZone Host File Transfer supports the LIPI File Transfer (Licensed Internal Program Interface). LIPI is a feature rich and robust file transfer environment that is designed specifically for IBM AS/400 and iSeries host systems. LIPI enables file transfer over TCP/IP.">BlueZone LIPI host file transfer – iSeries (5250)</a></div></div></div>
+
+</div></body>
+</html>

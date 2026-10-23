@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="RACF changes"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_express-logon-feature.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_racf-changes"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>RACF changes</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_racf-changes">
+<div class="topic">
+
+<h1 class="title topictitle1">RACF changes</h1>
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><ul class="ul">
+<li class="li">Add Root certificate - if not already
+					available:<pre class="pre codeblock">RACDCERT CERTAUTH ADD('<var class="keyword varname">your CA dataset name</var>') TRUST -  withlabel('<var class="keyword varname">your CA label</var> ') </pre>
+</li>
+
+<li class="li">Add Server certificate, if not already
+					available:<pre class="pre codeblock">RACDCERT ID(TN3270) ADD('<var class="keyword varname">your datasetname</var>') TRUST -  WITHLABEL('<var class="keyword varname">your label</var>') 
+PASSWORD('<var class="keyword varname">password</var>')</pre>
+</li>
+
+<li class="li">Create RACF keyring:<pre class="pre codeblock">RACDCERT ID(TN3270) ADDRING('<var class="keyword varname">your RACF keyring name</var>')</pre>
+</li>
+
+<li class="li">Add certificates to the
+					keyring:<pre class="pre codeblock">RACDCERT ID(TN3270) CONNECT(CERTAUTH) - LABEL('<var class="keyword varname">your CA label</var>')  RING('<var class="keyword varname">your RACF 
+keyring name</var>')  -USAGE(CERTAUTH))
+
+RACDCERT ID(TN3270) CONNECT(ID(TN3270)  - LABEL('<var class="keyword varname">your label</var>') -RING('<var class="keyword varname">your RACF 
+keyring name</var>') DEFAULT USAGE(PERSONAL))</pre>
+</li>
+
+<li class="li">For testing, a self-signed client certificate was created:<pre class="pre codeblock">RACDCERT ID('<var class="keyword varname">RACF userid</var>') -    
+
+GENCERT -                              
+
+SUBJECTSDN(CN('<var class="keyword varname">Name of User</var>') -           
+
+			O('<var class="keyword varname">Name of Organization</var>') -      
+
+			C('<var class="keyword varname">US</var>'))                    -      
+
+WITHLABEL('<var class="keyword varname">BlueZone Client for Username</var>') - 
+
+SIGNWITH(CERTAUTH LABEL(''<var class="keyword varname">your CA label</var>'))
+
+RACDCERT EXPORT(LABEL('<var class="keyword varname">BlueZone Client for Name of User</var>')) - 
+
+ID('<var class="keyword varname">RACF userid</var>') -          
+
+DSN('<var class="keyword varname">your dataset name</var>') -            
+
+PASSWORD('<var class="keyword varname">client password</var>') -     
+
+FORMAT(PKCS12DER)    </pre>
+Using FTP, this data set is sent
+to the user's machine and imported into their personal certificate
+store. </li>
+
+</ul>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_express-logon-feature.htm" title="Beginning with BlueZone version 5.1, the BlueZone Mainframe Display emulator has support for the IBM express logon feature, known as Certificate Express Logon. The BlueZone express logon feature allows you to configure BlueZone Mainframe Display sessions that automatically connect to an IBM Mainframe without requiring a user ID and password. When this feature is enabled, the Telnet server on the Mainframe uses certificate information from an SSL connection and the application ID supplied by BlueZone to request a user ID and a PassTicket (a temporary password) from the IBM host access control program RACF.">Express logon feature</a></div></div></div>
+
+</div></body>
+</html>

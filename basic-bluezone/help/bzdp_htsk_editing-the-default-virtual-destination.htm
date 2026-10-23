@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Editing the default virtual destination"/>
+<meta name="abstract" content="After you configure the default open ID, the next step is to edit the default virtual destination to contain your host information."/>
+<meta name="description" content="After you configure the default open ID, the next step is to edit the default virtual destination to contain your host information."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_href_configure-connections-uts.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_editing-the-default-virt"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Editing the default virtual destination</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_editing-the-default-virt">
+<div class="topic">
+
+<h1 class="title topictitle1">Editing the default virtual destination</h1>
+
+
+<div class="body taskbody"><p class="shortdesc">After you configure the default open ID, the next step
+is to edit the default virtual destination to contain your host information. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"> </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context"> </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">Select the <span class="ph uicontrol">MYHOST</span> virtual destination. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Edit selected Destination</span> icon. Or you can double-click <span class="ph uicontrol">MYHOST</span>. </span>
+<div class="itemgroup stepresult">The Edit Virtual Destination dialog opens. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Edit the following information: </span>
+<div class="itemgroup info"><dl class="dl">
+
+<dt class="dt dlterm">Virtual destination id</dt>
+
+<dd class="dd">The name of the virtual destination being configured.  It is used
+to link to a connection point. </dd>
+
+
+
+<dt class="dt dlterm">Destination IP address</dt>
+
+<dd class="dd">You must click <span class="ph uicontrol">Edit IP Address</span> to define
+the IP address. The Network Edit Address dialog opens. In the <span class="ph uicontrol">FQDN/IP Addr</span> field, type the IP address, in dotted notation
+or symbolic destination machine name, of a host.<div class="note note"><span class="notetitle">Note:</span> When using a
+QPlex server as a gateway, use the IP Address of the QPlex server.</div>
+<div class="p">You can also select one of the following options: <ul class="ul">
+<li class="li"><p class="p">Use IPv4 Only</p>
+</li>
+
+<li class="li"><p class="p">Prefer IPv4</p>
+</li>
+
+<li class="li"><p class="p">Use IPv6 Only</p>
+</li>
+
+<li class="li"><p class="p">Prefer IPv6</p>
+</li>
+
+<li class="li"><p class="p">Accept first address found</p>
+</li>
+
+</ul>
+</div>
+</dd>
+
+
+
+<dt class="dt dlterm">IP Port Id</dt>
+
+<dd class="dd">This text box contains the port address to the host.  This number
+is normally 23. </dd>
+
+
+
+<dt class="dt dlterm">Connection Type</dt>
+
+<dd class="dd">Select the connection type: <ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">TP0 to HLC, or through DCP as IP router</span></p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">TP0 to a DCP as a DCA TS</span></p>
+<ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Use as Default destination</span></p>
+</li>
+
+</ul>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Host Gateway Server</span></p>
+</li>
+
+</ul>
+  </dd>
+
+
+
+<dt class="dt dlterm">SSL Options</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Enable Host Authentication</span>: Enables
+host authentication. </p>
+<ul class="ul">
+<li class="li"><p class="p"><span class="ph uicontrol">Enable Encryption</span>: Enables encryption. </p>
+</li>
+
+<li class="li"><p class="p"><span class="ph uicontrol">Alternate Principal Name</span>: Type a valid
+address in this field to use to validate the server certificate. </p>
+<p class="p">When a host site's server certificate's Common Name (CN) or AltSubjectName
+does not match the address used to connect to the host, a certificate
+error occurs, stating that the host address does not match the common
+name. If it is not possible to connect to the host address listed
+in the certificate, the address from the certificate can be typed
+into the <span class="ph uicontrol">Alternate Principal Name </span>field. This
+address, rather than the host connection address, is used to validate
+the server certificate.</p>
+</li>
+
+</ul>
+</li>
+
+</ul>
+</dd>
+
+
+</dl>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> to exit the dialog. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Save and Close</span> to exit the
+UTS Host Connections dialog and return to the Edit Screen Settings
+dialog. </span></li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_href_configure-connections-uts.htm" title="The UTS Host Connections dialog is used to control the overall operation of the configuration process and to configure points to a host visually. The dialog contains a work area where connection points and virtual destinations (hosts) can be easily linked together.">Configure connections</a></div></div></div>
+
+</div></body>
+</html>

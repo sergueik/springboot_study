@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="concept"/>
+<meta name="DC.Title" content="Windows API print driver"/>
+<meta name="abstract" content="The Windows API print driver is used by most Windows programs when printing documents and graphics. It provides extensive formatting, graphics, and printer control capabilities. This is the default setting for BlueZone Printer Emulators."/>
+<meta name="description" content="The Windows API print driver is used by most Windows programs when printing documents and graphics. It provides extensive formatting, graphics, and printer control capabilities. This is the default setting for BlueZone Printer Emulators."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_printing-types.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_hcon_windows-api-print-driver"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Windows API print driver</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_hcon_windows-api-print-driver">
+<div class="topic">
+
+<h1 class="title topictitle1">Windows API print driver</h1>
+
+
+<div class="body conbody"><p class="shortdesc">The Windows API print driver is used by most Windows programs
+when printing documents and graphics.  It provides extensive formatting,
+graphics, and printer control capabilities.  This is the default setting
+for BlueZone Printer Emulators. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">When to use</h2><ul class="ul">
+<li class="li">Use with any EBCDIC printer data stream when auto-sizing the font
+and a nearly perfect fit is required.  </li>
+
+<li class="li">Use when printing a Windows True Type Font.  </li>
+
+<li class="li">Use by default when the target printer is unknown.  Check the
+Use Default Windows Printer on Startup check box. </li>
+
+</ul>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">When not to use</h2><ul class="ul">
+<li class="li">When exact font size is necessary to print on preprinted forms.
+ Windows scales True Type fonts to the nearest pixel resulting in
+slight misalignments when compared to fixed CPI fonts resident in
+the printers.  </li>
+
+<li class="li">Draft mode printing on dot matrix printers.  </li>
+
+<li class="li">ASCII Transparent Printing  </li>
+
+<li class="li">iSeries Host Print Transform </li>
+
+</ul>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Required emulator settings</h2><p class="p">Settings required
+in the Print Setup property sheet (choose <span class="ph menucascade"><span class="ph uicontrol">File</span> → <span class="ph uicontrol">Print Setup</span></span> from
+the menu bar) necessary to properly configure the emulator for this
+feature. </p>
+<p class="p">Click the <span class="ph uicontrol">Passthrough</span> tab,
+clear the <span class="ph uicontrol">Send all Data Directly to the Printer</span> check box. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Ignored emulator settings</h2><p class="p">All ignored settings
+are disabled when the required settings are set properly. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_printing-types.htm">Printing types</a></div></div></div>
+
+</div></body>
+</html>

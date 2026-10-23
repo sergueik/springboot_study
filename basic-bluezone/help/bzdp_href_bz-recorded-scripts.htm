@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="BlueZone recorded scripts"/>
+<meta name="abstract" content="BlueZone recorded scripts can be recorded in either BlueZone proprietary format, BlueZone Basic, VBScript, or JavaScript."/>
+<meta name="description" content="BlueZone recorded scripts can be recorded in either BlueZone proprietary format, BlueZone Basic, VBScript, or JavaScript."/>
+<meta name="DC.subject" content="scripts, BlueZone proprietary format, text-based, text-based scripts, BlueZone proprietary format scripts"/>
+<meta name="keywords" content="scripts, BlueZone proprietary format, text-based, text-based scripts, BlueZone proprietary format scripts"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_bz-scripting.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_bz-recorded-scripts"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>BlueZone recorded scripts</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_bz-recorded-scripts">
+<div class="topic">
+
+<h1 class="title topictitle1">BlueZone recorded scripts</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc">BlueZone recorded scripts can be recorded in either BlueZone
+proprietary format, BlueZone Basic, VBScript, or JavaScript. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><p class="p">BlueZone proprietary scripts are targeted at users with
+a basic understanding of scripting and logic but without skill sets
+required to write and edit BlueZone Basic scripts, VBScripts or JavaScripts. </p>
+<p class="p">BlueZone
+text-based scripts are targeted at users who wish to leverage their
+proficiency with either BlueZone Basic, VBScript or JavaScript and
+want to take advantage of being able to write and edit scripts in
+a scripting language that they already know. </p>
+<div class="p">The type of script
+desired is selected at the time when the script is created by selecting
+the desired file extension. 
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" class="table" frame="border" border="1" rules="all"><caption><span class="tablecap">Table 1: BlueZone recorded script file extensions</span></caption>
+<thead class="thead" align="left">
+<tr class="row">
+<th class="cellrowborder" valign="top" id="d42937e55">File extension  </th>
+
+<th class="cellrowborder" valign="top" id="d42937e58">Script type   </th>
+
+</tr>
+
+</thead>
+
+<tbody class="tbody">
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d42937e55 "><span class="ph filepath">.BZS  </span></td>
+
+<td class="cellrowborder" valign="top" headers="d42937e58 ">BlueZone Proprietary Script   </td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d42937e55 "><span class="ph filepath">.VBS  </span></td>
+
+<td class="cellrowborder" valign="top" headers="d42937e58 ">VBScript   </td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d42937e55 "><span class="ph filepath">.JS  </span></td>
+
+<td class="cellrowborder" valign="top" headers="d42937e58 ">JavaScript   </td>
+
+</tr>
+
+<tr class="row">
+<td class="cellrowborder" valign="top" headers="d42937e55 "><span class="ph filepath">.BBS  </span></td>
+
+<td class="cellrowborder" valign="top" headers="d42937e58 ">BlueZone Basic Script  </td>
+
+</tr>
+
+</tbody>
+
+</table>
+</div>
+</div>
+<p class="p">The pros and cons of BlueZone proprietary formatted
+compared to BlueZone Basic text formatted scripts are discussed at
+the end of each topic below. </p>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">BlueZone proprietary script format</h2><p class="p">BlueZone
+Proprietary Scripts are recorded and played back using a proprietary
+method.  Scripts are typically created by recording keystrokes and
+can be used as is, or can be edited later to change the desired playback.
+ Scripts are edited using the BlueZone Script Editor (<span class="ph filepath">bzse.exe</span>)
+application which is launched from the BlueZone menu bar by clicking <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol">Edit</span></span> and
+selecting the desired script.  Selecting a script that ends in <span class="ph filepath">.bzs</span> will
+result in the launching of the BlueZone Script Editor application
+with the requested script displayed in the editing window. </p>
+<p class="p">Refer
+to <a class="xref" href="bzdp_hcon_bz-script-editor.htm" title="BlueZone scripting is a powerful and flexible scripting language which uses a built-in GUI (Graphical User Interface) designed for the easy automation of tasks on host systems using the BlueZone family of host emulation products.">BlueZone Script Editor</a> for an overview of the BlueZone
+Script Editor.</p>
+<p class="p">BlueZone Script Editor is a GUI tool allowing
+users to drag Script Events into the Script flow, change the order
+of events, and delete previously recorded events.  BlueZone Scripts
+support a proprietary mechanism called Wait_Ready that ensures the
+host is ready to accept input, even when using TN3270 or TN3270E . </p>
+<dl class="dl">
+
+<dt class="dt dlterm"> Advantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">Easy to record. </li>
+
+<li class="li">Easy to edit with BlueZone Script Editor. </li>
+
+<li class="li">Keyboard lock state aware. </li>
+
+<li class="li">Support for advanced functions like wait for, watch for, text
+input, and so on. </li>
+
+<li class="li">Can execute other programs using the Run command. </li>
+
+<li class="li">Can run BlueZone Menu commands, ex; Copy, Paste, Print Screen. </li>
+
+<li class="li">Can accept variables passed from a BlueZone Web to Host Object
+Tag.  ex: Login ID and Password generated dynamically by the web application
+and used to sign the user into the mainframe.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Disadvantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">Do not support file I/O. </li>
+
+<li class="li">No external application integration.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">BlueZone text-based scripts</h2><p class="p">BlueZone Text
+Based Scripts can be written or recorded in either VBScript or JavaScript.
+ Scripts are typically created by recording keystrokes, but can be
+edited later to change the desired playback.  Scripts are edited using
+the BlueZone Script Host and Debugger (bsh.exe) application which
+is launched from the BlueZone menu bar by clicking <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol">Edit</span></span> and
+selecting the desired script.  Selecting a script that ends in either <span class="ph filepath">.vbs</span> or <span class="ph filepath">.js</span> script
+will result in the launching of the BlueZone Script Host and Debugger
+application with the requested script displayed in the editing region. </p>
+<p class="p">BlueZone
+Script Host and Debugger is discussed in more detail in the BlueZone
+Script Host section below.</p>
+<dl class="dl">
+
+<dt class="dt dlterm">Advantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">Easy to record or can be written from scratch. </li>
+
+<li class="li">Can be written in VBScript or JavaScript </li>
+
+<li class="li">Easy to edit with BlueZone Script Host and Debugger. </li>
+
+<li class="li">Support unique BlueZone methods which control the behavior of
+BlueZone.</li>
+
+</ul>
+</dd>
+
+
+
+<dt class="dt dlterm">Disadvantages</dt>
+
+<dd class="dd"><ul class="ul">
+<li class="li">Require a working knowledge of VBScript or JavaScript.</li>
+
+</ul>
+</dd>
+
+
+</dl>
+<p class="p">Refer to <a class="xref" href="bzdp_href_bz-scripts.htm" title="BlueZone scripts can be recorded in either a proprietary format or in a text-based format recorded in either VBScript or JavaScript.">BlueZone scripts</a> for more information. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_bz-scripting.htm" title="BlueZone and BlueZone Web-to-Host offer several powerful tools for automating repetitive tasks, streamlining the user interface, and communicating with external applications. Each tool has its strengths and weaknesses and must be used appropriately. The following topics describe each tool and how to determine its appropriate use.">BlueZone scripting</a></div></div></div>
+
+</div></body>
+</html>

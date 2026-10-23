@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Recording and modifying an express logon script"/>
+<meta name="abstract" content="You have the choice of starting the script when the session is either disconnected or connected, so it may or may not start with a Connect event."/>
+<meta name="description" content="You have the choice of starting the script when the session is either disconnected or connected, so it may or may not start with a Connect event."/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_express-logon-feature.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_recording-and-modifying-"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Recording and modifying an express logon script</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_recording-and-modifying-">
+<div class="topic">
+
+<h1 class="title topictitle1">Recording and modifying an express logon script</h1>
+
+
+<div class="body taskbody"><p class="shortdesc">You have the choice of starting the script when the session
+is either disconnected or connected, so it may or may not start with
+a Connect event. </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"> </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context"> </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Record</span></span>. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Type a name for the script and click <span class="ph uicontrol">Save</span>. </span>
+<div class="itemgroup info"><div class="note note"><span class="notetitle">Note:</span> BlueZone express logon is only supported with BlueZone
+Script files (<span class="ph filepath">.bzs</span>).</div>
+</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Record the steps necessary to connect to your host (if
+not already) and logon to the desired application. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Stop</span></span> to end the script recording. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph menucascade"><span class="ph uicontrol">Script</span> → <span class="ph uicontrol"> Edit</span></span> and select the script you just recorded.
+ </span>
+<div class="itemgroup stepresult">The BlueZone Script Editor launches and your script is
+displayed. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">In the script, find the Script Event where you typed your
+UserID (Type "MYUSERID"), double-click <span class="ph uicontrol">MYUSERID</span> to bring up the edit box. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Replace your UserID with <kbd class="ph userinput">")USR.ID("</kbd> and click <span class="ph uicontrol">OK</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">In the script, find the Script Event (Type "RpvPassword"),
+double-click it to bring up the edit box. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Replace "RpvPassword" with ")PSS.WD(". </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Directly before the Type ")USR.ID(" command, insert an
+Express Logon Script Event, and type the host Application ID for the
+application you want to use.  You must get this application ID from
+your system administrator who configured the host for Express Logon. </span>
+<ol type="a" class="ol substeps">
+<li class="li substep substepexpand"><span class="ph cmd">To do this, select the Script Event before (Type ")USR.ID(").
+ In the Script Events box, locate the Express_Logon event and double-click.
+ </span>
+<div class="itemgroup stepresult">The edit box where you can enter the Application ID opens. </div>
+</li>
+
+<li class="li substep substepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span>.  </span>
+<div class="itemgroup stepresult">This places the (Express_Logon "Application ID") Script
+Event immediately before the (Type ")USR.ID(") Script Event. </div>
+</li>
+
+</ol>
+
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Save the script and exit the Script Editor. </span></li>
+</ol>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_express-logon-feature.htm" title="Beginning with BlueZone version 5.1, the BlueZone Mainframe Display emulator has support for the IBM express logon feature, known as Certificate Express Logon. The BlueZone express logon feature allows you to configure BlueZone Mainframe Display sessions that automatically connect to an IBM Mainframe without requiring a user ID and password. When this feature is enabled, the Telnet server on the Mainframe uses certificate information from an SSL connection and the application ID supplied by BlueZone to request a user ID and a PassTicket (a temporary password) from the IBM host access control program RACF.">Express logon feature</a></div></div></div>
+
+</div></body>
+</html>

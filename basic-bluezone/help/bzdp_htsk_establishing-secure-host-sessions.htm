@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="task"/>
+<meta name="DC.Title" content="Establishing secure host sessions"/>
+<meta name="abstract" content="By default, BlueZone is not configured for secure SSL or TLS encrypted sessions. In order to establish a Secure host connection, you will have to configure the security settings in BlueZone."/>
+<meta name="description" content="By default, BlueZone is not configured for secure SSL or TLS encrypted sessions. In order to establish a Secure host connection, you will have to configure the security settings in BlueZone."/>
+<meta name="DC.subject" content="connecting, secure host sessions, establishing, disconnecting"/>
+<meta name="keywords" content="connecting, secure host sessions, establishing, disconnecting"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-iseries.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_htsk_establishing-secure-host"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Establishing secure host sessions</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_htsk_establishing-secure-host">
+<div class="topic">
+
+<h1 class="title topictitle1">Establishing secure host sessions</h1>
+
+
+
+<div class="body taskbody"><p class="shortdesc">By default, BlueZone is not configured for secure SSL or
+TLS encrypted sessions.  In order to establish a Secure host connection,
+you will have to configure the security settings in BlueZone.  </p>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section prereq p"><div class="note note"><span class="notetitle">Note:</span> Keep in mind that your Telnet host must be capable of negotiating a secure Telnet session,
+        using TLS v1.0, TLS v1.1, TLS 1.2, or SSL v3. If your host is not secure Telnet-capable, one
+        option is to use a product like BlueZone Security Server in front of your host to perform
+        the Telnet encryption and decryption functions. </div>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section context">To enable SSL encryption in BlueZone, follow this procedure.  </div>
+
+<ol class="ol steps"><li class="li step stepexpand"><span class="ph cmd">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">Properties</span>. </span></li>
+<li class="li step stepexpand"><span class="ph cmd">In the <span class="ph uicontrol">Connection List</span>, highlight
+the session that you want to secure and click <span class="ph uicontrol">Edit</span>.
+ </span>
+<div class="itemgroup stepresult">If you don't have any existing sessions, or you want to
+create a new one, click <span class="ph uicontrol">New</span>. </div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Edit the <span class="ph uicontrol">Host Address</span> and the <span class="ph uicontrol">TCP
+Port</span> if necessary.  </span>
+<div class="itemgroup stepresult">Your Telnet host administrator gives you the correct values
+to use.</div>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> to close the dialog. </span>
+</li>
+<li class="li step stepexpand"><span class="ph cmd">Click the <span class="ph uicontrol">Security</span> tab.  </span>
+<div class="itemgroup stepresult">The Security dialog displays. </div>
+</li>
+<li class="li step stepexpand">
+    <span class="ph cmd">From the drop-down list box, select either <span class="ph uicontrol">Implicit TLS</span> (for a fixed
+     port) or <span class="ph uicontrol">Explicit TLS</span> (for a telnet-negotiated secure port). </span>
+   </li>
+<li class="li step stepexpand">
+        <span class="ph cmd">Select the <span class="ph uicontrol">Minimum TSL version</span>. This should be set to the
+          minimum acceptable version of the TLS protocol.</span>
+        <ul class="ul choices">
+          <li class="li choice"><span class="ph uicontrol">SSL v3</span></li>
+
+          <li class="li choice"><span class="ph uicontrol">TLS v1.0</span></li>
+
+          <li class="li choice"><span class="ph uicontrol">TLS v1.1</span></li>
+
+          <li class="li choice"><span class="ph uicontrol">TLS v1.2</span></li>
+
+        </ul>
+
+        <div class="itemgroup info">SSL v3 is the least secure (not recommended), TLS v1.2 is the most secure. The highest
+          version that can connect to the host should be selected.</div>
+      </li>
+<li class="li step stepexpand"><span class="ph cmd">Determine how you want to handle <span class="ph uicontrol">Invalid certificates</span>.
+ </span>
+<div class="itemgroup stepresult">It is recommended to select <span class="ph uicontrol">Ask before Accepting</span> until
+you are sure you can use one of the other settings. </div>
+</li>
+<li class="li step stepexpand">
+        <span class="ph cmd">Select a preferred <span class="ph uicontrol">CipherSuite</span> only if directed by you host
+          administrator. </span>
+        <div class="itemgroup stepresult">By leaving it set to <span class="ph uicontrol">Strong only</span>, BlueZone automatically
+          negotiates the highest encryption that both BlueZone and the host can support.
+        </div>
+      </li>
+<li class="li step stepexpand"><span class="ph cmd">Click <span class="ph uicontrol">OK</span> twice to close out all
+dialogs. </span></li>
+</ol>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="example">Now that you have BlueZone configured, you are ready to make a secure connection with your
+      host. <p class="p">From the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Connect</span></span> or click the <span class="ph uicontrol">Connect</span> icon located on the BlueZone
+        toolbar. </p>
+<div class="p">At the start of a secure Telnet connection, a negotiation takes place. Part
+        of the negotiation is to examine the certificate that is being presented by the host. You
+        may get a warning message like this: <div class="fig fignone">
+          <img class="image" src="graphics/bz_cert_error.PNG"/>
+        </div>
+</div>
+<div class="p">This message is normal if you are
+        using a self-signed certificate like the one that comes with BlueZone Security Server. In
+        some situations this can be perfectly acceptable. <div class="note tip"><span class="tiptitle">Tip:</span> If you are using
+          encryption to allow secure remote Telnet connections from users that are not employees of
+          your organization, like your customers, you may want to consider purchasing a verified
+          certificate from a Certification Authority (CA). Using a verified, rather than a
+          self-signed certificate, gives confidence to your remote users that they are indeed
+          connecting to the correct Telnet host and that their information is encrypted and secure.
+          It also prevents an invalid certificate error.</div>
+</div>
+<p class="p">To make these messages go
+        away, follow these steps: </p>
+<p class="p">When the Certificate Error message opens and you are sure
+        that you trust the issuer of the certificate, enable the <span class="ph uicontrol">Add this Certificate to
+          Trusted List</span> check box. When the certificate is in your trusted list, this
+        error message no longer opens. </p>
+<div class="p">When you are connected, the Secure Connection Status
+        icon displays in the BlueZone status bar, as shown here: <div class="fig fignone">
+          <img class="image" src="graphics/bz_statusbar_lock.PNG"/>
+        </div>
+</div>
+<div class="p">You can click the Secure Connection Status icon to open the Secure Connection
+        Status dialog, as shown here: <div class="fig fignone">
+          <img class="image" id="Bzdp_htsk_establishing-secure-host__image_wqw_1s1_ft" src="graphics/secure_connection_status.png"/>
+        </div>
+</div>
+<p class="p">This is an easy way to verify the type and strength of your encryption. It also
+        allows you to view the certificate that was presented by the host Telnet server. In
+        addition, if you are using client certificates, you can view that as well. </p>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>

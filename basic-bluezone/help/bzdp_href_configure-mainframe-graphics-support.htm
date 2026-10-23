@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en-us" lang="en-us">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="copyright" content="(C) Copyright 2005"/>
+<meta name="DC.rights.owner" content="(C) Copyright 2005"/>
+<meta name="DC.Type" content="reference"/>
+<meta name="DC.Title" content="Configuring Mainframe graphics support"/>
+<meta name="abstract" content=""/>
+<meta name="description" content=""/>
+<meta name="DC.subject" content="graphics support, mainframe, graphics support, configuring"/>
+<meta name="keywords" content="graphics support, mainframe, graphics support, configuring"/>
+<meta name="DC.Relation" scheme="URI" content="bzdp_hcon_ibm-mainframe.htm"/>
+<meta name="DC.Date.Created" content="April 2017"/>
+<meta name="DC.Format" content="XHTML"/>
+<meta name="DC.Identifier" content="Bzdp_href_configure-mainframe-grap"/>
+<link rel="stylesheet" type="text/css" href="commonltr.css"/>
+<link rel="stylesheet" type="text/css" href="htmlhelp.css"/>
+<title>Configuring Mainframe graphics support</title>
+</head>
+<body xmlns:dita2html="http://dita-ot.sourceforge.net/ns/200801/dita2html" id="Bzdp_href_configure-mainframe-grap">
+<div class="topic">
+
+<h1 class="title topictitle1">Configuring Mainframe graphics support</h1>
+
+
+
+<div class="body refbody"><p class="shortdesc"/>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Display settings</h2><ol class="ol">
+<li class="li">Start a BlueZone Mainframe display session. </li>
+
+<li class="li">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>. </li>
+
+<li class="li">Click the <span class="ph uicontrol">3270 Emulation</span> tab. </li>
+
+<li class="li">In the <span class="ph uicontrol">Features</span> group, place a check in
+all three check boxes: <ul class="ul">
+<li class="li"><span class="ph uicontrol">Use Extended Attributes</span>  </li>
+
+<li class="li"><span class="ph uicontrol">Use Multiple Explicit Partitions  </span></li>
+
+<li class="li"><span class="ph uicontrol">Enable Vector Graphics </span></li>
+
+</ul>
+</li>
+
+<li class="li">In the <span class="ph uicontrol">Default Screen Model Type</span> group,
+select the screen size you are using.  Typically, a <span class="ph uicontrol">Model
+3 (32x80)</span> screen is used, but other screen sizes can also
+work. </li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span>. </li>
+
+</ol>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">TN3270E settings</h2><ol class="ol">
+<li class="li">On the On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Session</span> → <span class="ph uicontrol"> Configure</span></span>.  </li>
+
+<li class="li"><p class="p">Click <span class="ph uicontrol"> Properties</span>. </p>
+</li>
+
+<li class="li">Highlight the desired host in your <span class="ph uicontrol">Connection List</span>. </li>
+
+<li class="li">Click the <span class="ph uicontrol">Device</span> tab. </li>
+
+<li class="li">Select your <span class="ph uicontrol">Device Model</span> and check the <span class="ph uicontrol">Extended
+Attributes</span> check box.  Ensure <span class="ph uicontrol">Override 3270
+Emulation Model Type</span> is checked. <div class="note note"><span class="notetitle">Note:</span> If your host requires
+that you connect with a different Device Model type than the one that
+you need to support graphics, select the Device Model that is required
+for connection here, and clear the <span class="ph uicontrol">Override 3270 Emulation
+Model Type</span> check box.</div>
+<p class="p">This results in BlueZone
+negotiating the TN3270E connection with the host using the Device
+Model selected on the TN3270E Properties, <span class="ph uicontrol">Device</span> tab
+but uses the Default Screen Model Type selected in the Session Configuration, <span class="ph uicontrol">3270
+Emulation</span> tab for the actual screen display.</p>
+</li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span> twice.</li>
+
+</ol>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Font settings</h2><ol class="ol">
+<li class="li">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol"> Display</span></span>. The <span class="ph uicontrol">Font</span> tab
+is used to set the font size. <div class="note note"><span class="notetitle">Note:</span> This step is particularly important
+when using graphics, since the graphics screen emulates an IBM 3179
+terminal with a 9x12 character cell.</div>
+</li>
+
+<li class="li">For best results, click <span class="ph uicontrol">Change</span> and select <span class="ph uicontrol">New
+Renex Terminal</span> as the font, with <span class="ph uicontrol">9x12</span> as
+the font size. </li>
+
+<li class="li">Click <span class="ph uicontrol">OK</span>.</li>
+
+<li class="li">Clear the <span class="ph uicontrol">Auto-Size Font</span> check box and
+click <span class="ph uicontrol">OK</span>. <br/>This forces the terminal
+session to use a 9x12 font size, which makes the graphics appear the
+best. <div class="note note"><span class="notetitle">Note:</span> If a larger size is used, grid lines can appear when scaling
+raster graphics.  If a smaller size is used, graphics detail is lost
+when scaling down. </div>
+</li>
+
+</ol>
+ </div>
+
+<div xmlns:xs="http://www.w3.org/2001/XMLSchema" class="section"><h2 class="title sectiontitle">Keyboard settings</h2><ol class="ol">
+<li class="li">On the BlueZone menu bar, click <span class="ph menucascade"><span class="ph uicontrol">Options</span> → <span class="ph uicontrol"> Keyboard</span></span>. </li>
+
+<li class="li">Click the <span class="ph uicontrol">Mouse Options</span> tab. </li>
+
+<li class="li">Select <span class="ph uicontrol">Send 3270 Function Enter on Mouse Left Double-Click</span>. <br/>This enables the mouse to be used to select areas on the
+graphics screen with a double-click and send the graphics cursor location
+back to the application. </li>
+
+<li class="li">Connect to your host and run the graphics application. </li>
+
+</ol>
+ </div>
+
+</div>
+
+<div><div class="related-links"><div><strong>Parent topic:</strong> <a class="link" href="bzdp_hcon_ibm-mainframe.htm">BlueZone Mainframe Display and Printer</a></div></div></div>
+
+</div></body>
+</html>
