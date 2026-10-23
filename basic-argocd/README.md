@@ -31,7 +31,79 @@ __Argo CD__:
 |Source of truth|Puppet code and data|Git repository, typically|
 
 
+```mermaid
 
+stateDiagram-v2
+
+direction TB
+
+state "Sync Stats"  as Sync {
+ direction LR
+ [*] --> Unknown_S
+ Unknown_S --> Synched
+ Unknown_S --> OutOfSynch
+ Synched --> OutOfSynch: Git Change\nCommit/\nLive drift
+ OutOfSynch --> Synched: Fetch/Pull
+}
+
+state "Health Status" as Health {
+direction LR
+ [*] --> Unknown_H
+Unknown_H --> Progressing: health\n check
+Progressing --> Healthy
+Progressing --> Degraded: problem
+Degraded -->  Progressing: retry/\nself-heal
+Healthy --> Progressing: spec change\ntriggers rollout
+Degraded -->  Suspended: manual\npause
+Healthy -->  Suspended: manual\npause
+
+Suspended --> Progressing: resume
+}
+
+Sync --> Health: controller evaluates\nhealth after apply
+Health --> Sync: health informs next\nreconsile diff
+
+
+```
+technically the two operate in parallel
+
+__Health Status__:
+```mermaid
+stateDiagram-v2
+
+direction TB
+  [*] --> Unknown
+  Unknown --> Progressing: telemetry\nhealth\nassessment
+  Progressing --> Healthy:   criteria\nmet
+  Progressing --> Degraded: failure
+  Degraded --> Progressing: recovery\nunderway
+  Healthy --> Progressing: rollout
+  Progressing --> Suspended: manual\npause\n(not guaranteed)
+  Suspended --> Progressing: manual\nresume
+note right of Unknown
+  Health is assessed using
+  resource-specific criteria
+  Application health aggregates
+  the health of managed resources
+  Not every resource supports
+  every transition shown
+end note
+```
+
+__Sync Status__
+```mermaid
+
+stateDiagram-v2
+
+direction TB
+
+  [*] --> Unknown
+  Unknown --> Synced: comparison\ncompleted
+  Unknown --> OutOfSync: differences\nfound
+  Synced --> OutOfSync: desired/live\ndrift detected
+  OutOfSync --> Synced: successful\napply and\ncompare
+
+```
 The key similarity is declarative desired-state management backed by reconciliation.
 __Puppet__ was already doing that long before __Argo CD__ appeared.
 There is also a meaningful difference: Puppet traditionally manages resources on machines — __packages__, __files__, __services__, __users__ and __configuration__.
@@ -286,7 +358,7 @@ statefulset.apps/argocd-application-controller   1/1     7m3s
 minikube.exe kubectl -- port-forward svc/argocd-server --namespace argocd 8080:443
 ```
 
-after the minikube was stopped and started, argoCD installed earlier, will launch 
+after the minikube was stopped and started, argoCD installed earlier, will launch
 
 ```cmd
 minikube.exe kubectl -- get all --namespace argocd
@@ -625,7 +697,7 @@ eEQ1cDRJbzJiOU9FMTBTcw==
 ```
 then
 ```cmd
-"c:\Program Files\Git\usr\bin\echo.exe" "eEQ1cDRJbzJiOU9FMTBTcw==" | "c:\Program Files\Git\usr\bin\base64.exe" -d - 
+"c:\Program Files\Git\usr\bin\echo.exe" "eEQ1cDRJbzJiOU9FMTBTcw==" | "c:\Program Files\Git\usr\bin\base64.exe" -d -
 ```
 ```text
 xD5p4Io2b9OE10Ss
@@ -643,7 +715,7 @@ xD5p4Io2b9OE10Ss
 
 > NOTE: Do __NOT__ use the CMD's ECHO command:
 > ```cmd
-> echo eEQ1cDRJbzJiOU9FMTBTcw== | "c:\Program Files\Git\usr\bin\base64.exe" -d - 
+> echo eEQ1cDRJbzJiOU9FMTBTcw== | "c:\Program Files\Git\usr\bin\base64.exe" -d -
 > ```
 > ```text
 > xD5p4Io2b9OE10Ss/usr/bin/base64: invalid input
@@ -667,8 +739,8 @@ sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 rm argocd-linux-amd64
 ```
 
-On Windows inspect the version shown in dashboard, `v2.8.4+c279299`, confirm asset is available 
- 
+On Windows inspect the version shown in dashboard, `v2.8.4+c279299`, confirm asset is available
+
 
 ```
 curl -skI https://github.com/argoproj/argo-cd/releases?q=2.8.4
@@ -1061,7 +1133,7 @@ That interpretation is consistent with the history, although it would be too str
 
 ```sh
 sudo apt-get remove golang-go
-``` 
+```
 
 ```
 VERSION='1.16.1'
@@ -1115,15 +1187,15 @@ kind v0.22.0 go1.16.1 linux/amd64
 
 > NOTE: cannot install latest versions of kind with older Go:
 > ```
-> go install sigs.k8s.io/kind@v0.33.0 
+> go install sigs.k8s.io/kind@v0.33.0
 > ```
 > ```text
-> can't load package: package sigs.k8s.io/kind@v0.33.0: 
+> can't load package: package sigs.k8s.io/kind@v0.33.0:
 > can only use path@version syntax with 'go get'
 > ```
-> 
+>
 > ```sh
-> go get sigs.k8s.io/kind@v0.33.0 
+> go get sigs.k8s.io/kind@v0.33.0
 > ```
 > ```txt
 > go: downloading sigs.k8s.io/kind v0.33.0
@@ -1164,12 +1236,12 @@ kind create cluster --name argocd-cluster --config kind-config.yaml
 
 ```text
 Creating cluster "argocd-cluster" ...
- ✓ Ensuring node image (kindest/node:v1.29.2) 🖼 
- ✓ Preparing nodes 📦  
- ✓ Writing configuration 📜 
- ✓ Starting control-plane 🕹️ 
- ✓ Installing CNI 🔌 
- ✓ Installing StorageClass 💾 
+ ✓ Ensuring node image (kindest/node:v1.29.2) 🖼
+ ✓ Preparing nodes 📦
+ ✓ Writing configuration 📜
+ ✓ Starting control-plane 🕹️
+ ✓ Installing CNI 🔌
+ ✓ Installing StorageClass 💾
 Set kubectl context to "kind-argocd-cluster"
 You can now use your cluster with:
 
@@ -1211,7 +1283,7 @@ service/argocd-notifications-controller-metrics   ClusterIP   10.96.32.232     <
 service/argocd-redis                              ClusterIP   10.111.188.213   <none>        6379/TCP                     4m13s
 service/argocd-repo-server                        ClusterIP   10.96.77.212     <none>        8081/TCP,8084/TCP            4m12s
 service/argocd-server                             ClusterIP   10.105.219.66    <none>        80/TCP,443/TCP               4m12s
-service/argocd-server-metrics                     ClusterIP   10.109.42.160    <none>        8083/TCP             
+service/argocd-server-metrics                     ClusterIP   10.109.42.160    <none>        8083/TCP
 service/argocd-server-metrics                     ClusterIP   10.109.42.160    <none>        8083/TCP                     4m12s
 
 NAME                                               READY   UP-TO-DATE   AVAILABLE   AGE
@@ -1301,14 +1373,14 @@ networkpolicy.networking.k8s.io/argocd-repo-server-network-policy serverside-app
 networkpolicy.networking.k8s.io/argocd-server-network-policy serverside-applied
 ```
 ```sh
-docker container ls 
+docker container ls
 ```
 ```text
 CONTAINER ID   IMAGE                  COMMAND                  CREATED          STATUS          PORTS                                                NAMES
 ebd255c6282f   kindest/node:v1.29.2   "/usr/local/bin/entr…"   19 minutes ago   Up 19 minutes   127.0.0.1:44057->6443/tcp, 0.0.0.0:8443->30443/tcp   argocd-cluster-control-plane
 ```
 ```sh
-docker images |grep kindest/node 
+docker images |grep kindest/node
 ```
 ```text
 kindest/node                                    <none>                  09c50567d34e   2 years ago   956MB
@@ -1372,17 +1444,17 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 
 ### Next Step
 
-__Argo CD__ is no longer the thing you need to learn to install. 
+__Argo CD__ is no longer the thing you need to learn to install.
 You need to learn how to diagnose a deployment that __Argo CD__ cannot successfully reconcile.
 
 The electricity analogy is apt. Once the supply is available, one stops caring whether it comes through a wall socket or a power bank.
 Likewise, after establishing that __Argo CD__ works on __Windows__ __11__ in __VirtualBox__,
-__Ubuntu__ __18.04__ with __VirtualBox__, and __kind__ with a pinned node image, 
+__Ubuntu__ __18.04__ with __VirtualBox__, and __kind__ with a pinned node image,
 the infrastructure is mostly a laboratory prerequisite.
 
 Your next step should be to treat __Argo CD__ as a small operational control system and deliberately introduce faults into the applications it manages.
 
-### Install Custom Images into Kind Container to make 
+### Install Custom Images into Kind Container to make
 
 ### Troubleshooting
 
@@ -1411,7 +1483,7 @@ The attempt to recrate swap does not help:
 ```sh
  ls -hl /swapfile
  sudo swapoff -a
- sudo rm -f /swapfile 
+ sudo rm -f /swapfile
  sudo dd if=/dev/zero of=/swapfile bs=1M count=4096
  sudo chmod 600 /swapfile
  sudo mkswap /swapfile
@@ -1500,15 +1572,15 @@ Command Output: Error response from daemon: manifest for kindest/node@sha256:396
 
  kind create cluster --name argocd-cluster --image kindest/node:v1.27.3
 
-``` 
+```
  kind create cluster --name argocd-cluster --image kindest/node:v1.27.3
 ```
 ```text
 Creating cluster "argocd-cluster" ...
- ✓ Ensuring node image (kindest/node:v1.27.3) 🖼 
- ✓ Preparing nodes 📦  
- ✓ Writing configuration 📜 
- ✗ Starting control-plane 🕹️ 
+ ✓ Ensuring node image (kindest/node:v1.27.3) 🖼
+ ✓ Preparing nodes 📦
+ ✓ Writing configuration 📜
+ ✗ Starting control-plane 🕹️
 ERROR: failed to create cluster: failed to init node with kubeadm: command "docker exec --privileged argocd-cluster-control-plane kubeadm init --skip-phases=preflight --config=/kind/kubeadm.conf --skip-token-print --v=6" failed with error: exit status 1
 Command Output: I1021 21:45:58.469740     104 initconfiguration.go:255] loading configuration from "/kind/kubeadm.conf"
 W1021 21:45:58.473076     104 initconfiguration.go:332] [config] WARNING: Ignored YAML document with GroupVersionKind kubeadm.k8s.io/v1beta3, Kind=JoinConfiguration
@@ -1796,7 +1868,7 @@ and service account keys on each node and then running the following as root:
 
   kubeadm join argocd-cluster-control-plane:6443 --token <value withheld> \
 	--discovery-token-ca-cert-hash sha256:7497ea858ced55655874d7b6a266edb7a8b4c0caab632bd18103710e03929708 \
-	--control-plane 
+	--control-plane
 
 Then you can join any number of worker nodes by running the following on each as root:
 
@@ -1807,7 +1879,7 @@ kubeadm join argocd-cluster-control-plane:6443 --token <value withheld> \
 ```sh
  kind get kubeconfig --name argocd-cluster
 ```
-```yaml 
+```yaml
 apiVersion: v1
 clusters:
 - cluster:
@@ -1840,12 +1912,12 @@ kind create cluster --name argocd-cluster --image kindest/node:v1.24.15
 ```
 ```text
 Creating cluster "argocd-cluster" ...
- ✓ Ensuring node image (kindest/node:v1.24.15) 🖼 
- ✓ Preparing nodes 📦  
- ✓ Writing configuration 📜 
- ✓ Starting control-plane 🕹️ 
+ ✓ Ensuring node image (kindest/node:v1.24.15) 🖼
+ ✓ Preparing nodes 📦
+ ✓ Writing configuration 📜
+ ✓ Starting control-plane 🕹️
  ✓ Installing CNI 🔌
- ✓ Installing StorageClass 💾 
+ ✓ Installing StorageClass 💾
 Set kubectl context to "kind-argocd-cluster"
 You can now use your cluster with:
 
@@ -1960,7 +2032,7 @@ resources:
     memory: "8Gi" # Way higher than your 4GB host!
   requests:
     memory: "6Gi"
-    
+
 • hat ArgoCD will show: ArgoCD will happily sync the manifest because the YAML syntax is valid (the App status will be Synced). However, the health status will flip to a degraded, looping Progressing state. If you click the Pod in the ArgoCD UI, you will see Status: OOMKilled or CrashLoopBackOff.
 • The Recovery: Commit a fix lowering the memory to 64Mi, push it, and watch ArgoCD automatically terminate the broken pod and spin up a healthy one.
 
@@ -1988,13 +2060,14 @@ Which of these failure scenarios would you like to build out first? If you have 
 
 • The Recovery: Fix the spelling mistake in Git, commit, and let ArgoCD auto-sync back to a healthy state.
 
-    
-    
+
+
 ### See Also
 
 
    * [docker hub](https://hub.docker.com/r/argoproj/argocd)
-   * collection of [Example Apps to Demonstrate Argo CD](https://github.com/argoproj/argocd-example-apps) and related [video](https://www.youtube.com/watch?v=0WAm0y2vLIo)
+   * collection of [example apps to demonstrate ArgoCD](https://github.com/argoproj/argocd-example-apps) and related [video](https://www.youtube.com/watch?v=0WAm0y2vLIo)
+   * collection of [example apps to demonstrate ArgoCD](https://github.com/sidd-harth/gitops-argocd) 
    * [simple nginx application to demonstarte working with argocd](https://github.com/OdabasiMehmet/nginx-kubernetes)
    * [ArgoCD In One Shot](https://github.com/LondheShubham153/argocd-in-one-shot)
    * [Demos of arogcd one shot video project sources](https://github.com/LondheShubham153/argocd-demos)
@@ -2006,6 +2079,7 @@ Which of these failure scenarios would you like to build out first? If you have 
    * https://argo-cd.readthedocs.io/en/latest/try_argo_cd_locally/
    * [Argo CD cli](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
    * https://github.com/argoproj/argo-cd/releases
+
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
