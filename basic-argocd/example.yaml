@@ -1,25 +1,35 @@
-```
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: probe-example
+  labels:
+    app: probe-example
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
   template:
+    metadata:
+      labels:
+        app: app  
     spec:
       containers:
       - name: app-container
-        image: my-app-image:latest
+        image: docker.io/library/status-server:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         startupProbe:
           httpGet:
-            path: /healthz
+            path: /
             port: 8080
           failureThreshold: 30
           periodSeconds: 10
         livenessProbe:
           httpGet:
-            path: /healthz
+            path: /app/live
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5
@@ -27,16 +37,16 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /ready
+            path: /app/ready
             port: 8080
           periodSeconds: 5
         env:
-        - name: APP_READYNESS
+        - name: READY
           valueFrom:
             configMapKeyRef:
               name: health-config
               key: APP_READYNESS
-        - name: APP_LIVENESS
+        - name: LIVE
           valueFrom:
             configMapKeyRef:
               name: health-config
@@ -48,11 +58,12 @@ kind: ConfigMap
 metadata:
   name: health-config
 data:
-  APP_READYNESS: "normal" 
+  APP_READYNESS: "up" 
+  APP_LIVENESS: "up"
   MAX_CONN: "100"
 binaryData:
-  # "normal" encoded in base64
-  APP_LIVENESS: bm9ybWFs       
+  # "up" encoded in base64
+  APP_DO_NOT_USE: dXA=       
 # ... is optional
 ---  
 apiVersion: v1
