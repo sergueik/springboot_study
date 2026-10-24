@@ -38,7 +38,8 @@ files,
 
 
 To practice app, one may run it on Windows VM, an tn3270 on Docker joined to same host network and connect on 
-
+Trialware Gatekeeping that what it is - Rocket is not really interested in giving one a free 30 day trial
+ 
 
 ```text
 
@@ -776,8 +777,42 @@ The next useful artifact would be the COM type library or the `BZWhll.h` / `BZWh
 
 ![Start Menu Programs (Windows 7)](screenshots/bluezone-start-menu.png)
 
+### Summary
+
+Technical debt as a problem of __time-to-understanding__, rather than simply old technology or expensive maintenance
+
+The Conan Doyle __Dancing Men__ story supplies a memorable distinction: possessing the evidence is _not_
+the same as being able to interpret it _before_ interpretation becomes useless
+
+Powerful use of the API Spec comparen to bare hands learning the legacy BlueZone scripts. 
+is a means to reduce the __apparent semantic distance between two pieces of code by learning the vocabulary of the API__ 
+they use.
+
+In Arthur Conan Doyle's The Adventure of the Dancing Men, the detective must discover the correspondence between unfamiliar symbols and their underlying message.
+It turns out,
+the symbols initially obscure an ordinary social human communication.
 
 
+There  may exist two or more hypothetical BlueZone scripts that retrieve an account balance. 
+Lexically very different, and even without being behaviorally equivalent they
+may pursue the same business objective .
+
+The API documentation helps distinguish genuine differences from differences in coding style, but it cannot alone establish equivalence of the complete business behavior.
+
+
+Your Selenium analogy suggests a particularly useful analysis technique: separate the automation mechanism from the business-specific content.
+
+When you first learn Selenium, every test can seem like a distinct program. Eventually, you recognize the recurring structure:
+- Locate an element.
+- Perform an action.
+- Wait for a condition.
+- Read a result.
+- Verify an outcome.
+- Handle an exception.
+The test cases differ in their business inputs and expected results, but much of their technical structure is shared.
+
+
+same distinction applies to BlueZone, with one important difference: terminal automation often exposes business workflows that are less explicit than modern web application interfaces.
 ### See Also
 
 
