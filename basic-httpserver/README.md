@@ -1,4 +1,5 @@
 ### Info
+
 Tiny HTTP server in pure Java for [layered Dockerfile](https://www.baeldung.com/docker-layers-spring-boot) unpublished snapshot dependency.
 
 ### Usage
@@ -26,8 +27,6 @@ Uploaded to local: file:C:\Users\kouzm\AppData\Local\Temp/repo/example/commandli
 
  * spin http server serving the repository
 
-
-
 ```sh
 push basic-httpserver
 mvn package
@@ -48,31 +47,31 @@ popd
  * pin and add the dependency to subject project `pom.xml` `<dependencies>`:
 
 ```xml
-    <commandline-parser.version>0.12.1-SNAPSHOT</commandline-parser.version>
+<commandline-parser.version>0.12.1-SNAPSHOT</commandline-parser.version>
 ```
 
 ```xml
-     <groupId>example</groupId>
-      <artifactId>commandline-parser</artifactId>
-      <version>${commandline-parser.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.json</groupId>
-          <artifactId>json</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.google.code.gson</groupId>
-          <artifactId>gson</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+ <groupId>example</groupId>
+  <artifactId>commandline-parser</artifactId>
+  <version>${commandline-parser.version}</version>
+  <exclusions>
+    <exclusion>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </exclusion>
+    <exclusion>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </exclusion>
+  </exclusions>
+</dependency>
 ```
 
- > NOTE: do not really need to use the API from dependency
+ > NOTE: the application does not really use the API from the dependency
 
  * make sure the `commandline-parser` of the desired version is not cached in `.m2`
 
@@ -97,19 +96,19 @@ Downloaded from local-repository: http://localhost:8081/example/commandline-pars
 Try to add to hostonly-repository with hostname: `192.168.99.1` in '<repository>`
 
 ```xml
-  <repository>
-      <id>hostonly-repository</id>
-      <name>not really a repo</name>
-      <!-- NOTE: not https -->
-      <url>http://192.168.99.1:8081</url>
-        <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <layout>default</layout>
-    </repository>
+<repository>
+  <id>hostonly-repository</id>
+  <name>not really a repo</name>
+  <!-- NOTE: not https -->
+  <url>http://192.168.99.1:8081</url>
+    <releases>
+    <enabled>true</enabled>
+  </releases>
+  <snapshots>
+    <enabled>true</enabled>
+  </snapshots>
+  <layout>default</layout>
+</repository>
 ```
 package the app with external dependency
 ```sh
@@ -125,9 +124,6 @@ Failed to read artifact descriptor for example:commandline-parser:jar:0.12.1-SNA
 Could not transfer artifact example:commandline-parser:pom:0.12.1-SNAPSHOT from/to maven-default-http-blocker (http://0.0.0.0/):
 Blocked mirror for repositories: [hostonly-repository (http://192.168.99.1:8081, default, releases+snapshots)]
 ```
-
-
-
 the only canonical option is through tweaking `~/.m2/settings.xml` in certain way:
 
 ```xml
@@ -166,9 +162,9 @@ During the experimentation with a tiny local HTTP server to serve an unpublished
 
 1. __Local SNAPSHOT deployment__
    - The `commandline-parser` project was deployed to a temporary file-based Maven repository using:
-   ```sh
-   mvn clean deploy -DaltDeploymentRepository=local::default::file:%TEMP%/repo
-   ```
+```sh
+mvn clean deploy -DaltDeploymentRepository=local::default::file:%TEMP%/repo
+```
    - This created a repository layout with `.jar`, `.pom`, and `maven-metadata.xml` files.
 
 2. __Tiny HTTP server in Java__
@@ -178,9 +174,9 @@ During the experimentation with a tiny local HTTP server to serve an unpublished
 3. __Maven HTTP blocker behavior (3.8+)__
    - Maven version 3.8 and later enforces the __`maven-default-http-blocker`__, which blocks plain HTTP repositories by default to encourage HTTPS usage.
    - Attempting to access the repository using any hostname other than `localhost` (e.g., `http://192.168.99.1:8081`) results in a blocked mirror error:
-   ```
-   Blocked mirror for repositories: [hostonly-repository (http://192.168.99.1:8081, default, releases+snapshots)]
-   ```
+```
+Blocked mirror for repositories: [hostonly-repository (http://192.168.99.1:8081, default, releases+snapshots)]
+```
    - This is a policy issue in Maven, not a network connectivity problem. The host-only gateway IP (`192.168.99.1`) is reachable from Docker Machine containers, as confirmed with `nc` tests.
 
 4. __Workarounds for local experimentation__
@@ -190,9 +186,9 @@ During the experimentation with a tiny local HTTP server to serve an unpublished
      - Define a profile that enables releases and snapshots from the repository
      - Activate the profile globally
    - Quick command-line flags are also possible for temporary bypass:
-     ```sh
-     mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -U clean package
-     ```
+```sh
+mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -U clean package
+```
 
 5. __Docker Machine / host-only networking__
    - In a Docker Toolbox / Docker Machine setup, `host.docker.internal` is __not automatically available__.
