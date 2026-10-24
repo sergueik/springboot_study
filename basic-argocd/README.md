@@ -247,7 +247,7 @@ alternatively download __CRD__ to examine and /or customize:
 ```sh
 curl -skLO https://raw.githubusercontent.com/argoproj/argo-cd/v2.8.4/manifests/install.yaml
 ```
-feed to kubectl (it will deal with direcrory
+feed to kubectl (it will deal with directory
 ```cmd
 minikube.exe kubectl -- apply --namespace argocd -f install.yaml
 ```
@@ -311,7 +311,7 @@ networkpolicy.networking.k8s.io/argocd-server-network-policy created
 
 Verify the installation by getting all the objects in the ArgoCD namespace.
 ```cmd
-minikube.exe kubectl -- get all -n argocd
+minikube.exe kubectl -- get all --namespace argocd
 ```
 (wait till all pods in that namespace running)
 
@@ -977,8 +977,9 @@ NAME                                             READY   AGE
 statefulset.apps/argocd-application-controller   1/1     4m12s
 
 ```
-```text
-et
+
+```sh
+VboxManage list runningvms
 ```
 ```text
 "minikube" {c89f1689-bc57-4cc3-86a9-b3a6afb63538}
@@ -1846,34 +1847,37 @@ I1021 22:01:00.203145     191 round_trippers.go:553] POST https://argocd-cluster
 [addons] Applied essential addon: kube-proxy
 I1021 22:01:00.204963     191 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
 I1021 22:01:00.206404     191 loader.go:373] Config loaded from file:  /etc/kubernetes/admin.conf
+```
 
 Your Kubernetes control-plane has initialized successfully!
 
 To start using your cluster, you need to run the following as a regular user:
 
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```sh
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 
 Alternatively, if you are the root user, you can run:
 
-  export KUBECONFIG=/etc/kubernetes/admin.conf
+```sh
+export KUBECONFIG=/etc/kubernetes/admin.conf
+```
 
 You should now deploy a pod network to the cluster.
-Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+Run `kubectl apply -f [podnetwork].yaml` with one of the options listed at:
   https://kubernetes.io/docs/concepts/cluster-administration/addons/
 
 You can now join any number of control-plane nodes by copying certificate authorities
 and service account keys on each node and then running the following as root:
-
-  kubeadm join argocd-cluster-control-plane:6443 --token <value withheld> \
-	--discovery-token-ca-cert-hash sha256:7497ea858ced55655874d7b6a266edb7a8b4c0caab632bd18103710e03929708 \
-	--control-plane
+```sh
+kubeadm join argocd-cluster-control-plane:6443 --token <value withheld>  --discovery-token-ca-cert-hash sha256:7497ea858ced55655874d7b6a266edb7a8b4c0caab632bd18103710e03929708 --control-plane
+```
 
 Then you can join any number of worker nodes by running the following on each as root:
-
-kubeadm join argocd-cluster-control-plane:6443 --token <value withheld> \
-	--discovery-token-ca-cert-hash sha256:7497ea858ced55655874d7b6a266edb7a8b4c0caab632bd18103710e03929708
+```sh
+kubeadm join argocd-cluster-control-plane:6443 --token <value withheld> --discovery-token-ca-cert-hash sha256:7497ea858ced55655874d7b6a266edb7a8b4c0caab632bd18103710e03929708
 ```
 
 ```sh
@@ -2004,7 +2008,7 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```text
 error: unable to forward port because pod is not running. Current status=Pending
 ```
-give a little time to boot
+wait a little time longer to let boot
 ```sh
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
@@ -2021,33 +2025,34 @@ kubectl --namespace argocd get sin-secret -o jsonpath="{.data.password}"  | base
 creating "bad commits" is an amazing way to see how ArgoCD isolates application failures without crashing your underlying kind control plane.
 Here are a few highly educational "bad commit" scenarios you can intentionally introduce in your forked repo, what they teach you, and how to recover them.
 
-Scenario 1: The Out-of-Resource Crash (Memory Limit Exhaustion)
+#### Scenario 1: The Out-of-Resource Crash (Memory Limit Exhaustion)
 
 Since your system has 4GB of RAM, this is the most realistic failure you'll face. You want to see what happens when a pod requests or limits more memory than your limited kind node can actually provide.
 • The Bad Commit: In your plain YAML guestbook deployment, intentionally change the resources block to request a ridiculous amount of memory:y
 
-yaml
+```yaml
 resources:
   limits:
     memory: "8Gi" # Way higher than your 4GB host!
   requests:
     memory: "6Gi"
-
-• hat ArgoCD will show: ArgoCD will happily sync the manifest because the YAML syntax is valid (the App status will be Synced). However, the health status will flip to a degraded, looping Progressing state. If you click the Pod in the ArgoCD UI, you will see Status: OOMKilled or CrashLoopBackOff.
+```
+• hat ArgoCD will show: ArgoCD will happily sync the manifest because the YAML syntax is valid (the App status will be Synced). However, the health status will flip to a `Degraded`,
+looping `Progressing` state. If you click the Pod in the ArgoCD UI, you will see Status: `OOMKilled` or `CrashLoopBackOff`.
 • The Recovery: Commit a fix lowering the memory to 64Mi, push it, and watch ArgoCD automatically terminate the broken pod and spin up a healthy one.
 
 
-Scenario 2: The Syntax/Typo Failure (The Invalid Schema)
+#### Scenario 2: The Invalid Schema Syntax/Typo Failure
 
 This simulates a developer making a typo in a Kubernetes API field, which passes Git validation but fails when the Kubernetes API server tries to parse it.
-• The Bad Commit: In a manifest, change a standard field name to a typo, like changing replicas: 2 to replicaaas: 2, or mess up the indentation under spec.
+• The Bad Commit: In a manifest, change a standard field name to a typo, like changing `replicas: 2` to `replicaz: 2`, or mess up the indentation under `spec`.
 • What ArgoCD will show: ArgoCD will immediately block the deployment. The App status will switch to SyncFailed. If you open the App details, ArgoCD will explicitly print the exact error message returning from your cluster's API server (e.g., error unmarshaling JSON: unknown field "replicaaas").
 • The Recovery: Fix the spelling mistake in Git, commit, and let ArgoCD auto-sync back to a healthy state.
 
-Scenario 3: The Ghost Image (Missing Container Image Tag)
+#### Scenario 3: Missing Container Image Tag Ghost Image
 
 This simulates a broken CI pipeline where code gets committed, but the corresponding Docker image fails to build or push to the registry.
-• The Bad Commit: Change the container image tag in your deployment manifest to something non-existent, like image: gcr.io/heptio-images/ks-guestbook-demo:does-not-exist.
+• The Bad Commit: Change the container image tag in your deployment manifest to something non-existent, like `image: gcr.io/heptio-images/ks-guestbook-demo:does-not-exist`.
 • What ArgoCD will show: The application will status as Synced but Degraded. Looking at the pod status tree in ArgoCD, you will visually see the pods turn red with an ErrImagePull or ImagePullBackOff error.
 • The Recovery: Revert the image tag to a valid one (like 0.1), commit, and watch the visual tree instantly clear to green.
 
@@ -2056,18 +2061,21 @@ Pro-Tip: Experiment with ArgoCD "Self-Heal"
 While testing these bad commits, toggle the Self-Heal and Automated Prune features in your ArgoCD Application settings:
 1. Turn Self-Heal ON: Try manually deleting a pod or changing a service port using kubectl directly on your host. Watch how fast ArgoCD fights back and overwrites your manual changes to match Git.
 2. Turn Automated Prune ON/OFF: See how ArgoCD behaves when you completely delete a configuration file from your Git repository.
-Which of these failure scenarios would you like to build out first? If you have your forked repository ready, I can help you write the exact application manifest to link your local ArgoCD instance to your GitHub repository.
 
 • The Recovery: Fix the spelling mistake in Git, commit, and let ArgoCD auto-sync back to a healthy state.
 
 
+
+the application reads HEALTH_MODE and returns:
+- 200 OK from /startup, /live, and /ready when the mode is normal.
+- 200 OK from /startup and /live, but 503 Service Unavailable from /ready when the mode is broken  
 
 ### See Also
 
 
    * [docker hub](https://hub.docker.com/r/argoproj/argocd)
    * collection of [example apps to demonstrate ArgoCD](https://github.com/argoproj/argocd-example-apps) and related [video](https://www.youtube.com/watch?v=0WAm0y2vLIo)
-   * collection of [example apps to demonstrate ArgoCD](https://github.com/sidd-harth/gitops-argocd) 
+   * collection of [example apps to demonstrate ArgoCD](https://github.com/sidd-harth/gitops-argocd)
    * [simple nginx application to demonstarte working with argocd](https://github.com/OdabasiMehmet/nginx-kubernetes)
    * [ArgoCD In One Shot](https://github.com/LondheShubham153/argocd-in-one-shot)
    * [Demos of arogcd one shot video project sources](https://github.com/LondheShubham153/argocd-demos)
@@ -2079,7 +2087,9 @@ Which of these failure scenarios would you like to build out first? If you have 
    * https://argo-cd.readthedocs.io/en/latest/try_argo_cd_locally/
    * [Argo CD cli](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
    * https://github.com/argoproj/argo-cd/releases
-
+   * https://kubernetes.io/docs/concepts/workloads/pods/probes/
+   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+   * Local image workflow in Minikube https://minikube.sigs.k8s.io/docs/commands/image 
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

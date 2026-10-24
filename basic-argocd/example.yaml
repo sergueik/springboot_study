@@ -1,0 +1,68 @@
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe-example
+spec:
+  template:
+    spec:
+      containers:
+      - name: app-container
+        image: my-app-image:latest
+        ports:
+        - containerPort: 8080
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          periodSeconds: 5
+        env:
+        - name: APP_READYNESS
+          valueFrom:
+            configMapKeyRef:
+              name: health-config
+              key: APP_READYNESS
+        - name: APP_LIVENESS
+          valueFrom:
+            configMapKeyRef:
+              name: health-config
+              key: APP_LIVENESS
+      
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: health-config
+data:
+  APP_READYNESS: "normal" 
+  MAX_CONN: "100"
+binaryData:
+  # "normal" encoded in base64
+  APP_LIVENESS: bm9ybWFs       
+# ... is optional
+---  
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe-example
+spec:
+  ports:
+  - port: 9090
+    targetPort: 8080
+  selector:
+    app: probe-example
+  
