@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       labels:
-        app: app  
+        app: app
     spec:
       containers:
       - name: app-container
@@ -29,7 +29,7 @@ spec:
           periodSeconds: 10
         livenessProbe:
           httpGet:
-            path: /app/live
+            path: /api/live
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5
@@ -37,7 +37,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /app/ready
+            path: /api/ready
             port: 8080
           periodSeconds: 5
         env:
@@ -51,21 +51,21 @@ spec:
             configMapKeyRef:
               name: health-config
               key: APP_LIVENESS
-      
+
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: health-config
 data:
-  APP_READYNESS: "up" 
+  APP_READYNESS: "up"
   APP_LIVENESS: "up"
   MAX_CONN: "100"
 binaryData:
   # "up" encoded in base64
-  APP_DO_NOT_USE: dXA=       
+  APP_DO_NOT_USE: dXA=
 # ... is optional
----  
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -76,4 +76,4 @@ spec:
     targetPort: 8080
   selector:
     app: probe-example
-  
+

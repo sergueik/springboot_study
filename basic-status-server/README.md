@@ -390,6 +390,81 @@ NAME                             READY   STATUS    RESTARTS   AGE
 probe-example-7d444dc7f8-tnn9v   1/1     Running   0          5m26s
 ```
 
+change config:
+```yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: health-config
+data:
+  APP_READYNESS: "down" 
+  APP_LIVENESS: "up"
+```
+
+```cmd
+minikube.exe kubectl -- --namespace example delete deployment probe-example
+```
+```text
+deployment.apps "probe-example" deleted
+```
+```cmd
+minikube.exe kubectl -- --namespace example apply -f  example.yaml
+```
+```text
+deployment.apps/probe-example created
+configmap/health-config unchanged
+service/probe-example unchanged
+```
+```cmd
+minikube.exe kubectl -- --namespace example get pod
+```
+```text
+NAME                             READY   STATUS    RESTARTS   AGE
+probe-example-5497848cf4-6jllb   0/1     Running   0          10s
+```
+restore configuration and redeploy. NOTE: will have to recreate deployment
+
+```cmd
+minikube.exe kubectl -- --namespace example delete deployment probe-example
+minikube.exe kubectl -- --namespace example apply -f  example.yaml
+```
+observe
+```cmd
+minikube.exe kubectl -- --namespace example get pod
+```
+```text
+NAME                             READY   STATUS        RESTARTS   AGE
+probe-example-5497848cf4-4gvbg   1/1     Running       0          12s
+probe-example-5497848cf4-6jllb   0/1     Terminating   0          33m
+```
+
+However, deletion and recreation are not strictly necessary just to change the application configuration.
+For a normal configuration update, you can edit the ConfigMap and [restart](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/kubectl_rollout_restart/) the Deployment:
+```cmd
+minikube.exe kubectl -- --namespace example apply -f example.yaml
+minikube.exe kubectl -- --namespace example rollout restart deployment/probe-example
+minikube.exe kubectl -- --namespace example rollout status deployment/probe-example
+```
+
+_restart_ is important when configuration is injected through environment variables because existing processes do not automatically receive updated environment values.
+In __restore the configuration and redeploy__ example Kubernetes deletes and recreates the Deployment. 
+Kubernetes creates a replacement Pod, while the previous Pod may remain in Terminating state briefly as cleanup completes
+
+
+#### Kind
+
+The other popular framework for running local Kubernetes clusters using Docker container primarily for testing, __Kubernetes in Docker__ ([kind](https://kind.sigs.k8s.io/)) 
+also supports loading a locally built __Docker__ image directly into its __Kubernetes__ nodes.
+One does not need to publish work in progress image e.g. `status-server:latest` image to __Docker Hub__ or another registry
+
+The [equivalent](https://kind.sigs.k8s.io/docs/user/quick-start/#loading-an-image-into-your-cluster) of your Minikube workflow is very similar:
+```sh
+docker save --output status-server.tar status-server
+```
+```
+kind load image-archive status-server.tar --name my-cluster
+``
 ### Trubleshooting Notepad Graphical Subsystem Error
 
 ```cmd

@@ -2068,7 +2068,7 @@ While testing these bad commits, toggle the Self-Heal and Automated Prune featur
 
 the application reads HEALTH_MODE and returns:
 - 200 OK from /startup, /live, and /ready when the mode is normal.
-- 200 OK from /startup and /live, but 503 Service Unavailable from /ready when the mode is broken  
+- 200 OK from /startup and /live, but 503 Service Unavailable from /ready when the mode is broken
 
 ### See Also
 
@@ -2089,7 +2089,15 @@ the application reads HEALTH_MODE and returns:
    * https://github.com/argoproj/argo-cd/releases
    * https://kubernetes.io/docs/concepts/workloads/pods/probes/
    * https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-   * Local image workflow in Minikube https://minikube.sigs.k8s.io/docs/commands/image 
----
+   * Local image workflow in Minikube https://minikube.sigs.k8s.io/docs/commands/image
+   * [Argo CD Kubernetes](https://www.youtube.com/playlist?list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by)
+      + [Argo CD continuous deployment to Kubernetes](https://www.youtube.com/watch?v=HX24uMKmJRw&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=1&pp=iAQB0gcJCSwMAYcqIYzv)
+      + [Deploying Argo CD in Kubernetes | Creating your first App](https://www.youtube.com/watch?v=vSnVhJkyJBw&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=2&pp=iAQB)
+      + [Argo CD Continuous Deployment from Helm Repo](https://www.youtube.com/watch?v=kke9ztMcC7g&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=3&pp=iAQB)
+      + [Argo CD Creating app using custom resource definition](https://www.youtube.com/watch?v=gHFHMg8_rP8&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=4&pp=iAQB)
+      + [Argo CD and Kustomize](https://www.youtube.com/watch?v=UzCacg8aPRQ&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=5&pp=iAQB)
+      + [Argo CD CLI](https://www.youtube.com/watch?v=e9ci_ISVCeM&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=6&pp=iAQB)
+      
+--- 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
