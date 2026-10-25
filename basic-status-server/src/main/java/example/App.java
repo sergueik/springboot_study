@@ -11,6 +11,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 
+@SuppressWarnings("restriction")
 public class App {
 	private static boolean debug = false;
 
@@ -48,11 +49,17 @@ public class App {
 		server.start();
 	}
 
-	// Route 1: Home page
+	// Route 1: Home page - rejecting everything else
 	static class HomeHandler implements HttpHandler {
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
-			sendResponse(exchange, "Welcome to the Home Route!", 200);
+			String path = exchange.getRequestURI().getPath();
+			// NOTE: he package com.sun.net.httpserver (part of the jdk.httpserver module) does not contain a dedicated HttpStatus
+			if (!"/".equals(path)) {
+				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}", 404);
+				return;
+			}
+			sendResponse(exchange, "Welcome!", 200);
 		}
 	}
 
@@ -73,12 +80,16 @@ public class App {
 		}
 
 		@Override
-		public void handle(HttpExchange exchange) throws IOException {
+		public void handle(@SuppressWarnings("restriction") HttpExchange exchange) throws IOException {
+			String path = exchange.getRequestURI().getPath();
+			if (!"/api/live".equals(path) && !"/api/ready".equals(path)) {
+				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}", 404);
+				return;
+			}
 			sendResponse(exchange, String.format("{\"status\": \"%s\"}", status ? "UP" : "DOWN"), status ? 200 : 503);
 		}
 	}
 
-	// Helper method to reduce boilerplate
 	private static void sendResponse(HttpExchange exchange, String response, int statusCode) throws IOException {
 		exchange.sendResponseHeaders(statusCode, response.length());
 		try (OutputStream os = exchange.getResponseBody()) {
