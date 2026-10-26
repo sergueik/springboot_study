@@ -746,6 +746,7 @@ contents of compiled help file (500+ files and directories):
 Files of interest:
 
 |Help topic|What it may establish|
+|----------|---------------------|
 |`bzdp_hcon_bz-host-automation-object.htm`|The BlueZone Host Automation Object (BHAO/BZHAO) and its object model|
 |`bzdp_hcon_ole-automation.htm`|The broader OLE Automation integration mechanism|
 |`bzdp_hcon_bz-plus-vba.htm`|VBA integration and its prerequisites|
@@ -777,7 +778,7 @@ The next useful artifact would be the COM type library or the `BZWhll.h` / `BZWh
 
 ![Start Menu Programs (Windows 7)](screenshots/bluezone-start-menu.png)
 
-### Summary
+  ### Summary
 
 Technical debt as a problem of __time-to-understanding__, rather than simply old technology or expensive maintenance
 
@@ -812,7 +813,8 @@ When you first learn Selenium, every test can seem like a distinct program. Even
 The test cases differ in their business inputs and expected results, but much of their technical structure is shared.
 
 
-same distinction applies to BlueZone, with one important difference: terminal automation often exposes business workflows that are less explicit than modern web application interfaces.
+same distinction applies to __BlueZone__, with one important difference: terminal automation often exposes business workflows that are less explicit than modern web application interfaces.
+
 ### See Also
 
 
@@ -826,3 +828,7 @@ same distinction applies to BlueZone, with one important difference: terminal au
   * "noname" https://bluezone.en.download.it/downloading/started
   * [RFC 2355 - TN3270 enhancement](https://www.rfc-editor.org/info/rfc2355)
   * [BlueZone Advanced Automation Developer's Guide](https://docs-be.rocketsoftware.com/bundle/TE_devguide_V10.1.0/raw/resource/enus/TE_devguide_V10.1.0.pdf) covering work with Rocket BlueZone had a COM automation object, a VBA integration option, and a separate Basic scripting environment 
+
+--- 
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

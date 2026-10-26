@@ -42,29 +42,31 @@ state "Sync Stats"  as Sync {
  [*] --> Unknown_S
  Unknown_S --> Synched
  Unknown_S --> OutOfSynch
- Synched --> OutOfSynch: Git Change\nCommit/\nLive drift
+ Synched --> OutOfSynch: Git Change<br/>Commit/<br/>Live drift
  OutOfSynch --> Synched: Fetch/Pull
 }
 
 state "Health Status" as Health {
 direction LR
  [*] --> Unknown_H
-Unknown_H --> Progressing: health\n check
+Unknown_H --> Progressing: health<br/> check
 Progressing --> Healthy
 Progressing --> Degraded: problem
-Degraded -->  Progressing: retry/\nself-heal
-Healthy --> Progressing: spec change\ntriggers rollout
-Degraded -->  Suspended: manual\npause
-Healthy -->  Suspended: manual\npause
+Degraded -->  Progressing: retry/<br/>self-heal
+Healthy --> Progressing: spec change<br/>triggers rollout
+Degraded -->  Suspended: manual<br/>pause
+Healthy -->  Suspended: manual<br/>pause
 
 Suspended --> Progressing: resume
 }
 
-Sync --> Health: controller evaluates\nhealth after apply
-Health --> Sync: health informs next\nreconsile diff
+Sync --> Health: controller evaluates<br/>health after apply
+Health --> Sync: health informs next<br/>reconsile diff
 
 
 ```
+![ArgoCD State Machines](screenshots/argocd_state_machines.png)
+
 technically the two operate in parallel
 
 __Health Status__:
@@ -73,13 +75,13 @@ stateDiagram-v2
 
 direction TB
   [*] --> Unknown
-  Unknown --> Progressing: telemetry\nhealth\nassessment
-  Progressing --> Healthy:   criteria\nmet
+  Unknown --> Progressing: telemetry<br/>health<br/>assessment
+  Progressing --> Healthy:   criteria<br/>met
   Progressing --> Degraded: failure
-  Degraded --> Progressing: recovery\nunderway
+  Degraded --> Progressing: recovery<br/>underway
   Healthy --> Progressing: rollout
-  Progressing --> Suspended: manual\npause\n(not guaranteed)
-  Suspended --> Progressing: manual\nresume
+  Progressing --> Suspended: manual<br/>pause<br/>(not guaranteed)
+  Suspended --> Progressing: manual<br/>resume
 note right of Unknown
   Health is assessed using
   resource-specific criteria
@@ -89,6 +91,7 @@ note right of Unknown
   every transition shown
 end note
 ```
+![ArgoCD Health State Machine](screenshots/argocd_health_state.png)
 
 __Sync Status__
 ```mermaid
@@ -98,12 +101,14 @@ stateDiagram-v2
 direction TB
 
   [*] --> Unknown
-  Unknown --> Synced: comparison\ncompleted
-  Unknown --> OutOfSync: differences\nfound
-  Synced --> OutOfSync: desired/live\ndrift detected
-  OutOfSync --> Synced: successful\napply and\ncompare
-
+  Unknown --> Synced: comparison<br/>completed
+  Unknown --> OutOfSync: differences<br/>found
+  Synced --> OutOfSync: desired/live<br/>drift detected
+  OutOfSync --> Synced: successful<br/>apply and<br/>compare
 ```
+
+![ArgoCD Health State Machine](screenshots/argocd_sync_state.png)
+
 The key similarity is declarative desired-state management backed by reconciliation.
 __Puppet__ was already doing that long before __Argo CD__ appeared.
 There is also a meaningful difference: Puppet traditionally manages resources on machines — __packages__, __files__, __services__, __users__ and __configuration__.
