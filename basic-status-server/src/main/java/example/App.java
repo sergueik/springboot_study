@@ -1,6 +1,7 @@
 package example;
 
 import com.sun.net.httpserver.HttpServer;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -30,6 +32,7 @@ public class App {
 
 		if (cli.containsKey("ready"))
 			ready = "up".equalsIgnoreCase(cli.get("ready"));
+		// will return HTTP Status-Code 503: Service Unavailable if not ready
 		if (cli.containsKey("live"))
 			live = "up".equalsIgnoreCase(cli.get("live"));
 		if (cli.containsKey("port"))
@@ -37,12 +40,13 @@ public class App {
 
 		HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
-		// hard code the 3 routes
+		// NOTE: serve the 3 hard coded routes only
+		// Return HTTP Status-Code 404: Not Found for everything else
 		StatusHandler readyHandler = new StatusHandler();
 		readyHandler.setStatus(ready);
 		server.createContext("/", new HomeHandler());
 		server.createContext("/api/live", new StatusHandler(live));
-		server.createContext("/api/ready", readyHandler /* new StatusHandler(ready) */);
+		server.createContext("/api/ready", readyHandler);
 
 		server.setExecutor(null); // Creates a default executor
 		System.err.println("Server started on port " + port);
@@ -54,12 +58,14 @@ public class App {
 		@Override
 		public void handle(HttpExchange exchange) throws IOException {
 			String path = exchange.getRequestURI().getPath();
-			// NOTE: he package com.sun.net.httpserver (part of the jdk.httpserver module) does not contain a dedicated HttpStatus
+			// NOTE: he package com.sun.net.httpserver (part of the jdk.httpserver module)
+			// does not contain a dedicated HttpStatus
 			if (!"/".equals(path)) {
-				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}", 404);
+				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}",
+						HttpURLConnection.HTTP_NOT_FOUND);
 				return;
 			}
-			sendResponse(exchange, "Welcome!", 200);
+			sendResponse(exchange, "Welcome!", HttpURLConnection.HTTP_OK);
 		}
 	}
 
@@ -83,10 +89,12 @@ public class App {
 		public void handle(@SuppressWarnings("restriction") HttpExchange exchange) throws IOException {
 			String path = exchange.getRequestURI().getPath();
 			if (!"/api/live".equals(path) && !"/api/ready".equals(path)) {
-				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}", 404);
+				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}",
+						HttpURLConnection.HTTP_NOT_FOUND);
 				return;
 			}
-			sendResponse(exchange, String.format("{\"status\": \"%s\"}", status ? "UP" : "DOWN"), status ? 200 : 503);
+			sendResponse(exchange, String.format("{\"status\": \"%s\"}", status ? "UP" : "DOWN"),
+					status ? HttpURLConnection.HTTP_OK : HttpURLConnection.HTTP_UNAVAILABLE);
 		}
 	}
 

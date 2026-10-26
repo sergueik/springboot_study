@@ -8,6 +8,40 @@ Bare minimal controllable HTTP application for Minikube/Argo CD learning exercis
 ```sh
 mvn clean package
 ```
+
+```cmd
+java -cp target\example.status-server.jar example.App 
+```
+```cmd
+java -jar target\example.status-server.jar -live up -ready down
+```
+
+```sh
+curl http://localhost:8080/api/alive | jq '.'
+```
+```json
+{
+  "status": "error",
+  "error": "Not Found"
+}
+```
+
+```sh
+curl -s http://localhost:8080/api/live | jq '.'
+```
+```json
+{
+  "status": "UP"
+}
+```
+```sh
+curl -s http://localhost:8080/api/ready | jq '.'
+```
+```json
+{
+  "status": "DOWN"
+}
+```
 ```sh
 docker pull alpine/java:11-jre
 ```
@@ -134,7 +168,7 @@ a portable file `.tar` archive
 ```sh
 docker save --output ${NAME}.tar $NAME 
 ```
-> NOTE: Docker Toolbox will have the archive on Windows side 
+> NOTE: __Docker Toolbox__ will store the archive on Windows side 
 ```cmd
 set NAME=status-server
 dir %NAME%.tar
@@ -142,6 +176,10 @@ dir %NAME%.tar
 
 ```text
 10/24/2026  03:22 PM       156,687,360 status-server.tar
+```
+
+```sh
+docker-machine stop
 ```
 ```cmd
 minikube.exe start --driver=virtualbox
