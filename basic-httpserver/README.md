@@ -7,7 +7,7 @@ Tiny HTTP server in pure Java for [layered Dockerfile](https://www.baeldung.com/
 * put snapshot dependency in custom location
 
 ```sh
-pushd commandline-parser
+pushd ..\..\commandline-parser
 mkdir %TEMP%/repo
 mvn clean deploy -DaltDeploymentRepository=local::default::file:%TEMP%/repo
 popd
@@ -23,6 +23,20 @@ Uploading to local: file:C:\Users\kouzm\AppData\Local\Temp/repo/example/commandl
 Uploaded to local: file:C:\Users\kouzm\AppData\Local\Temp/repo/example/commandline-parser/0.12.1-SNAPSHOT/maven-metadata.xml (778 B at 18 kB/s)
 Uploading to local: file:C:\Users\kouzm\AppData\Local\Temp/repo/example/commandline-parser/maven-metadata.xml
 Uploaded to local: file:C:\Users\kouzm\AppData\Local\Temp/repo/example/commandline-parser/maven-metadata.xml (286 B at 9.9 kB/s)
+```
+
+```cmd
+dir %temp%\repo\example\commandline-parser
+```
+```text
+ Directory of C:\Users\kouzm\AppData\Local\Temp\repo\example\commandline-parser
+
+10/25/2026  03:31 PM    <DIR>          .
+10/25/2026  03:31 PM    <DIR>          ..
+10/25/2026  03:31 PM    <DIR>          0.12.1-SNAPSHOT
+10/25/2026  03:31 PM               286 maven-metadata.xml
+10/25/2026  03:31 PM                32 maven-metadata.xml.md5
+10/25/2026  03:31 PM                40 maven-metadata.xml.sha1
 ```
 
  * spin http server serving the repository
@@ -198,6 +212,65 @@ mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -U
    - Maven __3.8__+ enforces HTTPS and will block otherwise reachable HTTP repositories.
    - Host-only networking via Docker Machine allows containers to reach host services, but special handling is required to avoid Maven HTTP-blocker errors.
    - Using `localhost` on the host is the most straightforward approach for local SNAPSHOT experiments, avoiding the need for advanced Maven settings tweaks.
+
+
+### Testing with Curl
+```cmd
+java -jar target\example.httpserver.jar  -root %temp%\repo\example\commandline-parser -dir example/commandline-parser
+```
+```text
+Repo server on 0.0.0.0:8081 with document root: C:\Users\kouzm\AppData\Local\Temp\repo\example\commandline-parser directory /example/commandline-parser
+```
+```
+curl http://localhost:8081/example/commandline-parser/maven-metadata.xml
+```
+
+```text
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>example</groupId>
+  <artifactId>commandline-parser</artifactId>
+  <versioning>
+    <versions>
+      <version>0.12.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20261025193144</lastUpdated>
+  </versioning>
+</metadata>
+```
+
+
+
+```shcurl -s -o /dev/null -w "%{http_code}\n" http://localhost:8081/example/commandline-parser/
+```
+```text
+404
+```
+```shcurl -s -o /dev/null -w "%{http_code}\n"   http://localhost:8081/example/commandline-parser/0.12.1-SNAPSHOT/
+```
+```text
+404
+```
+```shcurl -s -o /dev/null -w "%{http_code}\n" http://localhost:8081/example/commandline-parser/dummmy
+```
+```text
+404
+
+```
+```sh
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8081/example//commandline-parser/../../../../../..
+```
+```text
+404
+```
+### Use for Helm Charts
+
+|Concern|Maven repository|Helm HTTP chart repository|
+|-------|----------------|--------------------------|
+|Artifact lookup|Convention-based paths, coordinates and metadata|index.yaml, chart name and version|
+|Artifact format|JAR, POM and related files|Packaged chart .tgz|
+|Metadata|POMs, Maven metadata and checksums, depending on client and repository|index.yaml maps chart versions to archive URLs|
+|Rendering|Maven resolves dependencies and builds projects|Helm renders templates into Kubernetes manifests|
 
 ### See Also
 
