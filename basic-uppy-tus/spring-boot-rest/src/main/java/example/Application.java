@@ -36,6 +36,8 @@ public class Application implements ApplicationListener<ContextRefreshedEvent> {
 	@Bean
 	public TusFileUploadService tusFileUploadService() {
 		// https://javadoc.io/doc/me.desair.tus/tus-java-server/latest/index.html
+		// https://github.com/tomdesair/tus-java-server/blob/master/CHANGELOG.md
+		// https://github.com/tomdesair/tus-java-server/blob/master/src/main/java/me/desair/tus/server/TusFileUploadService.java#L188
 		return new TusFileUploadService().withStoragePath(tusDataPath).withDownloadFeature()
 				.withUploadURI(servletContextPath + "/api/upload").withThreadLocalCache(true);
 	}

@@ -10,7 +10,7 @@ server side
 [Uppy](https://uppy.io/) has excellent support for resumable, chunked uploads. It handles this primarily through the [Tus](https://tus.io/) protocol, which splits files into smaller chunks and sends them sequentially, ensuring that dropped connections or browser crashes don't force you to start from scratch
 
 
-The __tus__ protocol was [created](https://tus.io/blog) in 2013 (the __tus 1.0__ was released in 2015) by the team at Transloadit (Kevin van Zonneveld and Tim Koschützki). It was designed as an open-source standard to allow resumable file uploads over HTTP, meaning large file transfers can be paused or recovered after network drops without restarting
+The __tus__ protocol was [created](https://tus.io/blog) in 2013 (the __tus 1.0__ was released in 2015) by the team at Transloadit (Kevin van Zonneveld and Tim Koschützki). It was designed as an open-source standard to allow resumable file uploads over HTTP  via PATCH, meaning large file transfers can be paused or recovered after network drops without restarting
 
 ![TUS in Action](screenshots/capture-tus-chunks.png)
 
@@ -79,13 +79,13 @@ pushd spring-boot-rest
 mvn clean spring-boot:run
 ```
 navigate to `http://localhost:8080`
-
+create local file of desited size
 ```sh
 dd if=/dev/urandom of=test.bin bs=1M count=100
 ```
 Processing the TUS upload
 
-The server logs
+The server logs will have
 ```text
 2026-06-12 17:15:03.236 DEBUG 15800 --- [nio-8080-exec-1] o.s.w.f.CommonsRequestLoggingFilter      : Before request [HEAD /api/upload/3704fec5-1362-49b1-a379-0b323328e4a6, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", sec-ch-ua:""Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"", sec-ch-ua-mobile:"?0", accept:"*/*", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9"]]
 2026-06-12 17:15:03.262  WARN 15800 --- [nio-8080-exec-1] m.d.tus.server.TusFileUploadService      : Unable to process request HEAD http://localhost:8080/api/upload/3704fec5-1362-49b1-a379-0b323328e4a6. Sent response status 404 with message "The upload for path /api/upload/3704fec5-1362-49b1-a379-0b323328e4a6 and owner null was not found."
@@ -877,6 +877,38 @@ Response:
 docker pull tusproject/tusd:v2.9.1
 docker run -d -p 8080:8080 tusproject/tusd:v2.9.1
 ```
+
+### Upgrade
+
+```sh
+grep -r tus\\. spring-boot-rest/src/ | grep import | grep -v server | awk -F : '{print $1}'
+```
+```text
+spring-boot-rest/src/main/resources/public/app-bundle.js
+```
+```
+grep -r tus\\. spring-boot-rest/src/i --include '*.java' | grep import | grep -i server | awk -F : '{print $1}' |awk -F / '{print $NF}' | uniq
+```
+```text
+Application.java
+FinalizeController.java
+TusFileUploadController.java
+ValidateController.java
+FinalizeService.java
+TusStorageResolver.java
+FinalizeControllerRestTemplateTest.java
+FinalizeControllerTest.java
+MockMvcTusFileUploadControllerTest.java
+RestTemplateTusFileUploadControllerTest.java
+ValidateControllerTest.java
+```
+> NOTE: Java is backwards-compatible but not forwards-compatiblea. The dependency jar is compiled by Java 17
+When building on Java 11 environment will be getting the in maven error:
+```text
+class file has wrong version 61.0, should be 55.0
+```
+> NOTE: this was tried earlier in `<version>0.7.1-SNAPSHOT</version>` commit `d1d8c934f6`.
+
 ### See Also
 
   * official Docker image for running a tus server is [tusproject/tusd](https://hub.docker.com/r/tusproject/tusd) . Images are alpine based
@@ -895,6 +927,9 @@ docker run -d -p 8080:8080 tusproject/tusd:v2.9.1
   * [TwistingTwists/tusd-node-uppy---resumable-upload](https://github.com/TwistingTwists/tusd-node-uppy---resumable-upload) - node.js backend (presumably swappable) and uppy/tus frontend (elementary)
   * [RFC 3659](https://datatracker.ietf.org/doc/html/rfc3659) - FTP commands to obtain listings of remote directories in a defined format, and to permit restarts of interrupted data transfers in STREAM mode
   * [RFC959](https://www.w3.org/Protocols/rfc959/4_FileTransfer.html) to resume an interrupted FTP download exactly where it left off client sends the REST (Restart) command specifying the exact byte offset, followed immediately by the RETR (Retrieve) command.
+ * [analysis of download approaches](https://habr.com/p/1099060) (in Russian)
+
+---
 
 ### Author
 

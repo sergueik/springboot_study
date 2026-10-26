@@ -1332,6 +1332,7 @@ We also won Norwegian's Business Class upgrade lottery on the Fort Lauderdale–
   * `PATCH` Method for `HTTP` [RFC5789](https://www.rfc-editor.org/info/rfc5789/)
   * [Guide to Java FileChannel](https://www.baeldung.com/java-filechannel)
   * [dotenv-java](https://github.com/cdimascio/dotenv-java) - is a no-dep, pure Java module that loads environment variables from a .env file
+  * [analysis of download approaches](https://habr.com/p/1099060) (in Russian)
 
 ### Author
 
