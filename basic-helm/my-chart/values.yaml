@@ -1,0 +1,16 @@
+healthConfig:
+  appLiveness: up
+  appReadyness: up
+  maxConn: "100"
+kubernetesClusterDomain: cluster.local
+probeExample:
+  appContainer:
+    image:
+      repository: docker.io/library/status-server
+      tag: latest
+    imagePullPolicy: IfNotPresent
+  ports:
+  - port: 9090
+    targetPort: 8080
+  replicas: 1
+  type: ClusterIP

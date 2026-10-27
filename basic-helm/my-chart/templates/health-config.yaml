@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "my-chart.fullname" . }}-health-config
+  labels:
+  {{- include "my-chart.labels" . | nindent 4 }}
+binaryData:
+  APP_DO_NOT_USE: dXA=
+data:
+  APP_LIVENESS: {{ .Values.healthConfig.appLiveness | quote }}
+  APP_READYNESS: {{ .Values.healthConfig.appReadyness | quote }}
+  MAX_CONN: {{ .Values.healthConfig.maxConn | quote }}

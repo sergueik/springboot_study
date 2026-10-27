@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-chart.fullname" . }}-probe-example
+  labels:
+    app: probe-example
+  {{- include "my-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.probeExample.replicas }}
+  selector:
+    matchLabels:
+      app: app
+    {{- include "my-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: app
+      {{- include "my-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: READY
+          valueFrom:
+            configMapKeyRef:
+              key: APP_READYNESS
+              name: {{ include "my-chart.fullname" . }}-health-config
+        - name: LIVE
+          valueFrom:
+            configMapKeyRef:
+              key: APP_LIVENESS
+              name: {{ include "my-chart.fullname" . }}-health-config
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.probeExample.appContainer.image.repository }}:{{ .Values.probeExample.appContainer.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.probeExample.appContainer.imagePullPolicy }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/live
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+        name: app-container
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /api/ready
+            port: 8080
+          periodSeconds: 5
+        resources: {}
+        startupProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /
+            port: 8080
+          periodSeconds: 10
