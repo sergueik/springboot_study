@@ -270,6 +270,53 @@ The exchange is deliberately simplified, but the underlying problem is real. A v
 
 Meanwhile, the customer may be a security-audited institution with a deadline to remediate a vulnerability or upgrade a deeply embedded dependency. Waiting indefinitely for the vendor is not necessarily an acceptable option, and replacing the entire application may not be practical.
 
+Argo CD supports Helm; that does not mean Argo CD inherently requires Helm. A vendor's deployment instructions can create a practical dependency between them even when no such architectural dependency is necessary.
+
+There are three different relationships here:
+- Technical dependency: Argo CD can deploy ordinary Kubernetes manifests without Helm.
+- Vendor-imposed prerequisite: Vendor A documents a Helm chart as the supported installation method for its product.
+- Operational dependency: Bank B adopts that documented installation path and consequently has to understand and maintain the Helm-based deployment.
+The second relationship creates the third. It can make Helm appear to be an intrinsic requirement of Argo CD, when it is actually a requirement of the chosen application's delivery model.
+
+
+Argo CD supports Helm; that does not mean Argo CD inherently requires Helm. A vendor's deployment instructions can create a practical dependency between them even when no such architectural dependency is necessary.
+
+Vista/NVIDIA analogy (NVIDIA leads to , but Vista is blamed for experiencing BSOD, Causing the BSOD: NVIDIA. Taking the blame: Vista) makes the related diagnostic point: the visible failure is not necessarily caused by the component receiving the blame. A blue screen observed while using NVIDIA drivers does not, by itself, establish whether the fault lies in the driver, Windows, hardware, or an interaction between them.
+ut that reveals both subjects too early.
+
+Triggered by NVIDIA. Blamed for its occurrence: Vista.
+
+What is it?
+
+Spoiler: BSOD.
+works as a little riddle
+the punchline depends on delaying the identification of the blamed party until the end. The reader initially interprets the sentence as a technical statement, then discovers that the wrong subject has been assigned responsibility
+
+### The Cost of Heroic Engineering
+
+An experienced, exhausted architect—an engineer whose capabilities were recognized by the developers—eventually stepped in, rescued the situation, and saved the day.
+
+But there is a difference between being capable of solving a Titanic-scale problem and being expected to solve one every day.
+
+> It is not right to work at Titanic scale every day. It is too risky. One does like to be a hero occasionally—not every day.
+
+Heroic intervention can be necessary. It should not become the normal operating model. When success repeatedly depends on one exhausted expert stepping in to resolve problems that others cannot diagnose, the organization has accumulated operational risk rather than eliminated it.
+
+The objective of good release engineering is not to produce more heroes. It is to make failures understandable, interventions repeatable, and recovery possible without requiring a rescue.
+
+a successful rescue proves that someone could solve the problem; it does not prove that the system was designed to be operated safely
+
+the rescue itself distorts the victim’s estimate of the problem.
+
+The observer sees the final execution time: one hour. But that hour is conditional on having A available, with the experience to recognize the problem, discard irrelevant paths, and select a workable solution.
+
+The counterfactual is invisible:
+- With A: one hour.
+- With A guiding inexperienced people: potentially many hours or days, with repeated dead ends.
+- Without A: perhaps an indefinite failure, because nobody recognizes the decisive step.
+
+A successful rescue can teach an organization precisely the wrong lesson: that the problem was easy, rather than that the rescuer was exceptional.
+
 ### See Also
 
   * [automate Helm Chart Creation with Helmify](https://www.linkedin.com/pulse/automate-helm-chart-creation-helmify-manoj-dhobale/) (NOTE: Linkedin link - may be unavailanble when unauthorize
