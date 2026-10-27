@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe-example
+spec:
+  ports:
+  - port: 9090
+    targetPort: 8080
+  selector:
+    app: probe-example
+

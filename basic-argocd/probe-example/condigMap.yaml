@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: health-config
+data:
+  APP_READYNESS: "up"
+  APP_LIVENESS: "up"
+  MAX_CONN: "100"
+binaryData:
+  # "up" encoded in base64
+  APP_DO_NOT_USE: dXA=
