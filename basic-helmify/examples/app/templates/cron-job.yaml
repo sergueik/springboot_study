@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "app.fullname" . }}-cron-job
+  labels:
+  {{- include "app.labels" . | nindent 4 }}
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - command:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+            env:
+            - name: KUBERNETES_CLUSTER_DOMAIN
+              value: {{ quote .Values.kubernetesClusterDomain }}
+            image: {{ .Values.cronJob.hello.image.repository }}:{{ .Values.cronJob.hello.image.tag
+              | default .Chart.AppVersion }}
+            imagePullPolicy: {{ .Values.cronJob.hello.imagePullPolicy }}
+            name: hello
+            resources: {}
+          nodeSelector: {{- toYaml .Values.cronJob.nodeSelector | nindent 12 }}
+          priorityClassName: {{ .Values.cronJob.priorityClassName }}
+          restartPolicy: OnFailure
+          serviceAccountName: {{ include "app.serviceAccountName" . }}
+          tolerations: {{- toYaml .Values.cronJob.tolerations | nindent 12 }}
+          topologySpreadConstraints: {{- toYaml .Values.cronJob.topologySpreadConstraints
+            | nindent 12 }}
+  schedule: {{ .Values.cronJob.schedule | quote }}

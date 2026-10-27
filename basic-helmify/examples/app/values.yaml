@@ -1,0 +1,165 @@
+batchJob:
+  backoffLimit: 4
+  nodeSelector: {}
+  pi:
+    image:
+      repository: perl
+      tag: 5.34.0
+  tolerations: []
+  topologySpreadConstraints: []
+cronJob:
+  hello:
+    image:
+      repository: busybox
+      tag: "1.28"
+    imagePullPolicy: IfNotPresent
+  nodeSelector: {}
+  priorityClassName: low-priority
+  schedule: '* * * * *'
+  tolerations: []
+  topologySpreadConstraints: []
+fluentdElasticsearch:
+  fluentdElasticsearch:
+    image:
+      repository: quay.io/fluentd_elasticsearch/fluentd
+      tag: v2.5.2
+    resources:
+      limits:
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+  nodeSelector: {}
+  priorityClassName: system-node-critical
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  topologySpreadConstraints: []
+kubernetesClusterDomain: cluster.local
+myConfig:
+  dummyconfigmapkey: dummyconfigmapvalue
+  myConfigProperties:
+    health:
+      healthProbeBindAddress: "8081"
+    metrics:
+      bindAddress: 127.0.0.1:8080
+myConfigProps:
+  myProp1: "1"
+  myProp2: val 1
+  myProp3: "true"
+  myvalYaml: |-
+    apiVersion: clickhouse.altinity.com/v1
+    kind: ClickHouseInstallationTemplate
+    metadata:
+      name: default-oneperhost-pod-template
+    spec:
+      templates:
+        podTemplates:
+          - name: default-oneperhost-pod-template
+            distribution: "OnePerHost"
+mySecretCa:
+  caCrt: ""
+mySecretVars:
+  elasticFoobarHunter123MeowtownVerify: ""
+  str: ""
+  var1: ""
+  var2: ""
+myapp:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+  app:
+    args:
+    - --health-probe-bind-address=:8081
+    - --metrics-bind-address=127.0.0.1:8080
+    - --leader-elect
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+    image:
+      repository: controller
+      tag: latest
+    resources:
+      limits:
+        cpu: 100m
+        memory: 30Mi
+      requests:
+        cpu: 100m
+        memory: 20Mi
+  initContainer:
+    image:
+      repository: bash
+      tag: latest
+  nodeSelector:
+    region: east
+    type: user-node
+  podSecurityContext:
+    fsGroup: 20000
+    runAsNonRoot: true
+    runAsUser: 65532
+  priorityClassName: system-cluster-critical
+  proxySidecar:
+    args:
+    - --secure-listen-address=0.0.0.0:8443
+    - --v=10
+    image:
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      tag: v0.8.0
+  replicas: 3
+  revisionHistoryLimit: 5
+  tolerations: []
+  topologySpreadConstraints: []
+myappIpfamilyService:
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  type: ClusterIP
+myappLbService:
+  loadBalancerSourceRanges:
+  - 10.0.0.0/8
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  type: LoadBalancer
+myappPdb:
+  minAvailable: 2
+myappService:
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  type: ClusterIP
+nginx:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 0
+  type: ClusterIP
+pvc:
+  mySamplePvClaim:
+    storageClass: manual
+    storageLimit: 5Gi
+    storageRequest: 3Gi
+web:
+  nginx:
+    image:
+      repository: registry.k8s.io/nginx-slim
+      tag: "0.8"
+  nodeSelector: {}
+  priorityClassName: high-priority
+  replicas: 2
+  tolerations: []
+  topologySpreadConstraints: []
+  volumeClaims:
+    www:
+      requests:
+        storage: 1Gi
