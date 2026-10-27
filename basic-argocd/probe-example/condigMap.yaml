@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: health-config
 data:
-  APP_READYNESS: "up"
+  APP_READYNESS: "down"
   APP_LIVENESS: "up"
   MAX_CONN: "100"
 binaryData:
