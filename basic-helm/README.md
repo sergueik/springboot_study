@@ -291,6 +291,16 @@ What is it?
 Spoiler: BSOD.
 works as a little riddle
 the punchline depends on delaying the identification of the blamed party until the end. The reader initially interprets the sentence as a technical statement, then discovers that the wrong subject has been assigned responsibility
+### Troubleshooting
+
+```sh
+git pull 
+```
+```text
+```
+resolution: WIFI likely redirects first attempts to reach internet to accept page
+
+![Caption Free WIFI Accept](screenshots/free_wifi_accept.png) 
 
 ### The Cost of Heroic Engineering
 

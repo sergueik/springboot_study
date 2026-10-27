@@ -757,6 +757,32 @@ Files of interest:
 |`bzdp_href_bz-hllapi-support-mainframe.htm`|HLLAPI support for mainframe sessions|
 |`bzdp_hcon_bz-script-editor.htm`|The built-in script editor|
 
+Technical Files( illustrating the specifics of package):
+```text
+asic-bluezone/bluezone_reg.txt
+ create mode 100644 basic-bluezone/help/#IDXHDR
+ create mode 100644 basic-bluezone/help/#ITBITS
+ create mode 100644 basic-bluezone/help/#STRINGS
+ create mode 100644 basic-bluezone/help/#SYSTEM
+ create mode 100644 basic-bluezone/help/#TOPICS
+ create mode 100644 basic-bluezone/help/#URLSTR
+ create mode 100644 basic-bluezone/help/#URLTBL
+ create mode 100644 basic-bluezone/help/#WINDOWS
+ create mode 100644 basic-bluezone/help/$FIftiMain
+ create mode 100644 basic-bluezone/help/$OBJINST
+ create mode 100644 basic-bluezone/help/$WWAssociativeLinks/Property
+ create mode 100644 basic-bluezone/help/$WWKeywordLinks/BTree
+ create mode 100644 basic-bluezone/help/$WWKeywordLinks/Data
+ create mode 100644 basic-bluezone/help/$WWKeywordLinks/Map
+ create mode 100644 basic-bluezone/help/$WWKeywordLinks/Property
+ create mode 100644 basic-bluezone/help/bluezone.hhc
+ create mode 100644 basic-bluezone/help/bluezone.hhk
+ create mode 100644 basic-bluezone/help/bzdp_hcon_batch-file-transfers.htm
+ create mode 100644 basic-bluezone/help/bzdp_hcon_bluezone-6530.htm
+ create mode 100644 basic-bluezone/help/bzdp_hcon_bluezone-alc.htm
+ create mode 100644 basic-bluezone/help/bzdp_hcon_bz-6530-display-options.htm
+
+``` 
 BlueZone exposes a substantial in-process COM automation object model, not merely a terminal window that an external script clicks and types into.
 
 A few findings stand out:

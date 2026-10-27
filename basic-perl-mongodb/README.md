@@ -43,7 +43,6 @@ docker build -f Dockerfile -t $CONTAINER_IMAGE .
 run it in background
 ```sh
 CONTAINER_NAME=mongo_client_perl
-
 docker container rm -f $CONTAINER_NAME
 MONGO_SERVER=mongo_server
 docker run --link $MONGO_SERVER -d -e DATABASE_URL=mongodb://$MONGO_SERVER:27017/db --name $CONTAINER_NAME $CONTAINER_IMAGE

@@ -17,12 +17,12 @@ docker start $ID
 ```
 ```sh
 docker ps
-
 ```
 ```text
 CONTAINER ID        IMAGE               COMMAND                  CREATED     STATUS              PORTS                                         NAMES
 c2312b18f192        basic-perl-apache   "sh -c 'PIDFILE='/ru"   2 weeks ago    Up 2 minutes        0.0.0.0:9090->80/tcp, 0.0.0.0:9443->443/tcp   basic-perl-cgi
 ```
+
 
 ```
 * run new instance of default command

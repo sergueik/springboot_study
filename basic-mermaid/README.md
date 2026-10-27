@@ -184,6 +184,8 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 ```sh
 curl -I http://192.168.99.100:8080/
 ```
+> NOTE: if build locally on Linux machine use `http://localhost:8080` instead
+
 ```text
 HTTP/1.1 200 OK
 Server: nginx/1.30.3
@@ -206,11 +208,47 @@ open in the browser
 rm -fr dist
 docker cp mermaid-live:/usr/share/nginx/html dist
 ```
+
+```sh
+curl -o dist/index.html  http://localhost:8080 
+```
 The application is generated as a static web site (`docs/`). It can be served by any HTTP server.
 
 However, Simply opening `index.html` with the `file://` protocol will not work because modern browsers block module loading and requests such as `manifest.json` from the local file system.
 
+```sh
+xdg-open dist/index.html 
+```
+```sh
+echo $(pwd)/screenshots/capture-firefox-browser-console.png | xclip -sel clip
+```
+![Capture Firefox Browser Console](screenshots/capture-firefox-browser-console.png)
 
+
+```
+xsg-open dist
+```
+![Capture File Broser Linux](screenshots/capture-thunar.png)
+
+![Capture Chrome Browser DevTools Linux](screenshots/capture-chrome-linux.png)
+```sh
+pishd dist
+sed -i 's|href="/|href="|g' index.html 
+sed -i 's|href="/|href="|g' view.html
+```
+![Capture Chrome Browser DevTools Linux](screenshots/capture-chrome-take2-linux.png)
+
+The command
+```sh
+env google-chrome --user-data-dir=/tmp --allow-file-access-from-files file://$(pwd)/dist/index.html
+```
+
+does not help - after confirming the license and detault browser prompts, see errors in DevTools console
+![Capture Chrome Browser TOS Linux](screenshots/capture-chrome-tos.png)
+
+![Capture Chrome Default Browser Linux](screenshots/capture-chrome-default-prompt.png)
+
+On Windows one can take a chroot-like trick. It does not require elevation
 ```cmd
 pushd dist
 start "c:\Program Files\Google\Chrome\Application\chrome.exe" file://%cd%\index.html
