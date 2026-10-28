@@ -352,12 +352,20 @@ Cannot open in the browser via `file://` when using the real DOS Drive letters:
 when launched with
 
 ```cmd
-"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///..\dist\index.html
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///%CD%\index.html
+```
+and not
+```cmd
+subst.exe E: /d
+subst.exe E: %CD%
+cd /d E:
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///%CD%/index.html
 ```
 or
 ```cmd
-
-"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///C:/developer/sergueik/springboot_study/basic-mermaid-react/dist/index.html
+subst.exe E: /d
+subst.exe E: %CD%
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///E:/index.html
 ```
 it fails with `net::ERR_FILE_NOT_FOUND` error for multiple asset:
 
@@ -412,10 +420,16 @@ However it works successfully with new instance launched with option  --allow-fi
 
 ```cmd
 cd dist
-subst E: %CD%
+subst.exe E: /d
+subst.exe E: %CD%
 "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///E:/index.html
 ```
 ![Running from E: Drive](screenshots/capture-local-e.png)
+
+Copy-Paste some of the recent Mermaid shapes, e.g. [Architecture Diagrams](https://mermaid.ai/open-source/syntax/architecture.html) into editor.
+If the version is too old it will not be rendering (the contents of `Diagram` tab will stay blank or a hand grenade will be rendered
+
+
 
 ![Running Latest Mermaid from E: Drive](screenshots/capture-local-e2.png)
 
@@ -811,11 +825,12 @@ TypeError: Cannot read properties of undefined (reading 'first_line')
     at errors.ts:22:12
 ```
 
-|-------|-------------------|-------|--------------|----------------------|--------|
 |Variant|Runtime / packaging|Mermaid|Main advantage|Main nuisance / caveat|Best use|
+|-------|-------------------|-------|--------------|----------------------|--------|
 |1. Docker + nginx + Svelte + Mermaid|Container serves the Svelte dist through nginx|Mermaid bundled into the application|Cleanest and most reproducible; browser sees an ordinary HTTP application; no file:// restrictions|Requires Docker/container lifecycle; image rebuild when dependencies change|Primary development/test environment and closest to a deployable application|
 |2. Python local server + dist|Python HTTP server serves the locally built dist directory|Mermaid bundled in dist|Extremely lightweight; no nginx/Docker required; behaves like a normal web application|Smart cache cleanup is important, particularly after power-down/reboot or when changing Mermaid bundles; stale JS/assets can make debugging deceptively confusing|Fast local development / experimentation|
 |3. file:// + Z: drive trick|Browser opens the generated dist/index.html directly; Z: is a subst/mapped-style convenience rather than a physical/network drive|Mermaid bundled in dist|No server at all; convenient for examining the finished artifact|Browser file:// security/CORS behavior; Chrome may require --allow-file-access-from-files and a separate --user-data-dir; not a faithful HTTP deployment environment|Pre-render / inspect the final artifact before publishing, especially when a server is undesirable|
+
 ### Current status
 
 - ✅ Modern Mermaid successfully builds as a static application.
@@ -824,6 +839,72 @@ TypeError: Cannot read properties of undefined (reading 'first_line')
 - ⚠ Browser `file://` behavior still requires additional investigation.
 - ✅ HTTP deployment (nginx or any static web server) works correctly.
 
+### Patching Dist
+
+* a standard mermaid dist is 100 files, some of which are spiled with absoute resolution paths:
+
+```sh
+find dist/ -type f |wc -l
+```
+```text
+101
+```
+```sh
+grep -E -irl '"/[a-z]' dist
+```
+```text
+dist/assets/chunk-NGNAAXSQ-C2Wy9Xmz.js
+dist/assets/chunk-YZO67HFG-C3JoPMiI.js
+dist/assets/classDiagram-v2-4MYWR3UA-BV0a6Jhm.js
+dist/assets/erDiagram-KYQIGQAA-DbbGunAj.js
+dist/assets/index-BRr-X6hH.js
+dist/assets/mermaid-parser.core-DEw4vXfS.js
+dist/index.html
+
+```
+
+```sh
+grep -E -ir '"/[a-z]' dist |wc -l
+```
+```text
+26
+```
+
+```sh
+grep -E -irl '"/[a-z]' dist  | xargs -IX  sed -i 's|href="/assets|href="./assets|g' X
+grep -E -irl '"/[a-z]' dist  | xargs -IX  sed -i 's|src="/assets|src="./assets|g' X
+```
+
+```sh
+grep -E -lir '"/[a-z]' dist|wc -l
+```
+```text
+6
+```
+
+and then
+```cmd
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///%CD%/index.html
+```
+
+![capture page run from C drive](screenshots/capture-local-c-fixed.png)
+
+> NOTE:  the DevTools console  still shows plenty of
+```text
+GET file:///C:/assets/chunk-4EMNKR2T-QSZWtTv-.js net::ERR_FILE_NOT_FOUND
+```
+with varying names, but it does not block it from.
+
+confirmed with "Microsoft Edge":
+
+![capture page run from C drive](screenshots/capture-local-c-fixed-edge.png)
+
+and then
+
+```sh
+env google-chrome --user-data-dir=/tmp --allow-file-access-from-files file://$(pwd)/dist/index.html
+```
+![capture page run on linux](screenshots/capture-local-linux.png)
 
 ### Where I Draw the Line
 
@@ -831,11 +912,11 @@ TypeError: Cannot read properties of undefined (reading 'first_line')
 
 This is where I burn my money.
 
-Five-nines oxygen-free copper.
-Gold-plated screws.
-Silk insulation.
-One-inch diameter.
-Handcrafted signal pathways.
+* Five-nines oxygen-free copper.
+* Gold-plated screws.
+* Silk insulation.
+* One-inch diameter.
+* Handcrafted signal pathways.
 
 The signal travels through it in complete silence.
 
