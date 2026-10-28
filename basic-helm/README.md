@@ -326,6 +326,22 @@ The counterfactual is invisible:
 - Without A: perhaps an indefinite failure, because nobody recognizes the decisive step.
 
 A successful rescue can teach an organization precisely the wrong lesson: that the problem was easy, rather than that the rescuer was exceptional.
+### Big Clusters
+
+__Helm__ does encourage a chart's configurable parameters to be exposed through `values.yaml`. For a seriously large Kubernetes application clusters, that file can become _very large_ because it _may_ contain configuration for numerous services, deployments, ingress rules, resources, and dependencies.
+
+__Helm__ does not hard stop on collapse __all__ configuration into _just_ two YAML files, nor does `values.yaml` have to contain the *complete* configuration of every service
+
+But,
+
+  * _Multiple_ values files are supported. For example, `values-production.yaml` and `values-test.yaml` can override defaults without requiring every environment's configuration to be in the same physical file.
+
+
+  * Subcharts can _own_ their configuration. Each service chart can maintain its own `values.yaml` and templates, while a parent chart supplies overrides.
+
+
+  * A chart author can still choose a _monolithic_ design. A large umbrella chart with hundreds of parameters can become difficult to understand, especially if the configuration structure mirrors neither service ownership nor deployment boundaries
+
 
 ### See Also
 

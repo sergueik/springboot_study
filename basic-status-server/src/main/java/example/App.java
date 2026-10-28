@@ -86,7 +86,7 @@ public class App {
 		}
 
 		@Override
-		public void handle(@SuppressWarnings("restriction") HttpExchange exchange) throws IOException {
+		public void handle( HttpExchange exchange) throws IOException {
 			String path = exchange.getRequestURI().getPath();
 			if (!"/api/live".equals(path) && !"/api/ready".equals(path)) {
 				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}",

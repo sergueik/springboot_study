@@ -1,4 +1,5 @@
 SAMPLE-REC:
+  alternaives:
   ACCOUNT-PLAIN:
     CUSTOMER-ID:
       pic: X(10)

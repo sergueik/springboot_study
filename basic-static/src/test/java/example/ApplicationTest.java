@@ -32,9 +32,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(Launcher.class)
+@WebMvcTest(Application.class)
 @SuppressWarnings("deprecation")
-public class LauncherTest {
+public class ApplicationTest {
 
 	private MvcResult result = null;
 

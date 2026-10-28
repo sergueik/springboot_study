@@ -298,9 +298,27 @@ NAME=mermaid-react
 docker run --name $NAME -d -p 8080:80 $IMAGE
 ```
 ```sh
-docker-machine ip
+curl -I http://$(docker-machine ip):8080
 ```
+```text
+HTTP/1.1 200 OK
+```
+
+open in the regular browser
+```sh
+echo http://$(docker-machine ip):8080/
+```
+
+
+ 
+
+
 ![Run Nginx Docker](screenshots/capture-nginx-docker.png)
+
+Copy-Paste some of the recent Mermaid shapes, e.g. [Architecture Diagrams](https://mermaid.ai/open-source/syntax/architecture.html) into editor.
+If the version is too old it will not be rendering (the contents of `Diagram` tab will stay blank or a hand grenade will be rendered
+
+![hand grenade](screenshots/capture-mermaid-hand-grenade.png)
 
 ![Bookmark](screenshots/capture-container-bookmark.png)
 

@@ -37,11 +37,11 @@ public class Config implements WebMvcConfigurer {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-		for (String dir : Arrays.asList("images", "css", "js")) {
-			registry.addResourceHandler(String.format("/%s/**", dir))
-					.addResourceLocations(String.format("classpath:/static/%s/", dir),
-							String.format("file:///%s/src/main/resources/static/%s/",
-									System.getProperty("user.dir").replaceAll("\\\\", "/"), dir));
+		for (String dir : Arrays.asList("images", "assets", "css", "js")) {
+			registry.addResourceHandler(String.format("/%s/**", dir)).addResourceLocations(
+					String.format("classpath:/static/%s/", dir),
+					String.format("file:///%s/src/main/resources/static/%s/",
+							System.getProperty("user.dir").replaceAll("\\\\", "/"), dir));
 
 		}
 	}
@@ -66,8 +66,7 @@ public class Config implements WebMvcConfigurer {
 	}
 
 	@Override
-	public void addReturnValueHandlers(
-			List<HandlerMethodReturnValueHandler> arg0) {
+	public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> arg0) {
 
 	}
 
@@ -87,14 +86,12 @@ public class Config implements WebMvcConfigurer {
 	}
 
 	@Override
-	public void configureDefaultServletHandling(
-			DefaultServletHandlerConfigurer arg0) {
+	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer arg0) {
 
 	}
 
 	@Override
-	public void configureHandlerExceptionResolvers(
-			List<HandlerExceptionResolver> arg0) {
+	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> arg0) {
 
 	}
 
@@ -114,8 +111,7 @@ public class Config implements WebMvcConfigurer {
 	}
 
 	@Override
-	public void extendHandlerExceptionResolvers(
-			List<HandlerExceptionResolver> arg0) {
+	public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> arg0) {
 
 	}
 

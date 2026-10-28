@@ -427,10 +427,10 @@ avoid using  `<JUNCTION>` in volume bind arguments
 docker pull alpine:3.9.5
 ```
 ```sh
-docker run --rm -it -v /c/Users/$USERNAME/Documents:/tmp/documments alpine:3.9.5 sh
+docker run --rm -it -v /c/Users/$USERNAME/Documents:/tmp/documents alpine:3.9.5 sh
 ```
 ```sh
-ls /tmp/documments/
+ls /tmp/documents/
 Audacity                 My Music                 My Videos
 My Pictures
 ```

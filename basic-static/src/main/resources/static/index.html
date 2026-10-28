@@ -1,46 +1,200 @@
 <!DOCTYPE html>
-<html ng-app="myApp">
-
-<!-- 
-http://jsfiddle.net/vishalvasani/4hqvu/
-
-
-based on: http://www.matlus.com/html5-file-upload-with-progress/
-see also
--->
-
+<html>
 <head>
-<meta charset="utf-8" />
-<title>Upload file</title>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js">
+  <meta charset="UTF-8">
+  <title>Ultra Basic DOT Renderer</title>
+<style>
+  body {
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(#7d8086, #5d6168);
+    font-family: Verdana, sans-serif;
+    color: #111;
+  }
+
+  .app-shell {
+    max-width: 1400px;
+    margin: auto;
+    background: linear-gradient(#c8c8c8, #a9a9a9);
+    border: 2px solid #6d6d6d;
+    border-radius: 14px;
+    box-shadow:
+      inset 1px 1px 0 #f5f5f5,
+      inset -1px -1px 0 #6e6e6e,
+      0 8px 24px rgba(0,0,0,0.35);
+    padding: 18px;
+  }
+
+  .titlebar {
+    background: linear-gradient(#d8d8d8, #a8a8a8);
+    border: 1px solid #777;
+    border-radius: 10px;
+    padding: 8px 14px;
+    margin-bottom: 16px;
+    font-weight: bold;
+  }
+
+  .split {
+    display: flex;
+    gap: 20px;
+  }
+
+  .pane {
+    flex: 1;
+  }
+
+  .panel-label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: #efefef;
+    border: 2px inset #9a9a9a;
+    border-radius: 8px;
+    font-family: Consolas, monospace;
+    min-height: 320px;
+    padding: 10px;
+  }
+
+  #output {
+    background: #f5f5f5;
+    border: 2px inset #999;
+    border-radius: 8px;
+    padding: 10px;
+    overflow: auto;
+    min-height: 320px;
+  }
+
+  .toolbar {
+    margin-top: 10px;
+  }
+
+  .vintage-btn {
+    background: linear-gradient(#eeeeee, #bbbbbb);
+    border: 1px solid #666;
+    border-radius: 8px;
+    padding: 8px 18px;
+    margin-right: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
+</style>
+
+  <script src="viz.js"></script>
+  <script src="full.render.js"></script>
+<script>
+let scale = 1;
+
+function zoomIn() {
+  scale += 0.1;
+  applyZoom();
+}
+
+function zoomOut() {
+  scale -= 0.1;
+  applyZoom();
+}
+
+function applyZoom() {
+  const svg = document.querySelector("#output svg");
+  if (svg) {
+    svg.style.transform = `scale(${scale})`;
+    svg.style.transformOrigin = "0 0";
+  }
+}
 </script>
-<script src="/js/script.js"></script>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-<link rel="stylesheet" href="/css/main.css"/>
 </head>
+ <div class="app-shell">
+    <div class="titlebar">Ultra Basic DOT Renderer</div>
 
-<body ng-controller="FileUploadCtrl">
-  <div class="row">
-    <label for="fileToUpload">Select a File to Upload</label><br />
-    <input type="file" ng-model-instant id="fileToUpload" multiple onchange="angular.element(this).scope().setFiles(this)" />
+    <div class="split">
+      <div class="pane">
+        <div class="panel-label">DOT Input</div>
+        <textarea id="dotInput">
+
+digraph if_else_flow {
+  rankdir=LR;
+  node [shape=circle];
+
+  Start [shape=point];
+  End   [shape=doublecircle];
+
+  Start -> Cond1;
+  Cond1 -> Then1   [label="if"];
+  Cond1 -> Cond2   [label="else"];
+
+  Cond2 -> Then2   [label="elseif"];
+  Cond2 -> Else    [label="else"];
+
+  Then1 -> End;
+  Then2 -> End;
+  Else  -> End;
+}
+
+     </textarea>
+
+    <button class="btn btn-primary mt-2" onclick="renderDot()">Render</button>
+    <button onclick="zoomIn()">+</button>
+<button onclick="zoomOut()">-</button>
   </div>
-  <div id="dropbox" class="dropbox" ng-class="dropClass"><span>{{dropText}}</span></div>
-  <div ng-show="files.length">
-    <div ng-repeat="file in files.slice(0)">
-      <span>{{file.webkitRelativePath || file.name}}</span>
-      (<span ng-switch="file.size > 1024*1024">
-        <span ng-switch-when="true">{{file.size / 1024 / 1024 | number:2}} MB</span>
-        <span ng-switch-default>{{file.size / 1024 | number:2}} kB</span>
-      </span>)
-    </div>
-    <input type="button" ng-click="uploadFile()" value="Upload" />
-    <div ng-show="progressVisible">
-      <div class="percent">{{progress}}%</div>
-      <div class="progress-bar">
-        <div class="uploaded" ng-style="{'width': progress+'%'}"></div>
+
+ <div class="pane">
+        <div class="panel-label">Rendered Graph</div>
+        <div id="output"></div>
       </div>
     </div>
   </div>
+
+<script>
+
+  const viz = new Viz();
+
+  function renderDot() {
+    const dot = document.getElementById("dotInput").value;
+
+    viz.renderSVGElement(dot, {
+      images: [
+        { name: "schedule.svg", width: 64, height: 64 },
+        { name: "approval.svg", width: 64, height: 64 },
+        { name: "upload.svg", width: 64, height: 64 }
+      ]
+    })
+    .then(function(svg) {
+      svg.removeAttribute("width");
+      svg.removeAttribute("height");
+
+      svg.style.width = "100%";
+      svg.style.height = "auto";
+      svg.style.transformOrigin = "0 0";
+
+      // Safe fixed fallback only if missing
+      if (!svg.getAttribute("viewBox")) {
+        svg.setAttribute("viewBox", "0 0 1600 1200");
+      }
+
+      const output = document.getElementById("output");
+      output.innerHTML = "";
+      output.appendChild(svg);
+
+      applyZoom();
+    })
+    .catch(function(error) {
+      document.getElementById("output").innerText =
+        "DOT render error:\n" + error.message;
+    });
+  }
+
+  window.onload = renderDot;
+  // Optional: render default graph on page load
+  // window.onload = renderDot;
+</script>
 </body>
 </html>
+
+

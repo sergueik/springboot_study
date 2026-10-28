@@ -16,6 +16,24 @@ This directory contains docker build flow to construct  __CobolToJson__ - *Conve
 
 ![build flow diagram](https://github.com/sergueik/springboot_study/blob/master/basic-cobol2json-cb2xml-jrecord-build/screenshots/flow-diagram.png)
 
+
+The pipeline needs to establish the candidate transformation interface—even if the first implementation is deliberately trivial
+
+* Labeled 3270 Screen Generator: custom
+
+| Implementation | Platform / OS | Status |
+|---|---|---|
+| Java | Ubuntu | ✅ |
+| C# / Windows Forms | Windows | ✅ |
+| C# / Xwt | Ubuntu / Mono / GTK | ✅ |
+| Python | Ubuntu | ✅ |
+
+* Image Quality management: [ImageMagick](https://en.wikipedia.org/wiki/ImageMagick)
+* OCR: [Tesseract](https://en.wikipedia.org/wiki/Tesseract_(software))
+
+
+> This is not a one-off Java OCR demo.
+> The same controlled screen-generation idea has been exercised through several independent rendering paths.
 ### Usage
 
 * get images
@@ -1030,6 +1048,10 @@ The workflow engine does not hand an agent a picture of a workflow and hope that
 A Visio drawing, by contrast, can be a perfectly faithful picture of a process while still being merely a 
 collection of graphical objects. The fact that the picture looks right does not make it the serialized 
 representation of the executable process.
+
+
+
+That last sentence is probably the cleanest formulation of your whole objection.
 
 ### See Also
  

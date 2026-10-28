@@ -160,6 +160,14 @@ Successfully built acb997d6ff06
 Successfully tagged test-alpine:latest
 ```
 
+> NOTE: the error
+> ```text
+> unable to prepare context: unable to evaluate symlinks in Dockerfile path: 
+> CreateFile C:\Program Files\Docker Toolbox\Dockerfile: 
+> The system cannot find the file specified.
+> ```
+> indicates the wrong working directory when running `docker` command
+
 ```sh
 docker image ls
 ```
@@ -170,6 +178,7 @@ test-alpine         latest              1e52490045c7        6 hours ago         
 nginx               1.30.3-alpine3.23   d0701bd41f82        4 weeks ago         62.2MB
 node                18.1.0-alpine       d94913fe64df        4 years ago         171MB
 ```
+> NOTE: there may be other images in local image cache
 ```sh
 docker run --name mermaid-live -p 8080:80 -d test-alpine
 ```
@@ -182,7 +191,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 ```
 
 ```sh
-curl -I http://192.168.99.100:8080/
+curl -I http://$(docker-machine ip):8080/
 ```
 > NOTE: if build locally on Linux machine use `http://localhost:8080` instead
 
@@ -197,8 +206,15 @@ Connection: keep-alive
 ETag: "6a62fd52-9f6"
 Accept-Ranges: bytes
 ```
-open in the browser
+```sh
+echo http://$(docker-machine ip):8080/
+```
+open in the regular browser
+
 ![editor](screenshots/capture-editor.png)
+
+Paste some of the recent Mermaid shapes, e.g. [Architecture Diagrams](https://mermaid.ai/open-source/syntax/architecture.html) into editor.
+If the version is too old it will not be rendering (the contents of `Diagram` tab will stay greyed.
 
 #### Using the generated static site without Docker
 
