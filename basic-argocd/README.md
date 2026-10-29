@@ -2079,6 +2079,7 @@ the application reads HEALTH_MODE and returns:
 
 ```mermaid
 
+
 architecture-beta
     group mk(cloud)[Minikube]
     group k8s(server)[Kubernetes] in mk
@@ -2095,13 +2096,12 @@ architecture-beta
     service volumes(disk)[Persistent volumes] in k8s
 
     repo:R --> L:controller
-    helm:R --> L:controller
+    helm:T --> B:controller
     controller:R --> L:deploy
     registry:L --> R:deploy
-    repo_cfg:B --> T:controller
+    repo_cfg:B --> T:deploy
     config:B --> T:deploy
     volumes:B --> T:deploy
-
 ```
 ![Default](screenshots/diagram1.png)
 
@@ -2109,27 +2109,34 @@ architecture-beta
 
 ```mermiad
 
+
 architecture-beta
     group mk(cloud)[Minikube]
-    group argocd(server)[Argo CD] in mk
+    group k8s(server)[Kubernetes] in mk
+    group argocd(server)[Argo CD] in k8s
 
-    service git(server)[External Git]
-    service helm(server)[Helm repository] in mk
-    service registry(server)[Image registry] in mk
-    service controller(server)[Controller] in argocd
-    service manifests(disk)[Manifests] in argocd
-    service workloads(server)[Kubernetes workloads] in mk
+    service repo(server)[Git<br/>repository]
+    service helm(server)[Helm<br/>repository] in k8s
+    service registry(server)[Image<br/>registry] in k8s
 
-    git:R --> L:controller
-    manifests:B --> T:controller
-    controller:R --> L:workloads
-    helm:B --> T:controller
-    registry:R --> L:workloads
+    service controller(server)[Argo CD controller] in argocd
+    service repo_cfg(disk)[Application manifests] in argocd
+    service deploy(server)[Application workloads] in k8s
+    service config(disk)[ConfigMaps and Secrets] in k8s
+    service volumes(disk)[Persistent volumes] in k8s
 
-
+    repo:R --> L:controller
+    helm:T --> B:controller
+    controller:R --> L:deploy
+    registry:L --> R:deploy
+    repo_cfg:B --> T:deploy
+    config:B --> T:deploy
+    volumes:B --> T:deploy
 ```
 
 ![After Moving Dependencies](screenshots/diagram2.png)
+
+> NOTE minimizing external dependencies while preserving the essential mechanism of the real system
 
 ### See Also
 
