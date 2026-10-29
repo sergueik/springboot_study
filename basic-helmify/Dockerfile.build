@@ -1,0 +1,25 @@
+FROM basic-builder
+
+ARG VERSION
+ARG HASH
+ARG DATE
+
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+
+WORKDIR /build
+COPY go.mod .
+COPY go.sum .
+COPY pkg ./pkg/
+COPY cmd ./cmd/
+RUN go mod download
+# ENV CGO_ENABLED=0
+
+RUN go build -ldflags "-s -w -X main.Version=$VERSION -X main.CommitHash=$HASH -X 'main.CompileDate=$DATE'" -o helmify ./cmd/helmify
+
+

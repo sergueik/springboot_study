@@ -264,7 +264,7 @@ A: ???
 
 B: I can see C right there in your Helm chart!
 
-A: Honestly, that Helm chart is not entirely my chart.
+A: Honestly, that Helm chart is not entirely _my_ chart.
 
 The exchange is deliberately simplified, but the underlying problem is real. A vendor's Helm chart may package or reference components maintained by other vendors, open-source projects, or separate internal teams. The fact that a component appears in the vendor's deployment package does not necessarily mean the vendor owns its source code, can patch it independently, or can guarantee compatibility with a newer version.
 

@@ -2,6 +2,12 @@
 
 replica of the [mermaid-live-editor](https://github.com/mermaid-js/mermaid-live-editor) container for Edit, preview and share mermaid charts/diagrams taken
 at `efafad1e8709854e77bea2d6f1abf212ed7482a9` to use node 18
+
+### Background
+
+The __Mermaid Live Editor__ is an _simplify documentation and avoid heavy tools_ open source __Visio Alternative__
+it is available locally and can run from file.
+
 ### Usage
 
 
@@ -213,7 +219,7 @@ open in the regular browser
 
 ![editor](screenshots/capture-editor.png)
 
-Paste some of the recent Mermaid shapes, e.g. [Architecture Diagrams](https://mermaid.ai/open-source/syntax/architecture.html) into editor.
+Copy-Paste some of the recent Mermaid shapes, e.g. [Architecture Diagrams](https://mermaid.ai/open-source/syntax/architecture.html) into editor.
 If the version is too old it will not be rendering (the contents of `Diagram` tab will stay greyed.
 
 #### Using the generated static site without Docker
