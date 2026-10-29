@@ -1,6 +1,6 @@
 FROM alpine:3.12.1
 WORKDIR /work
 
-COPY --from=builder /build/helmify /usr/bin
+COPY --from=basic-build /build/helmify /usr/bin
 
 ENTRYPOINT helmify

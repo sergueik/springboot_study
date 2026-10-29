@@ -5,106 +5,110 @@ replica of [arttor/helmify](https://github.com/arttor/helmify) - CLI tool that c
 ### Backgound
 
 ### Usage
-```
+```sh
 docker pull golang:1.21-alpine
-
 ```
 
-```
+```sh
 IMAGE=basic-builder
 docker build -f Dockerfile.builder -t $IMAGE .
 ```
-
+```text
+[+] Building 9.6s (6/6) FINISHED
+ => [internal] load build definition from Dockerfile.builder               2.4s
+ => => transferring dockerfile: 165B                                       0.0s
+ => [internal] load .dockerignore                                          2.4s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/golang:1.21-alpine      0.0s
+ => [1/2] FROM docker.io/library/golang:1.21-alpine                        0.4s
+ => [2/2] RUN apk update && apk add -U --no-cache ca-certificates git      6.1s
+ => exporting to image                                                     0.4s
+ => => exporting layers                                                    0.4s
+ => => writing image sha256:ff90745fa9e3b3834a6e0cf6abce7c7b1a49e8f1c12d9  0.0s
+ => => naming to docker.io/library/basic-builder                           0.0s
 ```
+```sh
 IMAGE=basic-build
 docker build -f Dockerfile.build -t $IMAGE .
 ```
-> NOTE: time consuming
-```text
+> NOTE: *very* time consuming:
+> ```text
+> [7/8] RUN go mod download                                            128.5s
+> ```
 
-Sending build context to Docker daemon  592.9kB
-Step 1/17 : FROM basic-builder
- ---> 77c5a47c572b
-Step 2/17 : ARG VERSION
- ---> Using cache
- ---> 75834797f2d7
-Step 3/17 : ARG HASH
- ---> Using cache
- ---> 89a44236ae71
-Step 4/17 : ARG DATE
- ---> Using cache
- ---> 5669b95005fd
-Step 5/17 : ENV GO111MODULE=on
- ---> Using cache
- ---> 3168c3c92339
-Step 6/17 : ENV GOPROXY=https://proxy.golang.org
- ---> Using cache
- ---> 03e7c64cba08
-Step 7/17 : ENV GOOS=linux
- ---> Using cache
- ---> 06db4d5ec828
-Step 8/17 : ENV GOARCH=amd64
- ---> Using cache
- ---> dc2b49ec688e
-Step 9/17 : ENV CGO_ENABLED=0
- ---> Using cache
- ---> 2e79ec69303b
-Step 10/17 : ENV GOOS=linux
- ---> Using cache
- ---> 7ec1059a16d7
-Step 11/17 : WORKDIR /build
- ---> Using cache
- ---> 308c6efecb89
-Step 12/17 : COPY go.mod .
- ---> Using cache
- ---> 2e7b4ed505c8
-Step 13/17 : COPY go.sum .
- ---> Using cache
- ---> fa11f2b36136
-Step 14/17 : COPY pkg ./pkg/
- ---> c71d3daf5c5e
-Step 15/17 : COPY cmd ./cmd/
- ---> faa592bf2371
-Step 16/17 : RUN go mod download
- ---> Running in bdd3eb87b140
-Removing intermediate container bdd3eb87b140
- ---> 09bf842c0f91
-Step 17/17 : RUN go build -ldflags "-s -w -X main.Version=$VERSION -X main.CommitHash=$HASH -X 'main.CompileDate=$DATE'" -o helmify ./cmd/helmify
- ---> Running in 9eb391d18018
-Removing intermediate container 9eb391d18018
- ---> b01bf6662088
-Successfully built b01bf6662088
-Successfully tagged basic-build:latest
+
+```text
+[+] Building 9.6s (6/6) FINISHED
+ => [internal] load build definition from Dockerfile.builder               2.4s
+ => => transferring dockerfile: 165B                                       0.0s
+ => [internal] load .dockerignore                                          2.4s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/golang:1.21-alpine      0.0s
+ => [1/2] FROM docker.io/library/golang:1.21-alpine                        0.4s
+ => [2/2] RUN apk update && apk add -U --no-cache ca-certificates git      6.1s
+ => exporting to image                                                     0.4s
+ => => exporting layers                                                    0.4s
+ => => writing image sha256:ff90745fa9e3b3834a6e0cf6abce7c7b1a49e8f1c12d9  0.0s
+ => => naming to docker.io/library/basic-builder                           0.0s
+sergueik@sergueik172:~/src/springboot_study/basic-helmify$ IMAGE=basic-build
+sergueik@sergueik172:~/src/springboot_study/basic-helmify$ docker build -f Dockerfile.build -t $IMAGE .
+[+] Building 240.0s (11/12)
+[+] Building 240.1s (11/12)
+[+] Building 265.3s (13/13) FINISHED
+ => [internal] load .dockerignore                                          0.1s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load build definition from Dockerfile.build                 0.1s
+ => => transferring dockerfile: 495B                                       0.0s
+ => [internal] load metadata for docker.io/library/basic-builder:latest    0.0s
+ => [1/8] FROM docker.io/library/basic-builder                             0.3s
+ => [internal] load build context                                          0.3s
+ => => transferring context: 322.54kB                                      0.0s
+ => [2/8] WORKDIR /build                                                   0.4s
+ => [3/8] COPY go.mod .                                                    0.4s
+ => [4/8] COPY go.sum .                                                    0.2s
+ => [5/8] COPY pkg ./pkg/                                                  0.3s
+ => [6/8] COPY cmd ./cmd/                                                  0.2s
+ => [7/8] RUN go mod download                                            129.2s
+ => [8/8] RUN go build -ldflags "-s -w -X main.Version=$VERSION -X main  126.0s
+ => exporting to image                                                     8.1s
+ => => exporting layers                                                    8.0s
+ => => writing image sha256:1aeda48939b39405bf101bff2bc385f82bb2a1c1a1831  0.0s
+ => => naming to docker.io/library/basic-build                             0.0s
+ 
 ```
 ```sh
 export IMAGE=basic-helmify
 docker build -f Dockerfile.run -t $IMAGE .
 ```
 ```
-Sending build context to Docker daemon  621.1kB
-Step 1/5 : FROM alpine:3.12.1
- ---> d6e46aa2470d
-Step 2/5 : WORKDIR /
- ---> Using cache
- ---> 07082a32f5c3
-Step 3/5 : ENV PATH=/
- ---> Using cache
- ---> 79a6e1599709
-Step 4/5 : COPY --from=builder /build/helmify /
- ---> 20316bdcffc2
-Step 5/5 : ENTRYPOINT ["./helmify"]
- ---> Running in 6451d8a50827
-Removing intermediate container 6451d8a50827
- ---> dfaa0fbe204b
-Successfully built dfaa0fbe204b
-Successfully tagged basic-build:latest
+[+] Building 15.1s (9/9) FINISHED
+ => [internal] load build definition from Dockerfile.run                   0.9s
+ => => transferring dockerfile: 149B                                       0.0s
+ => [internal] load .dockerignore                                          1.1s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/basic-build:latest      0.0s
+ => [internal] load metadata for docker.io/library/alpine:3.12.1           2.6s
+ => [stage-0 1/3] FROM docker.io/library/alpine:3.12.1@sha256:c0e9560cda1  8.1s
+ => => resolve docker.io/library/alpine:3.12.1@sha256:c0e9560cda118f9ec63  1.7s
+ => => sha256:c0e9560cda118f9ec63ddefb4a173a2b2a0347082d7 1.64kB / 1.64kB  0.0s
+ => => sha256:d7342993700f8cd7aba8496c2d0e57be0666e80b4c44192 528B / 528B  0.0s
+ => => sha256:d6e46aa2470df1d32034c6707c8041158b652f38d2a 1.51kB / 1.51kB  0.0s
+ => => sha256:188c0c94c7c576fff0792aca7ec73d67a2f7f4cb3a6 2.80MB / 2.80MB  1.9s
+ => => extracting sha256:188c0c94c7c576fff0792aca7ec73d67a2f7f4cb3a6e53a8  0.2s
+ => FROM docker.io/library/basic-build                                     8.2s
+ => [stage-0 2/3] WORKDIR /work                                            1.0s
+ => [stage-0 3/3] COPY --from=basic-build /build/helmify /usr/bin          1.8s
+ => exporting to image                                                     0.3s
+ => => exporting layers                                                    0.2s
+ => => writing image sha256:960be7c44edf2fee08bf8672786986280ecdd4baa1721  0.0s
+ => => naming to docker.io/library/basic-helmify                           0.0s
 ```
-```
+```sh
 docker image ls $IMAGE
 ```
-```
-REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
-basic-helmify       latest              dfaa0fbe204b        About a minute ago
+```text
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+basic-helmify   latest    960be7c44edf   37 seconds ago   21.9MB
 ```
 ```sh
 docker run --rm $IMAGE -help
@@ -258,14 +262,15 @@ spec:
     app: probe-example
 
 ```
+> NOTE: on Windows can use `/c/Users/$USERNAME` instead of `~`
 ```sh
-docker run --rm -v /c/Users/$USERNAME/test:/work -w /work  -i $IMAGE  < data.yaml
+docker run --rm -v ~/test:/work -w /work  -i $IMAGE  < data.yaml
 ```
 ```text
 time="2026-10-29T15:00:14Z" level=info msg="Chart name is not set. Using default name 'chart"
 ```
 ```sh
-find   ~/test/chart/ -type f
+find ~/test/chart/ -type f
 ```
 
 ```text
@@ -277,19 +282,65 @@ find   ~/test/chart/ -type f
 /c/Users/kouzm/test/chart/templates/_helpers.tpl
 /c/Users/kouzm/test/chart/values.yaml
 ```
-
+> NOTE: on Linux currently have to use `sudo`:
+```sh
+sudo find   ~/test/chart/ -type f
+``` 
+```text
+/home/sergueik/test/chart/.helmignore
+/home/sergueik/test/chart/Chart.yaml
+/home/sergueik/test/chart/values.yaml
+/home/sergueik/test/chart/templates/deployment.yaml
+/home/sergueik/test/chart/templates/probe-example.yaml
+/home/sergueik/test/chart/templates/_helpers.tpl
+/home/sergueik/test/chart/templates/health-config.yaml
 ```
+```sh
 TAG=3.12.0
 docker pull alpine/helm:$TAG
 ```
 
 ```sh
-docker run --rm -it -w /tmp -v ~/test:/tmp alpine/helm:$TAG lint  chart
+docker run --rm -it -w /tmp -v ~/test:/tmp alpine/helm:$TAG lint chart
 ```
 ```text
 ==> Linting chart
 [INFO] Chart.yaml: icon is recommended
 1 chart(s) linted, 0 chart(s) failed
+```
+
+### Consolidated
+
+```sh
+export IMAGE=basic-helmify; 
+docker build -f Dockerfile -t $IMAGE .
+```
+```text
+[+] Building 445.2s (18/18) FINISHED
+ => [internal] load build definition from Dockerfile                       0.1s
+ => => transferring dockerfile: 859B                                       0.0s
+ => [internal] load .dockerignore                                          0.1s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/alpine:3.12.1           0.8s
+ => [internal] load metadata for docker.io/library/golang:1.21-alpine      0.0s
+ => CACHED [builder 1/8] FROM docker.io/library/golang:1.21-alpine         0.0s
+ => [stage-1 1/4] FROM docker.io/library/alpine:3.12.1@sha256:c0e9560cda1  0.0s
+ => CACHED [stage-1 2/4] WORKDIR /work                                     0.0s
+ => [stage-1 3/4] RUN adduser -D -u 1000 app                               1.0s
+ => [builder 2/8] RUN apk add --no-cache ca-certificates git               4.7s
+ => [internal] load build context                                          0.2s
+ => => transferring context: 4.80kB                                        0.0s
+ => [builder 3/8] WORKDIR /build                                           0.6s
+ => [builder 4/8] COPY go.mod go.sum ./                                    0.3s
+ => [builder 5/8] RUN --mount=type=cache,target=/go/pkg/mod     go mod   143.5s
+ => [builder 6/8] COPY pkg ./pkg/                                          0.8s
+ => [builder 7/8] COPY cmd ./cmd/                                          0.3s
+ => [builder 8/8] RUN --mount=type=cache,target=/root/.cache/go-build    258.7s
+ => [stage-1 4/4] COPY --from=builder /build/helmify /usr/bin             33.0s
+ => exporting to image                                                     0.5s
+ => => exporting layers                                                    0.4s
+ => => writing image sha256:40c3da99351e8859e720b72810dfef311d66b63368f1c  0.0s
+ => => naming to docker.io/library/basic-helmify                           0.0s
 ```
 ### Troubleahooting 
 
@@ -306,6 +357,30 @@ time="2026-10-29T14:39:32Z" level=info msg="Chart name is not set. Using default
 ```
 the directory `~/test` remains empty
 
+
+```
+docker run  --rm -v ~/test:/work -w /work --entrypoint '' -it $IMAGE  sh
+/work $ pwd
+/work
+/work $ ls -ld .
+drwxr-xr-x    2 root     root          4096 Oct 29 16:22 .
+
+docker run  --rm -v ~/test:/work -w /work  -i $IMAGE  < data.yaml
+```
+```
+time="2026-10-29T16:24:35Z" level=info msg="Chart name is not set. Using default name 'chart"
+time="2026-10-29T16:24:35Z" level=error msg="helmify finished with error" error="mkdir chart: permission denied: unable create chart/templates dir"
+```
+
+same when
+
+```sh
+docker run  --rm -v ~/test:/work -w /work --user "$(id -u):$(id -g)"  -i $IMAGE  < data.yaml
+```
+```text
+time="2026-10-29T16:48:40Z" level=info msg="Chart name is not set. Using default name 'chart"
+time="2026-10-29T16:48:40Z" level=error msg="helmify finished with error" error="mkdir chart: permission denied: unable create chart/templates dir"
+```
 ### See Also
 
   * [using helmify](https://devsecops.puziol.com.br/en/kubernetes/helm/using-helmify/)
