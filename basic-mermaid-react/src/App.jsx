@@ -4,7 +4,9 @@ import umd from "umd";
 import blobStreamBrowserify from "blob-stream-browserify";
 import * as svgExport from "svg-exportjs-browser";
 
-
+function MermaidVersion() {
+  return <span>v{__MERMAID_VERSION__}</span>;
+}
 window.prepareSvgForExport = function(sourceSvg) {
   var data = sourceSvg.outerHTML;
 
@@ -276,11 +278,15 @@ architecture-beta
         }
       />
       <hr/>
-        <button 
-          disabled={!rendered} 
-          onClick={() => window.exportSvg()} >
-        Export SVG
-      </button>
+       <div>
+         <span>
+           <button 
+             disabled={!rendered} 
+             onClick={() => window.exportSvg()} >Export SVG</button>
+	  </span>
+	  <span> Mermaid React <MermaidVersion />
+	  </span>
+        </div>
       <hr/>
       <div
         dangerouslySetInnerHTML={{

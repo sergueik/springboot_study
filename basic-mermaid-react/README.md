@@ -5,6 +5,10 @@ bundled with [React (software)](https://en.wikipedia.org/wiki/React_(software)) 
 
 ### Background
 
+The __Mermaid Live Editor__ is an _simplify documentation and avoid heavy tools_ open source __Visio Alternative__
+it is available locally and can run from file.
+
+
 `Mermaid.js` is a JavaScript library that allows users to create different types of diagrams, using a simple syntax. It supports a variety of diagram types, including [Swimlane flowcharts](https://en.wikipedia.org/wiki/Swimlane), [Sequence Diagrams](https://en.wikipedia.org/wiki/Sequence_diagram), [Gantt charts](https://en.wikipedia.org/wiki/Gantt_chart), [Entiy Relationship](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model),  and [UML](https://en.wikipedia.org/wiki/Unified_Modeling_Language) class diagrams
 Latest versions of Mermaid require [React](https://github.com/react/react)
 
@@ -295,6 +299,8 @@ Successfully tagged mermaid-react:latest
 ```
 ```sh
 NAME=mermaid-react
+docker container stop $NAME
+docker container rm $NAME
 docker run --name $NAME -d -p 8080:80 $IMAGE
 ```
 ```sh
