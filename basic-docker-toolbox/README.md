@@ -1,6 +1,24 @@
 ### Info
 
-this directory contains example for [latest available(https://github.com/boot2docker/boot2docker/releases) __Docker Toolbox__
+this directory contains example for one of [late available](https://github.com/boot2docker/boot2docker/releases) __Docker Toolbox__ releases (__0.16.1__, build `cce350d`).
+
+Since circa 2016 the Docker tagged deprecated and released the __Docker Toolbox__ project [source](https://github.com/docker-archive/toolbox)
+to make it easier for developers who work on Mac and Windows to get started using __Docker__. The details of how the project is actually build are in [Dockerfile.windows](source/Dockerfile.windows) 
+and `components/cli/scripts/build/windows` from repository
+[docker/docker-ce](https://github.com/docker/docker-ce) (also tagged deprecated in 2023). The [script](https://github.com/docker-archive/docker-ce/commit/fa3049db0864a9c3ae3ee0cf447a9fdcac2015b0#diff-bfa98b6cb60a23b8de433f140347999b064bae375fd868c2f47c16fe7b1c29e3) in question being a basic go command
+```sh
+export CC=x86_64-w64-mingw32-gcc
+export CGO_ENABLED=1
+export GOOS=windows
+export GOARCH=amd64
+
+# Override TARGET
+export TARGET="build/docker-windows-amd64"
+
+# TODO: -tags pkcs11
+go build -o "${TARGET}" --ldflags "${LDFLAGS}" "${SOURCE}"
+```
+was deleted from repository in [f2562cd0f](https://github.com/docker-archive/docker-ce/commit/f2562cd0f41c53935e99f4e73687a1d089843f7f)
 
 ### Notes
 
