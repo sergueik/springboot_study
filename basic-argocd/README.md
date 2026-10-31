@@ -726,7 +726,7 @@ xD5p4Io2b9OE10Ss
 > xD5p4Io2b9OE10Ss/usr/bin/base64: invalid input
 > ```
 
-
+> NOTE: the password will not be changing during lifetime unless explicitly requested
 ![Login](screenshots/login-argocd.png)
 
 if run from bash
@@ -2137,6 +2137,122 @@ architecture-beta
 ![After Moving Dependencies](screenshots/diagram2.png)
 
 > NOTE minimizing external dependencies while preserving the essential mechanism of the real system
+
+
+The customer is told that a particular application or capability depends on a long list of cloud services. But the list does not tell the customer:
+- Which services are genuinely mandatory.
+- Which are optional or conditional.
+- Which are merely convenient vendor-preferred choices.
+- Which require substantial engineering expertise.
+- Which create ongoing operational, licensing, security, or cost obligations.
+The customer is therefore expected to prepare for an architecture whose actual requirements have not been adequately explained.
+
+chlorine analogy is particularly useful.
+
+Knowing that chlorine can be purchased at Home Depot, Walmart, or another retailer , but not in a generic grocery or bakery
+is useful shopping knowledge.
+It does not establish knowledge of chlorine chemistry, safe handling, concentrations, reactions, or industrial applications.
+
+Similarly, a cloud certification can establish familiarity with service names, product categories, terminology, and basic use cases.
+That is not the same as being able to design, troubleshoot, secure, operate, or assess those services in a real architecture.
+
+There is a substantial difference between:
+1. Recognition: knowing that a service exists.
+2. Orientation: knowing approximately what it does and where it fits.
+3. Practical competence: being able to configure and use it.
+4. Engineering expertise: understanding its limitations, failure modes, dependencies, security implications, and operational behavior.
+A person can acquire a considerable amount of recognition and orientation without developing comparable depth in engineering expertise.
+
+The problem becomes particularly pronounced when a vendor presents a dozen or more services as dependencies of a seemingly simple
+application feature. An engineer might have substantial expertise in two or three of them, working familiarity with several others,
+and only superficial awareness of the remainder.
+
+That is not necessarily an individual knowledge deficit. It is a consequence of the breadth of the ecosystem.
+
+The Cost of Ambiguous Platform Dependencies
+An insufficiently precise description of vendor service dependencies creates a significant
+preparation and knowledge burden for the customer.
+
+Broad service inventories and certification programs can provide useful product awareness, but familiarity with service names and their advertised purposes should not be confused with practical engineering competence.
+
+When numerous services are presented as prerequisites for a particular application capability, customers need more than a list of product names. They need an explicit distinction between mandatory dependencies, conditional requirements, optional integrations, and alternative implementation choices.
+
+Otherwise, the customer is left to prepare for an unnecessarily broad technology landscape, while the actual depth of knowledge across that landscape remains uneven.
+
+The resulting problem is not simply a training requirement. It is an architecture-planning, resource-allocation, and operational-readiness problem.
+
+
+
+
+The point I would emphasize
+There is a rather unfortunate asymmetry:
+- The vendor knows its own portfolio and can distribute expertise across specialized teams.
+- The customer receives a broad dependency list and is expected to become sufficiently familiar with all of it.
+- Certifications provide a convenient way to measure progress, but do not necessarily establish the depth needed to make architectural decisions.
+This leads to a useful principle:
+
+A dependency list is not an implementation plan, and a certification inventory is not an engineering-readiness assessment.
+
+I would keep that sentence. It is concise, defensible, and gets to the heart of the problem without disparaging certifications or cloud vendors.
+
+And it connects directly to your earlier TDD analogy: establish the first concrete requirement, identify the genuinely necessary dependencies, satisfy it, and expand the knowledge and technology footprint incrementally.
+
+
+
+
+good addition, particularly with a constructive, non-confrontational executive audience
+An insufficiently precise description of vendor service dependencies creates a significant preparation and knowledge burden for the customer.
+
+An experienced shopper may know that chlorine can be purchased at Home Depot or Walmart,
+but is unlikely to expect to find it in a generic grocery store or bakery.
+ This is perfectly adequate shopping knowledge. However, knowing where to purchase a product is not the same as knowing how to use it safely and effectively.
+The customer is nevertheless expected to assemble the shopping basket and make the resulting combination work.
+
+he problem predates GenAI by more than a decade. Cloud vendors were already presenting extensive service portfolios as dependencies of relatively ordinary application capabilities. Experienced engineers could question those dependencies because they had sufficient background in infrastructure, databases, networking, application architecture, and operations to recognize when a proposed combination seemed excessive.
+GenAI changes the situation in two ways:
+1. It introduces genuinely sophisticated components that customers may not have the background to evaluate independently.
+2. It makes the original problem harder to isolate: when a proposed solution contains many services, some of which are genuinely complex and necessary, it becomes more difficult to distinguish justified architectural complexity from unnecessary portfolio expansion.
+
+### An Existing Challenge, Amplified by GenAI
+
+This challenge is not new. It was already observable during the early cloud-adoption years, well before AI services became part of mainstream cloud portfolios. Experienced engineers could often challenge proposed service dependencies using their existing knowledge of infrastructure, application architecture, databases, and operations.
+
+The underlying tension was that vendor recommendations naturally favored the broader service portfolio, rather than necessarily identifying the smallest sufficient combination for a particular customer requirement.
+
+Generative AI adds another dimension. Some of its underlying components are genuinely specialized and technically demanding, making independent assessment more difficult for customers without prior exposure to the technology. This further increases the importance of precise dependency descriptions and transparent architectural justification.
+
+The objective should not be academic minimalism or the avoidance of sophisticated technology. It should be to distinguish genuine technical necessity from optional complexity, and to make the associated knowledge, implementation, and operational responsibilities visible to the customer.
+
+
+The act of volunteering evidence can itself become evidence in an entirely different argument.
+
+The commenter apparently reasoned along these lines:
+- T voluntarily publicizes a screening-test result.
+- T presents it as evidence of exceptional intelligence.
+- The instrument was never designed to establish exceptional intelligence.
+- The choice to repeatedly emphasize such an easily challenged inference becomes an object of commentary in its own right.
+The last step is the Jesuit twist: the subject's attempt to establish one proposition inadvertently supplies material for an opposing interpretation.
+
+There is an important distinction, though: that observation can be rhetorically clever without being a valid inference about someone's IQ. The MoCA result and the decision to publicize it do not establish that conclusion.
+
+I would describe the commenter's technique as turning the choice of evidence into evidence about the argument itself.
+
+Sometimes the most revealing part of a vendor's statement is not what it explicitly claims, but what it inadvertently makes reasonable to question.
+
+The vendor makes an apparently straightforward technical statement.
+
+
+
+The statement exposes an unexpectedly broad dependency structure.
+
+The customer draws a second conclusion from the very evidence the vendor volunteered.
+
+blame-free post-mortem meeting - chess explanation
+
+  * What was the first strategically consequential mistake?
+  * Which apparently reasonable move created an unnoticed weakness?
+  * At what point did the available choices become severely constrained?
+  * Which subsequent mistakes were merely consequences of the original one?
 
 ### See Also
 

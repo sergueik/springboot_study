@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basic-httpserver
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basic-httpserver
+  template:
+    metadata:
+      labels:
+        app: basic-httpserver
+    spec:
+      containers:
+        - name: basic-httpserver
+          image: docker.io/library/basic-httpserver:latest
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: basic-httpserver
+  namespace: argocd
+spec:
+  type: ClusterIP
+  selector:
+    app: basic-httpserver
+  ports:
+    - name: http
+      port: 8081
+      targetPort: http
+      protocol: TCP

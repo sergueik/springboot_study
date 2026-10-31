@@ -95,7 +95,7 @@ rm -fr commandline-parser/0.12.1-SNAPSHOT
 popd
 ```
 
-`````
+```
 INFO] --------------------------< example:layered >---------------------------
 [INFO] Building example:layered 0.2.0-SNAPSHOT
 [INFO]   from pom.xml
@@ -263,7 +263,10 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8081/example//commandl
 ```text
 404
 ```
-### Use for Helm Charts
+### Hosting Helm Chart
+
+![Result](screenshots/capture-argocd-projects.png)
+
 
 |Concern|Maven repository|Helm HTTP chart repository|
 |-------|----------------|--------------------------|
@@ -271,6 +274,390 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8081/example//commandl
 |Artifact format|JAR, POM and related files|Packaged chart .tgz|
 |Metadata|POMs, Maven metadata and checksums, depending on client and repository|index.yaml maps chart versions to archive URLs|
 |Rendering|Maven resolves dependencies and builds projects|Helm renders templates into Kubernetes manifests|
+
+#### Usage
+
+```sh
+cp ~/test/package/chart-0.1.0.tgz .
+```
+ 
+```sh
+touch index.yaml
+```
+```yaml
+apiVersion: v1
+entries:
+  chart:
+    - apiVersion: v2
+      appVersion: 1.16.0
+      created: "2026-10-30T11:31:00Z"
+      description: A Helm chart for Kubernetes
+      digest: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+      name: chart
+      urls:
+        - chart-0.1.0.tgz
+      version: 0.1.0
+generated: "2026-10-30T11:31:00Z"
+```
+```sh
+mvn clean package
+```
+
+```cmd
+java -cp target\example.httpserver.jar example.App
+```
+```cmd
+java -jar target\example.httpserver.jar -root $(pwd) -dir myapp
+```
+
+```sh
+curl -v http://localhost:8081/myapp/index.yaml
+```
+```text
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8081 (#0)
+> GET /myapp/index.yaml HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/7.58.0
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Date: Fri, 30 Oct 2026 16:24:01 GMT
+< Transfer-encoding: chunked
+< 
+* Connection #0 to host localhost left intact
+```
+```
+docker build -t basic-httpserver -f Dockefile . 
+```
+
+```sh
+curl -v http://localhost:8081/package/index.yaml
+```
+```text
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8081 (#0)
+> GET /package/index.yaml HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/7.58.0
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< Date: Fri, 30 Oct 2026 16:45:06 GMT
+< Transfer-encoding: chunked
+<
+* Connection #0 to host localhost left intact
+
+```
+
+```sh
+NAME=basic-httpserver
+docker save --output ${NAME}.tar ${NAME}
+```
+```cmd
+set NAME=basic-httpserver
+minikube.exe image load -v 4 %NAME%.tar
+minikube.exe -- kubectl load image-archive %NAME%.tar --name %NAME%
+```
+
+create a basic deployment to expose the helm server under the name of `basic-httpserver`:
+```yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basic-httpserver
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basic-httpserver
+  template:
+    metadata:
+      labels:
+        app: basic-httpserver
+    spec:
+      containers:
+        - name: basic-httpserver
+          image: docker.io/library/basic-httpserver:latest
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: basic-httpserver
+  namespace: argocd
+spec:
+  type: ClusterIP
+  selector:
+    app: basic-httpserver
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+```
+
+and deploy
+
+```sh
+minikube.exe kubectl -- apply -f basic-httpserver.yaml
+```
+```text
+deployment.apps/basic-httpserver created
+service/basic-httpserver created
+```
+
+```
+minikube.exe kubectl --  --namespace argocd delete service basic-httpserver
+```
+```text
+service "basic-httpserver" deleted
+```
+```
+minikube.exe kubectl --  --namespace argocd delete deployment basic-httpserver
+```
+```text
+deployment.apps "basic-httpserver" deleted
+```
+```
+minikube.exe kubectl -- apply -f basic-httpserver.yaml
+```
+```text
+deployment.apps/basic-httpserver created
+service/basic-httpserver created
+```
+```sh
+minikube.exe kubectl -- --namespace argocd get svc basic-httpserver
+```
+```text
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+basic-httpserver   ClusterIP   10.100.192.114   <none>        8081/TCP   6m
+```
+```cmd
+minikube.exe kubectl -- -n argocd port-forward svc/basic-httpserver 8081:8081
+```
+```text
+Forwarding from 127.0.0.1:8081 -> 8081
+Forwarding from [::1]:8081 -> 8081
+```
+```sh
+curl -s http://localhost:8081/package/index.yaml
+```
+```yaml
+---
+apiVersion: v1
+entries:
+  chart:
+    - apiVersion: v2
+      appVersion: 1.16.0
+      created: "2026-10-30T11:31:00Z"
+      description: A Helm chart for Kubernetes
+      digest: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+      name: chart
+      urls:
+        - chart-0.1.0.tgz
+      version: 0.1.0
+generated: "2026-10-30T11:31:00Z"
+
+```
+```cmd
+argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package
+```
+```text
+time="2026-10-30T15:57:37-04:00" level=fatal msg="rpc error: code = Unknown desc = error testing repository connectivity: repository not found"
+```
+![Capture misconfigured ArgoCD Connection](screenshots/capture-argocd-helm-connection-error.png)
+
+
+```cmd
+argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package
+```
+```text
+time="2026-10-30T16:09:53-04:00" level=fatal msg="rpc error: code = Unknown desc = error testing repository connectivity: repository not found"
+```
+```cmd
+minikube.exe kubectl -- logs --namespace argocd basic-httpserver-787668c5b9-wl7j2
+```
+```text
+Repo server on 0.0.0.0:8081 with document root: /tmp directory /package
+Exception java.nio.file.NoSuchFileException: /tmp/info/refs from
+```
+
+
+```
+
+C:\developer\sergueik\springboot_study\basic-httpserver>argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package --type helm --name package
+Repository 'http://basic-httpserver.argocd.svc.cluster.local:8081/package' added
+
+```
+
+
+```
+Unable to create application: application spec for package is invalid: InvalidSpecError: Unable to generate manifests in : rpc error: code = Unknown desc = `helm pull --destination /tmp/e768ba8d-4589-49a5-9b08-160bf1d3bac3 --version 0.1.0 --repo http://basic-httpserver.argocd.svc.cluster.local:8081/package chart` failed exit status 1: Error: failed to fetch http://basic-httpserver.argocd.svc.cluster.local:8081/package/chart-0.1.0.tgz : 404 Not Found
+```
+
+
+```
+curl -v -o /dev/null http://localhost:8081/package/chart-0.1.0.tgz
+* Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106'
+* Host localhost:8081 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:8081...
+* Connected to localhost (::1) port 8081
+* using HTTP/1.x
+> GET /package/chart-0.1.0.tgz HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/8.12.1
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 404 Not Found
+< Date: Fri, 30 Oct 2026 20:22:28 GMT
+< Content-length: 0
+<
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Connection #0 to host localhost left intact
+
+```
+
+```sh
+docker run -it --entrypoint '' basic-httpserver sh
+/tmp # ls
+app.jar  chart  hsperfdata_root  index.yaml
+/tmp # ls chart/
+Chart.yaml  templates  values.yaml
+
+```
+```mermaid
+flowchart TB
+  A["Java source<br/>basic http server"] -- "mvn package" --> C["helm server.jar"]
+
+  D["K8 manifests<br/>status-server"] -- "helmify" --> F["Helm chart directory"]
+  F -- "helm package" --> H["chart-0.1.0.tgz"]
+  H -- "helm repo index" --> J[/"index.yaml"/]
+
+  C --"application" --> K[("helm-server<br/>image")]
+  H -- "artifact" --> K
+  J -- "directory" --> K
+
+  K -- "docker save" --> L["helm-server.tar"]
+  L -- "minikube image load<br/>kubectl apply" --> N["Kubernetes Service<br/>helm-server"]
+  N --> O{{"Internal HTTP Helm<br/> repository"}}
+
+RR{"live:up<br/>ready:down"}
+
+  P["Application code"] --"Git push" --> R(["ArgoCD reconciliation"])
+
+  O --"chart-0.1.0.tgz"--> S[["ArgoCD repo-server"]]
+  S -- "Discover and retrieve Helm chart" --> R
+
+  R -- "Helm rendering<br/>Kubernetes applies manifests" --> W["Deployment<br/>status-server "]
+  W --> Y["Pod"]
+  Y -- "startup,liveness<br/> and readiness probes" --> RR  --> AA["ArgoCD :Degraded"]
+ AC["Java source<br/>basic REST server"] -- "mvn package<br>Docker Build" --> 
+
+   AB[("status-server<br/>image")] -- "docker save <br/>minikube image load" --> Y
+
+
+  style O fill:#dceeff,stroke:#3975a5
+  style R fill:#e8e0fa,stroke:#7655a5
+  style AA fill:#fbe4e4,stroke:#b45b5b
+
+```
+![Capture](screenshots/diagram1.png)
+
+#### Troubleshootng
+
+* wrong path
+```sh
+curl -v http://localhost:8081/myapp/index.yaml
+```
+```text
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8081 (#0)
+> GET /myapp/index.yaml HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/7.58.0
+> Accept: */*
+>
+< HTTP/1.1 404 Not Found
+< Content-Length: 50
+< Content-Type: text/html
+<
+* Connection #0 to host localhost left intact
+<h1>404 Not Found</h1>No context found for request
+```
+
+```sh
+docker container ls
+ID=docker container ls|grep basic-httpserver |awk '{print $1}'
+```
+```text
+CONTAINER ID   IMAGE                   COMMAND                  CREATED         STATUS         PORTS                                                 NAMES
+30663603f869   basic-httpserver        "/bin/sh -c 'java -c…"   3 minutes ago   Up 3 minutes   8080/tcp, 0.0.0.0:8081->8081/tcp, :::8081->8081/tcp   magical_hugle
+```
+```sh
+docker exec -it $ID sh
+```
+```sh
+/tmp # ls
+```
+```text
+app.jar  chart  hsperfdata_root  index.yaml
+```
+```sh
+/tmp # ps
+```
+```text
+PID   USER     TIME  COMMAND
+    1 root      0:01 java -cp app.jar example.App -root /tmp -dir package
+   25 root      0:00 sh
+   32 root      0:00 ps
+```
+![Failed Connection])(screenshots/capture-argocd-helm-connection-error.png)
+
+* empty YAML.
+
+![Failed Connection])(screenshots/capture-argocd-helm-pull-error.png)
+
+
+![Capture successful Configuration](screenshots/capture-argocd-helm-connection-success.png)
+
+* bad `Dockerfile`:
+
+```sh
+ADD chart-0.1.0.tgz index.yaml ./
+```
+has to be 
+```sh
+COPY chart-0.1.0.tgz index.yaml ./
+```
+proof
+```sh
+docker run -it --entrypoint '' basic-httpserver sh
+```
+```sh
+/tmp # ls
+```
+
+```text
+app.jar  chart  hsperfdata_root  index.yaml
+/tmp # ls chart/
+Chart.yaml  templates  values.yaml
+```
+the container contains an unpacked Helm chart directory, not the packaged archive.
 
 ### See Also
 
@@ -280,3 +667,4 @@ curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8081/example//commandl
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
