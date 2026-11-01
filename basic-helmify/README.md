@@ -5,10 +5,81 @@ replica of [arttor/helmify](https://github.com/arttor/helmify) - CLI tool that c
 ### Backgound
 
 ### Usage
+
+#### Install Locally
+```sh
+TAG_NAME='v0.4.19'	
+curl -skLo /tmp/helmify_Linux_x86_64.tar.gz https://github.com/arttor/helmify/releases/download/${TAG_NAME}/helmify_Linux_x86_64.tar.gz
+pushd /tmp
+tar xzf helmify_Linux_x86_64.tar.gz
+```
+```sh
+stat -c '%n %A %C' helmify
+```
+```text
+helmify -rwxr-xr-x stat: failed to get security context of 'helmify': No data available
+```
+
+```sh
+./helmify --version
+```
+```text
+Version:    0.4.19
+Build Time: 2025-11-06T14:39:06Z
+Git Commit: 4f6d16b8113e927355730d34f2c62642f247ea3e
+```
+```sh
+sudo install helmify /usr/local/bin
+rm /tmp/helmify
+```
+#### Install in Container
+
+```sh
+TAG_NAME='v0.4.19'
+git clone https://github.com/arttor/helmify /tmp/helmify
+pushd !$
+git fetch origin
+git rev-list -1 tags/$TAG_NAME
+HASH=$(git rev-list -1 tags/$TAG_NAME)
+echo $HASH
+popd 
+rm -fr /tmp/hemlify
+```
+
 ```sh
 docker pull golang:1.21-alpine
 ```
+```sh
+docker build --build-arg HASH=$HASH -f Dockerfile -t $IMAGE  .
+```
+```text
+[+] Building 79.3s (17/17) FINISHED
+ => [internal] load .dockerignore                                          0.1s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load build definition from Dockerfile                       0.1s
+ => => transferring dockerfile: 908B                                       0.0s
+ => [internal] load metadata for docker.io/library/alpine:3.12.1           1.5s
+ => [internal] load metadata for docker.io/library/golang:1.21-alpine      0.0s
+ => [builder 1/8] FROM docker.io/library/golang:1.21-alpine                0.0s
+ => [internal] load build context                                          0.2s
+ => => transferring context: 314.04kB                                      0.1s
+ => [stage-1 1/3] FROM docker.io/library/alpine:3.12.1@sha256:c0e9560cda1  0.0s
+ => CACHED [builder 2/8] RUN apk add --no-cache ca-certificates git        0.0s
+ => CACHED [builder 3/8] WORKDIR /build                                    0.0s
+ => [builder 4/8] COPY go.mod go.sum ./                                    0.5s
+ => [builder 5/8] RUN --mount=type=cache,target=/go/pkg/mod     go mod do  4.6s
+ => [builder 6/8] COPY pkg ./pkg/                                          0.8s
+ => [builder 7/8] COPY cmd ./cmd/                                          0.3s
+ => [builder 8/8] RUN --mount=type=cache,target=/root/.cache/go-build     68.9s
+ => CACHED [stage-1 2/3] WORKDIR /work                                     0.0s
+ => [stage-1 3/3] COPY --from=builder /build/helmify /usr/bin              1.1s
+ => exporting to image                                                     0.4s
+ => => exporting layers                                                    0.4s
+ => => writing image sha256:fae938bd1c14e8a7d0a3717c637faef5238bc852eb595  0.0s
+ => => naming to docker.io/library/basic-builder                           0.0s
+```
 
+#### Separate Step Build
 ```sh
 IMAGE=basic-builder
 docker build -f Dockerfile.builder -t $IMAGE .
@@ -29,7 +100,7 @@ docker build -f Dockerfile.builder -t $IMAGE .
 ```
 ```sh
 IMAGE=basic-build
-docker build -f Dockerfile.build -t $IMAGE .
+docker build --build-arg HASH=$HASH -f Dockerfile.build -t $IMAGE .
 ```
 > NOTE: *very* time consuming:
 > ```text
@@ -80,7 +151,7 @@ sergueik@sergueik172:~/src/springboot_study/basic-helmify$ docker build -f Docke
 export IMAGE=basic-helmify
 docker build -f Dockerfile.run -t $IMAGE .
 ```
-```
+```text
 [+] Building 15.1s (9/9) FINISHED
  => [internal] load build definition from Dockerfile.run                   0.9s
  => => transferring dockerfile: 149B                                       0.0s
@@ -175,6 +246,14 @@ Flags:
         Enable very verbose output. Same as verbose but with DEBUG. Example: helmify -vv
 ```
 
+> NOTE: some versions refuse to show help:
+> 
+> ```sh
+> docker run --rm  $IMAGE -help
+> ```
+> ```text
+> time="2026-11-01T16:34:59Z" level=error msg="no data piped in stdin"
+> ```
 
 ```sh
 awk 'FNR==1 && NR!=1  {print "---"}{print}' ../basic-argocd/probe-example/*.yaml | tee data.yaml
@@ -270,7 +349,7 @@ docker run --rm -v ~/test:/work -w /work  -i $IMAGE  < data.yaml
 time="2026-10-29T15:00:14Z" level=info msg="Chart name is not set. Using default name 'chart"
 ```
 ```sh
-find ~/test/chart/ -type f
+sudo find ~/test/chart/ -type f
 ```
 
 ```text
@@ -284,7 +363,7 @@ find ~/test/chart/ -type f
 ```
 > NOTE: on Linux currently have to use `sudo`:
 ```sh
-sudo find   ~/test/chart/ -type f
+sudo find  ~/test/chart/ -type f
 ``` 
 ```text
 /home/sergueik/test/chart/.helmignore
@@ -295,6 +374,10 @@ sudo find   ~/test/chart/ -type f
 /home/sergueik/test/chart/templates/_helpers.tpl
 /home/sergueik/test/chart/templates/health-config.yaml
 ```
+
+> NOTE The choice of bound volume is based on how __Docker Toolbox__ works on Windows
+
+
 ```sh
 TAG=3.12.0
 docker pull alpine/helm:$TAG
