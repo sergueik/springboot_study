@@ -328,10 +328,21 @@ curl -v http://localhost:8081/myapp/index.yaml
 < 
 * Connection #0 to host localhost left intact
 ```
+```sh
+tar czf chart-0.2.0.tgz chart 
 ```
-docker build -t basic-httpserver -f Dockefile . 
+> NOTE:  make sure to compress to avoid the following error later:
+> ```text
+> ``` 
+> Unable to save changes: application spec for package is invalid: 
+> InvalidSpecError: Unable to generate manifests in : rpc error: code = Unknown desc = error reading file: gzip: invalid header
+> ```
+```sh
+docker build --build-arg CHART=chart-0.2.0.tgz -t basic-httpserver -f Dockerfile . 
 ```
-
+```sh
+docker run -it -p 8081:8081 basic-httpserver
+```
 ```sh
 curl -v http://localhost:8081/package/index.yaml
 ```
@@ -353,14 +364,50 @@ curl -v http://localhost:8081/package/index.yaml
 ```
 
 ```sh
+curl -I http://localhost:8081/package/chart-0.2.0.tgz
+```
+```text
+HTTP/1.1 200 OK
+Date: Sat, 31 Oct 2026 22:26:39 GMT
+```
+```sh
 NAME=basic-httpserver
 docker save --output ${NAME}.tar ${NAME}
+```
+> NOTE: the image size
+> ```text
+> 15OM Oct 31 15:46 basic-httpserver.tar
+> ```
+```cmd
+minikube.exe start --driver=virtualbox
+```
+```text
+😄  minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+✨  Using the virtualbox driver based on existing profile
+🎉  minikube 1.39.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.39.0
+💡  To disable this notice, run: 'minikube config set WantUpdateNotification false'
+
+👍  Starting control plane node minikube in cluster minikube
+🔄  Restarting existing virtualbox VM for "minikube" ...
+🌐  Found network options:
+    ▪ NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+    ▪ no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+    ▪ env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner
+💡  kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
 ```cmd
 set NAME=basic-httpserver
 minikube.exe image load -v 4 %NAME%.tar
-minikube.exe -- kubectl load image-archive %NAME%.tar --name %NAME%
 ```
+> NOTE: do not need
+> ```text
+> minikube.exe -- kubectl load image-archive %NAME%.tar --name %NAME%
+> ```
 
 create a basic deployment to expose the helm server under the name of `basic-httpserver`:
 ```yaml
@@ -407,7 +454,7 @@ spec:
 
 and deploy
 
-```sh
+```cmd
 minikube.exe kubectl -- apply -f basic-httpserver.yaml
 ```
 ```text
@@ -415,19 +462,15 @@ deployment.apps/basic-httpserver created
 service/basic-httpserver created
 ```
 
-```
+```cmd
 minikube.exe kubectl --  --namespace argocd delete service basic-httpserver
-```
-```text
-service "basic-httpserver" deleted
-```
-```
 minikube.exe kubectl --  --namespace argocd delete deployment basic-httpserver
 ```
 ```text
+service "basic-httpserver" deleted
 deployment.apps "basic-httpserver" deleted
 ```
-```
+```cmd
 minikube.exe kubectl -- apply -f basic-httpserver.yaml
 ```
 ```text
@@ -466,14 +509,41 @@ entries:
         - chart-0.1.0.tgz
       version: 0.1.0
 generated: "2026-10-30T11:31:00Z"
-
+```
+```sha
+curl -o a.tgz http://localhost:8081/package/chart-0.2.0.tgz
+tar tzvf a.tgz
+```
+```text
+drwxr-xr-x kouzm/197609      0 2026-10-31 15:10 chart/
+-rw-r--r-- kouzm/197609    349 2026-10-30 11:26 chart/.helmignore
+-rw-r--r-- kouzm/197609    135 2026-10-31 15:08 chart/Chart.yaml
+drwxr-xr-x kouzm/197609      0 2026-10-31 15:11 chart/templates/
+-rw-r--r-- kouzm/197609    240 2026-10-31 15:11 chart/templates/condigMap.yaml
+-rw-r--r-- kouzm/197609   1382 2026-10-31 15:11 chart/templates/deployment.yaml
+-rw-r--r-- kouzm/197609    152 2026-10-31 14:51 chart/templates/service.yaml
+-rw-r--r-- kouzm/197609   1770 2026-10-30 11:26 chart/templates/_helpers.tpl
+-rw-r--r-- kouzm/197609    561 2026-10-31 15:10 chart/values.yaml
 ```
 ```cmd
-argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package
+argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package --type helm
 ```
 ```text
 time="2026-10-30T15:57:37-04:00" level=fatal msg="rpc error: code = Unknown desc = error testing repository connectivity: repository not found"
 ```
+
+Access __ArgoCD__ in the browser on `http://localhost:8080/`
+
+>  NOTE: the earlier created application will fail to sync:
+
+```text
+ComparisonError: Failed to load target state: failed to generate manifest for source 1 of 1: 
+rpc error: code = Unknown desc = `helm pull --destination /tmp/f32dcf6a-2476-4314-b3c1-87236c9f4c55 --version 0.1.0 --repo http://basic-httpserver.argocd.svc.cluster.local:8081/package chart` 
+failed exit status 1: Error: chart "chart" version "0.1.0" not found in 
+http://basic-httpserver.argocd.svc.cluster.local:8081/package repository
+```
+
+that is because the version of chart was updated.
 ![Capture misconfigured ArgoCD Connection](screenshots/capture-argocd-helm-connection-error.png)
 
 
@@ -494,14 +564,16 @@ Exception java.nio.file.NoSuchFileException: /tmp/info/refs from
 
 ```
 
-C:\developer\sergueik\springboot_study\basic-httpserver>argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package --type helm --name package
+argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package --type helm --name package
 Repository 'http://basic-httpserver.argocd.svc.cluster.local:8081/package' added
 
 ```
 
 
 ```
-Unable to create application: application spec for package is invalid: InvalidSpecError: Unable to generate manifests in : rpc error: code = Unknown desc = `helm pull --destination /tmp/e768ba8d-4589-49a5-9b08-160bf1d3bac3 --version 0.1.0 --repo http://basic-httpserver.argocd.svc.cluster.local:8081/package chart` failed exit status 1: Error: failed to fetch http://basic-httpserver.argocd.svc.cluster.local:8081/package/chart-0.1.0.tgz : 404 Not Found
+Unable to create application: application spec for package is invalid: InvalidSpecError:
+Unable to generate manifests in : rpc error: code = Unknown desc = `helm pull --destination /tmp/e768ba8d-4589-49a5-9b08-160bf1d3bac3 --version 0.1.0 --repo http://basic-httpserver.argocd.svc.cluster.local:8081/package chart` failed exit status 1:
+Error: failed to fetch http://basic-httpserver.argocd.svc.cluster.local:8081/package/chart-0.1.0.tgz : 404 Not Found
 ```
 
 
@@ -659,6 +731,143 @@ Chart.yaml  templates  values.yaml
 ```
 the container contains an unpacked Helm chart directory, not the packaged archive.
 
+![Capture Application Creation Error](screenshots/argocd-applocation-creation-error.png)
+
+
+```text
+Unable to create application: application spec for package is invalid: InvalidSpecError: Unable to generate manifests in : rpc error: code = Unknown desc = error reading file: gzip: invalid header
+```
+
+```sh
+minikube.exe kubectl -- --namespace argocd exec deploy/argocd-repo-server -c argocd-repo-server -- helm version
+```
+```text
+version.BuildInfo{Version:"v3.12.1", GitCommit:"f32a527a060157990e2aa86bf45010dfb3cc8b8d", GitTreeState:"clean", GoVersion:"go1.20.4"}
+```
+```sh
+minikube.exe kubectl -- -n argocd cp a.tgz argocd-repo-server-7c8d87478b-msk8d:/tmp/a.tgz -c argocd-repo-server
+```
+```sh
+minikube.exe kubectl -- -n argocd exec deploy/argocd-repo-server -c argocd-repo-server -- helm template test /tmp/a.tgz
+```
+```yaml
+---
+# Source: chart/templates/condigMap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: health-config
+data:
+  APP_READYNESS: "up"
+  APP_LIVENESS:  ""
+  MAX_CONN: "100"
+binaryData:
+  # "up" encoded in base64
+  APP_DO_NOT_USE: dXA=
+---
+# Source: chart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe-example
+spec:
+  ports:
+  - port: 9090
+    targetPort: 8080
+  selector:
+    app: probe-example
+---
+# Source: chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe-example
+  labels:
+    app: probe-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app-container
+        image: "docker.io/library/status-server:latest"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        startupProbe:
+          httpGet:
+            path: /
+            port: 8080
+          failureThreshold: 3
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path:  "/api/live"
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path:  "/api/ready"
+            port: 8080
+          periodSeconds: 5
+        env:
+        - name: READY
+          valueFrom:
+            configMapKeyRef:
+              name: health-config
+              key: APP_READYNESS
+        - name: LIVE
+          valueFrom:
+            configMapKeyRef:
+              name: health-config
+              key: APP_LIVENESS
+
+```
+
+* redo the `index.yaml`:
+
+```sh
+docker run --rm -it -w /tmp -v ~/test:/tmp alpine/helm:$TAG repo index  package  --url http://basic-httpserver.argocd.svc.cluster.local:8081/package
+```
+```sh
+cp ~/test/package/index.html .
+```
+```yaml
+apiVersion: v1
+entries:
+  chart:
+  - apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-10-31T23:35:32.894507349Z"
+    description: A Helm chart for Libeness Readiness Example
+    digest: a4cfbbc048866e5444a0e15ff7f558db12924944912ede19b3ac60cb210ba8a5
+    name: chart
+    type: application
+    urls:
+    - http://basic-httpserver.argocd.svc.cluster.local:8081/package/chart-0.2.0.tgz
+    version: 0.2.0
+generated: "2026-10-31T23:35:32.891587907Z"
+
+
+```
+```
+docker build --build-arg CHART=chart-0.2.0.tgz -t basic-httpserver -f Dockerfile .
+NAME=basic-httpserver
+docker save --output ${NAME}.tar ${NAME}
+```  
+
+
+```
+```
 ### See Also
 
   * Maven versions __3.8.1__ and later blocking all external repository connections over plain HTTP by default for security reasons [release notes](https://maven.apache.org/docs/3.8.1/release-notes.html#cve-2021-26291)

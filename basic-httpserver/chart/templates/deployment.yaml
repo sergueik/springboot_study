@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe-example
+  labels:
+    app: probe-example
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app-container
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        ports:
+        - containerPort: 8080
+        startupProbe:
+          httpGet:
+            path: /
+            port: 8080
+          failureThreshold: 3
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path:  "{{ .Values.image.livenessProbe.path }}"
+            port: {{ .Values.image.livenessProbe.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path:  "{{ .Values.image.readinessProbe.path }}"
+            port: {{ .Values.image.readinessProbe.port }}
+          periodSeconds: 5
+        env:
+        - name: READY
+          valueFrom:
+            configMapKeyRef:
+              name: health-config
+              key: APP_READYNESS
+        - name: LIVE
+          valueFrom:
+            configMapKeyRef:
+              name: health-config
+              key: APP_LIVENESS
+

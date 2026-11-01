@@ -1,0 +1,16 @@
+image:
+    repository: docker.io/library/status-server
+    tag: latest
+    livenessProbe:
+        path: /api/live
+        port: 8080
+    readinessProbe:
+        path: /api/ready
+        port: 8080
+    imagePullPolicy: IfNotPresent
+    ready: up
+    live: up
+replicas: 1
+service:
+  type: ClusterIP
+  port: 80

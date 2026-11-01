@@ -810,5 +810,10 @@ update user home directory path in
 }
 
 ```
+### See Also
+
+  * fork of __Docker Toolbox__ maintained (with custom location of the [boot2docker.iso](https://github.com/kaosagnt/boot2docker-xfs-ng)). the windows installer can be downloaded from release assets directory [Toolbox2docker-29.9.2.exe](https://github.com/kaosagnt/toolbox2docker/releases/tag/29.9.2)
+
+---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

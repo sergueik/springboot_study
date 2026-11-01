@@ -1,15 +1,14 @@
----
 apiVersion: v1
 entries:
   chart:
-    - apiVersion: v2
-      appVersion: 1.16.0
-      created: "2026-10-30T11:31:00Z"
-      description: A Helm chart for Kubernetes
-      digest: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-      name: chart
-      urls:
-        - chart-0.1.0.tgz
-      version: 0.1.0
-generated: "2026-10-30T11:31:00Z"
-
+  - apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-10-31T23:35:32.894507349Z"
+    description: A Helm chart for Libeness Readiness Example
+    digest: a4cfbbc048866e5444a0e15ff7f558db12924944912ede19b3ac60cb210ba8a5
+    name: chart
+    type: application
+    urls:
+    - http://basic-httpserver.argocd.svc.cluster.local:8081/package/chart-0.2.0.tgz
+    version: 0.2.0
+generated: "2026-10-31T23:35:32.891587907Z"
