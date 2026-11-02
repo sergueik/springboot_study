@@ -932,6 +932,10 @@ networkpolicy.networking.k8s.io/argocd-server-network-policy created
 ```sh
 minikube kubectl port-forward svc/argocd-server --namespace argocd 8080:443
 ```
+or, if K8 is running on kind,
+```sh
+kubectl port-forward svc/argocd-server --namespace argocd 8080:443
+```
 ```text
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
@@ -1442,7 +1446,7 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 ```
 
-```
+```sh
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d |xclip -sel clip
 ```
 ![capture application hosted in docker on ubuntu](screenshots/application-argocd-kind.png)
@@ -2021,10 +2025,57 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 Forwarding from 127.0.0.1:8080 -> 8080
 Forwarding from [::1]:8080 -> 8080
 ```
+```sh
+kubectl --namespace argocd get all
+```
+```text
+NAME                                                    READY   STATUS    RESTARTS        AGE
+pod/argocd-application-controller-0                     1/1     Running   11 (155m ago)   11d
+pod/argocd-applicationset-controller-5dd497bfb9-4zsgp   1/1     Running   11 (155m ago)   11d
+pod/argocd-dex-server-7477f9db74-xn6b8                  1/1     Running   11 (155m ago)   11d
+pod/argocd-notifications-controller-6f4999b557-fvvhj    1/1     Running   11 (155m ago)   11d
+pod/argocd-redis-ff6c5f75b-xssn9                        1/1     Running   10 (155m ago)   11d
+pod/argocd-repo-server-77d57fb57c-k9zlk                 1/1     Running   10 (155m ago)   11d
+pod/argocd-server-c84c49c64-zc92d                       1/1     Running   11 (155m ago)   11d
+
+NAME                                              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+service/argocd-applicationset-controller          ClusterIP   10.96.150.141   <none>        7000/TCP,8080/TCP            11d
+service/argocd-dex-server                         ClusterIP   10.96.166.207   <none>        5556/TCP,5557/TCP,5558/TCP   11d
+service/argocd-metrics                            ClusterIP   10.96.5.104     <none>        8082/TCP                     11d
+service/argocd-notifications-controller-metrics   ClusterIP   10.96.157.120   <none>        9001/TCP                     11d
+service/argocd-redis                              ClusterIP   10.96.66.98     <none>        6379/TCP                     11d
+service/argocd-repo-server                        ClusterIP   10.96.171.225   <none>        8081/TCP,8084/TCP            11d
+service/argocd-server                             ClusterIP   10.96.129.131   <none>        80/TCP,443/TCP               11d
+service/argocd-server-metrics                     ClusterIP   10.96.241.54    <none>        8083/TCP                     11d
+
+NAME                                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/argocd-applicationset-controller   1/1     1            1           11d
+deployment.apps/argocd-dex-server                  1/1     1            1           11d
+deployment.apps/argocd-notifications-controller    1/1     1            1           11d
+deployment.apps/argocd-redis                       1/1     1            1           11d
+deployment.apps/argocd-repo-server                 1/1     1            1           11d
+deployment.apps/argocd-server                      1/1     1            1           11d
+
+NAME                                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/argocd-applicationset-controller-5dd497bfb9   1         1         1       11d
+replicaset.apps/argocd-dex-server-7477f9db74                  1         1         1       11d
+replicaset.apps/argocd-notifications-controller-6f4999b557    1         1         1       11d
+replicaset.apps/argocd-redis-ff6c5f75b                        1         1         1       11d
+replicaset.apps/argocd-repo-server-77d57fb57c                 1         1         1       11d
+replicaset.apps/argocd-server-c84c49c64                       1         1         1       11d
+
+NAME                                             READY   AGE
+statefulset.apps/argocd-application-controller   1/1     11d
+```
 
 ```sh
-kubectl --namespace argocd get sin-secret -o jsonpath="{.data.password}"  | base64 -d - | xclip -clip
-8c2hAZqJp33IQ9a3
+kubectl --namespace argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
+```
+```text
+OGMyaEFacUpwMzNJUTlhMw==
+```
+```sh
+kubectl --namespace argocd get secret argocd-initial-admin-secret  -o jsonpath="{.data.password}" | base64 -d - | xclip -sel clip
 ```
 
 creating "bad commits" is an amazing way to see how ArgoCD isolates application failures without crashing your underlying kind control plane.
@@ -2074,6 +2125,22 @@ While testing these bad commits, toggle the Self-Heal and Automated Prune featur
 the application reads HEALTH_MODE and returns:
 - 200 OK from /startup, /live, and /ready when the mode is normal.
 - 200 OK from /startup and /live, but 503 Service Unavailable from /ready when the mode is broken
+
+### Troublshooting
+
+![Capture DevTool Network](screenshots/screenshots/capture-gateway-create-application-error.png)
+
+It is possible to __ArgoCD__ never able to finisn application creation due to network timeouts reaching public github from VPN:
+
+![Capture Application detection its error](screenshots/capture-gateway-create-application-confirmed-timeout-error.png)
+
+When external network connection is challenged (reconnected)
+```text
+E1102 11:01:28.768050    9177 portforward.go:525] "Error copying from local connection to remote stream" err="writeto tcp6 [::1]:8080->[::1]:52792: read tcp6 [::1]:8080->[::1]:52792: read: network is unreachable" localPort=8080 remotePort=8080
+```
+
+![Capture Application detection its error](screenshots/capture-gateway-create-application-confirmed-timeout-error.png)
+
 
 ### Diagrams
 

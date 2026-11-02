@@ -89,6 +89,26 @@ TAG=v3.12.0
 
 > The recent [helmify](https://github.com/arttor/helmify) only supports __Helm__ versions newer than __v3.6.0__.
 
+> On the [v3.12.0 release](https://github.com/helm/helm/releases/v3.12.0) page inspect the individual download links - not the 'Assets' area.
+![Capture Release Page with Hover Hint](screenshots/capture-release-page-with-hint.png)
+
+
+```sh
+curl -skLo ~/Downloads/helm-v3.12.0-linux-amd64.tar.gz https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
+curl -skLo ~/Downloads/helm-v3.12.0-windows-amd64.zip  https://get.helm.sh/helm-v3.12.0-windows-amd64.zip
+```
+```sh
+pushd /tmp
+tar xzf ~/Downloads/helm-v3.12.0-linux-amd64.tar.gz 
+sudo install linux-amd64/helm  /usr/local/bin/
+```
+```sh
+helm version
+```
+```text
+version.BuildInfo{Version:"v3.12.0", GitCommit:"c9f554d75773799f72ceef38c51210f1842a1dea", GitTreeState:"clean", GoVersion:"go1.20.3"}
+```
+but the __Assets__  area only contains checksums
 ```cmd
 curl -skLO https://github.com/helm/helm/releases/download/v3.12.0/helm-v3.12.0-windows-amd64.zip.asc
 file helm-v3.12.0-windows-amd64.zip.asc
@@ -297,10 +317,13 @@ the punchline depends on delaying the identification of the blamed party until t
 git pull 
 ```
 ```text
+fatal: unable to access 'https://github.com/sergueik/springboot_study/': SSL: certificate subject name (tdwifi.tdbank.ca) does not match target host name 'github.com'
 ```
-resolution: WIFI likely redirects first attempts to reach internet to accept page
+WIFI likely redirects first attempts to reach internet to vendor consent accept page
+Continue through Login Free WIFI Consent "I accept the terms of use" page:
 
 ![Caption Free WIFI Accept](screenshots/free_wifi_accept.png) 
+
 
 ### The Cost of Heroic Engineering
 

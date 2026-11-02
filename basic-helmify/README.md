@@ -461,6 +461,17 @@ docker build -f Dockerfile -t $IMAGE .
 ```
 ### Troubleahooting 
 
+
+```sh
+git pull
+```
+```text
+fatal: unable to access 'https://github.com/sergueik/springboot_study/': SSL: certificate subject name (tdwifi.tdbank.ca) does not match target host name 'github.com'
+```
+
+Continue through Login Free WIFI Consent "I accept the terms of use" page.
+
+
 > NOTE: not intend to fix
 
 ```sh

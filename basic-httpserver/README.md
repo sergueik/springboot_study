@@ -285,6 +285,7 @@ cp ~/test/package/chart-0.1.0.tgz .
 touch index.yaml
 ```
 ```yaml
+---
 apiVersion: v1
 entries:
   chart:
