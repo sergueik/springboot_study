@@ -361,18 +361,551 @@ statefulset.apps/argocd-application-controller   1/1     7m3s
 ```
 
 ```sh
-ID=$(docker container ls | grep 'argocd-cluster-control-plane' | awk '{print $1}')
+ID=$(docker container ls -a | grep 'argocd-cluster-control-plane' | awk '{print $1}')
 ```
 ```sh
 docker container start $ID
 ```
+
+```
+docker logs $ID
+```
+> NOTE: log is long...
+```text
+Welcome to Debian GNU/Linux 11 (bullseye)!
+
+Set hostname to <argocd-cluster-control-plane>.
+Queued start job for default target Graphical Interface.
+[  OK  ] Created slice slice used to run Kubernetes / Kubelet.
+[  OK  ] Created slice system-modprobe.slice.
+[  OK  ] Started Dispatch Password …ts to Console Directory Watch.
+[  OK  ] Set up automount Arbitrary…s File System Automount Point.
+[  OK  ] Reached target Local Encrypted Volumes.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Slices.
+[  OK  ] Reached target Swap.
+[  OK  ] Listening on Journal Audit Socket.
+[  OK  ] Listening on Journal Socket (/dev/log).
+[  OK  ] Listening on Journal Socket.
+[  OK  ] Reached target Sockets.
+         Mounting Huge Pages File System...
+         Mounting Kernel Debug File System...
+         Mounting Kernel Trace File System...
+         Starting Create list of st…odes for the current kernel...
+         Starting Load Kernel Module configfs...
+         Starting Load Kernel Module fuse...
+         Starting Journal Service...
+         Starting Load Kernel Modules...
+         Starting Remount Root and Kernel File Systems...
+[  OK  ] Finished Create list of st… nodes for the current kernel.
+[  OK  ] Mounted Huge Pages File System.
+[  OK  ] Mounted Kernel Debug File System.
+[  OK  ] Mounted Kernel Trace File System.
+[  OK  ] Finished Remount Root and Kernel File Systems.
+         Starting Create System Users...
+         Starting Update UTMP about System Boot/Shutdown...
+modprobe@configfs.service: Succeeded.
+[  OK  ] Finished Load Kernel Module configfs.
+         Mounting Kernel Configuration File System...
+modprobe@fuse.service: Succeeded.
+[  OK  ] Finished Load Kernel Module fuse.
+         Mounting FUSE Control File System...
+[  OK  ] Mounted Kernel Configuration File System.
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Finished Update UTMP about System Boot/Shutdown.
+[  OK  ] Started Journal Service.
+         Starting Flush Journal to Persistent Storage...
+[  OK  ] Finished Create System Users.
+         Starting Create Static Device Nodes in /dev...
+[  OK  ] Finished Flush Journal to Persistent Storage.
+[  OK  ] Finished Create Static Device Nodes in /dev.
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+[  OK  ] Finished Load Kernel Modules.
+         Starting Apply Kernel Variables...
+[  OK  ] Finished Apply Kernel Variables.
+[  OK  ] Reached target System Initialization.
+[  OK  ] Started Daily Cleanup of Temporary Directories.
+[  OK  ] Reached target Basic System.
+[  OK  ] Reached target Timers.
+         Starting Undo KIND mount hacks...
+[  OK  ] Finished Undo KIND mount hacks.
+         Starting containerd container runtime...
+         Starting kubelet: The Kubernetes Node Agent...
+[  OK  ] Started kubelet: The Kubernetes Node Agent.
+[  OK  ] Started Kubernetes systemd probe.
+[  OK  ] Started containerd container runtime.
+[  OK  ] Reached target Multi-User System.
+[  OK  ] Reached target Graphical Interface.
+         Starting Update UTMP about System Runlevel Changes...
+[  OK  ] Finished Update UTMP about System Runlevel Changes.
+INFO: ensuring we can execute mount/umount even with userns-remap
+INFO: remounting /sys read-only
+INFO: making mounts shared
+INFO: detected cgroup v1
+INFO: detected cgroupns
+INFO: clearing and regenerating /etc/machine-id
+Initializing machine ID from random generator.
+INFO: faking /sys/class/dmi/id/product_name to be "kind"
+INFO: faking /sys/class/dmi/id/product_uuid to be random
+INFO: faking /sys/devices/virtual/dmi/id/product_uuid as well
+INFO: setting iptables to detected mode: legacy
+INFO: detected IPv4 address: 172.18.0.2
+INFO: detected old IPv4 address: 172.18.0.2
+INFO: detected IPv6 address: fc00:f853:ccd:e793::2
+INFO: detected old IPv6 address: fc00:f853:ccd:e793::2
+INFO: starting init
+systemd 247.3-7+deb11u2 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +ZSTD +SECCOMP +BLKID +ELFUTILS +KMOD +IDN2 -IDN +PCRE2 default-hierarchy=unified)
+Detected virtualization docker.
+Detected architecture x86-64.
+
+Welcome to Debian GNU/Linux 11 (bullseye)!
+
+Set hostname to <argocd-cluster-control-plane>.
+Queued start job for default target Graphical Interface.
+[  OK  ] Created slice slice used to run Kubernetes / Kubelet.
+[  OK  ] Created slice system-modprobe.slice.
+[  OK  ] Started Dispatch Password …ts to Console Directory Watch.
+[  OK  ] Set up automount Arbitrary…s File System Automount Point.
+[  OK  ] Reached target Local Encrypted Volumes.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Slices.
+[  OK  ] Reached target Swap.
+[  OK  ] Listening on Journal Audit Socket.
+[  OK  ] Listening on Journal Socket (/dev/log).
+[  OK  ] Listening on Journal Socket.
+[  OK  ] Reached target Sockets.
+         Mounting Huge Pages File System...
+         Mounting Kernel Debug File System...
+         Mounting Kernel Trace File System...
+         Starting Create list of st…odes for the current kernel...
+         Starting Load Kernel Module configfs...
+         Starting Load Kernel Module fuse...
+         Starting Journal Service...
+         Starting Load Kernel Modules...
+         Starting Remount Root and Kernel File Systems...
+[  OK  ] Mounted Huge Pages File System.
+[  OK  ] Mounted Kernel Debug File System.
+[  OK  ] Mounted Kernel Trace File System.
+[  OK  ] Finished Create list of st… nodes for the current kernel.
+modprobe@configfs.service: Succeeded.
+[  OK  ] Finished Load Kernel Module configfs.
+modprobe@fuse.service: Succeeded.
+[  OK  ] Finished Load Kernel Module fuse.
+         Mounting FUSE Control File System...
+         Mounting Kernel Configuration File System...
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Mounted Kernel Configuration File System.
+[  OK  ] Finished Remount Root and Kernel File Systems.
+         Starting Create System Users...
+         Starting Update UTMP about System Boot/Shutdown...
+[  OK  ] Finished Update UTMP about System Boot/Shutdown.
+[  OK  ] Finished Create System Users.
+         Starting Create Static Device Nodes in /dev...
+[  OK  ] Started Journal Service.
+         Starting Flush Journal to Persistent Storage...
+[  OK  ] Finished Flush Journal to Persistent Storage.
+[  OK  ] Finished Create Static Device Nodes in /dev.
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+[  OK  ] Finished Load Kernel Modules.
+         Starting Apply Kernel Variables...
+[  OK  ] Finished Apply Kernel Variables.
+[  OK  ] Reached target System Initialization.
+[  OK  ] Started Daily Cleanup of Temporary Directories.
+[  OK  ] Reached target Basic System.
+[  OK  ] Reached target Timers.
+         Starting Undo KIND mount hacks...
+[  OK  ] Finished Undo KIND mount hacks.
+         Starting containerd container runtime...
+         Starting kubelet: The Kubernetes Node Agent...
+[  OK  ] Started kubelet: The Kubernetes Node Agent.
+[  OK  ] Started Kubernetes systemd probe.
+[  OK  ] Started containerd container runtime.
+[  OK  ] Reached target Multi-User System.
+[  OK  ] Reached target Graphical Interface.
+         Starting Update UTMP about System Runlevel Changes...
+[  OK  ] Finished Update UTMP about System Runlevel Changes.
+         Stopping libcontainer cont…2609d342dbc0267ce3dc576f6c5db.
+         Stopping libcontainer cont…6061418d9817020068f282b3e28a5.
+         Stopping libcontainer cont…a65e5ff22d1cebe56526390e275bb.
+         Stopping libcontainer cont…dc2a9610ceb139da5d263d5d2c708.
+         Stopping libcontainer cont…5cb1e3dfb3ed8653c41a376c16470.
+         Stopping libcontainer cont…1f688cb089cbe9e97d57d7fadfd5a.
+         Stopping libcontainer cont…163f95813488aa9eccc57136898fe.
+         Stopping libcontainer cont…eb3fe8e809e95a82ff0491dcb27ac.
+         Stopping libcontainer cont…8fdee62b80a49ef5e86a9ef71f05d.
+         Stopping libcontainer cont…ab1a1b624336b9ec8cbdb11fca9e6.
+         Stopping libcontainer cont…133be32552bda755dc1a72d2ec184.
+         Stopping libcontainer cont…9e982cd8917a0ed8c8002cbccb0f0.
+         Stopping libcontainer cont…93850f8ff9984b2748f543c25e242.
+         Stopping libcontainer cont…5a44e5bb420db2d3b9b1a84c77947.
+         Stopping libcontainer cont…c5d7b9f116752306e4e96dbfe9cb4.
+         Stopping libcontainer cont…236f225979592ed078c8baf1b2c1a.
+         Stopping libcontainer cont…e17130f383e0c011465c1551e1e1b.
+         Stopping libcontainer cont…7123f1787e451c49add6b6d0fff0e.
+         Stopping libcontainer cont…72491a8b74e1384240465578e6d40.
+         Stopping libcontainer cont…ac2d84a5bcec065a02fae0f7f734c.
+         Stopping libcontainer cont…6e6f0184a04c031871bfaf356f3c3.
+         Stopping libcontainer cont…762ce32a3a9b28ca5e9f756f4cbd6.
+         Stopping libcontainer cont…f621cbf24de50ef5b1f1e855b1a88.
+         Stopping libcontainer cont…a762af4cc3bbd059eae53dc718ea5.
+         Stopping libcontainer cont…4a994c9516fcda96625ad0c872af6.
+         Stopping libcontainer cont…38cb0368b5d98ad737e02817e4628.
+         Stopping libcontainer cont…8c12ff743fece3c047857b3672f2f.
+         Stopping libcontainer cont…1cc86e162e61ecbff067661565f41.
+         Stopping libcontainer cont…26754af04693d96f693db7e3d6c65.
+         Stopping libcontainer cont…b3f1f75d4900b18a92691c8324e90.
+         Stopping libcontainer cont…b3859b6b433995663b4f548da28eb.
+         Stopping libcontainer cont…a9d02e12918261e920174b583d0e1.
+[  OK  ] Removed slice system-modprobe.slice.
+[  OK  ] Stopped target Graphical Interface.
+[  OK  ] Stopped target Multi-User System.
+[  OK  ] Stopped target Timers.
+[  OK  ] Stopped Daily Cleanup of Temporary Directories.
+         Stopping containerd container runtime...
+         Stopping kubelet: The Kubernetes Node Agent...
+[  OK  ] Stopped libcontainer conta…236f225979592ed078c8baf1b2c1a.
+[  OK  ] Stopped libcontainer conta…f621cbf24de50ef5b1f1e855b1a88.
+[  OK  ] Stopped libcontainer conta…133be32552bda755dc1a72d2ec184.
+[  OK  ] Stopped libcontainer conta…1f688cb089cbe9e97d57d7fadfd5a.
+[  OK  ] Stopped libcontainer conta…6061418d9817020068f282b3e28a5.
+[  OK  ] Stopped libcontainer conta…a9d02e12918261e920174b583d0e1.
+[  OK  ] Stopped libcontainer conta…dc2a9610ceb139da5d263d5d2c708.
+[  OK  ] Stopped libcontainer conta…8c12ff743fece3c047857b3672f2f.
+[  OK  ] Stopped libcontainer conta…38cb0368b5d98ad737e02817e4628.
+[  OK  ] Stopped libcontainer conta…c5d7b9f116752306e4e96dbfe9cb4.
+[  OK  ] Stopped libcontainer conta…93850f8ff9984b2748f543c25e242.
+[  OK  ] Stopped libcontainer conta…ab1a1b624336b9ec8cbdb11fca9e6.
+[  OK  ] Stopped libcontainer conta…26754af04693d96f693db7e3d6c65.
+[  OK  ] Stopped libcontainer conta…eb3fe8e809e95a82ff0491dcb27ac.
+[  OK  ] Stopped libcontainer conta…9e982cd8917a0ed8c8002cbccb0f0.
+[  OK  ] Stopped libcontainer conta…5cb1e3dfb3ed8653c41a376c16470.
+[  OK  ] Stopped libcontainer conta…e17130f383e0c011465c1551e1e1b.
+[  OK  ] Stopped libcontainer conta…4a994c9516fcda96625ad0c872af6.
+[  OK  ] Removed slice libcontainer…_4ffe_a837_ad8abf57f5f8.slice.
+[  OK  ] Removed slice libcontainer…_41e2_82bb_7dbe302f0404.slice.
+[  OK  ] Stopped libcontainer conta…2609d342dbc0267ce3dc576f6c5db.
+[  OK  ] Removed slice libcontainer…_492b_81cf_107da545113c.slice.
+[  OK  ] Stopped libcontainer conta…163f95813488aa9eccc57136898fe.
+[  OK  ] Removed slice libcontainer…809a68bcc3d4a2bd55f2c18.slice.
+[  OK  ] Stopped libcontainer conta…1cc86e162e61ecbff067661565f41.
+[  OK  ] Removed slice libcontainer…_4ad8_8808_55ecb8d3e688.slice.
+[  OK  ] Stopped libcontainer conta…6e6f0184a04c031871bfaf356f3c3.
+[  OK  ] Removed slice libcontainer…_4c15_b461_7e4f60b0f5e7.slice.
+[  OK  ] Stopped libcontainer conta…a65e5ff22d1cebe56526390e275bb.
+[  OK  ] Removed slice libcontainer…_4602_af2d_bf0c21e070d7.slice.
+[  OK  ] Stopped libcontainer conta…762ce32a3a9b28ca5e9f756f4cbd6.
+[  OK  ] Removed slice libcontainer…_4fec_bfa8_9655fe238ae7.slice.
+[  OK  ] Stopped libcontainer conta…7123f1787e451c49add6b6d0fff0e.
+[  OK  ] Removed slice libcontainer…_4cbd_96f7_c619d74b8136.slice.
+[  OK  ] Stopped kubelet: The Kubernetes Node Agent.
+[  OK  ] Stopped libcontainer conta…72491a8b74e1384240465578e6d40.
+[  OK  ] Removed slice libcontainer…_40d5_9134_56ae106fbd10.slice.
+[  OK  ] Stopped libcontainer conta…8fdee62b80a49ef5e86a9ef71f05d.
+[  OK  ] Removed slice libcontainer…5b65d78358b936c5051d93c.slice.
+[  OK  ] Stopped containerd container runtime.
+[  OK  ] Stopped target Basic System.
+[  OK  ] Stopped target Paths.
+[  OK  ] Stopped target Slices.
+[  OK  ] Stopped target Sockets.
+[  OK  ] Stopped target System Initialization.
+[  OK  ] Stopped target Local Encrypted Volumes.
+[  OK  ] Stopped Dispatch Password …ts to Console Directory Watch.
+[  OK  ] Stopped target Local File Systems.
+         Unmounting /etc/hostname...
+         Unmounting /etc/hosts...
+         Unmounting /etc/resolv.conf...
+         Unmounting /kind/product_uuid...
+         Unmounting /lib/modules...
+         Unmounting /run/containerd…42dbc0267ce3dc576f6c5db/shm...
+         Unmounting /run/containerd…8d9817020068f282b3e28a5/shm...
+         Unmounting /run/containerd…10ceb139da5d263d5d2c708/shm...
+         Unmounting /run/containerd…dfb3ed8653c41a376c16470/shm...
+         Unmounting /run/containerd…b089cbe9e97d57d7fadfd5a/shm...
+         Unmounting /run/containerd…e809e95a82ff0491dcb27ac/shm...
+         Unmounting /run/containerd…624336b9ec8cbdb11fca9e6/shm...
+         Unmounting /run/containerd…d8917a0ed8c8002cbccb0f0/shm...
+         Unmounting /run/containerd…8ff9984b2748f543c25e242/shm...
+         Unmounting /run/containerd…f116752306e4e96dbfe9cb4/shm...
+         Unmounting /run/containerd…f383e0c011465c1551e1e1b/shm...
+         Unmounting /run/containerd…9516fcda96625ad0c872af6/shm...
+         Unmounting /run/containerd…68b5d98ad737e02817e4628/shm...
+         Unmounting /run/containerd…743fece3c047857b3672f2f/shm...
+         Unmounting /run/containerd…f04693d96f693db7e3d6c65/shm...
+         Unmounting /run/containerd…12918261e920174b583d0e1/shm...
+         Unmounting /run/containerd…bc0267ce3dc576f6c5db/rootfs...
+         Unmounting /run/containerd…817020068f282b3e28a5/rootfs...
+         Unmounting /run/containerd…d1cebe56526390e275bb/rootfs...
+         Unmounting /run/containerd…eb139da5d263d5d2c708/rootfs...
+         Unmounting /run/containerd…3ed8653c41a376c16470/rootfs...
+         Unmounting /run/containerd…9cbe9e97d57d7fadfd5a/rootfs...
+         Unmounting /run/containerd…488aa9eccc57136898fe/rootfs...
+         Unmounting /run/containerd…9e95a82ff0491dcb27ac/rootfs...
+         Unmounting /run/containerd…0a49ef5e86a9ef71f05d/rootfs...
+         Unmounting /run/containerd…336b9ec8cbdb11fca9e6/rootfs...
+         Unmounting /run/containerd…2bda755dc1a72d2ec184/rootfs...
+         Unmounting /run/containerd…17a0ed8c8002cbccb0f0/rootfs...
+         Unmounting /run/containerd…9984b2748f543c25e242/rootfs...
+         Unmounting /run/containerd…20db2d3b9b1a84c77947/rootfs...
+         Unmounting /run/containerd…6752306e4e96dbfe9cb4/rootfs...
+         Unmounting /run/containerd…9592ed078c8baf1b2c1a/rootfs...
+         Unmounting /run/containerd…3e0c011465c1551e1e1b/rootfs...
+         Unmounting /run/containerd…e451c49add6b6d0fff0e/rootfs...
+         Unmounting /run/containerd…4e1384240465578e6d40/rootfs...
+         Unmounting /run/containerd…cec065a02fae0f7f734c/rootfs...
+         Unmounting /run/containerd…04c031871bfaf356f3c3/rootfs...
+         Unmounting /run/containerd…a9b28ca5e9f756f4cbd6/rootfs...
+         Unmounting /run/containerd…de50ef5b1f1e855b1a88/rootfs...
+         Unmounting /run/containerd…3bbd059eae53dc718ea5/rootfs...
+         Unmounting /run/containerd…6fcda96625ad0c872af6/rootfs...
+         Unmounting /run/containerd…5d98ad737e02817e4628/rootfs...
+         Unmounting /run/containerd…fece3c047857b3672f2f/rootfs...
+         Unmounting /run/containerd…e61ecbff067661565f41/rootfs...
+         Unmounting /run/containerd…693d96f693db7e3d6c65/rootfs...
+         Unmounting /run/containerd…900b18a92691c8324e90/rootfs...
+         Unmounting /run/containerd…33995663b4f548da28eb/rootfs...
+         Unmounting /run/containerd…18261e920174b583d0e1/rootfs...
+         Unmounting /run/netns/cni-…a316-b8f6-46da-36f0acabca80...
+         Unmounting /run/netns/cni-…f687-76d1-b241-8a8b9b9063eb...
+         Unmounting /run/netns/cni-…751c-361c-0145-a699ab6cb236...
+         Unmounting /run/netns/cni-…afb8-bca0-d03a-1bc23287735d...
+         Unmounting /run/netns/cni-…a275-c64c-30f1-542efc8f80ad...
+         Unmounting /run/netns/cni-…40fe-d9af-79ce-e80440405edd...
+         Unmounting /run/netns/cni-…a352-ad53-8131-d3d2f545ee66...
+         Unmounting /run/netns/cni-…0133-ccf3-2f6b-b516e4f87c9f...
+         Unmounting /run/netns/cni-…7f91-bdfb-4440-8e7b60d82ce5...
+         Unmounting /run/netns/cni-…b262-bfe6-5ed9-96181500c5a1...
+         Unmounting /tmp...
+         Unmounting /var/lib/kubele…ected/kube-api-access-px9fx...
+         Unmounting /var/lib/kubele…ret/argocd-repo-server-mtls...
+         Unmounting /var/lib/kubele…cret/argocd-repo-server-tls...
+         Unmounting /var/lib/kubele…ected/kube-api-access-chfrx...
+         Unmounting /var/lib/kubele…ected/kube-api-access-g5fdd...
+         Unmounting /var/lib/kubele…ected/kube-api-access-5l5tr...
+         Unmounting /var/lib/kubele…ret/argocd-repo-server-mtls...
+         Unmounting /var/lib/kubele…cret/argocd-repo-server-tls...
+         Unmounting /var/lib/kubele…ected/kube-api-access-47kgv...
+         Unmounting /var/lib/kubele…ecret/argocd-dex-server-tls...
+         Unmounting /var/lib/kubele…ret/argocd-repo-server-mtls...
+         Unmounting /var/lib/kubele…cret/argocd-repo-server-tls...
+         Unmounting /var/lib/kubele…ected/kube-api-access-5dkt6...
+         Unmounting /var/lib/kubele…ected/kube-api-access-9b6bx...
+         Unmounting /var/lib/kubele…ected/kube-api-access-xkntn...
+         Unmounting /var/lib/kubele…ret/argocd-repo-server-mtls...
+         Unmounting /var/lib/kubele…cret/argocd-repo-server-tls...
+         Unmounting /var/lib/kubele…ected/kube-api-access-v54b5...
+         Unmounting /var/lib/kubele…ecret/argocd-dex-server-tls...
+         Unmounting /var/lib/kubele…ected/kube-api-access-8btvd...
+         Unmounting /var/lib/kubele…ret/argocd-repo-server-mtls...
+         Unmounting /var/lib/kubele…cret/argocd-repo-server-tls...
+         Unmounting /var/lib/kubele…ected/kube-api-access-rv9g8...
+[  OK  ] Stopped Apply Kernel Variables.
+[  OK  ] Stopped Load Kernel Modules.
+         Stopping Update UTMP about System Boot/Shutdown...
+[  OK  ] Stopped libcontainer conta…b3f1f75d4900b18a92691c8324e90.
+[  OK  ] Removed slice libcontainer…dfcf2863bf11e91e8bb935b.slice.
+[  OK  ] Unmounted /etc/hosts.
+[  OK  ] Unmounted /etc/resolv.conf.
+[  OK  ] Unmounted /kind/product_uuid.
+[  OK  ] Unmounted /lib/modules.
+[  OK  ] Unmounted /run/containerd/…9610ceb139da5d263d5d2c708/shm.
+[  OK  ] Unmounted /etc/hostname.
+[  OK  ] Unmounted /run/containerd/…e3dfb3ed8653c41a376c16470/shm.
+[  OK  ] Unmounted /run/containerd/…2e12918261e920174b583d0e1/shm.
+[  OK  ] Unmounted /run/containerd/…30f383e0c011465c1551e1e1b/shm.
+[  OK  ] Unmounted /run/containerd/…8cb089cbe9e97d57d7fadfd5a/shm.
+[  OK  ] Unmounted /run/netns/cni-b…4-7f91-bdfb-4440-8e7b60d82ce5.
+[  OK  ] Unmounted /run/containerd/…ff9984b2748f543c25e242/rootfs.
+[  OK  ] Unmounted /run/netns/cni-5…3-afb8-bca0-d03a-1bc23287735d.
+[  OK  ] Unmounted /run/containerd/…43fece3c047857b3672f2f/rootfs.
+[  OK  ] Unmounted /var/lib/kubelet…secret/argocd-repo-server-tls.
+[  OK  ] Unmounted /var/lib/kubelet…ecret/argocd-repo-server-mtls.
+[  OK  ] Unmounted /run/containerd/…62e61ecbff067661565f41/rootfs.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-px9fx.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-chfrx.
+[  OK  ] Unmounted /run/containerd/…1b624336b9ec8cbdb11fca9e6/shm.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-xkntn.
+[  OK  ] Unmounted /var/lib/kubelet…ecret/argocd-repo-server-mtls.
+[  OK  ] Unmounted /run/containerd/…4af04693d96f693db7e3d6c65/shm.
+[  OK  ] Unmounted /run/containerd/…8b5d98ad737e02817e4628/rootfs.
+[  OK  ] Unmounted /run/containerd/…b420db2d3b9b1a84c77947/rootfs.
+[  OK  ] Unmounted /run/containerd/…ff743fece3c047857b3672f2f/shm.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-5dkt6.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-g5fdd.
+[  OK  ] Unmounted /var/lib/kubelet…~secret/argocd-dex-server-tls.
+[  OK  ] Unmounted /run/containerd/…089cbe9e97d57d7fadfd5a/rootfs.
+[  OK  ] Unmounted /run/containerd/…5bcec065a02fae0f7f734c/rootfs.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-8btvd.
+[  OK  ] Unmounted /var/lib/kubelet…secret/argocd-repo-server-tls.
+[  OK  ] Unmounted /run/containerd/…809e95a82ff0491dcb27ac/rootfs.
+[  OK  ] Unmounted /run/containerd/…d342dbc0267ce3dc576f6c5db/shm.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-v54b5.
+[  OK  ] Unmounted /run/containerd/…0f8ff9984b2748f543c25e242/shm.
+[  OK  ] Unmounted /run/containerd/…13488aa9eccc57136898fe/rootfs.
+[  OK  ] Unmounted /run/containerd/…b433995663b4f548da28eb/rootfs.
+[  OK  ] Unmounted /run/containerd/…b9f116752306e4e96dbfe9cb4/shm.
+[  OK  ] Unmounted /run/containerd/…4c9516fcda96625ad0c872af6/shm.
+[  OK  ] Unmounted /run/containerd/…116752306e4e96dbfe9cb4/rootfs.
+[  OK  ] Unmounted /run/netns/cni-a…1-0133-ccf3-2f6b-b516e4f87c9f.
+[  OK  ] Unmounted /var/lib/kubelet…secret/argocd-repo-server-tls.
+[  OK  ] Unmounted /run/containerd/…418d9817020068f282b3e28a5/shm.
+[  OK  ] Unmounted /var/lib/kubelet…ecret/argocd-repo-server-mtls.
+[  OK  ] Unmounted /var/lib/kubelet…secret/argocd-repo-server-tls.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-rv9g8.
+[  OK  ] Unmounted /run/containerd/…979592ed078c8baf1b2c1a/rootfs.
+[  OK  ] Unmounted /run/netns/cni-1…4-a316-b8f6-46da-36f0acabca80.
+[  OK  ] Unmounted /run/netns/cni-9…5-40fe-d9af-79ce-e80440405edd.
+[  OK  ] Unmounted /run/netns/cni-f…1-b262-bfe6-5ed9-96181500c5a1.
+[  OK  ] Unmounted /run/containerd/…22d1cebe56526390e275bb/rootfs.
+[  OK  ] Unmounted /run/netns/cni-1…6-f687-76d1-b241-8a8b9b9063eb.
+[  OK  ] Unmounted /var/lib/kubelet…secret/argocd-repo-server-tls.
+[  OK  ] Unmounted /run/netns/cni-7…d-a275-c64c-30f1-542efc8f80ad.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-47kgv.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-9b6bx.
+[  OK  ] Unmounted /run/containerd/…cc3bbd059eae53dc718ea5/rootfs.
+[  OK  ] Unmounted /run/containerd/…4a04c031871bfaf356f3c3/rootfs.
+[  OK  ] Unmounted /run/containerd/…24336b9ec8cbdb11fca9e6/rootfs.
+[  OK  ] Unmounted /run/netns/cni-5…9-751c-361c-0145-a699ab6cb236.
+[  OK  ] Unmounted /run/netns/cni-a…c-a352-ad53-8131-d3d2f545ee66.
+[  OK  ] Unmounted /run/containerd/…fb3ed8653c41a376c16470/rootfs.
+[  OK  ] Unmounted /run/containerd/…516fcda96625ad0c872af6/rootfs.
+[  OK  ] Unmounted /run/containerd/…2cd8917a0ed8c8002cbccb0f0/shm.
+[  OK  ] Unmounted /run/containerd/…e8e809e95a82ff0491dcb27ac/shm.
+[  OK  ] Unmounted /run/containerd/…0368b5d98ad737e02817e4628/shm.
+[  OK  ] Unmounted /run/containerd/…a3a9b28ca5e9f756f4cbd6/rootfs.
+[  OK  ] Unmounted /var/lib/kubelet…~secret/argocd-dex-server-tls.
+[  OK  ] Unmounted /run/containerd/…d9817020068f282b3e28a5/rootfs.
+[  OK  ] Unmounted /run/containerd/…0ceb139da5d263d5d2c708/rootfs.
+[  OK  ] Unmounted /run/containerd/…8917a0ed8c8002cbccb0f0/rootfs.
+[  OK  ] Unmounted /tmp.
+[  OK  ] Unmounted /var/lib/kubelet…ojected/kube-api-access-5l5tr.
+[  OK  ] Unmounted /run/containerd/…2918261e920174b583d0e1/rootfs.
+[  OK  ] Unmounted /var/lib/kubelet…ecret/argocd-repo-server-mtls.
+[  OK  ] Unmounted /var/lib/kubelet…ecret/argocd-repo-server-mtls.
+[  OK  ] Stopped Update UTMP about System Boot/Shutdown.
+[  OK  ] Stopped target Swap.
+         Unmounting /var...
+[  OK  ] Unmounted /var.
+[  OK  ] Unmounted /run/containerd/…b80a49ef5e86a9ef71f05d/rootfs.
+[  OK  ] Unmounted /run/containerd/…552bda755dc1a72d2ec184/rootfs.
+[  OK  ] Unmounted /run/containerd/…87e451c49add6b6d0fff0e/rootfs.
+[  OK  ] Unmounted /run/containerd/…24de50ef5b1f1e855b1a88/rootfs.
+[  OK  ] Unmounted /run/containerd/…383e0c011465c1551e1e1b/rootfs.
+[  OK  ] Unmounted /run/containerd/…2dbc0267ce3dc576f6c5db/rootfs.
+[  OK  ] Unmounted /run/containerd/…b74e1384240465578e6d40/rootfs.
+[  OK  ] Unmounted /run/containerd/…04693d96f693db7e3d6c65/rootfs.
+[  OK  ] Unmounted /run/containerd/…d4900b18a92691c8324e90/rootfs.
+[  OK  ] Stopped target Local File Systems (Pre).
+[  OK  ] Reached target Unmount All Filesystems.
+[  OK  ] Stopped Create Static Device Nodes in /dev.
+[  OK  ] Stopped Create System Users.
+[  OK  ] Stopped Remount Root and Kernel File Systems.
+[  OK  ] Stopped libcontainer conta…5a44e5bb420db2d3b9b1a84c77947.
+[  OK  ] Stopped libcontainer conta…ac2d84a5bcec065a02fae0f7f734c.
+[  OK  ] Removed slice libcontainer…_4f4a_b781_1432818e364f.slice.
+[  OK  ] Removed slice libcontainer…_4083_9c0a_202653aa9f0f.slice.
+[    **] (1 of 2) A stop job is running for …bd059eae53dc718ea5 (9s / 1min 30s)
+INFO: ensuring we can execute mount/umount even with userns-remap
+INFO: remounting /sys read-only
+INFO: making mounts shared
+INFO: detected cgroup v1
+INFO: detected cgroupns
+INFO: clearing and regenerating /etc/machine-id
+Initializing machine ID from random generator.
+INFO: faking /sys/class/dmi/id/product_name to be "kind"
+INFO: faking /sys/class/dmi/id/product_uuid to be random
+INFO: faking /sys/devices/virtual/dmi/id/product_uuid as well
+INFO: setting iptables to detected mode: legacy
+INFO: detected IPv4 address: 172.18.0.2
+INFO: detected old IPv4 address: 172.18.0.2
+INFO: detected IPv6 address: fc00:f853:ccd:e793::2
+INFO: detected old IPv6 address: fc00:f853:ccd:e793::2
+INFO: starting init
+systemd 247.3-7+deb11u2 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +ZSTD +SECCOMP +BLKID +ELFUTILS +KMOD +IDN2 -IDN +PCRE2 default-hierarchy=unified)
+Detected virtualization docker.
+Detected architecture x86-64.
+
+Welcome to Debian GNU/Linux 11 (bullseye)!
+
+Set hostname to <argocd-cluster-control-plane>.
+Queued start job for default target Graphical Interface.
+[  OK  ] Created slice slice used to run Kubernetes / Kubelet.
+[  OK  ] Created slice system-modprobe.slice.
+[  OK  ] Started Dispatch Password …ts to Console Directory Watch.
+[  OK  ] Set up automount Arbitrary…s File System Automount Point.
+[  OK  ] Reached target Local Encrypted Volumes.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Slices.
+[  OK  ] Reached target Swap.
+[  OK  ] Listening on Journal Audit Socket.
+[  OK  ] Listening on Journal Socket (/dev/log).
+[  OK  ] Listening on Journal Socket.
+[  OK  ] Reached target Sockets.
+         Mounting Huge Pages File System...
+         Mounting Kernel Debug File System...
+         Mounting Kernel Trace File System...
+         Starting Create list of st…odes for the current kernel...
+         Starting Load Kernel Module configfs...
+         Starting Load Kernel Module fuse...
+         Starting Journal Service...
+         Starting Load Kernel Modules...
+         Starting Remount Root and Kernel File Systems...
+[  OK  ] Finished Create list of st… nodes for the current kernel.
+[  OK  ] Mounted Huge Pages File System.
+[  OK  ] Mounted Kernel Debug File System.
+[  OK  ] Mounted Kernel Trace File System.
+modprobe@configfs.service: Succeeded.
+[  OK  ] Finished Load Kernel Module configfs.
+modprobe@fuse.service: Succeeded.
+[  OK  ] Finished Load Kernel Module fuse.
+         Mounting FUSE Control File System...
+         Mounting Kernel Configuration File System...
+[  OK  ] Finished Remount Root and Kernel File Systems.
+         Starting Create System Users...
+         Starting Update UTMP about System Boot/Shutdown...
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Mounted Kernel Configuration File System.
+[  OK  ] Finished Create System Users.
+         Starting Create Static Device Nodes in /dev...
+[  OK  ] Finished Update UTMP about System Boot/Shutdown.
+[  OK  ] Started Journal Service.
+         Starting Flush Journal to Persistent Storage...
+[  OK  ] Finished Create Static Device Nodes in /dev.
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+[  OK  ] Finished Flush Journal to Persistent Storage.
+[  OK  ] Finished Load Kernel Modules.
+         Starting Apply Kernel Variables...
+[  OK  ] Finished Apply Kernel Variables.
+[  OK  ] Reached target System Initialization.
+[  OK  ] Started Daily Cleanup of Temporary Directories.
+[  OK  ] Reached target Basic System.
+[  OK  ] Reached target Timers.
+         Starting Undo KIND mount hacks...
+[  OK  ] Finished Undo KIND mount hacks.
+         Starting containerd container runtime...
+         Starting kubelet: The Kubernetes Node Agent...
+[  OK  ] Started kubelet: The Kubernetes Node Agent.
+[  OK  ] Started Kubernetes systemd probe.
+[  OK  ] Started containerd container runtime.
+[  OK  ] Reached target Multi-User System.
+[  OK  ] Reached target Graphical Interface.
+         Starting Update UTMP about System Runlevel Changes...
+[  OK  ] Finished Update UTMP about System Runlevel Changes.
+````
+
 ```sh
 kubectl port-forward svc/argocd-server --namespace argocd 8080:443
 ```
-if the error is returned, wait for cluster to warm up and repeat
+if the error 
+
 ```text
 error: error upgrading connection: unable to upgrade connection: pod not found ("argocd-server-c84c49c64-zc92d_argocd")
 ```
+is returned, wait for cluster to warm up and repeat
+
+
 ```sh
 kubectl port-forward svc/argocd-server --namespace argocd 8080:443
 ```

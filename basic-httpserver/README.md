@@ -338,12 +338,61 @@ tar czf chart-0.2.0.tgz chart
 > Unable to save changes: application spec for package is invalid: 
 > InvalidSpecError: Unable to generate manifests in : rpc error: code = Unknown desc = error reading file: gzip: invalid header
 > ```
+
+
+#### Alternative Steps
+
+```sh
+sudo rm -fr ~/test/chart/
+sudo cp -r chart/ ~/test/
+```
+```
+TAG=3.12.0
+docker pull alpine/helm:$TAG
+```
+```
+TAG=3.12.0
+docker run --rm -it -w /tmp -v ~/test:/tmp alpine/helm:$TAG package chart -d package -n example
+```
+
+```text
+Successfully packaged chart and saved it to: package/chart-0.2.0.tgz
+```
+```
+TAG=3.12.0
+docker run --rm -it -w /tmp -v ~/test:/tmp alpine/helm:$TAG repo index package --url http://basic-httpserver.argocd.svc.cluster.local:8081/package
+```
+```sh
+sudo cp ~/test/package/index.yaml .
+sudo cp ~/test/package/chart-0.2.0.tgz .
+```
+
 ```sh
 docker build --build-arg CHART=chart-0.2.0.tgz -t basic-httpserver -f Dockerfile . 
 ```
-```sh
-docker run -it -p 8081:8081 basic-httpserver
+```text
++] Building 1.8s (9/9) FINISHED                                                
+ => [internal] load build definition from Dockerfile                       0.1s
+ => => transferring dockerfile: 293B                                       0.0s
+ => [internal] load .dockerignore                                          0.1s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/alpine/java:11-jre              0.3s
+ => [1/4] FROM docker.io/alpine/java:11-jre@sha256:2a110407bdb2b22b0c5b0c  0.0s
+ => [internal] load build context                                          0.0s
+ => => transferring context: 1.98kB                                        0.0s
+ => CACHED [2/4] WORKDIR /tmp                                              0.0s
+ => [3/4] COPY target/example.httpserver.jar app.jar                       0.5s
+ => [4/4] COPY chart-0.2.0.tgz index.yaml ./                               0.3s
+ => exporting to image                                                     0.2s
+ => => exporting layers                                                    0.2s
+ => => writing image sha256:eef96f97cf60f307413d3f1a5a558b832d1ce4518d323  0.0s
+ => => naming to docker.io/library/basic-httpserver                        0.0s
 ```
+```sh
+docker run -it --rm -p 8081:8081 basic-httpserver
+```
+leave the console
+
 ```sh
 curl -v http://localhost:8081/package/index.yaml
 ```
@@ -355,13 +404,26 @@ curl -v http://localhost:8081/package/index.yaml
 > Host: localhost:8081
 > User-Agent: curl/7.58.0
 > Accept: */*
->
+> 
 < HTTP/1.1 200 OK
-< Date: Fri, 30 Oct 2026 16:45:06 GMT
-< Transfer-encoding: chunked
-<
+< Date: Mon, 02 Nov 2026 20:52:36 GMT
+< Content-length: 453
+< 
+apiVersion: v1
+entries:
+  chart:
+  - apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-10-31T23:35:32.894507349Z"
+    description: A Helm chart for Libeness Readiness Example
+    digest: a4cfbbc048866e5444a0e15ff7f558db12924944912ede19b3ac60cb210ba8a5
+    name: chart
+    type: application
+    urls:
+    - http://basic-httpserver.argocd.svc.cluster.local:8081/package/chart-0.2.0.tgz
+    version: 0.2.0
+generated: "2026-10-31T23:35:32.891587907Z"
 * Connection #0 to host localhost left intact
-
 ```
 
 ```sh
@@ -371,6 +433,16 @@ curl -I http://localhost:8081/package/chart-0.2.0.tgz
 HTTP/1.1 200 OK
 Date: Sat, 31 Oct 2026 22:26:39 GMT
 ```
+
+ignore the method sanity warning in server console log:
+
+```text
+Repo server on 0.0.0.0:8081 with document root: /tmp directory /package
+
+Nov 02, 2026 8:54:06 PM sun.net.httpserver.ExchangeImpl sendResponseHeaders
+WARNING: sendResponseHeaders: being invoked with a content length for a HEAD request
+```
+Save container
 ```sh
 NAME=basic-httpserver
 docker save --output ${NAME}.tar ${NAME}
@@ -409,7 +481,15 @@ minikube.exe image load -v 4 %NAME%.tar
 > ```text
 > minikube.exe -- kubectl load image-archive %NAME%.tar --name %NAME%
 > ```
-
+if using Kind, the equivalent command is:
+```sh
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+export GO111MODULE=on
+NAME=basic-httpserver
+kind load image-archive ${NAME}.tar  --name argocd-cluster
+```
 create a basic deployment to expose the helm server under the name of `basic-httpserver`:
 ```yaml
 ---
@@ -456,7 +536,11 @@ spec:
 and deploy
 
 ```cmd
-minikube.exe kubectl -- apply -f basic-httpserver.yaml
+minikube.exe kubectl -- apply -f basic-httpserver.yaml --namespace argocd
+```
+or 
+```sh
+kubectl apply -f basic-httpserver.yaml  --namespace argocd
 ```
 ```text
 deployment.apps/basic-httpserver created
@@ -471,8 +555,14 @@ minikube.exe kubectl --  --namespace argocd delete deployment basic-httpserver
 service "basic-httpserver" deleted
 deployment.apps "basic-httpserver" deleted
 ```
+```sh
+kubectl --namespace argocd delete service basic-httpserver
+kubectl --namespace argocd delete deployment basic-httpserver
+kubectl apply -f basic-httpserver.yaml  --namespace argocd
+
+```
 ```cmd
-minikube.exe kubectl -- apply -f basic-httpserver.yaml
+minikube.exe kubectl -- apply -f basic-httpserver.yaml --namespace
 ```
 ```text
 deployment.apps/basic-httpserver created
@@ -563,22 +653,20 @@ Exception java.nio.file.NoSuchFileException: /tmp/info/refs from
 ```
 
 
-```
-
+```cmd
 argocd.exe repo add http://basic-httpserver.argocd.svc.cluster.local:8081/package --type helm --name package
 Repository 'http://basic-httpserver.argocd.svc.cluster.local:8081/package' added
-
 ```
 
 
-```
+```text
 Unable to create application: application spec for package is invalid: InvalidSpecError:
 Unable to generate manifests in : rpc error: code = Unknown desc = `helm pull --destination /tmp/e768ba8d-4589-49a5-9b08-160bf1d3bac3 --version 0.1.0 --repo http://basic-httpserver.argocd.svc.cluster.local:8081/package chart` failed exit status 1:
 Error: failed to fetch http://basic-httpserver.argocd.svc.cluster.local:8081/package/chart-0.1.0.tgz : 404 Not Found
 ```
 
 
-```
+```sh
 curl -v -o /dev/null http://localhost:8081/package/chart-0.1.0.tgz
 * Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106'
 * Host localhost:8081 was resolved.
@@ -601,7 +689,6 @@ curl -v -o /dev/null http://localhost:8081/package/chart-0.1.0.tgz
 <
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
 * Connection #0 to host localhost left intact
-
 ```
 
 ```sh
@@ -610,8 +697,12 @@ docker run -it --entrypoint '' basic-httpserver sh
 app.jar  chart  hsperfdata_root  index.yaml
 /tmp # ls chart/
 Chart.yaml  templates  values.yaml
-
 ```
+
+![Caption Error Pulling Image](screenshots/)
+
+![Caption Healthy Application](screenshots/)
+
 ```mermaid
 flowchart TB
   A["Java source<br/>basic http server"] -- "mvn package" --> C["helm server.jar"]
@@ -831,16 +922,15 @@ spec:
             configMapKeyRef:
               name: health-config
               key: APP_LIVENESS
-
 ```
 
 * redo the `index.yaml`:
 
 ```sh
-docker run --rm -it -w /tmp -v ~/test:/tmp alpine/helm:$TAG repo index  package  --url http://basic-httpserver.argocd.svc.cluster.local:8081/package
+docker run --rm -it -w /tmp -v ~/test:/tmp alpine/helm:$TAG repo index package --url http://basic-httpserver.argocd.svc.cluster.local:8081/package
 ```
 ```sh
-cp ~/test/package/index.html .
+sudo cp ~/test/package/index.yaml .
 ```
 ```yaml
 apiVersion: v1
