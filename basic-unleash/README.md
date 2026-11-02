@@ -3,6 +3,17 @@
 Replica of  the [demo project](https://github.com/findinpath/unleash-demo)
 [Java Spring Boot Feature Flag Unleash Examples](https://docs.getunleash.io/guides/feature-flag-examples-spring-boot) from [Featur Flag Tutorial](https://docs.getunleash.io/guides/implement-feature-flags-in-spring-boot)
 
+### Background
+
+Earler, __Google GCP__ platform as of 2023 did not offer a native
+__Feaure Flagging__ service developed and provided direclty by Google
+
+__Google Cloud__ introduced a native, rule-based feature flagging service
+called __App Lifecycle Manager Feature Flags__ (__ALM FF__) in public preview
+on May 21, 2026, __Google Cloud__ now offers a built-in feature flag solution
+through [App Lifecycle Manager](https://docs.cloud.google.com/app-lifecycle-manager/overview),
+allowing teams to manage feature rollouts directly in the Google Cloud console or via API.
+
 ### Usage
 ```sh
 docker pull postgres:12.1-alpine
@@ -12,7 +23,7 @@ docker pull unleashorg/unleash-server:3.11.0
 docker-compose up --build -d
 ```
 ```sh
- docker-compose ps
+docker-compose ps
 ```
 ```text
 NAME                      COMMAND                  SERVICE             STATUS              PORTS
@@ -22,16 +33,19 @@ docker-unleash-server-1   "docker-entrypoint.sΓÇª"   unleash-server      runn
 ```sh
 docker-compose logs unleash-server
 ```
+The log will be blank if the application stack is healthy
 
-will be blank if the application stack is healthy
+#### Manage Feature Manager Dashboard
 
-```
+If the Docker stack is hosted in __Docker Toolbox__, check the address
+
+```sh
 docker-machine ip
 ```
 ```
 192.168.99.100
 ```
-open http://192.168.99.100:4242
+open `http://192.168.99.100:4242` in the browser
 
 
 ![capture unleash login](screenshots/capture-unleash-login.png)
@@ -141,7 +155,7 @@ java -jar target\com.findinpath.findinpath.jar
 visit the application landing page `http://localhost:8080/index`, login
 ### Background
 
-[Unleash Documentation](https://docs.getunleash.io/) 
+[Unleash Documentation](https://docs.getunleash.io/)
 
 
 
@@ -153,78 +167,26 @@ stateDiagram-v2
     [*] --> Created
 
     Created --> Initializing: Configure SDK
-    Initializing --> LoadingLocal: Read bootstrap or cache
-    LoadingLocal --> ReadyCached: Usable configuration found
-    LoadingLocal --> Fetching: No usable configuration
-
-    Initializing --> Fetching: Start network synchronization
-    Fetching --> ReadyFresh: Fetch succeeds
-    Fetching --> WaitingRetry: Fetch fails
-
-    ReadyCached --> Fetching: Background refresh
-    ReadyFresh --> Evaluating: Flag requested
-    ReadyCached --> Evaluating: Flag requested
-    Evaluating --> ReadyFresh: Return evaluated result
-    Evaluating --> ReadyCached: Return evaluated result
-
-    ReadyFresh --> WaitingRetry: Refresh fails
-    WaitingRetry --> ReadyStale: Retry policy permits continued operation
-    WaitingRetry --> Fetching: Retry timer expires
-
-    ReadyStale --> Evaluating: Use last known configuration
-    ReadyStale --> Fetching: Refresh retry
-
-    ReadyFresh --> Stopping: Application shuts down
-    ReadyCached --> Stopping: Application shuts down
-    ReadyStale --> Stopping: Application shuts down
-    Stopping --> [*]
-
-    note right of Evaluating
-      Local evaluation:
-      flag definition
-      activation strategy
-      evaluation context
-      constraints and rollout
-    end note
-
-    note right of ReadyStale
-      Cached values may be old.
-      New server-side changes
-      are not yet available.
-    end note
-
-```
-![Diagram 1](screenshots/diagram1.png)
-
-![Diagram 1](screenshots/diagram1-alternative-rendering.png)
-
-```mermaid
-stateDiagram-v2
-    direction LR
-
-    [*] --> Created
-
-    Created --> Initializing: Configure<br/>SDK
     Initializing --> LoadingLocal: Read bootstrap<br/>or cache
-    LoadingLocal --> ReadyCached: Usable <br/>configuration<br/>detected
-    LoadingLocal --> Fetching: No usable<br/>configuration<br/>found
+    LoadingLocal --> ReadyCached: Usable<br/>configuration<br/>found
+    LoadingLocal --> Fetching: No usable<br/>configuration
 
-    Initializing --> Fetching: Start network<br/> synchronization
+    Initializing --> Fetching: Start network<br/>synchronization
     Fetching --> ReadyFresh: Fetch<br/>succeeds
     Fetching --> WaitingRetry: Fetch<br/>fails
 
-    ReadyCached --> Fetching: Background refresh
+    ReadyCached --> Fetching: Background<br/>refresh
     ReadyFresh --> Evaluating: Flag<br/>requested
     ReadyCached --> Evaluating: Flag<br/>requested
     Evaluating --> ReadyFresh: Return<br/>evaluated<br/>result
     Evaluating --> ReadyCached: Return<br/>evaluated<br/>result
 
     ReadyFresh --> WaitingRetry: Refresh<br/>fails
-    WaitingRetry --> ReadyStale: Retry policy permits<br/>continued operation
+    WaitingRetry --> ReadyStale: Retry policy<br/>permits continued <br/>operation
     WaitingRetry --> Fetching: Retry timer<br/>expires
 
-    ReadyStale --> Evaluating: Use last known<br/>configuration
-    ReadyStale --> Fetching: Refresh retry
+    ReadyStale --> Evaluating: Use last<br/>known<br/>configuration
+    ReadyStale --> Fetching: Refresh<br/>retry
 
     ReadyFresh --> Stopping: Application<br/>shuts down
     ReadyCached --> Stopping: Application<br/>shuts down
@@ -244,25 +206,76 @@ stateDiagram-v2
       New server-side changes
       are not yet available.
     end note
+```
+![Diagram 1](screenshots/diagram1.png)
+
+![Diagram 1](screenshots/diagram1-alternative-rendering.png)
+
+```mermaid
+stateDiagram-v2
+  direction LR
+
+  [*] --> Created
+
+  Created --> Initializing: Configure<br/>SDK
+  Initializing --> LoadingLocal: Read bootstrap<br/>or cache
+  LoadingLocal --> ReadyCached: Usable <br/>configuration<br/>detected
+  LoadingLocal --> Fetching: No usable<br/>configuration<br/>found
+
+  Initializing --> Fetching: Start network<br/> synchronization
+  Fetching --> ReadyFresh: Fetch<br/>succeeds
+  Fetching --> WaitingRetry: Fetch<br/>fails
+
+  ReadyCached --> Fetching: Background refresh
+  ReadyFresh --> Evaluating: Flag<br/>requested
+  ReadyCached --> Evaluating: Flag<br/>requested
+  Evaluating --> ReadyFresh: Return<br/>evaluated<br/>result
+  Evaluating --> ReadyCached: Return<br/>evaluated<br/>result
+
+  ReadyFresh --> WaitingRetry: Refresh<br/>fails
+  WaitingRetry --> ReadyStale: Retry policy permits<br/>continued operation
+  WaitingRetry --> Fetching: Retry timer<br/>expires
+
+  ReadyStale --> Evaluating: Use last known<br/>configuration
+  ReadyStale --> Fetching: Refresh retry
+
+  ReadyFresh --> Stopping: Application<br/>shuts down
+  ReadyCached --> Stopping: Application<br/>shuts down
+  ReadyStale --> Stopping: Application<br/>shuts down
+  Stopping --> [*]
+
+  note right of Evaluating
+    Local evaluation:
+    flag definition
+    activation strategy
+    evaluation context
+    constraints and rollout
+  end note
+
+  note right of ReadyStale
+    Cached values may be old.
+    New server-side changes
+    are not yet available.
+  end note
 
 ```
 
 ```code
 
 flowchart LR
-    A["Application requests flag"] --> B{"Flag<br/>definition<br/>available?"}
-    B -- No --> C["Fallback<br/>or <br/>disabled result"]
-    B -- Yes --> D{"Flag<br/>enabled<br/>globally ?"}
-    D -- No --> E["Disabled"]
-    D -- Yes --> F{"Activation<br/>strategy<br/>matches?"}
-    F -- No --> E
-    F -- Yes --> G{"Context<br/>constraints<br/>satisfied?"}
-    G -- No --> E
-    G -- Yes --> H[["Rollout <br/>or<br/>stickiness rules"]]
-    H --> I["Enabled<br/>or<br/>selected variant"]
-    C --> J["Application will<br/>use result"]
-    E --> J
-    I --> J
+  A["Application requests flag"] --> B{"Flag<br/>definition<br/>available?"}
+  B -- No --> C["Fallback<br/>or <br/>disabled result"]
+  B -- Yes --> D{"Flag<br/>enabled<br/>globally ?"}
+  D -- No --> E["Disabled"]
+  D -- Yes --> F{"Activation<br/>strategy<br/>matches?"}
+  F -- No --> E
+  F -- Yes --> G{"Context<br/>constraints<br/>satisfied?"}
+  G -- No --> E
+  G -- Yes --> H[["Rollout <br/>or<br/>stickiness rules"]]
+  H --> I["Enabled<br/>or<br/>selected variant"]
+  C --> J["Application will<br/>use result"]
+  E --> J
+  I --> J
 ```
 ![Diagram 2](screenshots/diagram2.png)
 
@@ -271,26 +284,23 @@ flowchart LR
 ```mermaid
 
 flowchart LR
-    A["Application requests flag"] --> B{"Flag<br/>definition<br/>available?"}
-    B -- No --> C["Fallback<br/>or <br/>disabled result"]
-    B -- Yes --> D{"Flag<br/>enabled<br/>globally ?"}
-    D -- No --> E["Disabled"]
-    D -- Yes --> F{"Activation<br/>strategy<br/>matches?"}
-    F -- No --> E
-    F -- Yes --> G{"Context<br/>constraints<br/>satisfied?"}
-    G -- No --> E
-    G -- Yes --> H[["Rollout <br/>or<br/>stickiness rules"]]
-    H --> I["Enabled<br/>or<br/>selected variant"]
-    C --> J["Application will<br/>use result"]
-    E --> J
-    I --> J
-
+  A["Application requests flag"] --> B{"Flag<br/>definition<br/>available?"}
+  B -- No --> C["Fallback<br/>or <br/>disabled result"]
+  B -- Yes --> D{"Flag<br/>enabled<br/>globally ?"}
+  D -- No --> E["Disabled"]
+  D -- Yes --> F{"Activation<br/>strategy<br/>matches?"}
+  F -- No --> E
+  F -- Yes --> G{"Context<br/>constraints<br/>satisfied?"}
+  G -- No --> E
+  G -- Yes --> H[["Rollout <br/>or<br/>stickiness rules"]]
+  H --> I["Enabled<br/>or<br/>selected variant"]
+  C --> J["Application will<br/>use result"]
+  E --> J
+  I --> J
 ```
 The definition:
 
 > __Feature Toggles__ _decouple_ deployment of code from release of new features
-
-
 
 __Feature Management__ is not strictly a successor to __Blue-Green Deployment__ [BG](https://en.wikipedia.org/wiki/Blue%E2%80%93green_deployment)). It is a *more* granular, complementary control mechanism that can reduce the need to use deployment topology as the only means of controlling feature exposure
 
@@ -300,10 +310,10 @@ Feature-management decisions must be explainable, traceable, and auditable acros
 
 #### Dashboard Protection
 
-The __Unleash__ / generic  __Future Manager Server__ administration dashboard is not merely a convenient screen for changing a Boolean: 
+The __Unleash__ / generic  __Future Manager Server__ administration dashboard is not merely a convenient screen for changing a Boolean:
 It is a privileged control plane exposed through a web application. That makes its own identity, authorization, and governance requirements an architectural concern, distinct from the SDK's runtime behavior.
 
-The risk is easy to obscure in executive language. A requirement such as 
+The risk is easy to obscure in executive language. A requirement such as
 
 > *centralized feature lifecycle management with enterprise-grade security
 
@@ -345,7 +355,7 @@ This is not a request to revisit the approved solution selection. It is to ensur
 
 ### Troubleshooting
 
-* package and run without fixing the route to unleash server:
+* package and run without fixing the route to `unleash` server:
 ```cmd
 java -jar  target\example.findinpath.jar
 
@@ -593,6 +603,8 @@ One can almost imagine both organizations signing the same pledge in fresh blood
 
 Sometimes the most important engineering requirement is the one nobody put on the requirements list. And sometimes the most expensive lesson is the one an organization promises itself it will never have to learn twice.
 
+* *change is constant*
+
 ### See Also
   * [Feature Flags with Spring](https://www.baeldung.com/spring-feature-flags)
   * [implement FF with Unleash](https://www.baeldung.com/java-unleash-feature-flags)
@@ -605,7 +617,11 @@ Sometimes the most important engineering requirement is the one nobody put on th
     + [rollout](https://learn.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management#rollout)
     + [experiment](https://learn.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management#experiment)
 
-  *  apparently a false answer: [the evolution of feature toggles in software development](https://www.harness.io/blog/a-brief-history-of-feature-toggles-how-the-software-tool-has-evolved)
+  * apparently a false answer: [the evolution of feature toggles in software development](https://www.harness.io/blog/a-brief-history-of-feature-toggles-how-the-software-tool-has-evolved)
+  * Google Cloud [App Lifecycle Manager documentation](https://docs.cloud.google.com/app-lifecycle-manager)
+  * Azure [Feature Management Overview](https://learn.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management)
+  * Harness [Feature Flags Documentation](https://developer.harness.io/feature-flags)
+  * Cloud Native Computing Foundation (CNCF) [OpenFeature SDK](https://openfeature.dev/docs/reference/intro/) is an open-source, vendor-agnostic specification and standard API layer for feature flagging.
 
 ---
 ### Author

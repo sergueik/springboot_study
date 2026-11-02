@@ -359,10 +359,41 @@ replicaset.apps/argocd-server-6bf47d79b4                      1         1       
 NAME                                             READY   AGE
 statefulset.apps/argocd-application-controller   1/1     7m3s
 ```
+
+```sh
+ID=$(docker container ls | grep 'argocd-cluster-control-plane' | awk '{print $1}')
+```
+```sh
+docker container start $ID
+```
+```sh
+kubectl port-forward svc/argocd-server --namespace argocd 8080:443
+```
+if the error is returned, wait for cluster to warm up and repeat
+```text
+error: error upgrading connection: unable to upgrade connection: pod not found ("argocd-server-c84c49c64-zc92d_argocd")
+```
+```sh
+kubectl port-forward svc/argocd-server --namespace argocd 8080:443
+```
+```sh
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+```
+login to `http://localhost:8080` as `admin`. After login examine the version in the logo (e.g. `v3.5.6`)
+
+```sh
+VERSION=v3.5.6
+curl -skLo /tmp/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+ls -l /tmp/argocd
+sudo install /tmp/argocd /usr/local/bin
+```
+> NOTE: may need a different version with Windows / Minikube hosted Kubernetes / ArgoCD
+```
+curl -skLo ~/Downloads/argocd.exe https://github.com/argoproj/argo-cd/releases/download/v3.5.6/argocd-windows-amd64.exe
+```
 ```cmd
 minikube.exe kubectl -- port-forward svc/argocd-server --namespace argocd 8080:443
 ```
-
 after the minikube was stopped and started, argoCD installed earlier, will launch
 
 ```cmd
