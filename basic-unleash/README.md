@@ -14,6 +14,191 @@ on May 21, 2026, __Google Cloud__ now offers a built-in feature flag solution
 through [App Lifecycle Manager](https://docs.cloud.google.com/app-lifecycle-manager/overview),
 allowing teams to manage feature rollouts directly in the Google Cloud console or via API.
 
+### Alternatives
+
+
+|Name|Best For|Deployment Model|Licensing / Pricing|
+|----|--------|----------------|-------------------|
+|Flagsmith|Teams wanting a direct, permissive open-source alternative|Self-Hosted or Cloud|BSD-3-Clause / Free tier available|
+|GrowthBook|Teams focused heavily on data analytics and experimentation|Self-Hosted or Cloud|MIT / Usage & Seat-based|
+|Flipt / FeatBit|High-performance, lightweight developer-first workflows|Self-Hosted / Cloud|Open Core / Open Specification|
+|GO Feature Flag|Minimalist architectures using file-based config|Stateless Relay Proxy|Apache 2.0 / Completely Free|
+|LaunchDarkly|Large enterprises requiring the industry gold standard|Managed SaaS Only|Closed Source / Enterprise pricing|
+|PostHog|Startups needing all-in-one flags, session replays, and analytics|Cloud or Private Cloud|Open-core / 1M free requests/mo|
+
+
+
+Java-Native / In-App Libraries (_No_ Separate Server Required):
+
+  * __Feature Flipping for Java__ [FF4J](https://github.com/ff4j/ff4j): a native Java feature toggle lib rary with built-in Spring Boot starters, a web administration console, runtime dynamic predicates, role/canary access, audit trails, and support for 20+ database backends such as SQL, Redis, MongoDB
+  * [Togglz](https://github.com/togglz/togglz): a popular Java feature flag implementation inspired by Ruby's Flipper - supports Spring, CDI, and Jersey, allowing to manage flags via annotations, code, or a simple admin console
+
+> NOTE: Both FF4J and Toggls have multiple subprojects based on the specific supported 
+backend.
+This is making build / test very time and resource consuming and showing errors:
+
+```text
+org.testcontainers.containers.ContainerLaunchException: Container startup failed
+Caused by: org.testcontainers.containers.ContainerFetchException: Can't get Docker image: RemoteDockerImage(imageName=gcr.io/google.com/cloudsdktool/cloud-sdk:emulators, imagePullPolicy=DefaultPullPolicy())
+Caused by: org.testcontainers.containers.ContainerFetchException: Failed to pull image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
+Caused by: java.lang.InterruptedException
+```
+in realistic case one has to remove most of submodules:
+
+|submodule|submodule|submodule|submodule|
+|--------|---------|-----------------------|-----------------|
+|ff4j-aop| ff4j-cli| ff4j-config-properties| ff4j-config-yaml|
+|ff4j-core| ff4j-jmx| ff4j-security-shiro| ff4j-security-spring|
+|ff4j-store-arangodb| ff4j-store-archaius| ff4j-store-aws-dynamodb| ff4j-store-aws-ssm|
+|ff4j-store-cassandra| ff4j-store-commonsconfig| ff4j-store-consul| ff4j-store-couchbase|
+|ff4j-store-couchdb| ff4j-store-ehcache| ff4j-store-elastic| ff4j-store-gcp-datastore|
+|ff4j-store-hazelcast| ff4j-store-hbase| ff4j-store-ignite| ff4j-store-jcache|
+ff4j-store-mongodb|
+|ff4j-store-neo4j| ff4j-store-redis| ff4j-store-spring-cloudconfig| ff4j-store-springjdbc|
+|ff4j-strategy-drools| ff4j-test| ff4j-utils-json| ff4j-web|
+|ff4j-webapi| ff4j-webapi-client| ff4j-webapi-jersey2x|| 
+```sh
+mvn -DskipTests package
+```
+with FF4J the targets will be in individual modules:
+```text
+./ff4j-store-couchbase/target/ff4j-store-couchbase-1.10-SNAPSHOT.jar
+./ff4j-store-ignite/target/ff4j-store-ignite-1.10-SNAPSHOT.jar
+./ff4j-store-consul/target/ff4j-store-consul-1.10-SNAPSHOT.jar
+./ff4j-store-hbase/target/ff4j-store-hbase-1.10-SNAPSHOT.jar
+./ff4j-config-yaml/target/ff4j-config-yaml-1.10-SNAPSHOT.jar
+./ff4j-webapi-jersey2x/target/ff4j-webapi-jersey2x-1.10-SNAPSHOT.jar
+./ff4j-store-archaius/target/ff4j-store-archaius-1.10-SNAPSHOT.jar
+./ff4j-security-shiro/target/ff4j-security-shiro-1.10-SNAPSHOT.jar
+./ff4j-store-neo4j/target/ff4j-store-neo4j-1.10-SNAPSHOT.jar
+./ff4j-test/target/ff4j-test-1.10-SNAPSHOT.jar
+./ff4j-store-arangodb/target/ff4j-store-arangodb-1.10-SNAPSHOT.jar
+./ff4j-store-aws-ssm/target/ff4j-store-aws-ssm-1.10-SNAPSHOT.jar
+./ff4j-store-elastic/target/ff4j-store-elastic-1.10-SNAPSHOT.jar
+./ff4j-security-spring/target/ff4j-security-spring-1.10-SNAPSHOT.jar
+./ff4j-config-properties/target/ff4j-config-properties-1.10-SNAPSHOT.jar
+./ff4j-webapi/target/ff4j-webapi-1.10-SNAPSHOT.jar
+./ff4j-strategy-drools/target/ff4j-strategy-drools-1.10-SNAPSHOT.jar
+./ff4j-core/target/ff4j-core-1.10-SNAPSHOT.jar
+./ff4j-store-cassandra/target/ff4j-store-cassandra-1.10-SNAPSHOT.jar
+./ff4j-store-hazelcast/target/ff4j-store-hazelcast-1.10-SNAPSHOT.jar
+./ff4j-utils-json/target/ff4j-utils-json-1.10-SNAPSHOT.jar
+./ff4j-jmx/target/ff4j-jmx-1.10-SNAPSHOT.jar
+./ff4j-store-commonsconfig/target/ff4j-store-commonsconfig-1.10-SNAPSHOT.jar
+./ff4j-store-couchdb/target/ff4j-store-couchdb-1.10-SNAPSHOT.jar
+./ff4j-store-springjdbc/target/ff4j-store-springjdbc-1.10-SNAPSHOT.jar
+./ff4j-store-aws-dynamodb/target/ff4j-store-aws-dynamodb-1.10-SNAPSHOT.jar
+./ff4j-aop/target/ff4j-aop-1.10-SNAPSHOT.jar
+./ff4j-web/target/ff4j-web-1.10-SNAPSHOT.jar
+./ff4j-store-ehcache/target/ff4j-store-ehcache-1.10-SNAPSHOT.jar
+./ff4j-store-gcp-datastore/target/ff4j-store-gcp-datastore-1.10-SNAPSHOT.jar
+./ff4j-store-redis/target/ff4j-store-redis-1.10-SNAPSHOT.jar
+./ff4j-store-mongodb/target/ff4j-store-mongodb-1.10-SNAPSHOT.jar
+./ff4j-cli/target/ff4j-cli-1.10-SNAPSHOT.jar
+./ff4j-store-jcache/target/ff4j-store-jcache-1.10-SNAPSHOT.jar
+```
+With Togglz, the result will be in
+```text
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT.war
+```
+and 80 jar files:
+```text
+./cloud-storage/target/togglz-cloud-storage-3.2.1-SNAPSHOT.jar
+./spring-security/target/togglz-spring-security-3.2.1-SNAPSHOT.jar
+./dynamodb/target/togglz-dynamodb-3.2.1-SNAPSHOT.jar
+./amazon-s3/target/togglz-amazon-s3-3.2.1-SNAPSHOT.jar
+./appengine/target/togglz-appengine-3.2.1-SNAPSHOT.jar
+./servlet/target/togglz-servlet-3.2.1-SNAPSHOT.jar
+./mongodb/target/togglz-mongodb-3.2.1-SNAPSHOT.jar
+./cdi/target/togglz-cdi-3.2.1-SNAPSHOT.jar
+./cloud-datastore/target/togglz-cloud-datastore-3.2.1-SNAPSHOT.jar
+./slack/target/togglz-slack-3.2.1-SNAPSHOT.jar
+./spring-core/target/togglz-spring-core-3.2.1-SNAPSHOT.jar
+./redis/target/togglz-redis-3.2.1-SNAPSHOT.jar
+./benchmarks/target/togglz-benchmarks-3.2.1-SNAPSHOT.jar
+./benchmarks/target/togglz-benchmarks-uberjar.jar
+./core/target/togglz-core-3.2.1-SNAPSHOT.jar
+./samples/spring-boot-hello-world-feature-enum/target/togglz-sample-spring-boot-hello-world-feature-enum-1.0.0-SNAPSHOT.jar
+./samples/spring-boot-security/target/togglz-sample-spring-boot-security-1.0.0-SNAPSHOT.jar
+./samples/spring-boot-hello-world/target/togglz-sample-spring-boot-hello-world-1.0.0-SNAPSHOT.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/togglz-core-3.2.1-SNAPSHOT.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/thymeleaf-spring5-3.0.15.RELEASE.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/log4j-api-2.17.2.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/owasp-java-html-sanitizer-20220608.1.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-jcl-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jackson-annotations-2.13.4.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/javassist-3.20.0-GA.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-context-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/error_prone_annotations-2.3.4.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jackson-databind-2.13.4.2.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jackson-core-2.13.4.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/togglz-spring-core-3.2.1-SNAPSHOT.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jackson-datatype-jdk8-2.13.4.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-boot-starter-json-2.7.5.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/unbescape-1.1.6.RELEASE.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/truffle-api-22.0.0.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/slf4j-api-1.7.36.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/js-22.0.0.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-boot-starter-2.7.5.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/graal-sdk-22.0.0.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/togglz-console-3.2.1-SNAPSHOT.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/togglz-servlet-3.2.1-SNAPSHOT.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/j2objc-annotations-1.3.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/snakeyaml-1.30.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jmte-7.0.0.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jackson-module-parameter-names-2.13.4.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/ognl-3.1.26.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jackson-datatype-jsr310-2.13.4.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/js-scriptengine-22.0.0.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/failureaccess-1.0.1.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/guava-30.1-jre.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jakarta.annotation-api-1.3.5.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-beans-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-web-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-webmvc-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-boot-2.7.5.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-boot-starter-web-2.7.5.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/regex-22.0.0.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jul-to-slf4j-1.7.36.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-core-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/commons-collections4-4.4.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/log4j-to-slf4j-2.17.2.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/checker-qual-3.5.0.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-aop-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-boot-starter-logging-2.7.5.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/thymeleaf-3.0.15.RELEASE.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/attoparser-2.0.5.RELEASE.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/togglz-spring-boot-starter-3.2.1-SNAPSHOT.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-expression-5.3.23.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/jsr305-3.0.2.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/spring-boot-autoconfigure-2.7.5.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/togglz-spring-web-3.2.1-SNAPSHOT.jar
+./samples/spring-boot-war/target/togglz-sample-spring-boot-war-0.0.1-SNAPSHOT/WEB-INF/lib/encoder-1.2.3.jar
+./samples/spring-boot-no-feature-provider-or-feature-enums/target/togglz-sample-spring-boot-no-feature-provider-or-feature-enums-1.0.0-SNAPSHOT.jar
+./samples/spring-boot-thymeleaf/target/togglz-sample-spring-boot-thymeleaf-1.0.0-SNAPSHOT.jar
+./test-harness/target/togglz-test-harness-3.2.1-SNAPSHOT.jar
+./spring-web/target/togglz-spring-web-3.2.1-SNAPSHOT.jar
+./shiro/target/togglz-shiro-3.2.1-SNAPSHOT.jar
+./spring-boot/starter/target/togglz-spring-boot-starter-3.2.1-SNAPSHOT.jar
+./console/target/togglz-console-3.2.1-SNAPSHOT.jar
+./console/target/original-togglz-console-3.2.1-SNAPSHOT.jar
+./testing/target/togglz-testing-3.2.1-SNAPSHOT.jar
+./kotlin/target/togglz-kotlin-3.2.1-SNAPSHOT.jar
+./kotlin/target/togglz-kotlin-3.2.1-SNAPSHOT-javadoc.jar
+./cassandra/target/togglz-cassandra-3.2.1-SNAPSHOT.jar
+./junit/target/togglz-junit-3.2.1-SNAPSHOT.jar
+./spock/target/togglz-spock-3.2.1-SNAPSHOT.jar
+
+```
+
+
+The __Togglz__ states Java  target release is __17__ and cannot compile HEAD with Java __11__ . Maven version __3.6.3__   is required - but not really.
+One can build it from [parent commit](https://github.com/togglz/togglz/commit/b05f204d9f31613d95655f0e0a43f833802b0747) of __Jakarta, Spring Boot 3 and Spring 6__ [4f6dd94](https://github.com/togglz/togglz/commits/master/?after=3ce6996391034763924dca7d1bdea9d5fcdf7028+489)
+The FF4J HEAD states Java  target release is __21__.  
+The commit [](https://github.com/ff4j/ff4j/commit/aa5e88cb3a3994d3e4147e2ae0162c90b1497a00)
+can be used with Java __11__  / __Maven 3.6.0__
+
 ### Usage
 ```sh
 docker pull postgres:12.1-alpine
@@ -146,6 +331,7 @@ update the `unleash.endpoint` from `localhost` to ip address of Docker machine:
 sed -i 's|endpoint: http://localhost|endpoint: http://192.168.99.100|' src/main/resources/application.yml
 ```
 ```sh
+puhd app
 mvn -Dskiptest clean package
 ```
 
@@ -357,8 +543,8 @@ This is not a request to revisit the approved solution selection. It is to ensur
 
 * package and run without fixing the route to `unleash` server:
 ```cmd
-java -jar  target\example.findinpath.jar
-
+pushd app
+java -jar target\example.findinpath.jar
 ```
 ```txt
 2026-10-12 16:27:09.189  WARN 36208 --- [sh-api-executor] no.finn.unleash.event.UnleashSubscriber  : Could not post to Unleash API
@@ -626,7 +812,7 @@ Sometimes the most important engineering requirement is the one nobody put on th
   * Cloud Native Computing Foundation (CNCF) [OpenFeature SDK](https://openfeature.dev/docs/reference/intro/) is an open-source, vendor-agnostic specification and standard API layer for feature flagging.
   * [IBM Cloud App Configuration service](https://www.ibm.com/products/app-configuration)
   * [Feature Flag overview](https://habr.com/ru/articles/897376/) (in Russian)
-
+  * [Harness Feature Flag service](https://www.harness.io/products/feature-management-experimentation) by [Harness](https://www.harness.io/) - the backend source code is proprietary and not not publshed on github
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

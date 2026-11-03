@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0'>
+    <title>Togglz</title>
+    <script src="jquery.js"></script>
+    <script src="bootstrap.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1>Togglz ${if displayName}<small>${displayName}</small>${end}</h1>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          ${content}
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="container">
+        <div class="text-center">
+          <div>${togglzTitle}</div>
+          <div>
+            <a href="https://www.togglz.org" target="_blank">www.togglz.org</a>
+          </div>
+          <div>${serverInfo}</div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
