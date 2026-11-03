@@ -619,9 +619,13 @@ Sometimes the most important engineering requirement is the one nobody put on th
 
   * apparently a false answer: [the evolution of feature toggles in software development](https://www.harness.io/blog/a-brief-history-of-feature-toggles-how-the-software-tool-has-evolved)
   * Google Cloud [App Lifecycle Manager documentation](https://docs.cloud.google.com/app-lifecycle-manager)
-  * Azure [Feature Management Overview](https://learn.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management)
+  * [Azure App Configuration Overview](https://learn.microsoft.com/en-us/azure/azure-app-configuration/overview) [Feature Management Overview](https://learn.microsoft.com/en-us/azure/azure-app-configuration/concept-feature-management)
+  * [Monitoring Asure App Configuration](https://learn.microsoft.com/en-us/azure/azure-app-configuration/monitor-app-configuration?tabs=portal)
+  * [Azure App Configuration emulator overview](https://learn.microsoft.com/en-us/azure/azure-app-configuration/emulator-overview?tabs=docker)
   * Harness [Feature Flags Documentation](https://developer.harness.io/feature-flags)
   * Cloud Native Computing Foundation (CNCF) [OpenFeature SDK](https://openfeature.dev/docs/reference/intro/) is an open-source, vendor-agnostic specification and standard API layer for feature flagging.
+  * [IBM Cloud App Configuration service](https://www.ibm.com/products/app-configuration)
+  * [Feature Flag overview](https://habr.com/ru/articles/897376/) (in Russian)
 
 ---
 ### Author

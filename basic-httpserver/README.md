@@ -699,10 +699,6 @@ app.jar  chart  hsperfdata_root  index.yaml
 Chart.yaml  templates  values.yaml
 ```
 
-![Caption Error Pulling Image](screenshots/)
-
-![Caption Healthy Application](screenshots/)
-
 ```mermaid
 flowchart TB
   A["Java source<br/>basic http server"] -- "mvn package" --> C["helm server.jar"]

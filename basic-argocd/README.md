@@ -1568,6 +1568,14 @@ minikube kubectl -- --namespace argocd get secret argocd-initial-admin-secret -o
 
 ![capture application hosted in virtualbox on ubuntu](screenshots/application-argocd-ubuntu.png)
 
+
+
+![Caption Error Pulling Image](screenshots/application-argocd-pod-error.png)
+
+
+![Caption Healthy Application](screenshots/application-argocd-healthy.png)
+
+
 ### Backgound
 
 
@@ -2885,6 +2893,19 @@ blame-free post-mortem meeting - chess explanation
   * At what point did the available choices become severely constrained?
   * Which subsequent mistakes were merely consequences of the original one?
 
+
+### Cleanup
+
+```sh
+ID=$(docker ps | grep 'argocd-cluster-control-plane' | awk '{print $1}')
+```
+```sh
+docker container stop $ID
+```
+```cmd
+minikube.exe stop
+docker-machine stop
+```
 ### See Also
 
 
@@ -2912,7 +2933,7 @@ blame-free post-mortem meeting - chess explanation
       + [Argo CD Creating app using custom resource definition](https://www.youtube.com/watch?v=gHFHMg8_rP8&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=4&pp=iAQB)
       + [Argo CD and Kustomize](https://www.youtube.com/watch?v=UzCacg8aPRQ&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=5&pp=iAQB)
       + [Argo CD CLI](https://www.youtube.com/watch?v=e9ci_ISVCeM&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=6&pp=iAQB)
-      
+  * [ArgoCD discussion and overview](https://habr.com/ru/companies/selectel/articles/883650/)(in  Russian)      
 --- 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
