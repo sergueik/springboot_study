@@ -933,6 +933,7 @@ Here, I don't care about reality.
 I care about sound myths.
 
 ### See Also:
+  * https://github.com/mermaid-js/mermaid
   * [Mermaid Live Editor](https://mermaid.live/edit): Online FlowChart & Diagrams Editor
   * [Diagram as Code: Comparing the Major Tools](https://diagrams.so/learn/diagram-as-code-comparison)
   * [top 6 Mermaid.js alternatives](https://swimm.io/learn/mermaid-js/top-6-mermaid-js-alternatives)

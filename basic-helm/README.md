@@ -372,8 +372,8 @@ But,
   * [Helm Chart Structure](https://github.com/BharathKumarReddy2103/Kubernetes/blob/main/Hem%20Chart%20Structure/Hem%20Chart%20Structure.md) example
   * __Helm__ [documentation](https://www.sysdig.com/learn-cloud-native/what-is-helm-in-kubernetes)
   * default __Helm__ [documentation](https://helm.sh/docs)
-  
-
+  * [Helm Tutorial](https://habr.com/ru/companies/dataart/articles/588258/) (in Russian)
+  * [Helm Tutorial](https://habr.com/ru/companies/dataart/articles/589539/) (in Russian)  
 
 -----
 ### Author
