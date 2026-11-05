@@ -1,6 +1,77 @@
 ### Info
 
-it is _not_ impossible to rewrite [GitHub Actions](https://docs.github.com/en/actions) completely on [Argo CD](https://argo-cd.readthedocs.io/en/stable/) and other way around.
+
+A seasoned ARE is someone who genuinely enjoys mastering Helm charts of non-amateur scale, with the satisfaction threshold
+varying according to experience, curiosity, and tolerance for Kubernetes complexity.
+
+The following scale is an informal, illustrative classification,
+not an industry standard.
+
+| Rendered Kubernetes objects | category |
+|-----------------------------|------------------------------|
+| 1–10                        | Tiny / Small application     |
+| 11–30                       | Basic multi-component app    |
+| 31–75                       | Substantial application stack|
+| 76–150                      | Large distributed platform   |
+| 150+                        | Extensive platform ecosystem |
+
+NOTE: Three different resource counts are worth distinguishing:
+
+* Helm-rendered resources – objects declared by the chart and
+  its subcharts, conditional on the selected values.
+* Runtime resources – additional objects created by Kubernetes
+  controllers, such as ReplicaSets and Pods.
+* Infrastructure footprint – external dependencies, storage,
+  databases, message brokers, and other infrastructure.
+
+
+For example the 
+[Snorkel AI](https://github.com/snorkel-ai/snorkel-flow-gcp-marketplace/tree/main/chart/snorkelflow/templates) chart, 
+which Instantiates a mostly complete Snorkel Flow installation in the target namespace, serves as a real-world reference point: 
+__118__ template files before rendering the chart.
+
+![Capture Marketplace Chart Template Diectory](screenshots/chart-template-directory-example.png)
+
+```powershell
+Get-ChildItem -Path . -Recurse -File |
+ Group-Object DirectoryName |
+     Select-Object @{Name='Directory'; Expression={($_.Name -replace '^.*\\','')}},
+                   Count |
+     Sort-Object Directory
+
+```
+```text
+
+Directory            Count
+---------            -----
+backendconfigs           1
+configmaps               9
+deployments             22
+ingresses                6
+istio                    7
+jobs                     1
+network-policies        23
+poddisruptionbudgets    22
+services                16
+templates                1
+volumes                 10
+
+```
+
+This is 118 template files, but only about 128 lines in the `values.yaml`.
+
+It suggests that chart complexity is not necessarily proportional to the size of its configuration file.
+
+A few possible explanations:
+
+ * Opinionated defaults — much of the deployment configuration is fixed in templates rather than exposed as user-configurable values.
+ * Shared configuration — multiple templates reuse a relatively small set of values.
+ * Subcharts and external configuration — some configuration may live in dependencies, separately maintained files, or the deployment process.
+ * Conditional rendering — a small number of feature flags or settings may control substantial portions of the chart.
+
+#### ArgoCD through Github Actions
+
+It is _not entirely_ impossible to rewrite [GitHub Actions](https://docs.github.com/en/actions) completely on [Argo CD](https://argo-cd.readthedocs.io/en/stable/) and other way around.
 
 but notably __GitHub Actions__ and __Argo CD__ are not two interchangeable implementations of the _same thing_
 
@@ -898,7 +969,7 @@ modprobe@fuse.service: Succeeded.
 ```sh
 kubectl port-forward svc/argocd-server --namespace argocd 8080:443
 ```
-if the error 
+if the error
 
 ```text
 error: error upgrading connection: unable to upgrade connection: pod not found ("argocd-server-c84c49c64-zc92d_argocd")
@@ -2933,7 +3004,9 @@ docker-machine stop
       + [Argo CD Creating app using custom resource definition](https://www.youtube.com/watch?v=gHFHMg8_rP8&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=4&pp=iAQB)
       + [Argo CD and Kustomize](https://www.youtube.com/watch?v=UzCacg8aPRQ&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=5&pp=iAQB)
       + [Argo CD CLI](https://www.youtube.com/watch?v=e9ci_ISVCeM&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=6&pp=iAQB)
-  * [ArgoCD discussion and overview](https://habr.com/ru/companies/selectel/articles/883650/)(in  Russian)      
---- 
+  * [pull GitOps and ArgoCD intro](https://selectel.ru/blog/gitops-argocd/?utm_source=habr.com&utm_medium=referral&utm_campaign=academy_article_argocd-and-deploy-strategy_190225_academy)
+  * [ArgoCD discussion and overview](https://habr.com/ru/companies/selectel/articles/883650/)(in  Russian)
+
+---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
