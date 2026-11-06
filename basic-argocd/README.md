@@ -33,12 +33,9 @@ __118__ template files before rendering the chart.
 ![Capture Marketplace Chart Template Diectory](screenshots/chart-template-directory-example.png)
 
 ```powershell
-Get-ChildItem -Path . -Recurse -File |
- Group-Object DirectoryName |
-     Select-Object @{Name='Directory'; Expression={($_.Name -replace '^.*\\','')}},
-                   Count |
-     Sort-Object Directory
-
+get-childItem -path . -recurse -file | group-object DirectoryName |
+  select-object @{Name='Directory'; Expression={($_.Name -replace '^.*\\','')}}, Count |
+  sort-object Directory
 ```
 ```text
 
@@ -57,6 +54,18 @@ templates                1
 volumes                 10
 
 ```
+|Category|Files|Share|
+|--------|-----|-----|
+|Deployments|22|18.6%|
+|Pod disruption budgets|22|18.6%|
+|Network policies|23|19.5%|
+|Services|16|13.6%|
+|Volumes|10|8.5%|
+|ConfigMaps|9|7.6%|
+|Istio|7|5.9%|
+|Ingresses|6|5.1%|
+|Other|3|2.5%|
+|Total|118|100%|
 
 This is 118 template files, but only about 128 lines in the `values.yaml`.
 
@@ -68,6 +77,31 @@ A few possible explanations:
  * Shared configuration — multiple templates reuse a relatively small set of values.
  * Subcharts and external configuration — some configuration may live in dependencies, separately maintained files, or the deployment process.
  * Conditional rendering — a small number of feature flags or settings may control substantial portions of the chart.
+
+Helm proficiency has a complexity threshold: below it, one learns the tool; beyond it, one learns the trade.
+Complexity, like alcohol content, is not a measure of quality. A fortified chart is not necessarily a mature platform.
+
+fortified wine: wine to which additional alcohol, traditionally brandy or grape spirit, is added. It raises the alcohol content and changes the character of the wine. It does not, by itself, imply poor quality. Port, Madeira and Sherry are well-known examples of fortified wines.
+
+But your analogy is interesting if you use fortification metaphorically.
+
+A Helm chart can be made to look substantial by adding resource templates, dependencies, policies and configuration. That increases its apparent weight, but not necessarily its educational or operational value.
+
+The distinction you seem to want is:
+- Substance: complexity arising from real architectural and operational requirements.
+- Fortification: complexity added to make something appear stronger or more substantial.
+Perhaps this is the proverb-like formulation:
+Complexity, like alcohol content, is not a measure of quality. A fortified chart is not necessarily a mature platform.
+
+And it connects to your earlier happiness-threshold idea:
+The pleasure of mastering a substantial Helm chart comes not from its weight, but from discovering the engineering substance that justifies that weight.
+
+
+sking a vendor for a per-role breakdown of Helm template counts, preferably accompanied by rendered-resource counts, is a legitimate architectural discovery question. It is not an unreasonable request for proprietary implementation details; it is asking for an aggregate view of deployment complexity.
+
+I also like the distinction you communicated:
+- Classroom scale: enough to learn Kubernetes and Helm concepts.
+- Operational scale: enough interacting components, dependencies, policies and failure modes that experience, shadowing and hands-on troubleshooting become essential.
 
 #### ArgoCD through Github Actions
 
@@ -3006,7 +3040,8 @@ docker-machine stop
       + [Argo CD CLI](https://www.youtube.com/watch?v=e9ci_ISVCeM&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=6&pp=iAQB)
   * [pull GitOps and ArgoCD intro](https://selectel.ru/blog/gitops-argocd/?utm_source=habr.com&utm_medium=referral&utm_campaign=academy_article_argocd-and-deploy-strategy_190225_academy)
   * [ArgoCD discussion and overview](https://habr.com/ru/companies/selectel/articles/883650/)(in  Russian)
-
+  * [CVAT Communty](https://github.com/cvat-ai/cvat) leading data annotation platform for image, video, audio, and 3D datasets [deployment on Kubernetes Minikube with Helm](https://docs.cvat.ai/docs/administration/community/advanced/k8s_deployment_with_helm)
+  * [Argilla](https://github.com/argilla-io/argilla) open-source data curation platform for LLMs [cloud Providers and Kubernetes](https://docs.v1.argilla.io/en/v2.2.0/getting_started/installation/deployments/cloud_providers.html) 
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
