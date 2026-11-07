@@ -3,6 +3,14 @@
 Latest [Mermaid](https://github.com/mermaid-js/mermaid) 
 bundled with [React (software)](https://en.wikipedia.org/wiki/React_(software)) library for web and native user interfaces and [Vite](https://github.com/vitejs/vite) fast next generation frontend tooling in order to run dist as a static resource (partial success)
 
+### TL; DR
+
+To run the application, one needs to open the console to run the command line:
+```cmd
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///%CD%\index.html
+```
+or equivalent command engaging the [create-shortcut.ps1](https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.ps1) call. See Puppetized version of the same in [create_simple_shortcut_ps1.erb](https://github.com/sergueik/puppetmaster_vagrant/blob/master/modules/custom_command/templates/create_simple_shortcut_ps1.erb)
+
 ### Background
 
 The __Mermaid Live Editor__ is an _simplify documentation and avoid heavy tools_ open source __Visio Alternative__

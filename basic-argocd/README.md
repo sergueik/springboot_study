@@ -24,8 +24,8 @@ NOTE: Three different resource counts are worth distinguishing:
 * Infrastructure footprint – external dependencies, storage,
   databases, message brokers, and other infrastructure.
 
-
-For example the 
+For example the
+ 
 [Snorkel AI](https://github.com/snorkel-ai/snorkel-flow-gcp-marketplace/tree/main/chart/snorkelflow/templates) chart, 
 which Instantiates a mostly complete Snorkel Flow installation in the target namespace, serves as a real-world reference point: 
 __118__ template files before rendering the chart.
@@ -68,7 +68,6 @@ volumes                 10
 |Total|118|100%|
 
 This is 118 template files, but only about 128 lines in the `values.yaml`.
-
 It suggests that chart complexity is not necessarily proportional to the size of its configuration file.
 
 A few possible explanations:
@@ -102,6 +101,197 @@ sking a vendor for a per-role breakdown of Helm template counts, preferably acco
 I also like the distinction you communicated:
 - Classroom scale: enough to learn Kubernetes and Helm concepts.
 - Operational scale: enough interacting components, dependencies, policies and failure modes that experience, shadowing and hands-on troubleshooting become essential.
+
+
+#### Resource Inventory
+```sh
+
+printf '|KIND|APIVERSION|FILE|\n|----|------|----|\n'
+
+grep -rEil '(apiversion|kind)' | xargs awk '
+FNR == 1 {
+    apiVersion = ""
+    kind = ""
+}
+/^\t*apiVersion\t*:/ {
+    apiVersion = $0
+    sub(/^\t*apiVersion\t*:\t*/, "", apiVersion)
+}
+/^\t*kind\t*:/ {
+    kind = $0
+    sub(/^\t*kind\t*:\t*/, "", kind)
+}
+ENDFILE {
+    if (apiVersion != "" || kind != "")
+        print "|" kind "|" apiVersion "|" FILENAME "|"
+}
+'
+```
+|KIND|APIVERSION|FILE|
+|----|----------|----|
+| Application| app.k8s.io/v1beta1|application.yaml|
+| BackendConfig| cloud.google.com/v1|backendconfigs/envoy-front-proxy-backend-config.yaml|
+| ConfigMap| v1|configmaps/envoy-front-proxy-envoy-front-proxy-json-config-map.yaml|
+| ConfigMap| v1|configmaps/grafana-config-configmap.yaml|
+| ConfigMap| v1|configmaps/grafana-dashboard-configmap.yaml|
+| ConfigMap| v1|configmaps/grafana-dashboard-json-configmap.yaml|
+| ConfigMap| v1|configmaps/grafana-datasource-configmap.yaml|
+| ConfigMap| v1|configmaps/grafana-notifiers-config-yaml-configmap.yaml|
+| ConfigMap| v1|configmaps/jupyterhub-configmap.yaml|
+| ConfigMap| v1|configmaps/oidc-configmap.yaml|
+| ConfigMap| v1|configmaps/telegraf-configmap.yaml|
+| Deployment| apps/v1|deployments/db-deployment.yaml|
+| Deployment| apps/v1|deployments/engine-deployment.yaml|
+| Deployment| apps/v1|deployments/engine-tiny-deployment.yaml|
+| Deployment| apps/v1|deployments/envoy-front-proxy-deployment.yaml|
+| Deployment| apps/v1|deployments/flow-ui-deployment.yaml|
+| Deployment| apps/v1|deployments/grafana-deployment.yaml|
+| Deployment| apps/v1|deployments/influxdb-deployment.yaml|
+| Deployment| apps/v1|deployments/jupyterhub-deployment.yaml|
+| Deployment| apps/v1|deployments/jupyterhub-proxy-deployment.yaml|
+| Deployment| apps/v1|deployments/minio-deployment.yaml|
+| Deployment| apps/v1|deployments/model-registry-deployment.yaml|
+| Deployment| apps/v1|deployments/model-trainer-deployment.yaml|
+| Deployment| apps/v1|deployments/notebook-deployment.yaml|
+| Deployment| apps/v1|deployments/ray-head-deployment.yaml|
+| Deployment| apps/v1|deployments/ray-worker-deployment.yaml|
+| Deployment| apps/v1|deployments/redis-deployment.yaml|
+| Deployment| apps/v1|deployments/studio-api-deployment.yaml|
+| Deployment| apps/v1|deployments/studio-dask-deployment.yaml|
+| Deployment| apps/v1|deployments/studio-ray-head-deployment.yaml|
+| Deployment| apps/v1|deployments/studio-ray-worker-deployment.yaml|
+| Deployment| apps/v1|deployments/tdm-api-deployment.yaml|
+| Deployment| apps/v1|deployments/telegraf-deployment.yaml|
+| Ingress| networking.k8s.io/v1|ingresses/influxdb-ingress.yaml|
+| Ingress| networking.k8s.io/v1|ingresses/minio-api-ingress.yaml|
+| Ingress| networking.k8s.io/v1|ingresses/minio-ingress.yaml|
+| Ingress| networking.k8s.io/v1|ingresses/snorkelflow-ingress.yaml|
+| Ingress| networking.k8s.io/v1|ingresses/studio-api-ingress.yaml|
+| Ingress| networking.k8s.io/v1|ingresses/tdm-api-ingress.yaml|
+| Gateway| networking.istio.io/v1beta1|istio/gateway.yaml|
+| VirtualService| networking.istio.io/v1beta1|istio/influxdb-vs.yaml|
+| VirtualService| networking.istio.io/v1beta1|istio/minio-api-vs.yaml|
+| VirtualService| networking.istio.io/v1beta1|istio/minio-vs.yaml|
+| VirtualService| networking.istio.io/v1beta1|istio/snorkelflow-vs.yaml|
+| VirtualService| networking.istio.io/v1beta1|istio/studio-api-vs.yaml|
+| VirtualService| networking.istio.io/v1beta1|istio/tdm-api-vs.yaml|
+| Job| batch/v1|jobs/secrets-generator-job.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/db-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/engine-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/engine-tiny-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/envoy-front-proxy-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/flow-ui-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/grafana-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/influxdb-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/jupyterhub-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/jupyterhub-proxy-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/jupyterhub-singleuser-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/minio-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/model-registry-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/model-trainer-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/notebook-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/ray-head-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/ray-worker-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/redis-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/studio-api-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/studio-dask-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/studio-ray-head-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/studio-ray-worker-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/tdm-api-network-policies.yaml|
+| NetworkPolicy| networking.k8s.io/v1|network-policies/telegraf-network-policies.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/db-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/engine-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/engine-tiny-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/envoy-front-proxy-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/flow-ui-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/grafana-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/influxdb-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/jupyterhub-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/jupyterhub-proxy-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/minio-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/model-registry-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/model-trainer-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/notebook-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/ray-head-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/ray-worker-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/redis-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/studio-api-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/studio-dask-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/studio-ray-head-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/studio-ray-worker-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/tdm-api-pdb.yaml|
+| PodDisruptionBudget| policy/v1|poddisruptionbudgets/telegraf-pdb.yaml|
+| Service| v1|services/db-service.yaml|
+| Service| v1|services/envoy-front-proxy-service.yaml|
+| Service| v1|services/flow-ui-service.yaml|
+| Service| v1|services/grafana-service.yaml|
+| Service| v1|services/influxdb-service.yaml|
+| Service| v1|services/jupyterhub-proxy-service.yaml|
+| Service| v1|services/jupyterhub-service.yaml|
+| Service| v1|services/minio-service.yaml|
+| Service| v1|services/model-registry-service.yaml|
+| Service| v1|services/notebook-service.yaml|
+| Service| v1|services/ray-head-service.yaml|
+| Service| v1|services/redis-service.yaml|
+| Service| v1|services/studio-api-service.yaml|
+| Service| v1|services/studio-ray-head-service.yaml|
+| Service| v1|services/tdm-api-service.yaml|
+| Service| v1|services/telegraf-service.yaml|
+| PersistentVolume| v1|volumes/snorkelflow-data-pv.yaml|
+| PersistentVolumeClaim| v1|volumes/snorkelflow-data-pvc.yaml|
+| PersistentVolume| v1|volumes/snorkelflow-influxdb-pv.yaml|
+| PersistentVolumeClaim| v1|volumes/snorkelflow-influxdb-pvc.yaml|
+| PersistentVolume| v1|volumes/snorkelflow-jupyterhub-pv.yaml|
+| PersistentVolumeClaim| v1|volumes/snorkelflow-jupyterhub-pvc.yaml|
+| PersistentVolume| v1|volumes/snorkelflow-postgres-pv.yaml|
+| PersistentVolumeClaim| v1|volumes/snorkelflow-postgres-pvc.yaml|
+| PersistentVolume| v1|volumes/snorkelflow-redis-pv.yaml|
+| PersistentVolumeClaim| v1|volumes/snorkelflow-redis-pvc.yaml|
+
+
+|Resource|Variations / capabilities|What to investigate|
+|--------|-------------------------|-------------------|
+|Ingress|Host/path routing, TLS termination, load balancing, annotations|Which Ingress controller implements it?|
+|Service|ClusterIP, NodePort, LoadBalancer, ExternalName, headless|Internal vs external exposure|
+|PersistentVolume|NFS, CSI, local storage, cloud disks, access modes|Storage backend and portability|
+|Deployment|Rolling updates, recreate strategy, replicas|Availability and rollout behavior|
+|StatefulSet|Stable identity, persistent storage, ordered startup|Stateful application architecture|
+|NetworkPolicy|Ingress/egress rules, pod selectors, namespace selectors|Actual CNI enforcement|
+|Gateway|Listeners, TLS, routing, controller implementation|Gateway API and implementation|
+|ConfigMap|Environment variables, mounted files, application configuration|Configuration delivery|
+|Job / CronJob|One-time execution, scheduled execution, retry behavior|Initialization and background tasks|
+
+
+Kubernetes has quite a few resource types where the resource is only the entry point to a much larger set of capabilities. 
+Ingress is a particularly good example.
+
+There are actually three different kinds of variation worth distinguishing:
+
+1. Built-in resource with configurable behavior — one kind, many features selected through fields.
+2. Alternative implementations — same resource type, different controllers or providers implementing it.
+3. Extension resources (CRDs) — additional resource types that provide functionality beyond the Kubernetes built-in AP
+
+
+With an `Ingress` resource YAML does not implement the functionality itself beyond the declaration interpreted by an installed Ingress controller.
+
+The three-column extraction:
+```
+KIND | APIVERSION | FILE
+```
+is good for discovering the vocabulary, but it cannot tell you which implementation or functionality variant is being used.
+
+one would eventually extend it to:
+
+|KIND|API GROUP|IMPLEMENTATION|VARIANT|
+|----|---------|--------------|-------|
+|Ingress|networking.k8s.io|nginx|TLS + path routing|
+|Service|core|Kubernetes|ClusterIP|
+|Gateway|networking.istio.io|Istio|HTTP/TLS|
+|PersistentVolume|core|CSI driver|Network storage|
+
+
+* Resource reference: what the resource type means.
+* Implementation reference: what the actual controller, operator, driver or CRD provider does.
 
 #### ArgoCD through Github Actions
 
