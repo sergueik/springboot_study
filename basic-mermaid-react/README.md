@@ -12,14 +12,29 @@ To run the application, one needs to open the console to run the command line:
 or equivalent command engaging the [create-shortcut.ps1](https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.ps1) call. See Puppetized version of the same in [create_simple_shortcut_ps1.erb](https://github.com/sergueik/puppetmaster_vagrant/blob/master/modules/custom_command/templates/create_simple_shortcut_ps1.erb)
 
 e.g. in powershell console
+
 ```powershell
 $url = 'https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.ps1'
-$raw_url = 'https://raw.githubusercontent.com/gangstanthony/PowerShell/refs/heads/master/Create-Shortcut.ps1'
+
+$builder = new-object System.UriBuilder($url)
+$builder.Path = $builder.Path -replace '/blob/', '/'
+<#
+$segments = $builder.Path.Trim('/').Split('/')
+
+if ($segments[2] -ne 'blob') {
+  throw 'Expected GitHub blob URL'
+}
+
+$segments[2] = 'master'
+$builder.Path = '/' + ($segments -join '/')
+#>
+$builder.Host = 'raw.githubusercontent.com'
+$raw_url = $builder.Uri.AbsoluteUri
 
 $webResponseObject = (invoke-WebRequest -usebasicparsing -uri $raw_url)
 $scriptCode = $webResponseObject.Content
 
-$scriptCode = ('{0}{1}{2}' -f 'param ( [string]$Source, [string]$DestinationLnk, [string]$Arguments )' , $scriptCode ,'Create-Shortcut -Source $Source -Arguments $Arguments -DestinationLnk $DestinationLnk -Verbose' )
+$scriptCode = ('{0}{3}{1}{3}{2}' -f 'param ( [string]$Source, [string]$DestinationLnk, [string]$Arguments )' , $scriptCode ,'Create-Shortcut -Source $Source -Arguments $Arguments -DestinationLnk $DestinationLnk -Verbose' )
 $scriptBlock = [scriptblock]::Create($scriptCode)
 $filepath = (resolve-path -path 'dist\index.html').path
 [Uri] $fileUri = new-object Uri($filepath)
