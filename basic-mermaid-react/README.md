@@ -1,6 +1,6 @@
 ### Info
 
-Latest [Mermaid](https://github.com/mermaid-js/mermaid) 
+Latest [Mermaid](https://github.com/mermaid-js/mermaid)
 bundled with [React (software)](https://en.wikipedia.org/wiki/React_(software)) library for web and native user interfaces and [Vite](https://github.com/vitejs/vite) fast next generation frontend tooling in order to run dist as a static resource (partial success)
 
 ### TL; DR
@@ -10,6 +10,37 @@ To run the application, one needs to open the console to run the command line:
 "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///%CD%\index.html
 ```
 or equivalent command engaging the [create-shortcut.ps1](https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.ps1) call. See Puppetized version of the same in [create_simple_shortcut_ps1.erb](https://github.com/sergueik/puppetmaster_vagrant/blob/master/modules/custom_command/templates/create_simple_shortcut_ps1.erb)
+
+e.g. in powershell console
+```powershell
+$url = 'https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.ps1'
+$raw_url = 'https://raw.githubusercontent.com/gangstanthony/PowerShell/refs/heads/master/Create-Shortcut.ps1'
+
+$webResponseObject = (invoke-WebRequest -usebasicparsing -uri $raw_url)
+$scriptCode = $webResponseObject.Content
+
+$scriptCode = ('{0}{1}{2}' -f 'param ( [string]$Source, [string]$DestinationLnk, [string]$Arguments )' , $scriptCode ,'Create-Shortcut -Source $Source -Arguments $Arguments -DestinationLnk $DestinationLnk -Verbose' )
+$scriptBlock = [scriptblock]::Create($scriptCode)
+$filepath = (resolve-path -path 'dist\index.html').path
+[Uri] $fileUri = new-object Uri($filepath)
+new-item -path 'launch.lnk' -itemtype file -erroraction silentlycontinue
+$destination = (resolve-path -path 'launch.lnk').path
+$arguments =  ('--user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files {0}' -f $fileUri.AbsoluteUri)
+$key = 'HKLM:\SOFTWARE\Classes\ChromeHTML\shell\open\command'
+$source =  (Get-Item -Path $key).GetValue('') -replace ' *--.*', ''
+& $scriptBlock -Source $source -Arguments "$arguments" -DestinationLnk "$destination" -Verbose
+
+```
+> NOTE: `Invoke-Expression` does not recognize `ArgumentList` nor `Parameter` parameter
+
+> NOTE: For a GitHub blob URL, `System.UriBuilder` is the way. The mapping is:
+
+|Component|Browser URL|Raw URL|
+|---------|-----------|-------|
+|Host|`github.com`|`raw.githubusercontent.com`|
+|Repository path|`/gangstanthony/PowerShell`|same|
+|Branch|`/blob/master/`|`/refs/heads/master/`<br/>the `/refs/heads/` part is unnecessary|
+|File path|`Create-Shortcut.ps1`|same|
 
 ### Background
 
@@ -324,7 +355,7 @@ echo http://$(docker-machine ip):8080/
 ```
 
 
- 
+
 
 
 ![Run Nginx Docker](screenshots/capture-nginx-docker.png)
