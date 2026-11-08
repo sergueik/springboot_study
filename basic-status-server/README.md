@@ -1,4 +1,4 @@
-
+###  Info
 Bare minimal controllable HTTP application for Minikube/Argo CD learning exercise whose liveness and readiness probe responses are set through container environment variables
 
 
@@ -219,33 +219,32 @@ docker image prune -f
 docker image rm status-server openjdk:8u191-jre-alpine3.9
 docker-machine stop
 ```
-```cmd
+```powershell.exe
+$env:MINIKUBE_IN_STYLE='true'
 minikube.exe start --driver=virtualbox
 ```
 
 ```text
-* minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
-* Using the virtualbox driver based on existing profile
-* minikube 1.39.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.39.0
-* To disable this notice, run: 'minikube config set WantUpdateNotification false'
-
-* Starting control plane node minikube in cluster minikube
-* Restarting existing virtualbox VM for "minikube" ...
-* Found network options:
-  - NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
-  - no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
-* Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
-  - env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
-* Verifying Kubernetes components...
-  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
-* Enabled addons: default-storageclass, storage-provisioner
-* kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
-* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+😄  minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+    ▪ MINIKUBE_IN_STYLE=true
+✨  Using the virtualbox driver based on existing profile
+👍  Starting control plane node minikube in cluster minikube
+🏃  Updating the running virtualbox "minikube" VM ...
+🌐  Found network options:
+    ▪ NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+    ▪ no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+    ▪ env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+💡  kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
 ```cmd
 minikube.exe image load -v 4 status-server.tar
 ```
-the load is silent - no output
+the load operation itself is silent - no output
 ```cmd
 minikube.exe image ls
 ```
@@ -533,7 +532,8 @@ In __restore the configuration and redeploy__ example Kubernetes deletes and rec
 Kubernetes creates a replacement Pod, while the previous Pod may remain in Terminating state briefly as cleanup completes
 
 
-### Connect to ArgoCD
+### Connect to ArgoCDn
+
 ```cmd
 minikube.exe kubectl -- get all --namespace argocd
 minikube.exe kubectl -- port-forward svc/argocd-server --namespace argocd 8080:443
@@ -860,9 +860,225 @@ Then patch the Deployment's Pod template label to match the Service selector:
 minikube.exe kubectl -- -n example patch deployment probe-example --type strategic --patch "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"app\":\"probe-example\"}}}}}"
 ```
 
+> NOTE: the command will not work in Powershell:
+```text
+Error from server (BadRequest): invalid character '\\' looking for beginning of object key string
+Error from server (NotFound): deployments.apps "spec\\:{\\template\\:{\\metadata\\:{\\labels\\:{\\app\\:\\probe-example\\}}}}}" not found
+```
+if run in CMD with explicit escaping double quotes
+
+```cmd
+minikube.exe kubectl -- -n example patch deployment probe-example --type strategic --patch "{\""spec\"":{\""template\"":{\""metadata\"":{\""labels\"":{\""app\"":\""probe-example\""}}}}}"
+```
+the error becomes
+```text
+The Deployment "probe-example" is invalid: spec.template.metadata.labels: Invalid value: `map[string]string{"app":"probe-example"}`:
+`selector` does not match template `labels`
+```
+```cmd
+minikube.exe kubectl --  --namespace example get deployment  -l app
+```
+```text
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+probe-example   1/1     1            1           11d
+```
+```cmd
+minikube.exe kubectl --  --namespace example get deployment  -l app=probe-example
+```
+```text
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+probe-example   1/1     1            1           11d
+```
+
+Deployment has two separate label-related structures:
+
+- `spec.selector.matchLabels` — identifies which Pods belong to the Deployment.
+- `spec.template.metadata.labels` — labels assigned to newly created Pods.
+
+The Deployment selector is immutable after creation, and its requirements must match the Pod template labels.
+
+Your proposed change modifies only the second structure.
+
+Therefore, changing `app=app` to `app=probe-example` is not a valid patch to this existing Deployment.
+
+Take 2: Change the Service selector temporarily from `probe-example` to `app`:
+
+```yaml
+spec:
+  selector:
+    app: app
+```
+save as `service.change.yaml`
+
+```cmd
+minikube.exe kubectl -- -n example patch service probe-example --type merge --patch-file service-change.yaml
+```
+```text
+The request is invalid: patch: Invalid value: "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{\"deployment.kubernetes.io/revision\":\"1\",\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"apps/v1\\\",\\\"kind\\\":\\\"Deployment\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"labels\\\":{\\\"app\\\":\\\"probe-example\\\",\\\"app.kubernetes.io/instance\\\":\\\"probe-example\\\"},\\\"name\\\":\\\"probe-example\\\",\\\"namespace\\\":\\\"example\\\"},\\\"spec\\\":{\\\"replicas\\\":1,\\\"selector\\\":{\\\"matchLabels\\\":{\\\"app\\\":\\\"app\\\"}},\\\"template\\\":{\\\"metadata\\\":{\\\"labels\\\":{\\\"app\\\":\\\"app\\\"}},\\\"spec\\\":{\\\"containers\\\":[{\\\"env\\\":[{\\\"name\\\":\\\"READY\\\",\\\"valueFrom\\\":{\\\"configMapKeyRef\\\":{\\\"key\\\":\\\"APP_READYNESS\\\",\\\"name\\\":\\\"health-config\\\"}}},{\\\"name\\\":\\\"LIVE\\\",\\\"valueFrom\\\":{\\\"configMapKeyRef\\\":{\\\"key\\\":\\\"APP_LIVENESS\\\",\\\"name\\\":\\\"health-config\\\"}}}],\\\"image\\\":\\\"docker.io/library/status-server:latest\\\",\\\"imagePullPolicy\\\":\\\"IfNotPresent\\\",\\\"livenessProbe\\\":{\\\"failureThreshold\\\":3,\\\"httpGet\\\":{\\\"path\\\":\\\"/api/live\\\",\\\"port\\\":8080},\\\"initialDelaySeconds\\\":10,\\\"periodSeconds\\\":5,\\\"timeoutSeconds\\\":3},\\\"name\\\":\\\"app-container\\\",\\\"ports\\\":[{\\\"containerPort\\\":8080}],\\\"readinessProbe\\\":{\\\"httpGet\\\":{\\\"path\\\":\\\"/api/ready\\\",\\\"port\\\":8080},\\\"periodSeconds\\\":5},\\\"startupProbe\\\":{\\\"failureThreshold\\\":30,\\\"httpGet\\\":{\\\"path\\\":\\\"/\\\",\\\"port\\\":8080},\\\"periodSeconds\\\":10}}]}}}}\\n\"},\"creationTimestamp\":\"2026-10-27T23:46:49Z\",\"generation\":1,\"labels\":{\"app\":\"probe-example\",\"app.kubernetes.io/instance\":\"probe-example\"},\"managedFields\":[{\"apiVersion\":\"apps/v1\",\"fieldsType\":\"FieldsV1\",\"fieldsV1\":{\"f:metadata\":{\"f:annotations\":{\".\":{},\"f:kubectl.kubernetes.io/last-applied-configuration\":{}},\"f:labels\":{\".\":{},\"f:app\":{},\"f:app.kubernetes.io/instance\":{}}},\"f:spec\":{\"f:progressDeadlineSeconds\":{},\"f:replicas\":{},\"f:revisionHistoryLimit\":{},\"f:selector\":{},\"f:strategy\":{\"f:rollingUpdate\":{\".\":{},\"f:maxSurge\":{},\"f:maxUnavailable\":{}},\"f:type\":{}},\"f:template\":{\"f:metadata\":{\"f:labels\":{\".\":{},\"f:app\":{}}},\"f:spec\":{\"f:containers\":{\"k:{\\\"name\\\":\\\"app-container\\\"}\":{\".\":{},\"f:env\":{\".\":{},\"k:{\\\"name\\\":\\\"LIVE\\\"}\":{\".\":{},\"f:name\":{},\"f:valueFrom\":{\".\":{},\"f:configMapKeyRef\":{\".\":{},\"f:key\":{},\"f:name\":{}}}},\"k:{\\\"name\\\":\\\"READY\\\"}\":{\".\":{},\"f:name\":{},\"f:valueFrom\":{\".\":{},\"f:configMapKeyRef\":{\".\":{},\"f:key\":{},\"f:name\":{}}}}},\"f:image\":{},\"f:imagePullPolicy\":{},\"f:livenessProbe\":{\".\":{},\"f:failureThreshold\":{},\"f:httpGet\":{\".\":{},\"f:path\":{},\"f:port\":{},\"f:scheme\":{}},\"f:initialDelaySeconds\":{},\"f:periodSeconds\":{},\"f:successThreshold\":{},\"f:timeoutSeconds\":{}},\"f:name\":{},\"f:ports\":{\".\":{},\"k:{\\\"containerPort\\\":8080,\\\"protocol\\\":\\\"TCP\\\"}\":{\".\":{},\"f:containerPort\":{},\"f:protocol\":{}}},\"f:readinessProbe\":{\".\":{},\"f:failureThreshold\":{},\"f:httpGet\":{\".\":{},\"f:path\":{},\"f:port\":{},\"f:scheme\":{}},\"f:periodSeconds\":{},\"f:successThreshold\":{},\"f:timeoutSeconds\":{}},\"f:resources\":{},\"f:startupProbe\":{\".\":{},\"f:failureThreshold\":{},\"f:httpGet\":{\".\":{},\"f:path\":{},\"f:port\":{},\"f:scheme\":{}},\"f:periodSeconds\":{},\"f:successThreshold\":{},\"f:timeoutSeconds\":{}},\"f:terminationMessagePath\":{},\"f:terminationMessagePolicy\":{}}},\"f:dnsPolicy\":{},\"f:restartPolicy\":{},\"f:schedulerName\":{},\"f:securityContext\":{},\"f:terminationGracePeriodSeconds\":{}}}}},\"manager\":\"argocd-controller\",\"operation\":\"Update\",\"time\":\"2026-10-27T23:46:49Z\"},{\"apiVersion\":\"apps/v1\",\"fieldsType\":\"FieldsV1\",\"fieldsV1\":{\"f:metadata\":{\"f:annotations\":{\"f:deployment.kubernetes.io/revision\":{}}},\"f:status\":{\"f:availableReplicas\":{},\"f:conditions\":{\".\":{},\"k:{\\\"type\\\":\\\"Available\\\"}\":{\".\":{},\"f:lastTransitionTime\":{},\"f:lastUpdateTime\":{},\"f:message\":{},\"f:reason\":{},\"f:status\":{},\"f:type\":{}},\"k:{\\\"type\\\":\\\"Progressing\\\"}\":{\".\":{},\"f:lastTransitionTime\":{},\"f:lastUpdateTime\":{},\"f:message\":{},\"f:reason\":{},\"f:status\":{},\"f:type\":{}}},\"f:observedGeneration\":{},\"f:readyReplicas\":{},\"f:replicas\":{},\"f:updatedReplicas\":{}}},\"manager\":\"kube-controller-manager\",\"operation\":\"Update\",\"time\":\"2026-11-08T14:32:04Z\"}],\"name\":\"probe-example\",\"namespace\":\"example\",\"resourceVersion\":\"73174\",\"uid\":\"89e7164e-f3c1-4d0e-9188-27b55075b180\"},\"spec\":{\"clusterIP\":\"10.104.179.6\",\"clusterIPs\":[\"10.104.179.6\"],\"ports\":[{\"protocol\":\"TCP\",\"port\":9090,\"targetPort\":8080}],\"progressDeadlineSeconds\":600,\"replicas\":1,\"revisionHistoryLimit\":10,\"selector\":{\"app\":\"probe-example\",\"matchLabels\":{\"app\":\"app\"}},\"sessionAffinity\":\"None\",\"strategy\":{\"rollingUpdate\":{\"maxSurge\":\"25%\",\"maxUnavailable\":\"25%\"},\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"app\":\"app\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"READY\",\"valueFrom\":{\"configMapKeyRef\":{\"key\":\"APP_READYNESS\",\"name\":\"health-config\"}}},{\"name\":\"LIVE\",\"valueFrom\":{\"configMapKeyRef\":{\"key\":\"APP_LIVENESS\",\"name\":\"health-config\"}}}],\"image\":\"docker.io/library/status-server:latest\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/api/live\",\"port\":8080,\"scheme\":\"HTTP\"},\"initialDelaySeconds\":10,\"periodSeconds\":5,\"successThreshold\":1,\"timeoutSeconds\":3},\"name\":\"app-container\",\"ports\":[{\"containerPort\":8080,\"protocol\":\"TCP\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/api/ready\",\"port\":8080,\"scheme\":\"HTTP\"},\"periodSeconds\":5,\"successThreshold\":1,\"timeoutSeconds\":1},\"resources\":{},\"startupProbe\":{\"failureThreshold\":30,\"httpGet\":{\"path\":\"/\",\"port\":8080,\"scheme\":\"HTTP\"},\"periodSeconds\":10,\"successThreshold\":1,\"timeoutSeconds\":1},\"terminationMessagePath\":\"/dev/termination-log\",\"terminationMessagePolicy\":\"File\"}],\"dnsPolicy\":\"ClusterFirst\",\"restartPolicy\":\"Always\",\"schedulerName\":\"default-scheduler\",\"securityContext\":{},\"terminationGracePeriodSeconds\":30}},\"type\":\"ClusterIP\"},\"status\":{\"availableReplicas\":1,\"conditions\":[{\"lastTransitionTime\":\"2026-10-27T23:46:49Z\",\"lastUpdateTime\":\"2026-11-08T05:37:35Z\",\"message\":\"ReplicaSet \\\"probe-example-5497848cf4\\\" has successfully progressed.\",\"reason\":\"NewReplicaSetAvailable\",\"status\":\"True\",\"type\":\"Progressing\"},{\"lastTransitionTime\":\"2026-11-08T14:32:04Z\",\"lastUpdateTime\":\"2026-11-08T14:32:04Z\",\"message\":\"Deployment has minimum availability.\",\"reason\":\"MinimumReplicasAvailable\",\"status\":\"True\",\"type\":\"Available\"}],\"loadBalancer\":{},\"observedGeneration\":1,\"readyReplicas\":1,\"replicas\":1,\"updatedReplicas\":1}}": converting (v1.Deployment) to (core.Service): unknown conversion
+```
+now one can port forward:
+```
+minikube.exe kubectl -- -n example port-forward service/probe-example 8081:9090 --v=6
+```
+```text
+I1108 10:03:25.456040    7756 loader.go:379] Config loaded from file:  C:\Users\kouzm/.kube/config
+I1108 10:03:25.459232    7756 cert_rotation.go:137] Starting client certificate rotation controller
+I1108 10:03:25.480873    7756 round_trippers.go:445] GET https://192.168.99.102:8443/api/v1/namespaces/example/services/probe-example 200 OK in 10 milliseconds
+I1108 10:03:25.489912    7756 round_trippers.go:445] GET https://192.168.99.102:8443/api/v1/namespaces/example/pods?labelSelector=app%3Dapp 200 OK in 3 milliseconds
+I1108 10:03:25.512229    7756 round_trippers.go:445] GET https://192.168.99.102:8443/api/v1/namespaces/example/pods/probe-example-5497848cf4-fcspm 200 OK in 2 milliseconds
+I1108 10:03:25.554507    7756 round_trippers.go:445] POST https://192.168.99.102:8443/api/v1/namespaces/example/pods/probe-example-5497848cf4-fcspm/portforward 101 Switching Protocols in 37 milliseconds
+Forwarding from 127.0.0.1:8081 -> 8080
+Forwarding from [::1]:8081 -> 8080
+```
 This should trigger a __Deployment__ rollout because Pod-template labels changed.
 
-Watch:
+The important lines are:
+
+```text
+GET .../services/probe-example 200 OK
+GET .../pods?labelSelector=app%3Dapp 200 OK
+GET .../pods/probe-example-5497848cf4-fcspm 200 OK
+POST .../pods/.../portforward 101 Switching Protocols
+```
+
+And finally:
+
+```text
+Forwarding from 127.0.0.1:8081 -> 8080
+Forwarding from [::1]:8081 -> 8080
+```
+and the ArgoCD will rank the application out-of-sync:
+
+![capture out of sync](screenshots/capture-outofsync1.png)
+
+
+![capture out of sync](screenshots/capture-outofsync2.png)
+
+- auto sync is not enabled (intentionally)
+
+#### After ArgoCD Reconsile
+rerunning port forward does not fail immediately, fails if attempted to reach the pod through published port `http://localhost:8081/`:
+```cmd
+^C
+```
+```cmd
+minikube.exe kubectl -- -n example port-forward service/probe-example 8081:9090 --v=6
+```
+```text
+I1108 10:11:27.680794    5992 loader.go:379] Config loaded from file:  C:\Users\kouzm/.kube/config
+I1108 10:11:27.681856    5992 cert_rotation.go:137] Starting client certificate rotation controller
+I1108 10:11:27.695552    5992 round_trippers.go:445] GET https://192.168.99.102:8443/api?timeout=32s 200 OK in 12 milliseconds
+I1108 10:11:27.698740    5992 round_trippers.go:445] GET https://192.168.99.102:8443/apis?timeout=32s 200 OK in 0 milliseconds
+I1108 10:11:27.706517    5992 round_trippers.go:445] GET https://192.168.99.102:8443/apis/certificates.k8s.io/v1beta1?timeout=32s 200 OK in 2 milliseconds
+```
+
+and later
+
+```text
+I1108 10:12:21.331156   21560 round_trippers.go:445] GET https://192.168.99.102:8443/api/v1/namespaces/example/pods?labelSelector=app%3Dprobe-example&resourceVersion=74922&watch=true 200 OK in 2 milliseconds
+F1108 10:13:21.333735   21560 helpers.go:115] error: timed out waiting for the condition
+goroutine 1 [running]:
+k8s.io/kubernetes/vendor/k8s.io/klog/v2.stacks(0xc000006001, 0xc000b28000, 0x59, 0x206)
+        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/klog/v2/klog.go:1026 +0xbf
+k8s.io/kubernetes/vendor/k8s.io/klog/v2.(*loggingT).output(0x29bfb80, 0xc000000003, 0x0, 0x0, 0xc0006af420, 0x279ea9e, 0xa, 0x73, 0x2eee00)
+        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/klog/v2/klog.go:975 +0x19e
+k8s.io/kubernetes/vendor/k8s.io/klog/v2.(*loggingT).printDepth(0x29bfb80, 0xc000000003, 0x0, 0x0, 0x0, 0x0, 0x2, 0xc0007d4af0, 0x1, 0x1)
+        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/klog/v2/klog.go:732 +0x185
+k8s.io/kubernetes/vendor/k8s.io/klog/v2.FatalDepth(...)
+
+```
+(stack trace truncated)
+
+
+The decisive line in log
+
+Before synchronization:
+
+```text
+GET .../pods?labelSelector=app%3Dapp 200 OK
+GET .../pods/probe-example-5497848cf4-fcspm 200 OK
+POST .../pods/.../portforward 101 Switching Protocols
+```
+After synchronization:
+```text
+GET .../pods?labelSelector=app%3Dprobe-example&resourceVersion=74922&watch=true 200 OK
+```
+
+|Before sync|After sync|
+|-----------|----------|
+|`app=app`|`app=probe-example`|
+|Pod found|No matching Pod established|
+|Port-forward connected|Waiting for a suitable Pod|
+
+This is consistent with ArgoCD restoring the original Service selector.
+
+2. Why the command appears to start successfully
+
+This is an important distinction
+```
+Forwarding from 127.0.0.1:8081 -> 8080
+```
+
+means `kubectl` has established its local forwarding listener.
+It does not necessarily mean that the remote application backend is reachable.
+
+When you use:
+```cmd
+minikube.exe kubectl -- -n example port-forward service/probe-example 8081:9090 --v=6
+```
+
+`kubectl` must resolve the Service to a Pod. If no matching Pod exists, it can wait for one.
+
+log ends with:
+```text
+F1108 ... error: timed out waiting for the condition
+```
+
+That is consistent with the Service having no matching Pod
+
+```cmd
+minikube.exe kubectl -- -n example get service probe-example -o json | jq ".spec.selector"
+```
+```json
+{
+  "app": "probe-example"
+}
+```
+
+```cmd
+minikube.exe kubectl -- -n example get pods --show-labels
+```
+```text
+NAME                             READY   STATUS    RESTARTS   AGE   LABELS
+probe-example-5497848cf4-fcspm   1/1     Running   5          9h    app=app,pod-template-hash=5497848cf4
+```
+
+```cmd
+minikube.exe kubectl -- -n example get endpointslices -l kubernetes.io/service-name=probe-example
+```
+```text
+NAME                  ADDRESSTYPE   PORTS     ENDPOINTS   AGE
+probe-example-62hlv   IPv4          <unset>   <unset>     11d
+```
+
+have now demonstrated three independent Kubernetes/GitOps behaviors:
+
+|Component|Behavior|
+|---------|--------|
+|Kubernetes Service controller|Recalculates endpoints when selectors change|
+|kubectl|Resolves Service port-forwarding through matching Pods|
+|ArgoCD|Restores the desired Service configuration during sync|
+
+And there is a useful operational consequence:
+
+*A successful ArgoCD synchronization can restore configuration consistency while inevitably reintroducing an application connectivity problem*
+
+__Desired state restored__: Service selector is `app=probe-example`.
+__Workload still running__: Pod is 1/1 Running, with label `app=app`.
+__Connectivity lost__: EndpointSlice has _no_ addresses and _no_ ports.
+
+NOTE: one can also in watch mode:
+
 ```cmd
 minikube.exe kubectl -- -n example get pods --show-labels -w
 ```
@@ -966,6 +1182,8 @@ observe on ArgoCD pod page:
 ```text
 Waiting for rollout to finish: 0 out of 1 new replicas are available...
 ```
+
+That is consistent with your deliberately induced container failure and Kubernetes replacing or restarting the unhealthy workload
 
 > NOTE: there are two reconciliation mechanisms:
 
