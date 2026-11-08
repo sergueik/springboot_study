@@ -3201,6 +3201,42 @@ docker container stop $ID
 minikube.exe stop
 docker-machine stop
 ```
+
+### Experiment
+
+
+|Defect injection|Kubernetes symptom|ArgoCD observation|
+|----------------|------------------|------------------|
+|Wrong image tag|ImagePullBackOff|Degraded health|
+|Java OOMKilled|Container restart|Deployment health degradation|
+|Readiness endpoint fails|Pod not Ready|Reduced availability|
+|Liveness endpoint fails|Restart loop|Degraded health|
+|Missing ConfigMap|Pod startup failure|Resource health degradation|
+|Wrong Service selector|No endpoints|May remain Healthy unless custom health checks detect it|
+|PVC Pending|Pod cannot mount volume|Degraded workload|
+|Two writers contend for lock|Application-level failure|Potentially invisible to ArgoCD|
+|NetworkPolicy blocks database|Application errors|May remain Healthy|
+|Incorrect Helm values|Configuration drift or failed rollout|Sync/health differences|
+
+
+|Scenario|How to simulate|What to learn|
+|--------|---------------|-------------|
+|PVC remains Pending|Request an unavailable StorageClass or excessive capacity|Provisioning and binding|
+|Storage capacity exhausted|Fill the mounted filesystem|Application behavior under disk-full conditions|
+|Wrong access mode|Request RWX from an RWO-only provisioner|Storage compatibility|
+|Concurrent writers|Run two application replicas against shared storage|File locking and consistency|
+|Storage backend outage|Stop or disconnect the storage server|I/O failure and recovery|
+|Pod loses access to volume|Remove or disrupt its storage backend|Mount and recovery behavior|
+|Data lost on recreation|Use a Delete reclaim policy and recreate resources|Lifecycle and data retention|
+|Permissions mismatch|Change UID/GID or filesystem permissions|Security context and volume ownership|
+
+
+How ArgoCD helps an enterprise operator connect a deployment, a failure, the affected resources, and the change that introduced the problem
+
+Operational context that becomes scattered when deployment is performed manually
+
+Java is a good vehicle: you can manufacture failures deterministically, rather than relying on random infrastructure failures
+
 ### See Also
 
 
@@ -3228,10 +3264,11 @@ docker-machine stop
       + [Argo CD Creating app using custom resource definition](https://www.youtube.com/watch?v=gHFHMg8_rP8&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=4&pp=iAQB)
       + [Argo CD and Kustomize](https://www.youtube.com/watch?v=UzCacg8aPRQ&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=5&pp=iAQB)
       + [Argo CD CLI](https://www.youtube.com/watch?v=e9ci_ISVCeM&list=PL34sAs7_26wMW4bWKnMIfEd87aPuw75by&index=6&pp=iAQB)
-  * [pull GitOps and ArgoCD intro](https://selectel.ru/blog/gitops-argocd/?utm_source=habr.com&utm_medium=referral&utm_campaign=academy_article_argocd-and-deploy-strategy_190225_academy)
+  * [pull GitOps and ArgoCD intro](https://selectel.ru/blog/gitops-argocd/)
   * [ArgoCD discussion and overview](https://habr.com/ru/companies/selectel/articles/883650/)(in  Russian)
   * [CVAT Communty](https://github.com/cvat-ai/cvat) leading data annotation platform for image, video, audio, and 3D datasets [deployment on Kubernetes Minikube with Helm](https://docs.cvat.ai/docs/administration/community/advanced/k8s_deployment_with_helm)
   * [Argilla](https://github.com/argilla-io/argilla) open-source data curation platform for LLMs [cloud Providers and Kubernetes](https://docs.v1.argilla.io/en/v2.2.0/getting_started/installation/deployments/cloud_providers.html) 
+  * https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -1,17 +1,31 @@
 package example;
 
-import com.sun.net.httpserver.HttpServer;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
+import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.OutputStream;
+import java.io.IOException;
+
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 @SuppressWarnings("restriction")
 public class App {
@@ -47,6 +61,85 @@ public class App {
 		server.createContext("/", new HomeHandler());
 		server.createContext("/api/live", new StatusHandler(live));
 		server.createContext("/api/ready", readyHandler);
+		server.createContext("/api/failure/file", new HttpHandler() {
+
+			ExclusiveFileOpener exclusiveFileOpener = new ExclusiveFileOpener();
+			FileLock lock = null;
+
+			@Override
+			public void handle(HttpExchange exchange) throws IOException {
+
+				String query = exchange.getRequestURI().getQuery();
+				Map<String, String> params = parseQuery(query);
+
+				// Example: access a parameter named "name"
+				boolean lockResource = Boolean.parseBoolean(params.getOrDefault("lock", "false"));
+				String resourcePath = params.getOrDefault("path", "path/to/your/file.txt");
+				try {
+					if (lockResource) {
+						lock = exclusiveFileOpener.openExclusiveFile(resourcePath);
+						System.err.println("Exclusive lock acquired successfully.");
+						// Keep lock indefinitely...
+					} else {
+						// Release and close when done - will throw NPE
+						lock.release();
+						lock.channel().close();
+					}
+				} catch (OverlappingFileLockException e) {
+					System.err.println("File is already locked within this Java machine.");
+				} catch (IllegalStateException | IOException e) {
+					System.err.println("Error: " + e.getMessage());
+				}
+			}
+
+			private Map<String, String> parseQuery(String query) {
+				if (query == null || query.isEmpty()) {
+					return Collections.emptyMap();
+				}
+				String key = null;
+				String value = null;
+				Map<String, String> result = new HashMap<>();
+				String[] tokens = query.split("&");
+
+				for (String token : tokens) {
+					int idx = token.indexOf("=");
+					if (idx > 0) {
+						key = URLDecoder.decode(token.substring(0, idx));
+						value = URLDecoder.decode(token.substring(idx + 1));
+						result.put(key, value);
+					} else if (!token.isEmpty()) {
+						key = URLDecoder.decode(token);
+						result.put(key, "");
+					}
+				}
+
+				return result;
+			}
+
+		});
+		server.createContext("/api/failure/oom", new HttpHandler() {
+
+			@Override
+			public void handle(HttpExchange exchange) throws IOException {
+				List<byte[]> memoryBurner = new ArrayList<>();
+				long delay = 1000;
+				int chunkSize = 2 * 1024 * 1024;
+				System.err.println("Bleeding memory...");
+
+				while (true) {
+					// Keep adding 2MB chunks to the list
+					memoryBurner.add(new byte[chunkSize]);
+					try {
+						Thread.sleep(delay);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				// throws java.lang.OutOfMemoryError
+				// Java heap space
+
+			}
+		});
 
 		server.setExecutor(null); // Creates a default executor
 		System.err.println("Server started on port " + port);
@@ -86,7 +179,7 @@ public class App {
 		}
 
 		@Override
-		public void handle( HttpExchange exchange) throws IOException {
+		public void handle(HttpExchange exchange) throws IOException {
 			String path = exchange.getRequestURI().getPath();
 			if (!"/api/live".equals(path) && !"/api/ready".equals(path)) {
 				sendResponse(exchange, "{\"status\": \"error\", \"error\": \"Not Found\"}",
@@ -96,6 +189,31 @@ public class App {
 			sendResponse(exchange, String.format("{\"status\": \"%s\"}", status ? "UP" : "DOWN"),
 					status ? HttpURLConnection.HTTP_OK : HttpURLConnection.HTTP_UNAVAILABLE);
 		}
+
+	}
+	// locking a file for exclusive access
+
+	private static class ExclusiveFileOpener {
+
+		public static FileLock openExclusiveFile(String filePath) throws IOException, IllegalStateException {
+			File file = new File(filePath);
+
+			// Open the file with read/write access
+			RandomAccessFile raf = new RandomAccessFile(file, "rw");
+			FileChannel channel = raf.getChannel();
+
+			// Try to acquire an exclusive lock without blocking
+			FileLock lock = channel.tryLock();
+
+			if (lock == null) {
+				channel.close();
+				raf.close();
+				throw new IllegalStateException("File is already locked by another process: " + filePath);
+			}
+
+			return lock;
+		}
+
 	}
 
 	private static void sendResponse(HttpExchange exchange, String response, int statusCode) throws IOException {

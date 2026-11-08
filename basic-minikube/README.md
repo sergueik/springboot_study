@@ -2648,8 +2648,8 @@ minikube.exe start --driver=virtualbox
        + [https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/service](https://cloud.google.com/kubernetes-engine/docs/concepts/service)
 
-   * Misc.
-     + Jenkins / K8 (mostly in Russian, possibly translations):
+    * Misc.
+      + Jenkins / K8 (mostly in Russian, possibly translations):
         - [part 1](https://habr.com/ru/post/487922)
         - [part 2](https://habr.com/ru/articles/488796)
         - [part 3](https://habr.com/ru/articles/490302)
@@ -2657,7 +2657,7 @@ minikube.exe start --driver=virtualbox
 
      + [k8 minikube docs](https://minikube.sigs.k8s.io/docs/start/)
      + [building a Kubernetes Cluster from Scratch: A Detailed Guide](https://codeproject.com/articles/Building-a-Kubernetes-Cluster-from-Scratch-A-Detai)
-
-
+    * https://minikube.sigs.k8s.io/docs/handbook/persistent_volumes/
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
