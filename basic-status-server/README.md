@@ -672,85 +672,275 @@ sync.(*Cond).Wait(0xc000051700)
 k8s.io/kubernetes/vendor/k8s.io/client-go/util/workqueue.(*Type).Get(0xc0002f3c20, 0x0, 0x0, 0x21a9e00)
         /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/client-go/util/workqueue/queue.go:145 +0x90
 k8s.io/kubernetes/vendor/k8s.io/client-go/transport.(*dynamicClientCert).processNextWorkItem(0xc000051740, 0x2030000)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/client-go/transport/cert_rotation.go:156 +0x6d
-k8s.io/kubernetes/vendor/k8s.io/client-go/transport.(*dynamicClientCert).runWorker(0xc000051740)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/client-go/transport/cert_rotation.go:151 +0x32
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.BackoffUntil.func1(0xc000890000)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:155 +0x66
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.BackoffUntil(0xc000890000, 0x26440c0, 0xc0003d2420, 0xc000157901, 0xc000086b40)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:156 +0xad
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.JitterUntil(0xc000890000, 0x3b9aca00, 0x0, 0xc000157a01, 0xc000086b40)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:133 +0x9f
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.Until(0xc000890000, 0x3b9aca00, 0xc000086b40)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:90 +0x54
-created by k8s.io/kubernetes/vendor/k8s.io/client-go/transport.(*dynamicClientCert).Run
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/client-go/transport/cert_rotation.go:140 +0x207
+...
+```
+(truncated)
 
-goroutine 51 [select, 1 minutes]:
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.WaitFor(0xc0008aa000, 0xc000890010, 0xc00004c060, 0x0, 0x0)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:539 +0x11d
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.PollUntil(0x45d964b800, 0xc000890010, 0xc000086b40, 0x0, 0x0)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:492 +0xc9
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.PollImmediateUntil(0x45d964b800, 0xc000890010, 0xc000086b40, 0x0, 0x245e29e)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:511 +0xb3
-created by k8s.io/kubernetes/vendor/k8s.io/client-go/transport.(*dynamicClientCert).Run
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/client-go/transport/cert_rotation.go:142 +0x275
+#### Troubleshooting
 
-goroutine 52 [select, 1 minutes]:
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.contextForChannel.func1(0xc000086b40, 0xc000890030, 0x2681980, 0xc000336000)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:279 +0xbe
-created by k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.contextForChannel
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:278 +0x94
+```cmd
+minikube.exe kubectl -- -n example get svc probe-example -o json|jq "."
+```
+```json
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "annotations": {
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/instance\":\"probe-example\"},\"name\":\"probe-example\",\"namespace\":\"example\"},\"spec\":{\"ports\":[{\"port\":9090,\"targetPort\":8080}],\"selector\":{\"app\":\"probe-example\"}}}\n"
+    },
+    "creationTimestamp": "2026-10-27T23:46:49Z",
+    "labels": {
+      "app.kubernetes.io/instance": "probe-example"
+    },
+    "managedFields": [
+      {
+        "apiVersion": "v1",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:metadata": {
+            "f:annotations": {
+              ".": {},
+              "f:kubectl.kubernetes.io/last-applied-configuration": {}
+            },
+            "f:labels": {
+              ".": {},
+              "f:app.kubernetes.io/instance": {}
+            }
+          },
+          "f:spec": {
+            "f:ports": {
+              ".": {},
+              "k:{\"port\":9090,\"protocol\":\"TCP\"}": {
+                ".": {},
+                "f:port": {},
+                "f:protocol": {},
+                "f:targetPort": {}
+              }
+            },
+            "f:selector": {
+              ".": {},
+              "f:app": {}
+            },
+            "f:sessionAffinity": {},
+            "f:type": {}
+          }
+        },
+        "manager": "argocd-controller",
+        "operation": "Update",
+        "time": "2026-10-27T23:46:49Z"
+      }
+    ],
+    "name": "probe-example",
+    "namespace": "example",
+    "resourceVersion": "40967",
+    "uid": "eebe05b6-850e-4be0-b463-a31b36f3aadc"
+  },
+  "spec": {
+    "clusterIP": "10.104.179.6",
+    "clusterIPs": [
+      "10.104.179.6"
+    ],
+    "ports": [
+      {
+        "port": 9090,
+        "protocol": "TCP",
+        "targetPort": 8080
+      }
+    ],
+    "selector": {
+      "app": "probe-example"
+    },
+    "sessionAffinity": "None",
+    "type": "ClusterIP"
+  },
+  "status": {
+    "loadBalancer": {}
+  }
+}
+```
+```cmd
+minikube.exe kubectl -- -n example get svc probe-example -o json|jq -cr ".metadata.annotations.""kubectl.kubernetes.io/last-applied-configuration""" | jq "."
+```
+```json
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "annotations": {},
+    "labels": {
+      "app.kubernetes.io/instance": "probe-example"
+    },
+    "name": "probe-example",
+    "namespace": "example"
+  },
+  "spec": {
+    "ports": [
+      {
+        "port": 9090,
+        "targetPort": 8080
+      }
+    ],
+    "selector": {
+      "app": "probe-example"
+    }
+  }
+}
+```
+check is labels match
 
-goroutine 53 [select, 1 minutes]:
-k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.poller.func1.1(0xc00004c120, 0x45d964b800, 0x0, 0xc00004c0c0)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:588 +0x17b
-created by k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait.poller.func1
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go:571 +0x93
+```cmd
+minikube.exe kubectl -- -n example get pods --show-labels
+```
+```text
+NAME                             READY   STATUS    RESTARTS   AGE   LABELS
+probe-example-5497848cf4-fcspm   1/1     Running   3          21m   app=app,pod-template-hash=5497848cf4
+```
 
-goroutine 55 [IO wait]:
-internal/poll.runtime_pollWait(0x175364b53d8, 0x72, 0x2647060)
-        /usr/local/go/src/runtime/netpoll.go:222 +0x65
-internal/poll.(*pollDesc).wait(0xc000a39ab8, 0x72, 0x31eb700, 0x0, 0x0)
-        /usr/local/go/src/internal/poll/fd_poll_runtime.go:87 +0x4c
-internal/poll.execIO(0xc000a39918, 0x250aac8, 0xc0004c1501, 0xc0006c49a0, 0x2c)
-        /usr/local/go/src/internal/poll/fd_windows.go:175 +0x105
-internal/poll.(*FD).Read(0xc000a39900, 0xc0009c2a80, 0x937, 0x937, 0x0, 0x0, 0x0)
-        /usr/local/go/src/internal/poll/fd_windows.go:441 +0x2ff
-net.(*netFD).Read(0xc000a39900, 0xc0009c2a80, 0x937, 0x937, 0x2030002, 0xc0009c2a80, 0x5)
-        /usr/local/go/src/net/fd_posix.go:55 +0x56
-net.(*conn).Read(0xc0006fc198, 0xc0009c2a80, 0x937, 0x937, 0x0, 0x0, 0x0)
-        /usr/local/go/src/net/net.go:182 +0x95
-crypto/tls.(*atLeastReader).Read(0xc000ba0060, 0xc0009c2a80, 0x937, 0x937, 0x22, 0x932, 0xc0004c1710)
-        /usr/local/go/src/crypto/tls/conn.go:779 +0x67
-bytes.(*Buffer).ReadFrom(0xc00043e280, 0x2642a60, 0xc000ba0060, 0xd0bfcc, 0x2236bc0, 0x2301d40)
-        /usr/local/go/src/bytes/buffer.go:204 +0xbb
-crypto/tls.(*Conn).readFromUntil(0xc00043e000, 0x175364b54c0, 0xc000004a80, 0x5, 0xc000004a80, 0x11)
-        /usr/local/go/src/crypto/tls/conn.go:801 +0xf3
-crypto/tls.(*Conn).readRecordOrCCS(0xc00043e000, 0x0, 0x0, 0xd0e510)
-        /usr/local/go/src/crypto/tls/conn.go:608 +0x12d
-crypto/tls.(*Conn).readRecord(...)
-        /usr/local/go/src/crypto/tls/conn.go:576
-crypto/tls.(*Conn).Read(0xc00043e000, 0xc000115000, 0x1000, 0x1000, 0x0, 0x0, 0x0)
-        /usr/local/go/src/crypto/tls/conn.go:1252 +0x16d
-bufio.(*Reader).Read(0xc000280ba0, 0xc000458578, 0x9, 0x9, 0x20, 0xc000730100, 0x0)
-        /usr/local/go/src/bufio/bufio.go:227 +0x238
-io.ReadAtLeast(0x2642880, 0xc000280ba0, 0xc000458578, 0x9, 0x9, 0x9, 0x8, 0xc0004c1d60, 0xd13f25)
-        /usr/local/go/src/io/io.go:314 +0x8e
-io.ReadFull(...)
-        /usr/local/go/src/io/io.go:333
-k8s.io/kubernetes/vendor/golang.org/x/net/http2.readFrameHeader(0xc000458578, 0x9, 0x9, 0x2642880, 0xc000280ba0, 0x0, 0xc000000000, 0x73bfbe8651b1aeb9, 0xc000816288)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/golang.org/x/net/http2/frame.go:237 +0x8e
-k8s.io/kubernetes/vendor/golang.org/x/net/http2.(*Framer).ReadFrame(0xc000458540, 0xc000b9e020, 0x0, 0x0, 0x0)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/golang.org/x/net/http2/frame.go:492 +0xa8
-k8s.io/kubernetes/vendor/golang.org/x/net/http2.(*clientConnReadLoop).run(0xc0004c1fa8, 0x0, 0x0)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/golang.org/x/net/http2/transport.go:1819 +0xe7
-k8s.io/kubernetes/vendor/golang.org/x/net/http2.(*ClientConn).readLoop(0xc000a37380)
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/golang.org/x/net/http2/transport.go:1741 +0x76
-created by k8s.io/kubernetes/vendor/golang.org/x/net/http2.(*Transport).newClientConn
-        /workspace/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/vendor/golang.org/x/net/http2/transport.go:705 +0x6c5
+Kubernetes Services select Pods by matching all selector key/value pairs. Your Service currently selects zero Pods.
+
+Consequently, the Service has no usable backend endpoint, which explains why port-forwarding through the Service cannot establish a connection.
+
+```cmd
+minikube.exe kubectl -- -n example get endpoints probe-example -o yaml
+```
+```yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  annotations:
+    endpoints.kubernetes.io/last-change-trigger-time: "2026-10-27T23:46:49Z"
+  creationTimestamp: "2026-10-27T23:46:49Z"
+  labels:
+    app.kubernetes.io/instance: probe-example
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:endpoints.kubernetes.io/last-change-trigger-time: {}
+        f:labels:
+          .: {}
+          f:app.kubernetes.io/instance: {}
+    manager: kube-controller-manager
+    operation: Update
+    time: "2026-10-27T23:46:49Z"
+  name: probe-example
+  namespace: example
+  resourceVersion: "40968"
+  uid: 1a591716-d850-423c-b77a-4930f46e1cbd
 
 ```
+
+```cmd
+minikube.exe kubectl -- -n example get endpointslices -l kubernetes.io/service-name=probe-example
+```
+```text
+NAME                  ADDRESSTYPE   PORTS     ENDPOINTS   AGE
+probe-example-62hlv   IPv4          <unset>   <unset>     11d
+```
+
+The resource exists, but it has no subsets section.
+
+That means Kubernetes has not associated any backend Pod IP addresses with this Service.
+One has to mosify the deployment in git - __ArgoCD__ will revert manual changes done through `kubectl`.
+
+First, save the current resources:
+```cmd
+minikube.exe kubectl -- -n example get deployment probe-example -o yaml > deployment-before.yaml
+```
+```cmd
+minikube.exe kubectl -- -n example get service probe-example -o yaml > service-before.yaml
+```
+
+Then patch the Deployment's Pod template label to match the Service selector:
+```cmd
+minikube.exe kubectl -- -n example patch deployment probe-example --type strategic --patch "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"app\":\"probe-example\"}}}}}"
+```
+
+This should trigger a __Deployment__ rollout because Pod-template labels changed.
+
+Watch:
+```cmd
+minikube.exe kubectl -- -n example get pods --show-labels -w
+```
+
+And inspect __ArgoCD__.
+
+Expected sequence:
+1. Kubernetes accepts your manual change.
+2. The Deployment creates replacement Pods.
+3. The Service begins acquiring endpoints.
+4. ArgoCD detects that live state differs from Git.
+5. ArgoCD reports OutOfSync.
+6. If automated self-healing is enabled, ArgoCD restores the Git-defined Deployment.
+
+
+> NOTE: YAML is not helpful 
+```cmd
+minikube.exe kubectl -- -n example get svc probe-example -o yaml
+```
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/instance":"probe-example"},"name":"probe-example","namespace":"example"},"spec":{"ports":[{"port":9090,"targetPort":8080}],"selector":{"app":"probe-example"}}}
+  creationTimestamp: "2026-10-27T23:46:49Z"
+  labels:
+    app.kubernetes.io/instance: probe-example
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:kubectl.kubernetes.io/last-applied-configuration: {}
+        f:labels:
+          .: {}
+          f:app.kubernetes.io/instance: {}
+      f:spec:
+        f:ports:
+          .: {}
+          k:{"port":9090,"protocol":"TCP"}:
+            .: {}
+            f:port: {}
+            f:protocol: {}
+            f:targetPort: {}
+        f:selector:
+          .: {}
+          f:app: {}
+        f:sessionAffinity: {}
+        f:type: {}
+    manager: argocd-controller
+    operation: Update
+    time: "2026-10-27T23:46:49Z"
+  name: probe-example
+  namespace: example
+  resourceVersion: "40967"
+  uid: eebe05b6-850e-4be0-b463-a31b36f3aadc
+spec:
+  clusterIP: 10.104.179.6
+  clusterIPs:
+  - 10.104.179.6
+  ports:
+  - port: 9090
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: probe-example
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+```
+
+
 connect directly to pod
 ```cmd
 minikube.exe kubectl -- -n example port-forward pod/probe-example-5497848cf4-fcspm 8081:8080
@@ -791,13 +981,14 @@ The other popular framework for running local Kubernetes clusters using Docker c
 also supports loading a locally built __Docker__ image directly into its __Kubernetes__ nodes.
 One does not need to publish work in progress image e.g. `status-server:latest` image to __Docker Hub__ or another registry
 
-The [equivalent](https://kind.sigs.k8s.io/docs/user/quick-start/#loading-an-image-into-your-cluster) of your Minikube workflow is very similar:
+The [equivalent](https://kind.sigs.k8s.io/docs/user/quick-start/#loading-an-image-into-your-cluster) of Minikube workflow is very similar:
+
 ```sh
 docker save --output status-server.tar status-server
 ```
-```
+```cmd
 kind load image-archive status-server.tar --name my-cluster
-``
+```
 ### Trubleshooting Notepad Graphical Subsystem Error
 
 ```cmd
@@ -820,3 +1011,6 @@ Report Id: 00b14aa3-f35a-4846-b5b6-13e76d246807
 Faulting package full name: Microsoft.WindowsNotepad_11.2607.14.0_x64__8wekyb3d8bbwe
 Faulting package-relative application ID: App
 ```
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
