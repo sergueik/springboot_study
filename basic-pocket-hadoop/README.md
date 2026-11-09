@@ -1,4 +1,4 @@
-### Setup
+  ### Setup
 
 ```
 lsblk -o NAME,SIZE,MODEL,FSTYPE,UUID,MOUNTPOINTS
@@ -51,7 +51,7 @@ block
 
 ```
 
-```
+```mermaid
  pie showData
    title Typical Laptop SSD 
     "Windows8_OS · sda5" : 8.641
@@ -108,15 +108,14 @@ EFI/
 ls /media/sergueik/Windows8_OS/
 ```
 ```text
-Boot                      Minikube               Ruby24-x64
-bootmgr                   Minikube.SAVED         swapfile.sys
-BOOTNXT                   opscode               'System Volume Information'
-developer                 PerfLogs               temp
-'Documents and Settings'   ProgramData            tools
-HashiCorp                'Program Files'         Users
-hiberfil.sys             'Program Files (x86)'  'Virtual Machines'
-Intel                     Recovery               Windows
-java                     '$Recycle.Bin'          windows-version.txt
+Boot                      Intel                 '$Recycle.Bin'
+ bootmgr                   java                  'System Volume Information'
+ BOOTNXT                   Minikube               temp
+ bootsqm.dat               PerfLogs               tools
+ developer                 ProgramData            Users
+'Documents and Settings'  'Program Files'        'Virtual Machines'
+ HashiCorp                'Program Files (x86)'   Windows
+ hiberfil.sys              Recovery               windows-version.txt
 ```
 ```sh
 sudo mount /dev/sda7  /media/sergueik/UNKNOWN2
@@ -260,13 +259,13 @@ Server:
   Version:          0.19.0
   GitCommit:
 ```
-```
+```sh
 ls -a /etc/docker/
 ```
-```
+```text
 .  ..  key.json
 ```
-```
+```sh
 ls -a ~sergueik/.docker/
 ```
 ```text
@@ -287,7 +286,7 @@ docker stop ff28
 ff28
 ```
 ```sh
- docker container ls -a
+docker container ls -a
 ```
 ```text
 CONTAINER ID   IMAGE                  COMMAND                  CREATED       STATUS                        PORTS     NAMES
@@ -498,12 +497,11 @@ CHKDSK repaired NTFS metadata, and the reported shrink limit changed from approx
 
 #### Unix Machine Steps
 ```sh
-docker info | grep -E 'Storage Driver|Docker Root Dir'
+docker info 2> /dev/null| grep -E 'Storage Driver|Docker Root Dir'
 ```
 ```text
-WARNING: No swap limit support
- Storage Driver: overlay2
- Docker Root Dir: /var/lib/docker
+Storage Driver: overlay2
+Docker Root Dir: /var/lib/docker
 ```
 
 it is easer to move the blank Docker configuration - no images, no volumes:
@@ -717,11 +715,104 @@ df -h /data/docker
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/sda8        20G  9.2M   19G   1% /data/docker
 ```
+
+
+### Usage
+
+This is a replica of []()
+
+```sh
+docker-compose -f docker-compose.yaml.NEW up --build 
+```
+```text
+```
+it is massive:
+
+```sh
+docker image ls 
+```
+```text
+REPOSITORY                  TAG       IMAGE ID       CREATED       SIZE
+alpine                      latest    3ea06e4cb95e   3 days ago    8.43MB
+panovvv/livy                2.5.2     0feffad7f496   5 years ago   1.68GB
+panovvv/zeppelin-bigdata    2.5.2     4a95a387824b   5 years ago   3.38GB
+panovvv/hadoop-hive-spark   2.5.2     19da667a8074   5 years ago   1.58GB
+postgres                    11.5      5f1485c70c9a   7 years ago   293MB
+```
+but immediaely boot is unhealthy
+```sh
+docker-compose ps
+```
+```text
+NAME                                  IMAGE                             COMMAND                  SERVICE             CREATED             STATUS                     PORTS
+basic-pocket-hadoop-hivemetastore-1   postgres:11.5                     "docker-entrypoint.s…"   hivemetastore       6 minutes ago       Up 5 minutes (healthy)     5432/tcp
+basic-pocket-hadoop-livy-1            panovvv/livy:2.5.2                "/entrypoint.sh"         livy                6 minutes ago       Up 5 minutes (unhealthy)   0/tcp, 0.0.0.0:8998->8998/tcp, :::8998->8998/tcp
+basic-pocket-hadoop-master-1          panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         master              6 minutes ago       Up 5 minutes (unhealthy)   0.0.0.0:4040-4043->4040-4043/tcp, :::4040-4043->4040-4043/tcp, 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 0.0.0.0:8088->8088/tcp, :::8088->8088/tcp, 0.0.0.0:9868->9868/tcp, :::9868->9868/tcp, 0.0.0.0:9870->9870/tcp, :::9870->9870/tcp, 0.0.0.0:10000->10000/tcp, :::10000->10000/tcp, 0/tcp, 0.0.0.0:18080->18080/tcp, :::18080->18080/tcp
+basic-pocket-hadoop-worker1-1         panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         worker1             6 minutes ago       Up 5 minutes (unhealthy)   0.0.0.0:8081->8081/tcp, :::8081->8081/tcp, 0/tcp, 0.0.0.0:9864->9864/tcp, :::9864->9864/tcp
+basic-pocket-hadoop-worker2-1         panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         worker2             6 minutes ago       Up 5 minutes (unhealthy)   0.0.0.0:8082->8082/tcp, :::8082->8082/tcp, 0/tcp, 0.0.0.0:9865->9865/tcp, :::9865->9865/tcp
+basic-pocket-hadoop-zeppelin-1        panovvv/zeppelin-bigdata:2.5.2    "/entrypoint.sh"         zeppelin            6 minutes ago       Up 5 minutes (unhealthy)   0.0.0.0:8890->8890/tcp, :::8890->8890/tcp
+
+```
+```sh
+sudo du -hs /data/*
+```
+```text
+4.0K	/data/data
+14G	/data/docker
+4.0K	/data/livy_batches
+60K	/data/zeppelin_notebooks
+```
+```sh
+docker ps
+```
+```text
+CONTAINER ID   IMAGE                             COMMAND                  CREATED          STATUS                      PORTS                                                                                                                                                                                                                                                                                                                                            NAMES
+3b6e5c40a980   panovvv/zeppelin-bigdata:2.5.2    "/entrypoint.sh"         29 minutes ago   Up 29 minutes (unhealthy)   0.0.0.0:8890->8890/tcp, :::8890->8890/tcp                                                                                                                                                                                                                                                                                                        basic-pocket-hadoop-zeppelin-1
+11dc661391af   panovvv/livy:2.5.2                "/entrypoint.sh"         29 minutes ago   Up 29 minutes (unhealthy)   0/tcp, 0.0.0.0:8998->8998/tcp, :::8998->8998/tcp                                                                                                                                                                                                                                                                                                 basic-pocket-hadoop-livy-1
+d2a8182cdfd9   panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         29 minutes ago   Up 29 minutes (unhealthy)   0.0.0.0:8081->8081/tcp, :::8081->8081/tcp, 0/tcp, 0.0.0.0:9864->9864/tcp, :::9864->9864/tcp                                                                                                                                                                                                                                                      basic-pocket-hadoop-worker1-1
+2b91fea68647   panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         29 minutes ago   Up 29 minutes (unhealthy)   0.0.0.0:8082->8082/tcp, :::8082->8082/tcp, 0/tcp, 0.0.0.0:9865->9865/tcp, :::9865->9865/tcp                                                                                                                                                                                                                                                      basic-pocket-hadoop-worker2-1
+9e9fb11e84e7   panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         29 minutes ago   Up 29 minutes (unhealthy)   0.0.0.0:4040-4043->4040-4043/tcp, :::4040-4043->4040-4043/tcp, 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 0.0.0.0:8088->8088/tcp, :::8088->8088/tcp, 0.0.0.0:9868->9868/tcp, :::9868->9868/tcp, 0.0.0.0:9870->9870/tcp, :::9870->9870/tcp, 0.0.0.0:10000->10000/tcp, :::10000->10000/tcp, 0/tcp, 0.0.0.0:18080->18080/tcp, :::18080->18080/tcp   basic-pocket-hadoop-master-1
+29c6550e149b   postgres:11.5                     "docker-entrypoint.s…"   29 minutes ago   Up 29 minutes (healthy)     5432/tcp                                                                                                                                                                                                                                                                                                                                         basic-pocket-hadoop-hivemetastore-1
+```
+
+inspecting docker container logs is a work in progess.
+
+```sh
+docker-compose rm -f
+Going to remove basic-pocket-hadoop-zeppelin-1, basic-pocket-hadoop-livy-1, basic-pocket-hadoop-worker1-1, basic-pocket-hadoop-worker2-1, basic-pocket-hadoop-master-1, basic-pocket-hadoop-hivemetastore-1
+[+] Running 6/0
+ ✔ Container basic-pocket-hadoop-hivemetastore-1  Removed                  0.0s 
+ ✔ Container basic-pocket-hadoop-livy-1           Removed                  0.0s 
+ ✔ Container basic-pocket-hadoop-zeppelin-1       Removed                  0.0s 
+ ✔ Container basic-pocket-hadoop-worker2-1        Removed                  0.1s 
+ ✔ Container basic-pocket-hadoop-master-1         Removed                  0.0s 
+ ✔ Container basic-pocket-hadoop-worker1-1        Removed                  0.1s
+
+```
+### Background
+
+Cloudera traditionally offered a pre-configured Cloudera QuickStart VM (a single-node Apache Hadoop environment packaged for VirtualBox, VMware, or KVM), though Cloudera officially stopped providing direct public downloads
+The [Cloudera Quickstart Docker Image](https://hub.docker.com/r/cloudera/quickstart/)
+is single-node deployment of Cloudera's 100% open-source distribution including 
+[Apache Hadoop](https://en.wikipedia.org/wiki/Apache_Hadoop), 
+and [Cloudera Manager](). They are ideal environments for learning about Hadoop, trying out new ideas, testing and demoing your application. 
+
+
 ### TODO 
 
-Hadoop on a Gamer Disappointer Device
-  
 The Gamer's Disappointment Redemption Project
 Turning Lenovo Y40/Y70 gaming disappointments into portable big-data laboratories.
 
 Repository: pocket-hadoop
+
+### See Also
+
+  * [Base Docker image with just essentials: Hadoop, Hive and Spark](https://github.com/panovvv/hadoop-hive-spark-docker)
+  * [Hadoop, Hive, Spark, Zeppelin and Livy: all in one Docker-compose file.](https://github.com/panovvv/bigdata-docker-compose)
+  * [Hadoop tutorial for university in Cloudera Quickstart VM]()
+  * [Cloudera Manager Guide](https://docs.cloudera.com/cdp-private-cloud-base/7.1.7/installation/cm-installation.pdf)
+  * [Cludera Hue Documentation - Get Started with Hue](https://docs-archive.cloudera.com/documentation/enterprise/5-13-x/topics/hue.html)
+
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
