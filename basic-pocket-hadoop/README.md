@@ -1667,6 +1667,7 @@ basic-pocket-hadoop-worker1-1         panovvv/hadoop-hive-spark:2.5.2   "/entryp
 basic-pocket-hadoop-worker2-1         panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         worker2             2 minutes ago       Up 2 minutes (unhealthy)   0.0.0.0:8082->8082/tcp, :::8082->8082/tcp, 0/tcp, 0.0.0.0:9865->9865/tcp, :::9865->9865/tcp
 basic-pocket-hadoop-zeppelin-1        panovvv/zeppelin-bigdata:2.5.2    "/entrypoint.sh"         zeppelin            2 minutes ago       Up 2 minutes (unhealthy)   0.0.0.0:8890->8890/tcp, :::8890->8890/tcp
 ```
+> NOTE: there is no health in `docker-compose.yml`
 ```sh
 sudo du -hs /data/*
 ```
@@ -1724,6 +1725,8 @@ sudo docker-compose -f docker-compose.yml stop
 ```
 ```sh
 docker-compose -f docker-compose.yml rm -f
+```
+```text
 Going to remove basic-pocket-hadoop-zeppelin-1, basic-pocket-hadoop-livy-1, basic-pocket-hadoop-worker1-1, basic-pocket-hadoop-worker2-1, basic-pocket-hadoop-master-1, basic-pocket-hadoop-hivemetastore-1
 [+] Running 6/0
  ✔ Container basic-pocket-hadoop-hivemetastore-1  Removed                  0.0s 
@@ -1745,11 +1748,398 @@ Filesystem      Size  Used Avail Use% Mounted on
 /dev/sda8        20G  109M   19G   1% /data/docker
 ```
 
+
+#### Virtual Box
+
 ```sh
 curl -skLo ~/Downloads/cloudera-quickstart-vm-5.13.0-0-virtualbox.zip https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-5.13.0-0-virtualbox.zip
 ```
 
+> NOTE: when downloading using Chrome browser, it spends significant time computing checksum at the end
+```sh
+unzip -l ~/Downloads/Unco* 
+```
+```text
+Archive:  /home/sergueik/Downloads/Unconfirmed 617944.crdownload
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2017-10-23 16:34   cloudera-quickstart-vm-5.13.0-0-virtualbox/
+5949797376  2017-10-23 16:34   cloudera-quickstart-vm-5.13.0-0-virtualbox/cloudera-quickstart-vm-5.13.0-0-virtualbox-disk1.vmdk
+    14457  2017-10-23 16:29   cloudera-quickstart-vm-5.13.0-0-virtualbox/cloudera-quickstart-vm-5.13.0-0-virtualbox.ovf
+---------                     -------
+5949811833                     3 files
+``` 
 
+![Importing the VM](screenshots/capture-virtual-machine-import.png)
+
+![Importing the VM](screenshots/capture-virtual-machine-import-windows.jpg)
+
+
+after the completion of import, which largely is a VMDK file copy, it runs old school:
+
+![Running the VM](screenshots/capture-cludera-quickstart-desktop.jpg)
+
+
+#### Standalone Container
+
+```sh
+docker pull cloudera/quickstart:latest
+```
+```text
+latest: Pulling from cloudera/quickstart
+```
+
+ignore the
+
+```text
+Image docker.io/cloudera/quickstart:latest uses outdated schema1 manifest format.
+Please upgrade to a schema2 image for better future compatibility. 
+More information at https://docs.docker.com/registry/spec/deprecated-schema-v1/
+```
+
+```sh
+docker image ls
+```
+```text
+REPOSITORY            TAG       IMAGE ID       CREATED        SIZE
+cloudera/quickstart   latest    4239cd2958c6   10 years ago   6.34GB
+```
+```sh
+docker run --hostname=quickstart.cloudera --privileged=true -p 8888:8888 -p 7180:7180 -p 50070:50070 -p 80:80 -p 8983:8983 -it cloudera/quickstart:latest /usr/bin/docker-quickstart
+```
+```text
+Starting mysqld:                                           [  OK  ]
+
+if [ "$1" == "start" ] ; then
+    if [ "${EC2}" == 'true' ]; then
+        FIRST_BOOT_FLAG=/var/lib/cloudera-quickstart/.ec2-key-installed
+        if [ ! -f "${FIRST_BOOT_FLAG}" ]; then
+            METADATA_API=http://169.254.169.254/latest/meta-data
+            KEY_URL=${METADATA_API}/public-keys/0/openssh-key
+            SSH_DIR=/home/cloudera/.ssh
+            mkdir -p ${SSH_DIR}
+            chown cloudera:cloudera ${SSH_DIR}
+            curl ${KEY_URL} >> ${SSH_DIR}/authorized_keys
+            touch ${FIRST_BOOT_FLAG}
+        fi
+    fi
+    if [ "${DOCKER}" != 'true' ]; then
+        if [ -f /sys/kernel/mm/redhat_transparent_hugepage/defrag ]; then
+            echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
+        fi
+
+        cloudera-quickstart-ip
+        HOSTNAME=quickstart.cloudera
+        hostname ${HOSTNAME}
+        sed -i -e "s/HOSTNAME=.*/HOSTNAME=${HOSTNAME}/" /etc/sysconfig/network
+    fi
+
+    (
+        cd /var/lib/cloudera-quickstart/tutorial;
+        nohup python -m SimpleHTTPServer 80 &
+    )
+
+    # TODO: check for expired CM license and update config.js accordingly
+fi
++ '[' start == start ']'
++ '[' '' == true ']'
++ '[' true '!=' true ']'
++ cd /var/lib/cloudera-quickstart/tutorial
++ nohup python -m SimpleHTTPServer 80
+
+nohup: appending output to `nohup.out'
+JMX enabled by default
+Using config: /etc/zookeeper/conf/zoo.cfg
+Starting zookeeper ... STARTED
+starting datanode, logging to /var/log/hadoop-hdfs/hadoop-hdfs-datanode-quickstart.cloudera.out
+Started Hadoop datanode (hadoop-hdfs-datanode):            [  OK  ]
+starting journalnode, logging to /var/log/hadoop-hdfs/hadoop-hdfs-journalnode-quickstart.cloudera.out
+Started Hadoop journalnode:                                [  OK  ]
+starting namenode, logging to /var/log/hadoop-hdfs/hadoop-hdfs-namenode-quickstart.cloudera.out
+Started Hadoop namenode:                                   [  OK  ]
+starting secondarynamenode, logging to /var/log/hadoop-hdfs/hadoop-hdfs-secondarynamenode-quickstart.cloudera.out
+Started Hadoop secondarynamenode:                          [  OK  ]
+
+Setting HTTPFS_HOME:          /usr/lib/hadoop-httpfs
+Using   HTTPFS_CONFIG:        /etc/hadoop-httpfs/conf
+Sourcing:                    /etc/hadoop-httpfs/conf/httpfs-env.sh
+Using   HTTPFS_LOG:           /var/log/hadoop-httpfs/
+Using   HTTPFS_TEMP:           /var/run/hadoop-httpfs
+Setting HTTPFS_HTTP_PORT:     14000
+Setting HTTPFS_ADMIN_PORT:     14001
+Setting HTTPFS_HTTP_HOSTNAME: quickstart.cloudera
+Setting HTTPFS_SSL_ENABLED: false
+Setting HTTPFS_SSL_KEYSTORE_FILE:     /var/lib/hadoop-httpfs/.keystore
+Setting HTTPFS_SSL_KEYSTORE_PASS:     password
+Using   CATALINA_BASE:       /var/lib/hadoop-httpfs/tomcat-deployment
+Using   HTTPFS_CATALINA_HOME:       /usr/lib/bigtop-tomcat
+Setting CATALINA_OUT:        /var/log/hadoop-httpfs//httpfs-catalina.out
+Using   CATALINA_PID:        /var/run/hadoop-httpfs/hadoop-httpfs-httpfs.pid
+
+Using   CATALINA_OPTS:       
+Adding to CATALINA_OPTS:     -Dhttpfs.home.dir=/usr/lib/hadoop-httpfs -Dhttpfs.config.dir=/etc/hadoop-httpfs/conf -Dhttpfs.log.dir=/var/log/hadoop-httpfs/ -Dhttpfs.temp.dir=/var/run/hadoop-httpfs -Dhttpfs.admin.port=14001 -Dhttpfs.http.port=14000 -Dhttpfs.http.hostname=quickstart.cloudera
+Using CATALINA_BASE:   /var/lib/hadoop-httpfs/tomcat-deployment
+Using CATALINA_HOME:   /usr/lib/bigtop-tomcat
+Using CATALINA_TMPDIR: /var/run/hadoop-httpfs
+Using JRE_HOME:        /usr/java/jdk1.7.0_67-cloudera
+Using CLASSPATH:       /usr/lib/bigtop-tomcat/bin/bootstrap.jar
+Using CATALINA_PID:    /var/run/hadoop-httpfs/hadoop-httpfs-httpfs.pid
+Started Hadoop httpfs (hadoop-httpfs):                     [  OK  ]
+starting historyserver, logging to /var/log/hadoop-mapreduce/mapred-mapred-historyserver-quickstart.cloudera.out
+26/11/09 21:27:37 INFO hs.JobHistoryServer: STARTUP_MSG: 
+/************************************************************
+STARTUP_MSG: Starting JobHistoryServer
+STARTUP_MSG:   host = quickstart.cloudera/172.17.0.2
+STARTUP_MSG:   args = []
+STARTUP_MSG:   version = 2.6.0-cdh5.7.0
+STARTUP_MSG:   classpath = /etc/hadoop/conf:/usr/lib/hadoop/lib/stax-api-1.0-2.jar:/usr/lib/hadoop/lib/jets3t-0.9.0.jar:/usr/lib/hadoop/lib/jackson-xc-1.8.8.jar:/usr/lib/hadoop/lib/servlet-api-2.5.jar:/usr/lib/hadoop/lib/apacheds-kerberos-codec-2.0.0-M15.jar:/usr/lib/hadoop/lib/commons-io-2.4.jar:/usr/lib/hadoop/lib/commons-lang-2.6.jar:/usr/lib/hadoop/lib/netty-3.6.2.Final.jar:/usr/lib/hadoop/lib/jackson-mapper-asl-1.8.8.jar:/usr/lib/hadoop/lib/xmlenc-0.52.jar:/usr/lib/hadoop/lib/guava-11.0.2.jar:/usr/lib/hadoop/lib/jackson-jaxrs-1.8.8.jar:/usr/lib/hadoop/lib/xz-1.0.jar:/usr/lib/hadoop/lib/commons-beanutils-core-1.8.0.jar:/usr/lib/hadoop/lib/api-util-1.0.0-M20.jar:/usr/lib/hadoop/lib/commons-digester-1.8.jar:/usr/lib/hadoop/lib/gson-2.2.4.jar:/usr/lib/hadoop/lib/api-asn1-api-1.0.0-M20.jar:/usr/lib/hadoop/lib/jetty-6.1.26.cloudera.4.jar:/usr/lib/hadoop/lib/aws-java-sdk-s3-1.10.6.jar:/usr/lib/hadoop/lib/commons-codec-1.4.jar:/usr/lib/hadoop/lib/aws-java-sdk-core-1.10.6.jar:/usr/lib/hadoop/lib/java-xmlbuilder-0.4.jar:/usr/lib/hadoop/lib/jsr305-3.0.0.jar:/usr/lib/hadoop/lib/jaxb-api-2.2.2.jar:/usr/lib/hadoop/lib/asm-3.2.jar:/usr/lib/hadoop/lib/curator-framework-2.7.1.jar:/usr/lib/hadoop/lib/commons-logging-1.1.3.jar:/usr/lib/hadoop/lib/hue-plugins-3.9.0-cdh5.7.0.jar:/usr/lib/hadoop/lib/htrace-core4-4.0.1-incubating.jar:/usr/lib/hadoop/lib/jasper-compiler-5.5.23.jar:/usr/lib/hadoop/lib/commons-cli-1.2.jar:/usr/lib/hadoop/lib/apacheds-i18n-2.0.0-M15.jar:/usr/lib/hadoop/lib/jersey-json-1.9.jar:/usr/lib/hadoop/lib/jetty-util-6.1.26.cloudera.4.jar:/usr/lib/hadoop/lib/jsp-api-2.1.jar:/usr/lib/hadoop/lib/httpclient-4.2.5.jar:/usr/lib/hadoop/lib/aws-java-sdk-kms-1.10.6.jar:/usr/lib/hadoop/lib/log4j-1.2.17.jar:/usr/lib/hadoop/lib/jackson-core-asl-1.8.8.jar:/usr/lib/hadoop/lib/snappy-java-1.0.4.1.jar:/usr/lib/hadoop/lib/protobuf-java-2.5.0.jar:/usr/lib/hadoop/lib/hamcrest-core-1.3.jar:/usr/lib/hadoop/lib/commons-el-1.0.jar:/usr/lib/hadoop/lib/commons-math3-3.1.1.jar:/usr/lib/hadoop/lib/commons-beanutils-1.7.0.jar:/usr/lib/hadoop/lib/logredactor-1.0.3.jar:/usr/lib/hadoop/lib/jasper-runtime-5.5.23.jar:/usr/lib/hadoop/lib/commons-collections-3.2.2.jar:/usr/lib/hadoop/lib/commons-configuration-1.6.jar:/usr/lib/hadoop/lib/commons-net-3.1.jar:/usr/lib/hadoop/lib/zookeeper.jar:/usr/lib/hadoop/lib/paranamer-2.3.jar:/usr/lib/hadoop/lib/jettison-1.1.jar:/usr/lib/hadoop/lib/jaxb-impl-2.2.3-1.jar:/usr/lib/hadoop/lib/jersey-server-1.9.jar:/usr/lib/hadoop/lib/commons-httpclient-3.1.jar:/usr/lib/hadoop/lib/jersey-core-1.9.jar:/usr/lib/hadoop/lib/slf4j-log4j12.jar:/usr/lib/hadoop/lib/activation-1.1.jar:/usr/lib/hadoop/lib/jsch-0.1.42.jar:/usr/lib/hadoop/lib/httpcore-4.2.5.jar:/usr/lib/hadoop/lib/slf4j-api-1.7.5.jar:/usr/lib/hadoop/lib/commons-compress-1.4.1.jar:/usr/lib/hadoop/lib/curator-client-2.7.1.jar:/usr/lib/hadoop/lib/curator-recipes-2.7.1.jar:/usr/lib/hadoop/lib/mockito-all-1.8.5.jar:/usr/lib/hadoop/lib/avro.jar:/usr/lib/hadoop/lib/junit-4.11.jar:/usr/lib/hadoop/.//hadoop-nfs.jar:/usr/lib/hadoop/.//parquet-common.jar:/usr/lib/hadoop/.//hadoop-common.jar:/usr/lib/hadoop/.//parquet-pig.jar:/usr/lib/hadoop/.//parquet-test-hadoop2.jar:/usr/lib/hadoop/.//hadoop-common-tests.jar:/usr/lib/hadoop/.//hadoop-auth.jar:/usr/lib/hadoop/.//parquet-encoding.jar:/usr/lib/hadoop/.//parquet-column.jar:/usr/lib/hadoop/.//parquet-tools.jar:/usr/lib/hadoop/.//hadoop-aws-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop/.//parquet-cascading.jar:/usr/lib/hadoop/.//parquet-jackson.jar:/usr/lib/hadoop/.//parquet-thrift.jar:/usr/lib/hadoop/.//parquet-avro.jar:/usr/lib/hadoop/.//hadoop-common-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop/.//hadoop-common-2.6.0-cdh5.7.0-tests.jar:/usr/lib/hadoop/.//parquet-format-javadoc.jar:/usr/lib/hadoop/.//parquet-format.jar:/usr/lib/hadoop/.//hadoop-auth-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop/.//hadoop-annotations-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop/.//parquet-hadoop-bundle.jar:/usr/lib/hadoop/.//parquet-hadoop.jar:/usr/lib/hadoop/.//parquet-generator.jar:/usr/lib/hadoop/.//parquet-scrooge_2.10.jar:/usr/lib/hadoop/.//hadoop-aws.jar:/usr/lib/hadoop/.//parquet-scala_2.10.jar:/usr/lib/hadoop/.//hadoop-annotations.jar:/usr/lib/hadoop/.//hadoop-nfs-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop/.//parquet-protobuf.jar:/usr/lib/hadoop/.//parquet-pig-bundle.jar:/usr/lib/hadoop/.//parquet-format-sources.jar:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/servlet-api-2.5.jar:/usr/lib/hadoop-hdfs/lib/leveldbjni-all-1.8.jar:/usr/lib/hadoop-hdfs/lib/commons-io-2.4.jar:/usr/lib/hadoop-hdfs/lib/commons-lang-2.6.jar:/usr/lib/hadoop-hdfs/lib/netty-3.6.2.Final.jar:/usr/lib/hadoop-hdfs/lib/xml-apis-1.3.04.jar:/usr/lib/hadoop-hdfs/lib/jackson-mapper-asl-1.8.8.jar:/usr/lib/hadoop-hdfs/lib/xmlenc-0.52.jar:/usr/lib/hadoop-hdfs/lib/guava-11.0.2.jar:/usr/lib/hadoop-hdfs/lib/jetty-6.1.26.cloudera.4.jar:/usr/lib/hadoop-hdfs/lib/commons-codec-1.4.jar:/usr/lib/hadoop-hdfs/lib/jsr305-3.0.0.jar:/usr/lib/hadoop-hdfs/lib/asm-3.2.jar:/usr/lib/hadoop-hdfs/lib/commons-logging-1.1.3.jar:/usr/lib/hadoop-hdfs/lib/htrace-core4-4.0.1-incubating.jar:/usr/lib/hadoop-hdfs/lib/commons-cli-1.2.jar:/usr/lib/hadoop-hdfs/lib/jetty-util-6.1.26.cloudera.4.jar:/usr/lib/hadoop-hdfs/lib/jsp-api-2.1.jar:/usr/lib/hadoop-hdfs/lib/log4j-1.2.17.jar:/usr/lib/hadoop-hdfs/lib/jackson-core-asl-1.8.8.jar:/usr/lib/hadoop-hdfs/lib/protobuf-java-2.5.0.jar:/usr/lib/hadoop-hdfs/lib/commons-el-1.0.jar:/usr/lib/hadoop-hdfs/lib/commons-daemon-1.0.13.jar:/usr/lib/hadoop-hdfs/lib/jasper-runtime-5.5.23.jar:/usr/lib/hadoop-hdfs/lib/jersey-server-1.9.jar:/usr/lib/hadoop-hdfs/lib/xercesImpl-2.9.1.jar:/usr/lib/hadoop-hdfs/lib/jersey-core-1.9.jar:/usr/lib/hadoop-hdfs/.//hadoop-hdfs.jar:/usr/lib/hadoop-hdfs/.//hadoop-hdfs-nfs-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-hdfs/.//hadoop-hdfs-nfs.jar:/usr/lib/hadoop-hdfs/.//hadoop-hdfs-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-hdfs/.//hadoop-hdfs-2.6.0-cdh5.7.0-tests.jar:/usr/lib/hadoop-hdfs/.//hadoop-hdfs-tests.jar:/usr/lib/hadoop-yarn/lib/stax-api-1.0-2.jar:/usr/lib/hadoop-yarn/lib/guice-servlet-3.0.jar:/usr/lib/hadoop-yarn/lib/jackson-xc-1.8.8.jar:/usr/lib/hadoop-yarn/lib/servlet-api-2.5.jar:/usr/lib/hadoop-yarn/lib/leveldbjni-all-1.8.jar:/usr/lib/hadoop-yarn/lib/commons-io-2.4.jar:/usr/lib/hadoop-yarn/lib/commons-lang-2.6.jar:/usr/lib/hadoop-yarn/lib/jackson-mapper-asl-1.8.8.jar:/usr/lib/hadoop-yarn/lib/guava-11.0.2.jar:/usr/lib/hadoop-yarn/lib/jackson-jaxrs-1.8.8.jar:/usr/lib/hadoop-yarn/lib/xz-1.0.jar:/usr/lib/hadoop-yarn/lib/jline-2.11.jar:/usr/lib/hadoop-yarn/lib/guice-3.0.jar:/usr/lib/hadoop-yarn/lib/jetty-6.1.26.cloudera.4.jar:/usr/lib/hadoop-yarn/lib/jersey-client-1.9.jar:/usr/lib/hadoop-yarn/lib/commons-codec-1.4.jar:/usr/lib/hadoop-yarn/lib/jsr305-3.0.0.jar:/usr/lib/hadoop-yarn/lib/aopalliance-1.0.jar:/usr/lib/hadoop-yarn/lib/jaxb-api-2.2.2.jar:/usr/lib/hadoop-yarn/lib/asm-3.2.jar:/usr/lib/hadoop-yarn/lib/spark-yarn-shuffle.jar:/usr/lib/hadoop-yarn/lib/commons-logging-1.1.3.jar:/usr/lib/hadoop-yarn/lib/jersey-guice-1.9.jar:/usr/lib/hadoop-yarn/lib/commons-cli-1.2.jar:/usr/lib/hadoop-yarn/lib/spark-1.6.0-cdh5.7.0-yarn-shuffle.jar:/usr/lib/hadoop-yarn/lib/jersey-json-1.9.jar:/usr/lib/hadoop-yarn/lib/jetty-util-6.1.26.cloudera.4.jar:/usr/lib/hadoop-yarn/lib/log4j-1.2.17.jar:/usr/lib/hadoop-yarn/lib/jackson-core-asl-1.8.8.jar:/usr/lib/hadoop-yarn/lib/protobuf-java-2.5.0.jar:/usr/lib/hadoop-yarn/lib/commons-collections-3.2.2.jar:/usr/lib/hadoop-yarn/lib/zookeeper.jar:/usr/lib/hadoop-yarn/lib/jettison-1.1.jar:/usr/lib/hadoop-yarn/lib/jaxb-impl-2.2.3-1.jar:/usr/lib/hadoop-yarn/lib/jersey-server-1.9.jar:/usr/lib/hadoop-yarn/lib/commons-httpclient-3.1.jar:/usr/lib/hadoop-yarn/lib/jersey-core-1.9.jar:/usr/lib/hadoop-yarn/lib/activation-1.1.jar:/usr/lib/hadoop-yarn/lib/commons-compress-1.4.1.jar:/usr/lib/hadoop-yarn/lib/javax.inject-1.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-unmanaged-am-launcher.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-common.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-registry-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-distributedshell.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-tests.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-client-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-api-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-nodemanager-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-registry.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-unmanaged-am-launcher-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-applicationhistoryservice.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-common-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-web-proxy-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-common-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-resourcemanager.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-resourcemanager-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-common.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-client.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-tests-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-api.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-distributedshell-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-web-proxy.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-applicationhistoryservice-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-nodemanager.jar:/usr/lib/hadoop-mapreduce/lib/guice-servlet-3.0.jar:/usr/lib/hadoop-mapreduce/lib/leveldbjni-all-1.8.jar:/usr/lib/hadoop-mapreduce/lib/commons-io-2.4.jar:/usr/lib/hadoop-mapreduce/lib/netty-3.6.2.Final.jar:/usr/lib/hadoop-mapreduce/lib/jackson-mapper-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/lib/xz-1.0.jar:/usr/lib/hadoop-mapreduce/lib/guice-3.0.jar:/usr/lib/hadoop-mapreduce/lib/aopalliance-1.0.jar:/usr/lib/hadoop-mapreduce/lib/asm-3.2.jar:/usr/lib/hadoop-mapreduce/lib/jersey-guice-1.9.jar:/usr/lib/hadoop-mapreduce/lib/log4j-1.2.17.jar:/usr/lib/hadoop-mapreduce/lib/jackson-core-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/lib/snappy-java-1.0.4.1.jar:/usr/lib/hadoop-mapreduce/lib/protobuf-java-2.5.0.jar:/usr/lib/hadoop-mapreduce/lib/hamcrest-core-1.3.jar:/usr/lib/hadoop-mapreduce/lib/paranamer-2.3.jar:/usr/lib/hadoop-mapreduce/lib/jersey-server-1.9.jar:/usr/lib/hadoop-mapreduce/lib/jersey-core-1.9.jar:/usr/lib/hadoop-mapreduce/lib/commons-compress-1.4.1.jar:/usr/lib/hadoop-mapreduce/lib/javax.inject-1.jar:/usr/lib/hadoop-mapreduce/lib/avro.jar:/usr/lib/hadoop-mapreduce/lib/junit-4.11.jar:/usr/lib/hadoop-mapreduce/.//stax-api-1.0-2.jar:/usr/lib/hadoop-mapreduce/.//jets3t-0.9.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-extras.jar:/usr/lib/hadoop-mapreduce/.//jackson-annotations-2.2.3.jar:/usr/lib/hadoop-mapreduce/.//jackson-xc-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//servlet-api-2.5.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-common-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient-2.6.0-cdh5.7.0-tests.jar:/usr/lib/hadoop-mapreduce/.//hadoop-azure.jar:/usr/lib/hadoop-mapreduce/.//apacheds-kerberos-codec-2.0.0-M15.jar:/usr/lib/hadoop-mapreduce/.//hadoop-auth.jar:/usr/lib/hadoop-mapreduce/.//commons-io-2.4.jar:/usr/lib/hadoop-mapreduce/.//commons-lang-2.6.jar:/usr/lib/hadoop-mapreduce/.//jackson-databind-2.2.3.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-shuffle-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-rumen-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archive-logs.jar:/usr/lib/hadoop-mapreduce/.//metrics-core-3.0.2.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient-tests.jar:/usr/lib/hadoop-mapreduce/.//jackson-mapper-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//xmlenc-0.52.jar:/usr/lib/hadoop-mapreduce/.//hadoop-sls-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//guava-11.0.2.jar:/usr/lib/hadoop-mapreduce/.//jackson-jaxrs-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//xz-1.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-azure-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//commons-beanutils-core-1.8.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-datajoin.jar:/usr/lib/hadoop-mapreduce/.//api-util-1.0.0-M20.jar:/usr/lib/hadoop-mapreduce/.//commons-digester-1.8.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs-plugins-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-rumen.jar:/usr/lib/hadoop-mapreduce/.//gson-2.2.4.jar:/usr/lib/hadoop-mapreduce/.//api-asn1-api-1.0.0-M20.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-nativetask-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-gridmix-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//jetty-6.1.26.cloudera.4.jar:/usr/lib/hadoop-mapreduce/.//jackson-core-2.2.3.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-examples-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-nativetask.jar:/usr/lib/hadoop-mapreduce/.//hadoop-gridmix.jar:/usr/lib/hadoop-mapreduce/.//commons-codec-1.4.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-shuffle.jar:/usr/lib/hadoop-mapreduce/.//java-xmlbuilder-0.4.jar:/usr/lib/hadoop-mapreduce/.//jsr305-3.0.0.jar:/usr/lib/hadoop-mapreduce/.//jaxb-api-2.2.2.jar:/usr/lib/hadoop-mapreduce/.//asm-3.2.jar:/usr/lib/hadoop-mapreduce/.//hadoop-auth-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs-plugins.jar:/usr/lib/hadoop-mapreduce/.//curator-framework-2.7.1.jar:/usr/lib/hadoop-mapreduce/.//commons-logging-1.1.3.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archives.jar:/usr/lib/hadoop-mapreduce/.//htrace-core4-4.0.1-incubating.jar:/usr/lib/hadoop-mapreduce/.//jasper-compiler-5.5.23.jar:/usr/lib/hadoop-mapreduce/.//commons-cli-1.2.jar:/usr/lib/hadoop-mapreduce/.//hadoop-distcp-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-app.jar:/usr/lib/hadoop-mapreduce/.//apacheds-i18n-2.0.0-M15.jar:/usr/lib/hadoop-mapreduce/.//jersey-json-1.9.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-core.jar:/usr/lib/hadoop-mapreduce/.//hadoop-ant-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//jetty-util-6.1.26.cloudera.4.jar:/usr/lib/hadoop-mapreduce/.//jsp-api-2.1.jar:/usr/lib/hadoop-mapreduce/.//httpclient-4.2.5.jar:/usr/lib/hadoop-mapreduce/.//hadoop-openstack.jar:/usr/lib/hadoop-mapreduce/.//log4j-1.2.17.jar:/usr/lib/hadoop-mapreduce/.//jackson-core-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-app-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-sls.jar:/usr/lib/hadoop-mapreduce/.//snappy-java-1.0.4.1.jar:/usr/lib/hadoop-mapreduce/.//protobuf-java-2.5.0.jar:/usr/lib/hadoop-mapreduce/.//hamcrest-core-1.3.jar:/usr/lib/hadoop-mapreduce/.//hadoop-datajoin-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//commons-el-1.0.jar:/usr/lib/hadoop-mapreduce/.//commons-math3-3.1.1.jar:/usr/lib/hadoop-mapreduce/.//commons-beanutils-1.7.0.jar:/usr/lib/hadoop-mapreduce/.//jasper-runtime-5.5.23.jar:/usr/lib/hadoop-mapreduce/.//commons-collections-3.2.2.jar:/usr/lib/hadoop-mapreduce/.//hadoop-extras-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//commons-configuration-1.6.jar:/usr/lib/hadoop-mapreduce/.//commons-net-3.1.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archives-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//zookeeper.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-common.jar:/usr/lib/hadoop-mapreduce/.//paranamer-2.3.jar:/usr/lib/hadoop-mapreduce/.//jettison-1.1.jar:/usr/lib/hadoop-mapreduce/.//hadoop-streaming-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-core-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archive-logs-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//jaxb-impl-2.2.3-1.jar:/usr/lib/hadoop-mapreduce/.//hadoop-streaming.jar:/usr/lib/hadoop-mapreduce/.//jersey-server-1.9.jar:/usr/lib/hadoop-mapreduce/.//commons-httpclient-3.1.jar:/usr/lib/hadoop-mapreduce/.//jersey-core-1.9.jar:/usr/lib/hadoop-mapreduce/.//activation-1.1.jar:/usr/lib/hadoop-mapreduce/.//hadoop-openstack-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs.jar:/usr/lib/hadoop-mapreduce/.//jsch-0.1.42.jar:/usr/lib/hadoop-mapreduce/.//httpcore-4.2.5.jar:/usr/lib/hadoop-mapreduce/.//microsoft-windowsazure-storage-sdk-0.6.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-distcp.jar:/usr/lib/hadoop-mapreduce/.//commons-compress-1.4.1.jar:/usr/lib/hadoop-mapreduce/.//curator-client-2.7.1.jar:/usr/lib/hadoop-mapreduce/.//curator-recipes-2.7.1.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-examples.jar:/usr/lib/hadoop-mapreduce/.//mockito-all-1.8.5.jar:/usr/lib/hadoop-mapreduce/.//avro.jar:/usr/lib/hadoop-mapreduce/.//junit-4.11.jar:/usr/lib/hadoop-mapreduce/.//hadoop-ant.jar:/usr/lib/hadoop-mapreduce/.//activation-1.1.jar:/usr/lib/hadoop-mapreduce/.//apacheds-i18n-2.0.0-M15.jar:/usr/lib/hadoop-mapreduce/.//apacheds-kerberos-codec-2.0.0-M15.jar:/usr/lib/hadoop-mapreduce/.//api-asn1-api-1.0.0-M20.jar:/usr/lib/hadoop-mapreduce/.//api-util-1.0.0-M20.jar:/usr/lib/hadoop-mapreduce/.//asm-3.2.jar:/usr/lib/hadoop-mapreduce/.//avro.jar:/usr/lib/hadoop-mapreduce/.//commons-beanutils-1.7.0.jar:/usr/lib/hadoop-mapreduce/.//commons-beanutils-core-1.8.0.jar:/usr/lib/hadoop-mapreduce/.//commons-cli-1.2.jar:/usr/lib/hadoop-mapreduce/.//commons-codec-1.4.jar:/usr/lib/hadoop-mapreduce/.//commons-collections-3.2.2.jar:/usr/lib/hadoop-mapreduce/.//commons-compress-1.4.1.jar:/usr/lib/hadoop-mapreduce/.//commons-configuration-1.6.jar:/usr/lib/hadoop-mapreduce/.//commons-digester-1.8.jar:/usr/lib/hadoop-mapreduce/.//commons-el-1.0.jar:/usr/lib/hadoop-mapreduce/.//commons-httpclient-3.1.jar:/usr/lib/hadoop-mapreduce/.//commons-io-2.4.jar:/usr/lib/hadoop-mapreduce/.//commons-lang-2.6.jar:/usr/lib/hadoop-mapreduce/.//commons-logging-1.1.3.jar:/usr/lib/hadoop-mapreduce/.//commons-math3-3.1.1.jar:/usr/lib/hadoop-mapreduce/.//commons-net-3.1.jar:/usr/lib/hadoop-mapreduce/.//curator-client-2.7.1.jar:/usr/lib/hadoop-mapreduce/.//curator-framework-2.7.1.jar:/usr/lib/hadoop-mapreduce/.//curator-recipes-2.7.1.jar:/usr/lib/hadoop-mapreduce/.//gson-2.2.4.jar:/usr/lib/hadoop-mapreduce/.//guava-11.0.2.jar:/usr/lib/hadoop-mapreduce/.//hadoop-ant-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-ant.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archive-logs-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archive-logs.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archives-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-archives.jar:/usr/lib/hadoop-mapreduce/.//hadoop-auth-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-auth.jar:/usr/lib/hadoop-mapreduce/.//hadoop-azure-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-azure.jar:/usr/lib/hadoop-mapreduce/.//hadoop-datajoin-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-datajoin.jar:/usr/lib/hadoop-mapreduce/.//hadoop-distcp-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-distcp.jar:/usr/lib/hadoop-mapreduce/.//hadoop-extras-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-extras.jar:/usr/lib/hadoop-mapreduce/.//hadoop-gridmix-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-gridmix.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-app-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-app.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-common-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-common.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-core-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-core.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs-plugins-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs-plugins.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-hs.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient-2.6.0-cdh5.7.0-tests.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient-tests.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-jobclient.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-nativetask-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-nativetask.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-shuffle-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-client-shuffle.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-examples-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-mapreduce-examples.jar:/usr/lib/hadoop-mapreduce/.//hadoop-openstack-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-openstack.jar:/usr/lib/hadoop-mapreduce/.//hadoop-rumen-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-rumen.jar:/usr/lib/hadoop-mapreduce/.//hadoop-sls-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-sls.jar:/usr/lib/hadoop-mapreduce/.//hadoop-streaming-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-mapreduce/.//hadoop-streaming.jar:/usr/lib/hadoop-mapreduce/.//hamcrest-core-1.3.jar:/usr/lib/hadoop-mapreduce/.//htrace-core4-4.0.1-incubating.jar:/usr/lib/hadoop-mapreduce/.//httpclient-4.2.5.jar:/usr/lib/hadoop-mapreduce/.//httpcore-4.2.5.jar:/usr/lib/hadoop-mapreduce/.//jackson-annotations-2.2.3.jar:/usr/lib/hadoop-mapreduce/.//jackson-core-2.2.3.jar:/usr/lib/hadoop-mapreduce/.//jackson-core-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//jackson-databind-2.2.3.jar:/usr/lib/hadoop-mapreduce/.//jackson-jaxrs-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//jackson-mapper-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//jackson-xc-1.8.8.jar:/usr/lib/hadoop-mapreduce/.//jasper-compiler-5.5.23.jar:/usr/lib/hadoop-mapreduce/.//jasper-runtime-5.5.23.jar:/usr/lib/hadoop-mapreduce/.//java-xmlbuilder-0.4.jar:/usr/lib/hadoop-mapreduce/.//jaxb-api-2.2.2.jar:/usr/lib/hadoop-mapreduce/.//jaxb-impl-2.2.3-1.jar:/usr/lib/hadoop-mapreduce/.//jersey-core-1.9.jar:/usr/lib/hadoop-mapreduce/.//jersey-json-1.9.jar:/usr/lib/hadoop-mapreduce/.//jersey-server-1.9.jar:/usr/lib/hadoop-mapreduce/.//jets3t-0.9.0.jar:/usr/lib/hadoop-mapreduce/.//jettison-1.1.jar:/usr/lib/hadoop-mapreduce/.//jetty-6.1.26.cloudera.4.jar:/usr/lib/hadoop-mapreduce/.//jetty-util-6.1.26.cloudera.4.jar:/usr/lib/hadoop-mapreduce/.//jsch-0.1.42.jar:/usr/lib/hadoop-mapreduce/.//jsp-api-2.1.jar:/usr/lib/hadoop-mapreduce/.//jsr305-3.0.0.jar:/usr/lib/hadoop-mapreduce/.//junit-4.11.jar:/usr/lib/hadoop-mapreduce/.//log4j-1.2.17.jar:/usr/lib/hadoop-mapreduce/.//metrics-core-3.0.2.jar:/usr/lib/hadoop-mapreduce/.//microsoft-windowsazure-storage-sdk-0.6.0.jar:/usr/lib/hadoop-mapreduce/.//mockito-all-1.8.5.jar:/usr/lib/hadoop-mapreduce/.//paranamer-2.3.jar:/usr/lib/hadoop-mapreduce/.//protobuf-java-2.5.0.jar:/usr/lib/hadoop-mapreduce/.//servlet-api-2.5.jar:/usr/lib/hadoop-mapreduce/.//snappy-java-1.0.4.1.jar:/usr/lib/hadoop-mapreduce/.//stax-api-1.0-2.jar:/usr/lib/hadoop-mapreduce/.//xmlenc-0.52.jar:/usr/lib/hadoop-mapreduce/.//xz-1.0.jar:/usr/lib/hadoop-mapreduce/.//zookeeper.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-api-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-api.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-distributedshell-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-distributedshell.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-unmanaged-am-launcher-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-applications-unmanaged-am-launcher.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-client-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-client.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-common-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-common.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-registry-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-registry.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-applicationhistoryservice-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-applicationhistoryservice.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-common-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-common.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-nodemanager-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-nodemanager.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-resourcemanager-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-resourcemanager.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-tests-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-tests.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-web-proxy-2.6.0-cdh5.7.0.jar:/usr/lib/hadoop-yarn/.//hadoop-yarn-server-web-proxy.jar:/usr/lib/hadoop-mapreduce/lib/aopalliance-1.0.jar:/usr/lib/hadoop-mapreduce/lib/asm-3.2.jar:/usr/lib/hadoop-mapreduce/lib/avro.jar:/usr/lib/hadoop-mapreduce/lib/commons-compress-1.4.1.jar:/usr/lib/hadoop-mapreduce/lib/commons-io-2.4.jar:/usr/lib/hadoop-mapreduce/lib/guice-3.0.jar:/usr/lib/hadoop-mapreduce/lib/guice-servlet-3.0.jar:/usr/lib/hadoop-mapreduce/lib/hamcrest-core-1.3.jar:/usr/lib/hadoop-mapreduce/lib/jackson-core-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/lib/jackson-mapper-asl-1.8.8.jar:/usr/lib/hadoop-mapreduce/lib/javax.inject-1.jar:/usr/lib/hadoop-mapreduce/lib/jersey-core-1.9.jar:/usr/lib/hadoop-mapreduce/lib/jersey-guice-1.9.jar:/usr/lib/hadoop-mapreduce/lib/jersey-server-1.9.jar:/usr/lib/hadoop-mapreduce/lib/junit-4.11.jar:/usr/lib/hadoop-mapreduce/lib/leveldbjni-all-1.8.jar:/usr/lib/hadoop-mapreduce/lib/log4j-1.2.17.jar:/usr/lib/hadoop-mapreduce/lib/netty-3.6.2.Final.jar:/usr/lib/hadoop-mapreduce/lib/paranamer-2.3.jar:/usr/lib/hadoop-mapreduce/lib/protobuf-java-2.5.0.jar:/usr/lib/hadoop-mapreduce/lib/snappy-java-1.0.4.1.jar:/usr/lib/hadoop-mapreduce/lib/xz-1.0.jar:/usr/lib/hadoop-mapreduce/modules/*.jar
+STARTUP_MSG:   build = http://github.com/cloudera/hadoop -r c00978c67b0d3fe9f3b896b5030741bd40bf541a; compiled by 'jenkins' on 2016-03-23T18:36Z
+STARTUP_MSG:   java = 1.7.0_67
+************************************************************/
+Started Hadoop historyserver:                              [  OK  ]
+starting nodemanager, logging to /var/log/hadoop-yarn/yarn-yarn-nodemanager-quickstart.cloudera.out
+Started Hadoop nodemanager:                                [  OK  ]
+starting resourcemanager, logging to /var/log/hadoop-yarn/yarn-yarn-resourcemanager-quickstart.cloudera.out
+Started Hadoop resourcemanager:                            [  OK  ]
+starting master, logging to /var/log/hbase/hbase-hbase-master-quickstart.cloudera.out
+Started HBase master daemon (hbase-master):                [  OK  ]
+starting rest, logging to /var/log/hbase/hbase-hbase-rest-quickstart.cloudera.out
+Started HBase rest daemon (hbase-rest):                    [  OK  ]
+starting thrift, logging to /var/log/hbase/hbase-hbase-thrift-quickstart.cloudera.out
+Started HBase thrift daemon (hbase-thrift):                [  OK  ]
+Starting Hive Metastore (hive-metastore):                  [  OK  ]
+Started Hive Server2 (hive-server2):                       [  OK  ]
+Starting Sqoop Server:                                     [  OK  ]
+Sqoop home directory: /usr/lib/sqoop2
+Setting SQOOP_HTTP_PORT:     12000
+Setting SQOOP_ADMIN_PORT:     12001
+Using   CATALINA_OPTS:       -Xmx1024m
+Adding to CATALINA_OPTS:    -Dsqoop.http.port=12000 -Dsqoop.admin.port=12001
+Using CATALINA_BASE:   /var/lib/sqoop2/tomcat-deployment
+Using CATALINA_HOME:   /usr/lib/bigtop-tomcat
+Using CATALINA_TMPDIR: /var/tmp/sqoop2
+Using JRE_HOME:        /usr/java/jdk1.7.0_67-cloudera
+Using CLASSPATH:       /usr/lib/bigtop-tomcat/bin/bootstrap.jar
+Using CATALINA_PID:    /var/run/sqoop2/sqoop-server-sqoop2.pid
+Starting Spark history-server (spark-history-server):      [  OK  ]
+Starting Hadoop HBase regionserver daemon: starting regionserver, logging to /var/log/hbase/hbase-hbase-regionserver-quickstart.cloudera.out
+hbase-regionserver.
+Starting hue:                                              [FAILED]
+Started Impala State Store Server (statestored):           [  OK  ]
+
+Setting OOZIE_HOME:          /usr/lib/oozie
+Sourcing:                    /usr/lib/oozie/bin/oozie-env.sh
+  setting JAVA_LIBRARY_PATH="$JAVA_LIBRARY_PATH:/usr/lib/hadoop/lib/native"
+  setting OOZIE_DATA=/var/lib/oozie
+  setting OOZIE_CATALINA_HOME=/usr/lib/bigtop-tomcat
+  setting CATALINA_TMPDIR=/var/lib/oozie
+  setting CATALINA_PID=/var/run/oozie/oozie.pid
+  setting CATALINA_BASE=/var/lib/oozie/tomcat-deployment
+  setting OOZIE_HTTPS_PORT=11443
+  setting OOZIE_HTTPS_KEYSTORE_PASS=password
+  setting CATALINA_OPTS="$CATALINA_OPTS -Doozie.https.port=${OOZIE_HTTPS_PORT}"
+  setting CATALINA_OPTS="$CATALINA_OPTS -Doozie.https.keystore.pass=${OOZIE_HTTPS_KEYSTORE_PASS}"
+  setting CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
+  setting OOZIE_CONFIG=/etc/oozie/conf
+  setting OOZIE_LOG=/var/log/oozie
+Using   OOZIE_CONFIG:        /etc/oozie/conf
+Sourcing:                    /etc/oozie/conf/oozie-env.sh
+  setting JAVA_LIBRARY_PATH="$JAVA_LIBRARY_PATH:/usr/lib/hadoop/lib/native"
+  setting OOZIE_DATA=/var/lib/oozie
+  setting OOZIE_CATALINA_HOME=/usr/lib/bigtop-tomcat
+  setting CATALINA_TMPDIR=/var/lib/oozie
+  setting CATALINA_PID=/var/run/oozie/oozie.pid
+  setting CATALINA_BASE=/var/lib/oozie/tomcat-deployment
+  setting OOZIE_HTTPS_PORT=11443
+  setting OOZIE_HTTPS_KEYSTORE_PASS=password
+  setting CATALINA_OPTS="$CATALINA_OPTS -Doozie.https.port=${OOZIE_HTTPS_PORT}"
+  setting CATALINA_OPTS="$CATALINA_OPTS -Doozie.https.keystore.pass=${OOZIE_HTTPS_KEYSTORE_PASS}"
+  setting CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
+  setting OOZIE_CONFIG=/etc/oozie/conf
+  setting OOZIE_LOG=/var/log/oozie
+Setting OOZIE_CONFIG_FILE:   oozie-site.xml
+Using   OOZIE_DATA:          /var/lib/oozie
+Using   OOZIE_LOG:           /var/log/oozie
+Setting OOZIE_LOG4J_FILE:    oozie-log4j.properties
+Setting OOZIE_LOG4J_RELOAD:  10
+Setting OOZIE_HTTP_HOSTNAME: quickstart.cloudera
+Setting OOZIE_HTTP_PORT:     11000
+Setting OOZIE_ADMIN_PORT:     11001
+Using   OOZIE_HTTPS_PORT:     11443
+Setting OOZIE_BASE_URL:      http://quickstart.cloudera:11000/oozie
+Using   CATALINA_BASE:       /var/lib/oozie/tomcat-deployment
+Setting OOZIE_HTTPS_KEYSTORE_FILE:     /var/lib/oozie/.keystore
+Using   OOZIE_HTTPS_KEYSTORE_PASS:     password
+Setting OOZIE_INSTANCE_ID:       quickstart.cloudera
+Setting CATALINA_OUT:        /var/log/oozie/catalina.out
+Using   CATALINA_PID:        /var/run/oozie/oozie.pid
+
+Using   CATALINA_OPTS:        -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Dderby.stream.error.file=/var/log/oozie/derby.log
+Adding to CATALINA_OPTS:     -Doozie.home.dir=/usr/lib/oozie -Doozie.config.dir=/etc/oozie/conf -Doozie.log.dir=/var/log/oozie -Doozie.data.dir=/var/lib/oozie -Doozie.instance.id=quickstart.cloudera -Doozie.config.file=oozie-site.xml -Doozie.log4j.file=oozie-log4j.properties -Doozie.log4j.reload=10 -Doozie.http.hostname=quickstart.cloudera -Doozie.admin.port=11001 -Doozie.http.port=11000 -Doozie.https.port=11443 -Doozie.base.url=http://quickstart.cloudera:11000/oozie -Doozie.https.keystore.file=/var/lib/oozie/.keystore -Doozie.https.keystore.pass=password -Djava.library.path=:/usr/lib/hadoop/lib/native:/usr/lib/hadoop/lib/native
+
+Using CATALINA_BASE:   /var/lib/oozie/tomcat-deployment
+Using CATALINA_HOME:   /usr/lib/bigtop-tomcat
+Using CATALINA_TMPDIR: /var/lib/oozie
+Using JRE_HOME:        /usr/java/jdk1.7.0_67-cloudera
+Using CLASSPATH:       /usr/lib/bigtop-tomcat/bin/bootstrap.jar
+Using CATALINA_PID:    /var/run/oozie/oozie.pid
+Starting Solr server daemon:                               [  OK  ]
+Using CATALINA_BASE:   /var/lib/solr/tomcat-deployment
+Using CATALINA_HOME:   /usr/lib/solr/../bigtop-tomcat
+Using CATALINA_TMPDIR: /var/lib/solr/
+Using JRE_HOME:        /usr/java/jdk1.7.0_67-cloudera
+Using CLASSPATH:       /usr/lib/solr/../bigtop-tomcat/bin/bootstrap.jar
+Using CATALINA_PID:    /var/run/solr/solr.pid
+Started Impala Catalog Server (catalogd) :                 [  OK  ]
+Started Impala Server (impalad):                           [  OK  ]
+```
+
+![Running the Landing Page in browser](screenshots/capture-cludera-quickstart.png)
+
+
+![Running the Hue](screenshots/capture-hue.png)
+
+
+|Component|Status|
+|---------|------|
+|MySQL|OK|
+|ZooKeeper|Started|
+|HDFS NameNode / DataNode|OK|
+|YARN ResourceManager / NodeManager|OK|
+|MapReduce History Server|OK|
+|Hive Metastore / HiveServer2|OK|
+|HBase|Started|
+|Sqoop|Started|
+|Impala|OK|
+|Hue|FAILED|
+|Oozie|Not confirmed|
+|Solr|Started|
+
+> NOTE: the port mapping is explained in original __Quick Start__ Docker container [README](https://hub.docker.com/r/cloudera/quickstart)
+
+|Host|Container|Service|
+|----|---------|-------|
+|8888|8888|Hue|
+|7180|7180|Cloudera Manager|
+|8088|8088|YARN ResourceManager|
+|50070|50070|HDFS NameNode (older Hadoop UI)|
+|80|80|Guided tutorial|
+|8983|8983|Solr|
+
+```sh
+service hue status 
+```
+```text
+supervisor (pid  2756) is running...
+```
+```sh
+tail -100 /var/log/hue/supervisor.log
+```
+```text
+[06/Apr/2016 02:29:15 ] supervisor   INFO     Starting process /usr/lib/hue/build/env/bin/hue kt_renewer
+[06/Apr/2016 02:29:15 ] supervisor   INFO     Starting process /usr/lib/hue/build/env/bin/hue runcpserver
+[06/Apr/2016 02:29:15 ] supervisor   INFO     Started proceses (pid 40502) /usr/lib/hue/build/env/bin/hue runcpserver
+[06/Apr/2016 02:29:15 ] supervisor   INFO     Started proceses (pid 40501) /usr/lib/hue/build/env/bin/hue kt_renewer
+[06/Apr/2016 02:29:20 ] supervisor   INFO     Command "/usr/lib/hue/build/env/bin/hue kt_renewer" exited normally.
+[06/Apr/2016 02:29:26 ] supervisor   ERROR    Exception in supervisor main loop
+Traceback (most recent call last):
+  File "/usr/lib/hue/desktop/core/src/desktop/supervisor.py", line 386, in main
+    wait_loop(sups, options)
+  File "/usr/lib/hue/desktop/core/src/desktop/supervisor.py", line 396, in wait_loop
+    time.sleep(1)
+  File "/usr/lib/hue/desktop/core/src/desktop/supervisor.py", line 218, in sig_handler
+    raise SystemExit("Signal %d received. Exiting" % signum)
+SystemExit: Signal 15 received. Exiting
+[06/Apr/2016 02:29:26 ] supervisor   WARNING  Supervisor shutting down!
+[06/Apr/2016 02:29:26 ] supervisor   WARNING  Waiting for children to exit for 5 seconds...
+[06/Apr/2016 02:29:26 ] supervisor   INFO     Command "/usr/lib/hue/build/env/bin/hue runcpserver" exited normally.
+[09/Nov/2026 21:28:21 ] supervisor   INFO     Starting process /usr/lib/hue/build/env/bin/hue kt_renewer
+[09/Nov/2026 21:28:21 ] supervisor   INFO     Starting process /usr/lib/hue/build/env/bin/hue runcpserver
+[09/Nov/2026 21:28:22 ] supervisor   INFO     Started proceses (pid 2887) /usr/lib/hue/build/env/bin/hue kt_renewer
+[09/Nov/2026 21:28:22 ] supervisor   INFO     Started proceses (pid 2896) /usr/lib/hue/build/env/bin/hue runcpserver
+[09/Nov/2026 21:28:24 ] supervisor   INFO     Command "/usr/lib/hue/build/env/bin/hue kt_renewer" exited normally.
+
+```
+```sh
+tail -100 /var/log/hue/error.log
+```
+```text
+ File "/usr/lib/hue/desktop/core/src/desktop/supervisor.py", line 218, in sig_handler
+    raise SystemExit("Signal %d received. Exiting" % signum)
+SystemExit: Signal 15 received. Exiting
+[06/Apr/2016 02:29:26 ] supervisor   WARNING  Supervisor shutting down!
+[06/Apr/2016 02:29:26 ] supervisor   WARNING  Waiting for children to exit for 5 seconds...
+[06/Apr/2016 02:29:26 ] supervisor   INFO     Command "/usr/lib/hue/build/env/bin/hue runcpserver" exited normally.
+[09/Nov/2026 21:28:21 ] supervisor   INFO     Starting process /usr/lib/hue/build/env/bin/hue kt_renewer
+[09/Nov/2026 21:28:21 ] supervisor   INFO     Starting process /usr/lib/hue/build/env/bin/hue runcpserver
+[09/Nov/2026 21:28:22 ] supervisor   INFO     Started proceses (pid 2887) /usr/lib/hue/build/env/bin/hue kt_renewer
+[09/Nov/2026 21:28:22 ] supervisor   INFO     Started proceses (pid 2896) /usr/lib/hue/build/env/bin/hue runcpserver
+[09/Nov/2026 21:28:24 ] supervisor   INFO     Command "/usr/lib/hue/build/env/bin/hue kt_renewer" exited normally.
+[root@quickstart /]# tail -100 /var/log/hue/error.log 
+[05/Apr/2016 19:20:31 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:20:33 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:20:41 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:20:43 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:20:52 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:20:54 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:02 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:04 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:13 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:15 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:23 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:25 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:34 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:36 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:45 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:47 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:21:59 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:22:01 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:22:11 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[05/Apr/2016 19:22:13 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
+[06/Apr/2016 02:29:26 ] supervisor   ERROR    Exception in supervisor main loop
+Traceback (most recent call last):
+  File "/usr/lib/hue/desktop/core/src/desktop/supervisor.py", line 386, in main
+    wait_loop(sups, options)
+  File "/usr/lib/hue/desktop/core/src/desktop/supervisor.py", line 396, in wait_loop
+    time.sleep(1)
+  File "/usr/lib/hue/desktop/core/src/desktop/supervisor.py", line 218, in sig_handler
+    raise SystemExit("Signal %d received. Exiting" % signum)
+SystemExit: Signal 15 received. Exiting
+[09/Nov/2026 13:39:00 -0800] api          ERROR    failed to load the HBase clusters
+Traceback (most recent call last):
+  File "/usr/lib/hue/apps/hbase/src/hbase/api.py", line 64, in getClusters
+    full_config = json.loads(conf.HBASE_CLUSTERS.get().replace("'", "\""))
+  File "/usr/lib64/python2.6/json/__init__.py", line 307, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib64/python2.6/json/decoder.py", line 319, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib64/python2.6/json/decoder.py", line 338, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+[09/Nov/2026 13:39:00 -0800] api          ERROR    failed to load the HBase clusters
+Traceback (most recent call last):
+  File "/usr/lib/hue/apps/hbase/src/hbase/api.py", line 64, in getClusters
+    full_config = json.loads(conf.HBASE_CLUSTERS.get().replace("'", "\""))
+  File "/usr/lib64/python2.6/json/__init__.py", line 307, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib64/python2.6/json/decoder.py", line 319, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib64/python2.6/json/decoder.py", line 338, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+[09/Nov/2026 13:39:00 -0800] api          ERROR    failed to load the HBase clusters
+Traceback (most recent call last):
+  File "/usr/lib/hue/apps/hbase/src/hbase/api.py", line 64, in getClusters
+    full_config = json.loads(conf.HBASE_CLUSTERS.get().replace("'", "\""))
+  File "/usr/lib64/python2.6/json/__init__.py", line 307, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib64/python2.6/json/decoder.py", line 319, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib64/python2.6/json/decoder.py", line 338, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+
+```
 ### Background
 
 Cloudera traditionally offered a pre-configured Cloudera QuickStart VM (a single-node Apache Hadoop environment packaged for VirtualBox, VMware, or KVM), though Cloudera officially stopped providing direct public downloads
