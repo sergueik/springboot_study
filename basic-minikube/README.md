@@ -1268,6 +1268,31 @@ sudo chmod 755 /usr/local/bin/kubectl
 ```sh
 minikube start --driver=virtualbox
 ```
+or
+```powershell
+$env:MINIKUBE_IN_STYLE='true'
+minikube.exe start --driver=virtualbox
+```
+> NOTE: this will enable emoji:
+>  ```text
+>  😄  minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+>      ▪ MINIKUBE_IN_STYLE=true
+>  ✨  Using the virtualbox driver based on existing profile
+>  👍  Starting control plane node minikube in cluster minikube
+>  🏃  Updating the running virtualbox "minikube" VM ...
+>  🌐  Found network options:
+>      ▪ NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+>      ▪ no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+>  🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+>      ▪ env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+>  🔎  Verifying Kubernetes components...
+>      ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+>  🌟  Enabled addons: storage-provisioner, default-storageclass
+>  💡  kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+>  🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+>  ```
+>  
+```
 ```cmd
 minikube.exe start --driver=virtualbox
 ```
@@ -2559,39 +2584,187 @@ remove the hidden directory, this will lead minikube to fully reinstall includin
 ```cmd
 ```
 ```cmd
+chcp.com 65001
+set MINIKUBE_IN_STYLE=true
 minikube.exe start --driver=virtualbox
 ```
 ```text
-* minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
-* Using the virtualbox driver based on user configuration
-* minikube 1.39.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.39.0
-* To disable this notice, run: 'minikube config set WantUpdateNotification false'
-
-* Downloading VM boot image ...
-    > minikube-v1.20.0.iso.sha256: 65 B / 65 B [-------------] 100.00% ? p/s 0s
-    > minikube-v1.20.0.iso: 245.40 MiB / 245.40 MiB [] 100.00% 8.26 MiB p/s 30s
-* Downloading VM boot image ...
-    > minikube-v1.20.0.iso.sha256: 65 B / 65 B [-------------] 100.00% ? p/s 0s
-    > minikube-v1.20.0.iso: 245.40 MiB / 245.40 MiB [] 100.00% 8.26 MiB p/s 30s
-* Starting control plane node minikube in cluster minikube
-* Downloading Kubernetes v1.20.2 preload ...
-    > preloaded-images-k8s-v10-v1...: 491.71 MiB / 491.71 MiB  100.00% 6.68 MiB
-* Creating virtualbox VM (CPUs=2, Memory=4000MB, Disk=20000MB) ...
-* Found network options:
-  - NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
-  - no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
-* Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
-  - env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105
-  - Generating certificates and keys ...
-  - Booting up control plane ...
-  - Configuring RBAC rules ...
-* Verifying Kubernetes components...
-  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
-* Enabled addons: storage-provisioner, default-storageclass
-* kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
-* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+😄  minikube v1.20.0 on Microsoft Windows 10 Pro 10.0.26200 Build 26200
+    ▪ MINIKUBE_IN_STYLE=true
+✨  Using the virtualbox driver based on existing profile
+👍  Starting control plane node minikube in cluster minikube
+🏃  Updating the running virtualbox "minikube" VM ...
+🌐  Found network options:
+    ▪ NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+    ▪ no_proxy=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+    ▪ env NO_PROXY=192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102,192.168.99.101,192.168.99.105,192.168.99.106
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+💡  kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
 > NOTE: your proxy settings will likely be different
+
+### Volume 
+
+The standard Minikube storage provisioner  is hostPath (k8s.io/minikube-hostpath), it 
+does not natively support `ReadWriteMany` mode (`RWX`); it only supports `ReadWriteOnce` (`RWO`).
+because `hostPath` simply maps a directory directly on the underlying node's local disk IO and lacks shared file system backend
+One needs to enable `volumesnapshots` addon:
+```cmd
+minikube.exe addons enable volumesnapshots
+minikube.exe addons enable csi-hostpath-driver
+```
+```text
+    ▪ Using image k8s.gcr.io/sig-storage/snapshot-controller:v4.0.0
+🌟  The 'volumesnapshots' addon is enabled
+
+
+    ▪ Using image k8s.gcr.io/sig-storage/csi-external-health-monitor-agent:v0.2.0
+    ▪ Using image k8s.gcr.io/sig-storage/csi-external-health-monitor-controller:v0.2.0
+    ▪ Using image k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.0.1
+    ▪ Using image k8s.gcr.io/sig-storage/livenessprobe:v2.2.0
+    ▪ Using image k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
+    ▪ Using image k8s.gcr.io/sig-storage/csi-attacher:v3.1.0
+    ▪ Using image k8s.gcr.io/sig-storage/hostpathplugin:v1.6.0
+    ▪ Using image k8s.gcr.io/sig-storage/csi-resizer:v1.1.0
+    ▪ Using image k8s.gcr.io/sig-storage/csi-provisioner:v2.1.0
+🔎  Verifying csi-hostpath-driver addon...
+🌟  The 'csi-hostpath-driver' addon is enabled
+```
+```cmd
+minikube.exe kubectl -- --namespace kube-system get all
+```
+```text
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/coredns-74ff55c5b-d8jwg               1/1     Running   11         23d
+pod/csi-hostpath-attacher-0               1/1     Running   0          3m42s
+pod/csi-hostpath-provisioner-0            1/1     Running   0          3m41s
+pod/csi-hostpath-resizer-0                1/1     Running   0          3m41s
+pod/csi-hostpath-snapshotter-0            1/1     Running   0          3m41s
+pod/csi-hostpathplugin-0                  5/5     Running   0          3m42s
+pod/etcd-minikube                         1/1     Running   2          19h
+pod/kube-apiserver-minikube               1/1     Running   2          19h
+pod/kube-controller-manager-minikube      1/1     Running   11         23d
+pod/kube-proxy-r7xf8                      1/1     Running   11         23d
+pod/kube-scheduler-minikube               1/1     Running   11         23d
+pod/snapshot-controller-989f9ddc8-46w9s   1/1     Running   0          3m49s
+pod/snapshot-controller-989f9ddc8-jhnrz   1/1     Running   0          3m49s
+pod/storage-provisioner                   1/1     Running   29         23d
+
+NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+service/csi-hostpath-attacher      ClusterIP   10.104.16.136    <none>        12345/TCP                3m42s
+service/csi-hostpath-provisioner   ClusterIP   10.107.126.122   <none>        12345/TCP                3m41s
+service/csi-hostpath-resizer       ClusterIP   10.101.222.222   <none>        12345/TCP                3m41s
+service/csi-hostpath-snapshotter   ClusterIP   10.110.182.211   <none>        12345/TCP                3m41s
+service/csi-hostpathplugin         ClusterIP   10.111.204.61    <none>        12345/TCP                3m42s
+service/kube-dns                   ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   23d
+
+NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   23d
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/coredns               1/1     1            1           23d
+deployment.apps/snapshot-controller   2/2     2            2           3m50s
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/coredns-74ff55c5b               1         1         1       23d
+replicaset.apps/snapshot-controller-989f9ddc8   2         2         2       3m50s
+
+NAME                                        READY   AGE
+statefulset.apps/csi-hostpath-attacher      1/1     3m42s
+statefulset.apps/csi-hostpath-provisioner   1/1     3m41s
+statefulset.apps/csi-hostpath-resizer       1/1     3m41s
+statefulset.apps/csi-hostpath-snapshotter   1/1     3m41s
+statefulset.apps/csi-hostpathplugin         1/1     3m42s
+```
+```cmd
+minikube.exe addons disable storage-provisioner
+minikube.exe addons disable default-storageclass
+```
+```text
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌑  "The 'storage-provisioner' addon is disabled
+🌑  "The 'default-storageclass' addon is disabled
+```
+
+```cmd
+minikube.exe kubectl -- patch storageclass csi-hostpath-sc -p "{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}"
+```
+```text
+storageclass.storage.k8s.io/csi-hostpath-sc patched
+```
+
+> NOTE: sensitive to quoting:
+```cmd
+minikube.exe kubectl -- patch storageclass csi-hostpath-sc -p "{""metadata"": {""annotations"":{""storageclass.kubernetes.io/is-default-class"":""true""}}}"
+```
+```text
+error: there is no need to specify a resource type as a separate argument when passing arguments in resource/name form (e.g. 'kubectl.exe get resource/<resource_name>' instead of 'kubectl.exe get resource resource/<resource_name>'
+```
+The storage class to reference in PVC is called `csi-hostpath-sc`.
+
+Create PVC:
+
+```YAML
+---
+# example-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: csi-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: csi-hostpath-sc
+```
+```cmd
+minikube.exe kubectl -- --namespace example apply -f example-pvc.yaml
+```
+```text
+persistentvolumeclaim/csi-pvc created
+```
+```cmd
+minikube.exe kubectl -- --namespace example get pv
+```
+```text
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM             STORAGECLASS      REASON   AGE
+pvc-4c6149bf-053c-4158-baa5-eaa46a03c68c   250Mi      RWO            Delete           Bound    example/csi-pvc   csi-hostpath-sc            37s
+```
+This confirms Kubernetes dynamically provisioned a PV in response to earier PVC deployment
+The actual Deployment Pod template references a PVC to attach PV to pod.
+```cmd
+minikube.exe kubectl -- --namespace example apply -f deployment.yaml.new
+```
+```text
+deployment.apps/probe-example configured
+```
+> NOTE: when indentation is wrong `volumes` ended up as a child of `template`, rather than a child of `template.spec`. Another error `volumes` must be a sibling of `containers`, not a child of the `container`, leading to error:
+```cmd
+minikube.exe kubectl -- --namespace example apply -f deployment.yaml.new
+```
+```text
+error: error validating "deployment.yaml": error validating data: ValidationError(Deployment.spec.template): unknown field "volumes" in io.k8s.api.core.v1.PodTemplateSpec; if you choose to ignore these errors, turn validation off with --validate=false
+```
+the correct resource layout is:
+```text
+Deployment
+└── spec
+    └── template                 PodTemplateSpec
+        ├── metadata
+        └── spec                 PodSpec
+            ├── containers
+            │   └── app-container
+            │       └── volumeMounts
+            └── volumes
+                └── persistent-data
+                    └── persistentVolumeClaim
+```
 ### See Also
 
    * https://github.com/DanWahlin/DockerAndKubernetesCourseCode/tree/main/samples
@@ -2657,7 +2830,9 @@ minikube.exe start --driver=virtualbox
 
      + [k8 minikube docs](https://minikube.sigs.k8s.io/docs/start/)
      + [building a Kubernetes Cluster from Scratch: A Detailed Guide](https://codeproject.com/articles/Building-a-Kubernetes-Cluster-from-Scratch-A-Detai)
-    * https://minikube.sigs.k8s.io/docs/handbook/persistent_volumes/
- 
+    * https://minikube.sigs.k8s.io/docs/handbook/persistent_volumes
+    * https://kubernetes.io/docs/concepts/storage/persistent-volumes
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
