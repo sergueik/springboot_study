@@ -26,7 +26,7 @@ services:
 
   master:
     image: panovvv/hadoop-hive-spark:2.5.2
-#    build: '../hadoop-hive-spark-docker'
+    # build: '../hadoop-hive-spark-docker'
     hostname: master
     depends_on:
       - hivemetastore
@@ -58,7 +58,9 @@ services:
       # Hive JDBC
       - 10000:10000
     volumes:
-      - ./data:/data
+      # NOTE: place the directory mount `data` volume on fast partition
+      # - ./data:/data
+      - /data/data:/data
     networks:
       spark_net:
         ipv4_address: 172.28.1.1
@@ -71,7 +73,7 @@ services:
 
   worker1:
     image: panovvv/hadoop-hive-spark:2.5.2
-#    build: '../hadoop-hive-spark-docker'
+    # build: '../hadoop-hive-spark-docker'
     hostname: worker1
     depends_on:
       - hivemetastore
@@ -89,10 +91,12 @@ services:
     ports:
       # Hadoop datanode UI
       - 9864:9864
-      #Spark worker UI
+      # Spark worker UI
       - 8081:8081
     volumes:
-      - ./data:/data
+      # NOTE: place the directory mount `data` volume on fast partition
+      # - ./data:/data
+      - /data/data:/data
     networks:
       spark_net:
         ipv4_address: 172.28.1.2
@@ -105,7 +109,7 @@ services:
 
   worker2:
     image: panovvv/hadoop-hive-spark:2.5.2
-#    build: '../hadoop-hive-spark-docker'
+    # build: '../hadoop-hive-spark-docker'
     hostname: worker2
     depends_on:
       - hivemetastore
@@ -127,7 +131,9 @@ services:
       # Spark worker UI
       - 8082:8082
     volumes:
-      - ./data:/data
+      # NOTE: place the directory mount `data` volume on fast partition
+      # - ./data:/data
+      - /data/data:/data
     networks:
       spark_net:
         ipv4_address: 172.28.1.3
@@ -140,15 +146,18 @@ services:
 
   livy:
     image: panovvv/livy:2.5.2
-#    build: '../livy-docker'
+    # build: '../livy-docker'
     hostname: livy
     depends_on:
       - master
       - worker1
       - worker2
     volumes:
-      - ./livy_batches:/livy_batches
-      - ./data:/data
+      # NOTE: place the directory mount `data` volume on fast partition
+      # - ./data:/data
+      # - ./livy_batches:/livy_batches
+      - /data/data:/data
+      - /data/livy_batches:/livy_batches
     environment:
       - SPARK_MASTER=yarn
       # Intentionally not specified - if it's set here, then we can't override it
@@ -177,7 +186,7 @@ services:
 
   zeppelin:
     image: panovvv/zeppelin-bigdata:2.5.2
-#    build: '../zeppelin-bigdata-docker'
+    # build: '../zeppelin-bigdata-docker'
     hostname: zeppelin
     depends_on:
       - master
@@ -185,8 +194,11 @@ services:
       - worker2
       - livy
     volumes:
-      - ./zeppelin_notebooks:/zeppelin_notebooks
-      - ./data:/data
+      # NOTE: place the directory mount `data` volume on fast partition
+      # - ./data:/data
+      # - ./zeppelin_notebooks:/zeppelin_notebooks
+      - /data/data:/data
+      - /data/zeppelin_notebooks:/zeppelin_notebooks
     environment:
       ZEPPELIN_PORT: 8890
       ZEPPELIN_NOTEBOOK_DIR: '/zeppelin_notebooks'
@@ -210,3 +222,5 @@ networks:
       driver: default
       config:
         - subnet: 172.28.0.0/16
+      # NOTE: the 172.28.0.0 subnet is not permanently or exclusively reserved for Docker Compose, though Docker frequently draws from the 172.16.0.0/12 private address space (RFC 1918) when automatically assigning bridge networks
+      # default for the standard bridge network is 172.17.0.0/16 
