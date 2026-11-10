@@ -7,6 +7,7 @@ bundled with [React (software)](https://en.wikipedia.org/wiki/React_(software)) 
 
 To run the application, one needs to open the console to run the command line:
 ```cmd
+pushd dist
 "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///%CD%\index.html
 ```
 or equivalent command engaging the [create-shortcut.ps1](https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.ps1) call. See Puppetized version of the same in [create_simple_shortcut_ps1.erb](https://github.com/sergueik/puppetmaster_vagrant/blob/master/modules/custom_command/templates/create_simple_shortcut_ps1.erb)
@@ -20,7 +21,7 @@ $builder = new-object System.UriBuilder($url)
 $builder.Path = $builder.Path -replace '/blob/', '/'
 <#
 $segments = $builder.Path.Trim('/').Split('/')
-
+n
 if ($segments[2] -ne 'blob') {
   throw 'Expected GitHub blob URL'
 }
@@ -56,6 +57,35 @@ $source =  (Get-Item -Path $key).GetValue('') -replace ' *--.*', ''
 |Repository path|`/gangstanthony/PowerShell`|same|
 |Branch|`/blob/master/`|`/refs/heads/master/`<br/>the `/refs/heads/` part is unnecessary|
 |File path|`Create-Shortcut.ps1`|same|
+
+
+On Ubuntu, create or edit the desktop launcher `mermaid-local.desktop`:
+
+```text
+[Desktop Entry]
+Version=1.0
+Name=Mermaid Local
+GenericName=Mermaid Local on Web Browser
+Comment=Render the Mermaid Content
+Exec=/usr/bin/google-chrome-stable --user-data-dir=/tmp/chrome-file-test --allow-file-access-from-files file://[PROJECT_DIR]/dist/index.html
+Terminal=false
+Icon=[PROJECT_DIR]/icons8-workflow-80.png
+Type=Application
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml_xml;image/webp;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;
+Actions=new-window;
+
+Name[en_US]=Mermaid Local
+
+[Desktop Action new-window]
+Name=New Window
+Exec=/usr/bin/google-chrome-stable --user-data-dir=/tmp/chrome-file-test --allow-file-access-from-files file://[PROJECT_DIR]/dist/index.html
+
+```
+```sh
+sed -i "s|\[PROJECT_DIR\]|$(pwd)|g" mermaid-local.desktop
+```
+![capture launcher browser](screenshots/capture-launched-browser.png)
 
 ### Background
 
@@ -360,6 +390,10 @@ docker run --name $NAME -d -p 8080:80 $IMAGE
 ```sh
 curl -I http://$(docker-machine ip):8080
 ```
+or 
+```sh
+curl -I http://localhost:8080
+```
 ```text
 HTTP/1.1 200 OK
 ```
@@ -368,10 +402,6 @@ open in the regular browser
 ```sh
 echo http://$(docker-machine ip):8080/
 ```
-
-
-
-
 
 ![Run Nginx Docker](screenshots/capture-nginx-docker.png)
 
