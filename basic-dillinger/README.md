@@ -139,10 +139,16 @@ docker inspect $NAME |jq '.[0].Config.Entrypoint'
 ]
 ```
 ```sh
+docker inspect $NAME |jq -cr '.[0].Config.Entrypoint[0]'
+```
+```
+```text
+/init
+```sh
 docker inspect $NAME |jq '.[0].Config.Cmd'
 ```
 this will reveal
-```
+```text
 null
 ```
 
@@ -197,7 +203,7 @@ symlink \config\configs C:\...dillinger\configs: A required privilege is not hel
 NAME=linuxserver-dillinger 
 docker exec -it $NAME tar cf /tmp/a.tar -C /app dillinger
 ```
-
+this will package the drectory
 ```sh
 NAME=linuxserver-dillinger 
 docker cp $NAME:/tmp/a.tar .
@@ -212,6 +218,7 @@ ls -hl a.tar
 ```sh
 tar xf a.tar
 ```
+> NOTE can ignore the error
 ```text
 tar: dillinger/configs: Cannot create symlink to ‘/config/configs’: No such file or directory
 tar: Exiting with failure status due to previous errors
@@ -261,6 +268,8 @@ subst E: "%CD%"
 ```
 > NOTE one can simply "open" the `index.html` from explorer. In later versions one does not even need to switch to the `E:` drive 
 
+![Open in](screenshots/capture-thunar.png)
+
 ![Run as File](screenshots/capture-file.png)
 
 > NOTE: use
@@ -271,7 +280,11 @@ or
 ```sh
 cygpath -wa . | sed 's|\\|/|g' | awk '{print "file:///" $0 "/index.html"}' | clip
 ```
-to create or updte the browser bookmark.
+or
+```
+echo "file://$(pwd)/index.html" |xclip -sel clip
+```
+then paste in browser address bar to create or update the browser bookmark.
 
 if necessary can package the files and distribute
 
