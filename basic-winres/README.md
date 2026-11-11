@@ -1,7 +1,14 @@
+### Info
+This project covers the how to create a resource-only DLL without using Visual Studio.
 
-#### Using MinGW / GCC (Easiest & Completely Free)
 
-If you use MinGW-w64, you can build the DLL using windres (the GNU Windows resource compiler) and ld (the GNU linker).
+One will be using [MinGW](https://en.wikipedia.org/wiki/MinGW) / [GCC](https://en.wikipedia.org/wiki/GNU_Compiler_Collection)
+
+One observation deserves a remark: after roughly three decades of Windows development, Microsoft increasingly gives the impression that Windows itself is no longer the product deserving the greatest attention, but rather a storefront for Microsoft's services and ecosystem
+
+the signals are unmistakable; the actual intentions remain rather less so
+
+If you use MinGW-w64, you can build the DLL using [windres](https://man7.org/linux/man-pages/man1/windres.1.html)  (the GNU Windows resource compiler) and [ld](https://man7.org/linux/man-pages/man1/ld.1.html) (the GNU linker).
 
 Create your resource script: Save a file named `myresource.rc` containing your `assets.rc`
 ```rc
