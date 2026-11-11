@@ -2148,6 +2148,32 @@ is single-node deployment of Cloudera's 100% open-source distribution including
 [Apache Hadoop](https://en.wikipedia.org/wiki/Apache_Hadoop), 
 and [Cloudera Manager](). They are ideal environments for learning about Hadoop, trying out new ideas, testing and demoing your application. 
 
+### Abandonezation
+
+__Completed__: developers achieve the intended functionality and see no reason to continue
+
+__Superseded__: functionality moved elsewhere or became unnecessary
+
+__Abandoned project__: development stopped while important problems remained
+
+The GitHub's *archived* status communicates the repository is read-only, not which scenario applies
+
+Compare with lst of producs abandoned with a passion
+
+|Product|Memorable Charateristic|
+|-------|-----------------------|
+|Microsoft Kin|A spectacularly short commercial life|
+|Zune|A serious iPod competitor arriving too late|
+|Microsoft Bob|An alternative vision of the desktop, with a cartoon house|
+|Microsoft Courier|Beautiful dual-screen concept, never shipped|
+|Silverlight|A proposed Flash successor overtaken by the web|
+|Windows RT|Windows branding, ARM hardware, desktop compatibility restrictions|
+|Windows Phone|Multiple generations of platform reinvention|
+|Microsoft Expression|A whole creative/development tooling family retired|
+|Windows 8 |	The desktop/tablet convergence experiment that alienated traditional desktop users with its radical Start-screen redesign|
+|Windows Phone 8 |	A platform reset that broke compatibility with Windows Phone 7 devices, while attempting to catch up with iOS and Android|
+
+__importance has absolutely no correlation with physical size__
 
 ### TODO 
 

@@ -396,14 +396,25 @@ curl -I http://localhost:8080
 ```
 ```text
 HTTP/1.1 200 OK
+Server: nginx/1.30.3
+Date: Wed, 11 Nov 2026 20:31:24 GMT
+Content-Type: text/html
+Content-Length: 1346
+Last-Modified: Wed, 11 Nov 2026 20:30:41 GMT
+Connection: keep-alive
+ETag: "6af4d071-542"
+Accept-Ranges: bytes
 ```
 
 open in the regular browser
 ```sh
-echo http://$(docker-machine ip):8080/
+echo http://$(docker-machine ip):8080/ | clip
 ```
 
 ![Run Nginx Docker](screenshots/capture-nginx-docker.png)
+
+
+![Run Locally](screenshots/capture-run-locally.png)
 
 Copy-Paste some of the recent Mermaid shapes, e.g. [Architecture Diagrams](https://mermaid.ai/open-source/syntax/architecture.html) into editor.
 If the version is too old it will not be rendering (the contents of `Diagram` tab will stay blank or a hand grenade will be rendered
@@ -411,6 +422,8 @@ If the version is too old it will not be rendering (the contents of `Diagram` ta
 ![hand grenade](screenshots/capture-mermaid-hand-grenade.png)
 
 ![Bookmark](screenshots/capture-container-bookmark.png)
+
+![Launcher](screenshots/capture-launcher.png)
 
 > NOTE: the following command expects the `dist` directory be deleted
 
