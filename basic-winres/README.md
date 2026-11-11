@@ -331,13 +331,13 @@ test2                                                                  latest   
 ```sh
 rm -fr ~/test
 mkdir ~/test
-cp *rc *bmp *ico ~/test
+cp *rc *png *ico ~/test
 ```
 ```sh
 docker run --rm -it -w /tmp -v ~/test:/tmp test2 sh
 ```
 ```sh
-convert icon1.bmp  -define icon:auto-resize=256,48,32,16 generated_icon1.ico
+convert icon1.png -type TrueColorAlpha -define icon:auto-resize=256,48,32,16 generated_icon1.ico
 /usr/bin/x86_64-w64-mingw32-windres myresource.rc  -o myresource.o
 /usr/x86_64-w64-mingw32/bin/ld --dll -o myresource.dll myresource.o
 exit
@@ -353,6 +353,19 @@ Open or create a `.lnk` file and click __Change Icon__ button, select the `myres
 
 ![capture](screenshots/capture-change-icon.png)
 
+#### Manual Transparency
+
+Assuming the source `PNG` has a white background one wants to become transparent, modiry the command
+```sh
+convert icon1.png -fuzz 5% -transparent white  -type TrueColorAlpha -define icon:auto-resize=256,48,32,16 icon1.ico
+```  
+### Cleanup
+
+```sh
+docker container prune -f
+docker image prune -f
+docker image rm test test2
+```
 ### Troubleshooting
 
 Occasionally, if when the command run from __Git Bash__, not the one started by __Docker Toolbox__
@@ -364,6 +377,12 @@ docker run --rm -it -w /tmp -v ~/test:/tmp test sh
 C:\Program Files\Docker Toolbox\docker.exe: Error response from daemon: the working directory 'C:/Users/kouzm/AppData/Local/Temp' is invalid, it needs to be an absolute path.
 See 'C:\Program Files\Docker Toolbox\docker.exe run --help'
 ```
+
+to solve modigy command
+```sh
+MSYS_NO_PATHCONV=1 docker run --rm -it -w /tmp -v "$(cygpath -m ~/test):/tmp" test sh
+```
+
 ### Limitations
 
 There is an important Windows limitation:
@@ -372,7 +391,7 @@ A pure resource dll cannot simply declare a `BITMAP` resource and have the Windo
 
 ### See Also
 
-  * [Image](https://hub.docker.com/r/mwaeckerlin/mingw) and [source](https://github.com/mwaeckerlin/mingw) of `mwaeckerlin/mingw` -  `Dockerfile` with advanced set of bash build scripts for cross compiling Windows targets in a Ubuntu Docker Container. The image is likely capable of all sorts of much more interesing stuff than `winres` execution is a possible far overkill
+  * [Image](https://hub.docker.com/r/mwaeckerlin/mingw) and [source](https://github.com/mwaeckerlin/mingw) of `mwaeckerlin/mingw` -  `Dockerfile` with advanced set of bash build scripts for cross compiling Windows targets in a Ubuntu Docker Container. The image is likely capable of all sorts of much more interesting stuff than `windres` execution is a possible significant overkill
 
 ---
 ### Author
