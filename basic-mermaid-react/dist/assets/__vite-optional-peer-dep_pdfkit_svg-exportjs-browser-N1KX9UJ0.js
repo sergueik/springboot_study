@@ -1,0 +1,1 @@
+var e={};throw Error(`Could not resolve "pdfkit" imported by "svg-exportjs-browser". Is it installed?`);export{e as default};

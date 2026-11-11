@@ -1,0 +1,1 @@
+var e={};throw Error(`Could not resolve "canvg" imported by "svg-exportjs-browser". Is it installed?`);export{e as default};
