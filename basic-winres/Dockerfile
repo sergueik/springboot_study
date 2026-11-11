@@ -1,10 +1,9 @@
-FROM ubuntu:18.04
+FROM alpine:3.15
+RUN apk update \
+    && apk add --update --no-cache mingw-w64-gcc make imagemagick \
+    && rm -rf /var/cache/* \
+    && mkdir /var/cache/apk
 
-RUN apt-get update && \
-    apt-get install -y mingw-w64 make && \
-    rm -rf /var/lib/apt/lists/*
-
-# Verify windres is available
 RUN x86_64-w64-mingw32-windres --version
 
 WORKDIR /app

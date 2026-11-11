@@ -24,22 +24,21 @@ Link it into a resource-only DLL
 ```
 ld --dll -o myresource.dll myresource.o
 ```
-> NOTE: the unfortunate `ICON` statement in a Windows Resource (.rc) file is *native*, and the value source  file *must* be in the standard `.ico` binary format.
-> Failure to take this into account e.g. using  another format (like .png, .bmp, or .jpg) in right hand side in the ICON statement,  
+> NOTE: the unfortunate `ICON` statement in a Windows Resource (`.rc`) file is *native*, and the value source  file *must* be in the standard `.ico` binary format.
+> Failure to take this into account e.g. using  another format like `.png`, `.bmp`, or `.jpg` in right hand side in the `ICON` statement,
 > leads to the Windows Resource Compiler (`rc.exe`) compilation error, such as:
-> ``` 
-> RC2175: icon file is not in 3.00 format. 
+> ```
+> RC2175: icon file is not in 3.00 format.
 > ```
 > This happens because the compiler explicitly expects an `icon directory` header followed by individual `icon image`
 > components to split them into `RT_ICON` structures.
 > In other words *it happens*.
 
-The alternarive solution is to convert subject image to Windows Bitmap format (.bmp), 
+The alternarive solution is to convert subject image to Windows Bitmap format (.bmp),
 and use the BITMAP statement:
 ```rc
 IDB_MY_BITMAP BITMAP "assets/image.bmp"
 ```
-
 
 ### Usage
 
@@ -219,13 +218,126 @@ Removing intermediate container c318644b6ab1
  ---> af985ff45d94
 Successfully built af985ff45d94
 Successfully tagged test:latest
-SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
 ```
+```
+Step 1/4 : FROM alpine:3.15
+ ---> 32b91e3161c8
+Step 2/4 : RUN apk update     && apk add --update --no-cache mingw-w64-gcc make imagemagick     && rm -rf /var/cache/*     && mkdir /var/cache/apk
+ ---> Running in c893701188ef
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.15/community/x86_64/APKINDEX.tar.gz
+v3.15.11-31-g2a2ec278a7b [https://dl-cdn.alpinelinux.org/alpine/v3.15/main]
+v3.15.11-31-g2a2ec278a7b [https://dl-cdn.alpinelinux.org/alpine/v3.15/community]
+OK: 15857 distinct packages available
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.15/community/x86_64/APKINDEX.tar.gz
+(1/68) Installing libxau (1.0.9-r0)
+(2/68) Installing libmd (1.0.3-r0)
+(3/68) Installing libbsd (0.11.3-r1)
+(4/68) Installing libxdmcp (1.1.3-r0)
+(5/68) Installing libxcb (1.14-r2)
+(6/68) Installing libx11 (1.7.3.1-r1)
+(7/68) Installing libxext (1.3.4-r0)
+(8/68) Installing libbz2 (1.0.8-r1)
+(9/68) Installing expat (2.5.0-r0)
+(10/68) Installing brotli-libs (1.0.9-r5)
+(11/68) Installing libpng (1.6.37-r1)
+(12/68) Installing freetype (2.11.1-r2)
+(13/68) Installing libuuid (2.37.4-r0)
+(14/68) Installing fontconfig (2.13.1-r4)
+(15/68) Installing lcms2 (2.12-r1)
+(16/68) Installing libltdl (2.4.6-r7)
+(17/68) Installing xz-libs (5.2.5-r1)
+(18/68) Installing libxml2 (2.9.14-r2)
+(19/68) Installing imagemagick-libs (7.1.0.16-r0)
+(20/68) Installing libxrender (0.9.10-r3)
+(21/68) Installing pixman (0.40.0-r4)
+(22/68) Installing cairo (1.16.0-r5)
+(23/68) Installing libffi (3.4.2-r1)
+(24/68) Installing libintl (0.21-r0)
+(25/68) Installing libblkid (2.37.4-r0)
+(26/68) Installing libmount (2.37.4-r0)
+(27/68) Installing pcre (8.45-r1)
+(28/68) Installing glib (2.70.5-r0)
+(29/68) Installing dbus-libs (1.12.26-r0)
+(30/68) Installing avahi-libs (0.8-r5)
+(31/68) Installing gmp (6.2.1-r1)
+(32/68) Installing nettle (3.7.3-r0)
+(33/68) Installing p11-kit (0.24.0-r1)
+(34/68) Installing libtasn1 (4.18.0-r1)
+(35/68) Installing libunistring (0.9.10-r1)
+(36/68) Installing gnutls (3.7.1-r2)
+(37/68) Installing cups-libs (2.3.3-r8)
+(38/68) Installing libgcc (10.3.1_git20211027-r0)
+(39/68) Installing jbig2dec (0.19-r0)
+(40/68) Installing libjpeg-turbo (2.1.2-r0)
+(41/68) Installing libstdc++ (10.3.1_git20211027-r0)
+(42/68) Installing libwebp (1.2.2-r2)
+(43/68) Installing zstd-libs (1.5.0-r0)
+(44/68) Installing tiff (4.4.0-r4)
+(45/68) Installing ghostscript (9.55.0-r2)
+(46/68) Installing aom-libs (3.2.0-r0)
+(47/68) Installing libde265 (1.0.12-r0)
+(48/68) Installing x265-libs (3.5-r0)
+(49/68) Installing libheif (1.12.0-r2)
+(50/68) Installing cairo-gobject (1.16.0-r5)
+(51/68) Installing pkgconf (1.8.1-r0)
+(52/68) Installing shared-mime-info (2.1-r2)
+(53/68) Installing gdk-pixbuf (2.42.8-r0)
+(54/68) Installing libxft (2.3.4-r0)
+(55/68) Installing fribidi (1.0.11-r0)
+(56/68) Installing graphite2 (1.3.14-r0)
+(57/68) Installing harfbuzz (3.0.0-r2)
+(58/68) Installing pango (1.48.10-r0)
+(59/68) Installing librsvg (2.50.7-r1)
+(60/68) Installing imagemagick (7.1.0.16-r0)
+(61/68) Installing make (4.3-r0)
+(62/68) Installing mingw-w64-binutils (2.37-r1)
+(63/68) Installing mingw-w64-winpthreads (9.0.0-r0)
+(64/68) Installing mingw-w64-headers (9.0.0-r0)
+(65/68) Installing mingw-w64-crt (9.0.0-r0)
+(66/68) Installing mpfr4 (4.1.0-r0)
+(67/68) Installing mpc1 (1.2.1-r0)
+(68/68) Installing mingw-w64-gcc (11.2.0-r0)
+Executing busybox-1.34.1-r7.trigger
+Executing fontconfig-2.13.1-r4.trigger
+Executing shared-mime-info-2.1-r2.trigger
+Executing gdk-pixbuf-2.42.8-r0.trigger
+OK: 469 MiB in 82 packages
+Removing intermediate container c893701188ef
+ ---> 949cff2ce7a8
+Step 3/4 : RUN x86_64-w64-mingw32-windres --version
+ ---> Running in 7395f6f0b4cf
+GNU windres (GNU Binutils) 2.37
+Copyright (C) 2021 Free Software Foundation, Inc.
+This program is free software; you may redistribute it under the terms of
+the GNU General Public License version 3 or (at your option) any later version.
+This program has absolutely no warranty.
+Removing intermediate container 7395f6f0b4cf
+ ---> c6256e257dc9
+Step 4/4 : WORKDIR /app
+ ---> Running in 05652fd0a580
+Removing intermediate container 05652fd0a580
+ ---> c0166fdaa80e
+Successfully built c0166fdaa80e
+Successfully tagged test2:latest
+```
+```text
+REPOSITORY                                                             TAG                 IMAGE ID            CREATED             SIZE
+test                                                                   latest              61b542c1d4e4        15 minutes ago      926MB
+test2                                                                  latest              c0166fdaa80e        2 seconds ago       481MB
 
-```sh
-docker run --rm -it -w /tmp -v ~/test:/tmp test sh
 ```
 ```sh
+rm -fr ~/test
+mkdir ~/test
+cp *rc *bmp *ico ~/test
+```
+```sh
+docker run --rm -it -w /tmp -v ~/test:/tmp test2 sh
+```
+```sh
+convert icon1.bmp  -define icon:auto-resize=256,48,32,16 generated_icon1.ico
 /usr/bin/x86_64-w64-mingw32-windres myresource.rc  -o myresource.o
 /usr/x86_64-w64-mingw32/bin/ld --dll -o myresource.dll myresource.o
 exit
@@ -236,37 +348,32 @@ ls ~/test
 ```text
 icon1.bmp  icon1.ico  myresource.dll*  myresource.o  myresource.rc
 ```
-#### Exotic Option
 
-Using MSVC Command Line Tools (Build Tools)
+Open or create a `.lnk` file and click __Change Icon__ button, select the `myresource.dll` as source
 
-If you don't want the Visual Studio IDE but still want to use Microsoft's compiler, you can download the standalone Visual Studio Build Tools.
-1. Open the Developer Command Prompt for VS.
-2. Compile the resource script using rc.exe to generate a .res file:cmd
-rc.exe myresource.rc
-Use code with caution.
-3. Link the resource into a DLL using link.exe:cmd
-link.exe /DLL /NOENTRY /MACHINE:X64 myresource.res /OUT:myresource.dll
-Use code with caution.
+![capture](screenshots/capture-change-icon.png)
 
-	• Note: The /NOENTRY flag is mandatory. It prevents the linker from looking for a DllMain or _main function, creating a pure data/resource-only binary.
+### Troubleshooting
 
-Method 3: For .NET / C# Assemblies
+Occasionally, if when the command run from __Git Bash__, not the one started by __Docker Toolbox__
 
-If you are trying to create a resource-only assembly for a .NET environment rather than native Win32, you can use the built-in SDK tools resgen.exe and al.exe:
-1. Convert an XML resource file (.resx) to a binary .resources file:cmd
-resgen.exe Strings.resx Strings.resources
-Use code with caution.
-2. Embed it into a DLL assembly using the Assembly Linker (al.exe):cmd
-al.exe /embed:Strings.resources /out:Strings.resources.dll
-Use code with caution.
-Let me know:
-• What type of resources you are trying to embed (images, strings, icons, or binary data)?
-• Which programming language or environment will be loading this DLL?
-I can give you the exact .rc script syntax or the code snippets to load them!
+```sh
+docker run --rm -it -w /tmp -v ~/test:/tmp test sh
+```
+```text
+C:\Program Files\Docker Toolbox\docker.exe: Error response from daemon: the working directory 'C:/Users/kouzm/AppData/Local/Temp' is invalid, it needs to be an absolute path.
+See 'C:\Program Files\Docker Toolbox\docker.exe run --help'
+```
+### Limitations
 
+There is an important Windows limitation:
+
+A pure resource dll cannot simply declare a `BITMAP` resource and have the Windows shell explorer __Change Icon__ dialog recognize it as an *icon*.
 
 ### See Also
 
   * [Image](https://hub.docker.com/r/mwaeckerlin/mingw) and [source](https://github.com/mwaeckerlin/mingw) of `mwaeckerlin/mingw` -  `Dockerfile` with advanced set of bash build scripts for cross compiling Windows targets in a Ubuntu Docker Container. The image is likely capable of all sorts of much more interesing stuff than `winres` execution is a possible far overkill
- 
+
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
