@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 /**
  * Build script - inlines ALL JS (including CDN libs) into index.html.
  * Produces a fully self-contained single HTML file with zero external dependencies.

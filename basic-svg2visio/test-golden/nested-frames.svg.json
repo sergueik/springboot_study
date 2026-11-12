@@ -1,0 +1,420 @@
+{
+  "connectors": [
+    {
+      "arrowEnd": false,
+      "arrowStart": false,
+      "fromShape": 2,
+      "id": null,
+      "parentShape": null,
+      "points": [
+        {
+          "x": 175,
+          "y": 115
+        },
+        {
+          "x": 260,
+          "y": 115
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#333333",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 3,
+      "type": "line"
+    }
+  ],
+  "shapes": [
+    {
+      "angle": 0,
+      "height": 200,
+      "id": null,
+      "isContainer": true,
+      "parentShape": null,
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#0078D4",
+        "strokeDasharray": "6 4",
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "textRuns": [],
+      "textStyle": null,
+      "type": "rect",
+      "width": 200,
+      "x": 20,
+      "y": 20
+    },
+    {
+      "angle": 0,
+      "height": 160,
+      "id": null,
+      "isContainer": true,
+      "parentShape": 0,
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#0078D4",
+        "strokeDasharray": "6 4",
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "textRuns": [],
+      "textStyle": null,
+      "type": "rect",
+      "width": 168,
+      "x": 35,
+      "y": 50
+    },
+    {
+      "angle": 0,
+      "height": 50,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 1,
+      "style": {
+        "fill": "#ffffff",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#333333",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1.5,
+        "textAnchor": "start"
+      },
+      "text": "Leaf\na detail line",
+      "textRuns": [
+        {
+          "style": {
+            "fill": "#222222",
+            "fillOpacity": 1,
+            "fontFamily": "Calibri",
+            "fontSize": 16,
+            "fontWeight": "bold",
+            "opacity": 1,
+            "rx": 0,
+            "ry": 0,
+            "stroke": "none",
+            "strokeDasharray": null,
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "textAnchor": "middle",
+            "textColor": "#222222"
+          },
+          "text": "Leaf"
+        },
+        {
+          "style": {
+            "fill": "#666666",
+            "fillOpacity": 1,
+            "fontFamily": "Calibri",
+            "fontSize": 11,
+            "fontWeight": "normal",
+            "opacity": 1,
+            "rx": 0,
+            "ry": 0,
+            "stroke": "none",
+            "strokeDasharray": null,
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "textAnchor": "middle",
+            "textColor": "#666666"
+          },
+          "text": "a detail line"
+        }
+      ],
+      "textStyle": {
+        "fill": "#222222",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "middle",
+        "textColor": "#222222"
+      },
+      "type": "rect",
+      "width": 120,
+      "x": 55,
+      "y": 90
+    },
+    {
+      "angle": 0,
+      "height": 50,
+      "id": null,
+      "isContainer": false,
+      "parentShape": null,
+      "style": {
+        "fill": "#ffffff",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#333333",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1.5,
+        "textAnchor": "start"
+      },
+      "text": "Sibling",
+      "textRuns": [
+        {
+          "style": {
+            "fill": "#222222",
+            "fillOpacity": 1,
+            "fontFamily": "Calibri",
+            "fontSize": 16,
+            "fontWeight": "bold",
+            "opacity": 1,
+            "rx": 0,
+            "ry": 0,
+            "stroke": "none",
+            "strokeDasharray": null,
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "textAnchor": "middle",
+            "textColor": "#222222"
+          },
+          "text": "Sibling"
+        }
+      ],
+      "textStyle": {
+        "fill": "#222222",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "middle",
+        "textColor": "#222222"
+      },
+      "type": "rect",
+      "width": 110,
+      "x": 260,
+      "y": 90
+    },
+    {
+      "angle": 0,
+      "height": 80,
+      "id": null,
+      "isContainer": true,
+      "parentShape": null,
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#0078D4",
+        "strokeDasharray": "6 4",
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "textRuns": [],
+      "textStyle": null,
+      "type": "rect",
+      "width": 130,
+      "x": 245,
+      "y": 165
+    },
+    {
+      "angle": 0,
+      "height": 52,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 4,
+      "style": {
+        "fill": "#ffffff",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#333333",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1.5,
+        "textAnchor": "start"
+      },
+      "text": "Only child",
+      "textRuns": [
+        {
+          "style": {
+            "fill": "#222222",
+            "fillOpacity": 1,
+            "fontFamily": "Calibri",
+            "fontSize": 16,
+            "fontWeight": "bold",
+            "opacity": 1,
+            "rx": 0,
+            "ry": 0,
+            "stroke": "none",
+            "strokeDasharray": null,
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "textAnchor": "middle",
+            "textColor": "#222222"
+          },
+          "text": "Only child"
+        }
+      ],
+      "textStyle": {
+        "fill": "#222222",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "middle",
+        "textColor": "#222222"
+      },
+      "type": "rect",
+      "width": 105,
+      "x": 258,
+      "y": 185
+    }
+  ],
+  "texts": [
+    {
+      "id": null,
+      "parentShape": 0,
+      "standalone": false,
+      "style": {
+        "fill": "#222222",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start",
+        "textColor": "#222222"
+      },
+      "text": "Outer",
+      "x": 28,
+      "y": 38
+    },
+    {
+      "id": null,
+      "parentShape": 1,
+      "standalone": false,
+      "style": {
+        "fill": "#222222",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 16,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start",
+        "textColor": "#222222"
+      },
+      "text": "Inner",
+      "x": 43,
+      "y": 68
+    },
+    {
+      "id": null,
+      "parentShape": 4,
+      "standalone": false,
+      "style": {
+        "fill": "#666666",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 11,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start",
+        "textColor": "#666666"
+      },
+      "text": "Solo frame",
+      "x": 250,
+      "y": 180
+    }
+  ],
+  "viewBox": {
+    "height": 260,
+    "width": 400,
+    "x": 0,
+    "y": 0
+  },
+  "warnings": []
+}

@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check (JSDoc types, no build step)
+        run: npm run typecheck
+
+      - name: Unit and integration tests
+        run: npm run test:unit
+
+      - name: Golden-file snapshots
+        run: npm run test:golden
+
+      - name: Check dist/index.html is up to date
+        run: |
+          node build.js
+          if ! git diff --quiet -- dist/index.html; then
+            echo "::error::dist/index.html is stale - run 'node build.js' and commit the result."
+            git diff --stat -- dist/index.html
+            exit 1
+          fi

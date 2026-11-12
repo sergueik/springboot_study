@@ -110,11 +110,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(212,165,116,0.3); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-secondary {
+            background: #1a2744;
+            color: #e0e0e0;
+            border: 1px solid #d4a574;
+        }
+        .btn-secondary:hover { background: #223055; }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             align-items: center;
+            flex-wrap: wrap;
             margin-bottom: 1.5rem;
         }
 
@@ -142,6 +150,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             flex-wrap: wrap;
             margin-top: 1rem;
         }
+        .warnings {
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-left: 3px solid #d19a2f;
+            background: rgba(209, 154, 47, 0.08);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .warnings ul { margin: 0.4rem 0 0; padding-left: 1.1rem; }
+        .warnings li { margin: 0.15rem 0; }
         .stat-badge {
             background: #1a2744;
             padding: 0.4rem 0.8rem;
@@ -172,8 +191,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 </head>
 <body>
     <header>
-        <h1>SVG &amp; Draw.io to Visio Converter</h1>
-        <p>Convert SVG diagrams and Draw.io files to editable Visio (.vsdx) files</p>
+        <h1>SVG to Visio, Draw.io &amp; LibreOffice</h1>
+        <p>Convert SVG (or Draw.io) diagrams to editable .vsdx, .drawio and .fodg files</p>
     </header>
 
     <div class="container">
@@ -189,6 +208,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         <div class="actions">
             <button class="btn btn-primary" id="convertBtn" disabled>Convert to .vsdx</button>
+            <button class="btn btn-secondary" id="drawioBtn" disabled>Convert to .drawio</button>
+            <button class="btn btn-secondary" id="odgBtn" disabled>Convert to .fodg</button>
             <span id="statusText" style="color:#888; font-size:0.9rem;"></span>
         </div>
 
@@ -198,12 +219,1109 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             <h3>SVG Preview</h3>
             <div class="preview-container" id="previewContainer"></div>
             <div class="stats" id="stats"></div>
+            <div class="warnings" id="warnings" style="display:none"></div>
         </div>
     </div>
 
     <input type="file" id="fileInput" accept=".svg,.drawio,.xml,image/svg+xml">
 
+    <!-- Load order matters: these are plain scripts, not modules. -->
+    <script>/* scene-model.js */
+// @ts-check
+/**
+ * The scene model - the contract between every parser and the builder.
+ *
+ * Both SvgParser and DrawioParser must produce exactly this shape, and
+ * VsdxBuilder may rely on it without defensive fallbacks. Until this file
+ * existed the two parsers emitted different fields and the builder guessed
+ * which one it was handed.
+ *
+ * Coordinates are SVG user units (pixels, y growing downwards). Conversion to
+ * Visio inches happens in the builder and nowhere else.
+ */
+
+/**
+ * @typedef {Object} Style
+ * @property {string}  fill             CSS colour, or 'none'
+ * @property {number}  fillOpacity      0..1
+ * @property {string}  stroke           CSS colour, or 'none'
+ * @property {number}  strokeWidth      user units
+ * @property {number}  strokeOpacity    0..1
+ * @property {string|null} strokeDasharray  raw dash array, or null when solid
+ * @property {number}  fontSize         user units
+ * @property {string}  fontFamily
+ * @property {string}  fontWeight       'normal' | 'bold' | numeric string
+ * @property {'start'|'middle'|'end'} textAnchor
+ * @property {number}  opacity          0..1
+ * @property {number}  rx               corner radius
+ * @property {number}  ry
+ * @property {string} [textColor]       resolved text colour (text nodes only)
+ */
+
+/**
+ * @typedef {Object} Point
+ * @property {number} x
+ * @property {number} y
+ */
+
+/**
+ * @typedef {Object} TextRun
+ * @property {string} text
+ * @property {Style}  style
+ */
+
+/**
+ * @typedef {Object} Shape
+ * @property {'rect'|'circle'|'ellipse'|'diamond'|'polygon'|'path-shape'} type
+ * @property {number} x                 left edge of the unrotated box
+ * @property {number} y                 top edge of the unrotated box
+ * @property {number} width
+ * @property {number} height
+ * @property {number} angle             radians, counter-clockwise, about the centre
+ * @property {Style}  style
+ * @property {string|null} id
+ * @property {string|null} text         all runs joined with '\n', or null
+ * @property {TextRun[]}   textRuns     one entry per source line
+ * @property {Style|null}  textStyle    dominant run's style
+ * @property {boolean} isContainer      encloses other shapes; never labelled or glued to
+ * @property {number|null} parentShape   index of the frame this sits inside
+ * @property {Point[]} [points]         polygon / path outline
+ * @property {string}  [d]              original path data
+ */
+
+/**
+ * @typedef {Object} Connector
+ * @property {'line'|'polyline'|'path'} type
+ * @property {Point[]} points           at least two
+ * @property {boolean} arrowStart
+ * @property {boolean} arrowEnd
+ * @property {Style}   style
+ * @property {string|null} id
+ * @property {string|null} text
+ * @property {number|null} fromShape    index into Scene.shapes
+ * @property {number|null} toShape
+ * @property {number|null} parentShape  index of the frame this sits inside
+ * @property {string} [d]
+ */
+
+/**
+ * @typedef {Object} StandaloneText
+ * @property {number} x                 anchor point
+ * @property {number} y                 baseline
+ * @property {string} text
+ * @property {Style}  style
+ * @property {string|null} id
+ * @property {boolean} standalone  the parser already decided this text is
+ *                                 free-floating; the layout stage must not
+ *                                 fold it into a shape
+ * @property {number|null} parentShape   index of the frame this sits inside
+ */
+
+/**
+ * @typedef {Object} ViewBox
+ * @property {number} x
+ * @property {number} y
+ * @property {number} width
+ * @property {number} height
+ */
+
+/**
+ * @typedef {Object} Scene
+ * @property {ViewBox}  viewBox
+ * @property {Shape[]}  shapes
+ * @property {Connector[]} connectors
+ * @property {StandaloneText[]} texts
+ * @property {string[]} warnings        things the .vsdx cannot reproduce
+ */
+
+const SceneModel = {
+    SHAPE_TYPES: Object.freeze(['rect', 'circle', 'ellipse', 'diamond', 'polygon', 'path-shape']),
+    CONNECTOR_TYPES: Object.freeze(['line', 'polyline', 'path']),
+    TEXT_ANCHORS: Object.freeze(['start', 'middle', 'end']),
+
+    /**
+     * A style with every field populated. Parsers start from this so no
+     * consumer ever has to test a field for undefined.
+     * @returns {Style}
+     */
+    defaultStyle() {
+        return {
+            fill: 'none',
+            fillOpacity: 1,
+            stroke: 'none',
+            strokeWidth: 1,
+            strokeOpacity: 1,
+            strokeDasharray: null,
+            fontSize: 14,
+            fontFamily: 'Calibri',
+            fontWeight: 'normal',
+            textAnchor: 'start',
+            opacity: 1,
+            rx: 0,
+            ry: 0
+        };
+    },
+
+    /**
+     * Fill in whatever a parser left out, so the model is complete before it
+     * reaches the layout stage or the builder.
+     * @param {any} scene
+     * @returns {Scene}
+     */
+    normalise(scene) {
+        const vb = scene.viewBox || {};
+        scene.viewBox = {
+            x: vb.x || 0,
+            y: vb.y || 0,
+            width: vb.width || 800,
+            height: vb.height || 600
+        };
+        scene.shapes = scene.shapes || [];
+        scene.connectors = scene.connectors || [];
+        scene.texts = scene.texts || [];
+        scene.warnings = scene.warnings || [];
+
+        for (const shape of scene.shapes) {
+            shape.style = Object.assign(this.defaultStyle(), shape.style);
+            if (shape.id === undefined) shape.id = null;
+            if (shape.angle === undefined) shape.angle = 0;
+            if (shape.text === undefined) shape.text = null;
+            if (shape.isContainer === undefined) shape.isContainer = false;
+            if (shape.parentShape === undefined) shape.parentShape = null;
+            if (shape.textStyle === undefined) shape.textStyle = null;
+            if (!shape.textRuns) {
+                shape.textRuns = shape.text
+                    ? [{ text: shape.text, style: shape.textStyle || shape.style }]
+                    : [];
+            }
+        }
+
+        for (const conn of scene.connectors) {
+            conn.style = Object.assign(this.defaultStyle(), conn.style);
+            if (conn.id === undefined) conn.id = null;
+            if (conn.text === undefined) conn.text = null;
+            if (conn.fromShape === undefined) conn.fromShape = null;
+            if (conn.toShape === undefined) conn.toShape = null;
+            if (conn.parentShape === undefined) conn.parentShape = null;
+            // Legacy scenes that only say "there is an arrow" mean the end
+            if (conn.arrowEnd === undefined) conn.arrowEnd = !!conn.hasArrow;
+            if (conn.arrowStart === undefined) conn.arrowStart = false;
+        }
+
+        for (const text of scene.texts) {
+            text.style = Object.assign(this.defaultStyle(), text.style);
+            if (text.id === undefined) text.id = null;
+            if (text.standalone === undefined) text.standalone = false;
+            if (text.parentShape === undefined) text.parentShape = null;
+        }
+
+        return scene;
+    },
+
+    /**
+     * Structural check used by the tests. Returns the problems found so a
+     * parser that drifts from the contract fails loudly instead of producing
+     * a subtly wrong .vsdx.
+     * @param {any} scene
+     * @returns {string[]}
+     */
+    validate(scene) {
+        const problems = [];
+        const num = (v) => typeof v === 'number' && isFinite(v);
+        const shapeIndex = (v) => v === null ||
+            (Number.isInteger(v) && v >= 0 && v < scene.shapes.length);
+
+        if (!scene || typeof scene !== 'object') return ['scene is not an object'];
+
+        for (const key of ['viewBox', 'shapes', 'connectors', 'texts', 'warnings']) {
+            if (scene[key] === undefined) problems.push(`scene.${key} is missing`);
+        }
+        if (problems.length) return problems;
+
+        for (const key of ['x', 'y', 'width', 'height']) {
+            if (!num(scene.viewBox[key])) problems.push(`viewBox.${key} is not a number`);
+        }
+
+        const checkStyle = (style, where) => {
+            if (!style) { problems.push(`${where}.style is missing`); return; }
+            for (const key of ['fill', 'stroke', 'fontFamily', 'fontWeight', 'textAnchor']) {
+                if (typeof style[key] !== 'string') problems.push(`${where}.style.${key} is not a string`);
+            }
+            for (const key of ['fillOpacity', 'strokeWidth', 'strokeOpacity', 'fontSize', 'opacity', 'rx', 'ry']) {
+                if (!num(style[key])) problems.push(`${where}.style.${key} is not a number`);
+            }
+            if (this.TEXT_ANCHORS.indexOf(style.textAnchor) === -1) {
+                problems.push(`${where}.style.textAnchor is "${style.textAnchor}"`);
+            }
+        };
+
+        scene.shapes.forEach((shape, i) => {
+            const where = `shapes[${i}]`;
+            if (this.SHAPE_TYPES.indexOf(shape.type) === -1) problems.push(`${where}.type is "${shape.type}"`);
+            for (const key of ['x', 'y', 'width', 'height', 'angle']) {
+                if (!num(shape[key])) problems.push(`${where}.${key} is not a number`);
+            }
+            if (typeof shape.isContainer !== 'boolean') problems.push(`${where}.isContainer is not a boolean`);
+            if (!shapeIndex(shape.parentShape)) {
+                problems.push(`${where}.parentShape is not null or a valid shape index`);
+            } else if (shape.parentShape === i) {
+                problems.push(`${where}.parentShape points at itself`);
+            }
+            if (!Array.isArray(shape.textRuns)) problems.push(`${where}.textRuns is not an array`);
+            if (shape.text !== null && typeof shape.text !== 'string') problems.push(`${where}.text is neither string nor null`);
+            checkStyle(shape.style, where);
+        });
+
+        scene.connectors.forEach((conn, i) => {
+            const where = `connectors[${i}]`;
+            if (this.CONNECTOR_TYPES.indexOf(conn.type) === -1) problems.push(`${where}.type is "${conn.type}"`);
+            if (!Array.isArray(conn.points) || conn.points.length < 2) {
+                problems.push(`${where}.points has fewer than 2 entries`);
+            } else {
+                conn.points.forEach((p, j) => {
+                    if (!num(p.x) || !num(p.y)) problems.push(`${where}.points[${j}] is not a point`);
+                });
+            }
+            for (const key of ['arrowStart', 'arrowEnd']) {
+                if (typeof conn[key] !== 'boolean') problems.push(`${where}.${key} is not a boolean`);
+            }
+            for (const key of ['fromShape', 'toShape', 'parentShape']) {
+                if (!shapeIndex(conn[key])) {
+                    problems.push(`${where}.${key} is not null or a valid shape index`);
+                }
+            }
+            checkStyle(conn.style, where);
+        });
+
+        scene.texts.forEach((text, i) => {
+            const where = `texts[${i}]`;
+            if (!num(text.x) || !num(text.y)) problems.push(`${where} has no numeric position`);
+            if (typeof text.text !== 'string') problems.push(`${where}.text is not a string`);
+            if (typeof text.standalone !== 'boolean') problems.push(`${where}.standalone is not a boolean`);
+            if (!shapeIndex(text.parentShape)) {
+                problems.push(`${where}.parentShape is not null or a valid shape index`);
+            }
+            checkStyle(text.style, where);
+        });
+
+        // A parent chain that loops would make the builder recurse forever.
+        // Nesting only ever points at a strictly larger frame, so a cycle
+        // means a heuristic went wrong rather than a drawing being odd.
+        scene.shapes.forEach((shape, i) => {
+            const seen = new Set([i]);
+            let p = shape.parentShape;
+            while (Number.isInteger(p) && p >= 0 && p < scene.shapes.length) {
+                if (seen.has(p)) { problems.push(`shapes[${i}].parentShape chain is a cycle`); break; }
+                seen.add(p);
+                p = scene.shapes[p].parentShape;
+            }
+        });
+
+        return problems;
+    }
+};
+
+</script>
+    <script>/* scene-layout.js */
+// @ts-check
+/**
+ * Layout heuristics, applied to the scene model after parsing.
+ *
+ * These decide which shapes are grouping frames, which label belongs to which
+ * box, and which shapes a connector is glued to. They live here rather than in
+ * a parser because they are not SVG-specific: a Draw.io drawing with nested
+ * containers must behave the same way as the equivalent SVG. Previously they
+ * only ran for SVG input.
+ *
+ * Every threshold is in TUNING. When a drawing converts badly, this is the
+ * first place to look.
+ */
+
+const SceneLayout = {
+    TUNING: Object.freeze({
+        /**
+         * A shape counts as a frame only if the shape it encloses is
+         * meaningfully smaller. Without the margin, two rectangles of nearly
+         * identical size would each call the other a container.
+         */
+        containerAreaRatio: 0.9,
+
+        /**
+         * Slack, in user units, when testing whether a label sits inside a
+         * box. Generous padding lets a caption next to a small swatch get
+         * swallowed by it, so keep this tight.
+         */
+        labelPadding: 2,
+
+        /**
+         * Slack, in user units, when testing whether a shape sits inside a
+         * frame. A tile drawn flush with its frame's edge still belongs to it,
+         * and drawings round their coordinates.
+         */
+        nestPadding: 1,
+
+        /**
+         * The connector glue radius is this fraction of the drawing's
+         * diagonal, clamped below. A fixed radius is far too coarse on a small
+         * drawing and far too tight on a large one.
+         */
+        glueRadiusFraction: 0.015,
+        glueRadiusMin: 8,
+        glueRadiusMax: 48,
+
+        /**
+         * Average em width used to decide whether a label fits inside a tile.
+         * Visio wraps shape text at the tile width; SVG just overflows. A
+         * line that would wrap is left floating so it stays one line.
+         */
+        labelFitEm: 0.55,
+        labelFitEmBold: 0.59,
+        labelFitInset: 0
+    }),
+
+    /**
+     * Run every heuristic over a scene, in order.      * Containers must be known
+     * before labels are assigned, labels before nesting (so a label folded
+     * into a box is not also nested as a loose text), and gluing before a
+     * connector is nested, because which frame can hold a connector depends
+     * on where its ends are glued.
+     * @param {any} scene
+     * @param {any} [tuning]
+     */
+    apply(scene, tuning) {
+        const t = tuning || this.TUNING;
+        this.markContainers(scene, t);
+        this.associateTexts(scene, t);
+        this.nest(scene, t);
+        this.glueConnectors(scene, t);
+        this.nestConnectors(scene, t);
+        return scene;
+    },
+
+    /** Glue radius for a drawing of this size, in user units. */
+    glueRadius(scene, tuning) {
+        const diagonal = Math.hypot(scene.viewBox.width, scene.viewBox.height);
+        return Math.max(tuning.glueRadiusMin,
+                        Math.min(tuning.glueRadiusMax, diagonal * tuning.glueRadiusFraction));
+    },
+
+    /**
+     * A shape that fully encloses another shape is a grouping frame (subnet,
+     * VNet, legend box), not a labelled box. Such frames must not swallow the
+     * labels of the shapes inside them, and connectors must not glue to them.
+     */
+    markContainers(scene, tuning) {
+        for (const a of scene.shapes) {
+            a.isContainer = false;
+            const areaA = a.width * a.height;
+            if (areaA <= 0) continue;
+            for (const b of scene.shapes) {
+                if (b === a) continue;
+                const areaB = b.width * b.height;
+                if (areaB <= 0 || areaB >= areaA * tuning.containerAreaRatio) continue;
+                if (b.x >= a.x - 1 && b.y >= a.y - 1 &&
+                    b.x + b.width <= a.x + a.width + 1 &&
+                    b.y + b.height <= a.y + a.height + 1) {
+                    a.isContainer = true;
+                    break;
+                }
+            }
+        }
+    },
+
+    /** The frames something can nest into: unrotated containers. */
+    nestingFrames(scene) {
+        const frames = [];
+        scene.shapes.forEach((shape, i) => {
+            // A rotated frame would turn its children with it, and the child
+            // coordinates are axis-aligned, so leave those flat.
+            if (shape.isContainer && !shape.angle) {
+                frames.push({ index: i, shape, area: shape.width * shape.height });
+            }
+        });
+        return frames;
+    },
+
+    /**
+     * The innermost frame enclosing this box, or null.
+     *
+     * Only frames strictly larger than the box adopt it: that ordering by
+     * area is what makes a parent chain impossible to loop.
+     */
+    innermostFrame(frames, tuning, x, y, width, height, ownIndex, ownArea) {
+        const PAD = tuning.nestPadding;
+        let best = null;
+        let bestArea = Infinity;
+
+        for (const frame of frames) {
+            if (frame.index === ownIndex) continue;
+            if (frame.area <= ownArea) continue;
+            const f = frame.shape;
+            if (x < f.x - PAD || y < f.y - PAD ||
+                x + width > f.x + f.width + PAD ||
+                y + height > f.y + f.height + PAD) continue;
+            if (frame.area < bestArea) {
+                bestArea = frame.area;
+                best = frame.index;
+            }
+        }
+
+        return best;
+    },
+
+    /**
+     * Give every shape and loose text the frame it sits in.
+     *
+     * A drawing's frames are the whole structure a reader sees - a subnet
+     * inside a VNet inside a subscription - but on the page they are just
+     * rectangles that happen to be drawn around other rectangles. Recording
+     * the containment lets the builder emit real groups, so dragging a frame
+     * takes its contents along instead of sliding out from under them.
+     */
+    nest(scene, tuning) {
+        const frames = this.nestingFrames(scene);
+
+        scene.shapes.forEach((shape, i) => {
+            shape.parentShape = this.innermostFrame(frames, tuning, shape.x, shape.y,
+                shape.width, shape.height, i, shape.width * shape.height);
+        });
+
+        // A text has no extent of its own worth testing - its anchor decides,
+        // the same way associateTexts decides which box owns a label.
+        // Do not nest a long overflowing line into a frame narrower than the
+        // line: Visio/Aspose clip members to the group, which wraps the text.
+        for (const text of scene.texts) {
+            let host = this.innermostFrame(frames, tuning, text.x, text.y, 0, 0, -1, 0);
+            const need = this.estimatedLineWidth(text, tuning);
+            while (host !== null && scene.shapes[host].width < need) {
+                host = scene.shapes[host].parentShape;
+            }
+            text.parentShape = host;
+        }
+    },
+
+    /**
+     * Give a connector the frame it sits in, if one holds all of it.
+     *
+     * A connector joins two things and cannot belong to a frame that holds
+     * only one of them, so it stays on the page unless its whole route and
+     * both its ends are inside the same frame. Glue already carries a
+     * connector along when both ends are glued to shapes that move; this is
+     * for the rest - a legend's key lines, glued at one end or neither, which
+     * would otherwise stretch out of shape when their frame moves.
+     *
+     * This has to run after gluing: which frame can hold a connector depends
+     * on where its ends are glued.
+     */
+    nestConnectors(scene, tuning) {
+        const frames = this.nestingFrames(scene);
+
+        // Is b the frame a, or nested inside it?
+        const within = (b, a) => {
+            let p = b;
+            while (Number.isInteger(p)) {
+                if (p === a) return true;
+                p = scene.shapes[p].parentShape;
+            }
+            return false;
+        };
+
+        for (const conn of scene.connectors) {
+            const xs = conn.points.map(p => p.x);
+            const ys = conn.points.map(p => p.y);
+            const minX = Math.min.apply(null, xs);
+            const minY = Math.min.apply(null, ys);
+            const ends = [conn.fromShape, conn.toShape];
+
+            let host = this.innermostFrame(frames, tuning, minX, minY,
+                Math.max.apply(null, xs) - minX,
+                Math.max.apply(null, ys) - minY, -1, 0);
+            while (host !== null && !ends.every(t => t === null || within(t, host))) {
+                host = scene.shapes[host].parentShape;
+            }
+            conn.parentShape = host;
+        }
+    },
+
+    associateTexts(scene, tuning) {
+        const PAD = tuning.labelPadding;
+        const candidates = new Map();
+
+        for (const text of scene.texts) {
+            // A parser that already classified this text keeps the last word
+            if (text.standalone) continue;
+
+            let best = null;
+            let bestArea = Infinity;
+
+            for (const shape of scene.shapes) {
+                if (shape.isContainer) continue;
+
+                const inside = text.x >= shape.x - PAD && text.x <= shape.x + shape.width + PAD &&
+                               text.y >= shape.y - PAD && text.y <= shape.y + shape.height + PAD;
+                if (!inside) continue;
+
+                // Innermost (smallest) enclosing shape wins, not the nearest centre -
+                // otherwise a label lands in the big frame around its box.
+                const area = shape.width * shape.height;
+                if (area < bestArea) {
+                    bestArea = area;
+                    best = shape;
+                }
+            }
+
+            if (best) {
+                if (!candidates.has(best)) candidates.set(best, []);
+                candidates.get(best).push(text);
+            }
+        }
+
+        for (const [shape, texts] of candidates) {
+            // All-or-nothing: Visio centers shape text in the tile. Folding
+            // only the lines that fit leaves them sitting on top of the
+            // overflow lines we left floating.
+            if (!texts.every(t => this.labelFitsBox(t, shape, tuning))) continue;
+            texts.sort((a, b) => (a.y - b.y) || (a.x - b.x));
+            shape.text = texts.map(t => t.text).join('\n');
+            // One run per source line so a heading keeps its own size/weight.
+            shape.textRuns = texts.map(t => ({ text: t.text, style: t.style }));
+            // The largest line drives the shape's overall font styling.
+            shape.textStyle = texts.reduce((a, b) =>
+                (b.style.fontSize || 0) > (a.style.fontSize || 0) ? b : a).style;
+            for (const t of texts) t._associated = true;
+        }
+
+        // Keep unassociated texts as standalone text shapes
+        scene.texts = scene.texts.filter(t => !t._associated);
+    },
+
+    /**
+     * True when the line is short enough that Visio will not wrap it inside
+     * the tile. Longer lines stay free-floating, matching the SVG overflow.
+     *
+     * @param {{text: string, style: any}} text
+     * @param {{width: number}} shape
+     * @param {{labelFitEm: number, labelFitEmBold: number, labelFitInset: number}} tuning
+     */
+    labelFitsBox(text, shape, tuning) {
+        const size = (text.style && text.style.fontSize) || 14;
+        const weight = text.style && text.style.fontWeight;
+        const bold = weight === 'bold' || Number(weight) >= 700;
+        const em = bold ? tuning.labelFitEmBold : tuning.labelFitEm;
+        const width = [...String(text.text)].length * size * em;
+        return width <= shape.width - tuning.labelFitInset;
+    },
+
+    /**
+     * @param {{text: string, style: any}} text
+     * @param {{labelFitEm: number, labelFitEmBold: number}} tuning
+     */
+    estimatedLineWidth(text, tuning) {
+        const size = (text.style && text.style.fontSize) || 14;
+        const weight = text.style && text.style.fontWeight;
+        const bold = weight === 'bold' || Number(weight) >= 700;
+        const em = bold ? tuning.labelFitEmBold : tuning.labelFitEm;
+        return [...String(text.text)].length * size * em;
+    },
+
+    glueConnectors(scene, tuning) {
+        // A fixed 30px radius is far too coarse on a small drawing and far too
+        // tight on a large one, so scale it with the diagram's diagonal.
+        // Try to detect which shapes connectors connect to
+        for (const conn of scene.connectors) {
+            if (conn.points.length < 2) continue;
+
+            // Only derive an endpoint the parser could not supply itself.
+            // Draw.io knows its edges' source and target exactly; guessing
+            // geometrically would be strictly worse.
+            if (conn.fromShape === null) {
+                conn.fromShape = this.findNearestShape(scene, tuning, conn.points[0]);
+            }
+            if (conn.toShape === null) {
+                conn.toShape = this.findNearestShape(scene, tuning, conn.points[conn.points.length - 1]);
+            }
+        }
+    },
+
+    /**
+     * How far a connector endpoint is from a shape, in user units.
+     *
+     * A box counts as hit anywhere on or inside it: an arrow drawn into a box
+     * is meant for that box. A frame is measured to its border instead,
+     * because an arrow that merely crosses a subscription-sized rectangle is
+     * not attached to it - and measuring a frame to its border is what stops
+     * every endpoint on the page from gluing to the outermost one, which is
+     * why frames used to be skipped altogether. An arrow that starts on a
+     * frame's edge really does belong to that frame, and now that frames are
+     * emitted as groups, gluing to one makes the arrow follow it.
+     */
+    glueDistance(shape, point) {
+        const cx = shape.x + shape.width / 2;
+        const cy = shape.y + shape.height / 2;
+        const dx = Math.abs(point.x - cx) - shape.width / 2;
+        const dy = Math.abs(point.y - cy) - shape.height / 2;
+
+        if (dx <= 0 && dy <= 0) {
+            return shape.isContainer ? Math.min(-dx, -dy) : 0;
+        }
+        return Math.hypot(Math.max(0, dx), Math.max(0, dy));
+    },
+
+    findNearestShape(scene, tuning, point) {
+        const MAX_DIST = this.glueRadius(scene, tuning);
+        let best = null;
+        let bestRank = Infinity;
+        let bestDist = MAX_DIST;
+        let bestArea = Infinity;
+
+        for (let i = 0; i < scene.shapes.length; i++) {
+            const shape = scene.shapes[i];
+            const dist = this.glueDistance(shape, point);
+            if (dist >= MAX_DIST) continue;
+
+            // A box is always the better anchor, even a little further away:
+            // an arrow leaving a band of services under one of them belongs to
+            // that service, not to the band. A frame is what is left when no
+            // box is near enough - which is the only case where gluing to it
+            // beats not gluing at all.
+            const rank = shape.isContainer ? 1 : 0;
+            const area = shape.width * shape.height;
+            const closer = dist < bestDist - 0.5 ||
+                (Math.abs(dist - bestDist) <= 0.5 && area < bestArea);
+            if (rank < bestRank || (rank === bestRank && closer)) {
+                bestRank = rank;
+                bestDist = dist;
+                bestArea = area;
+                best = i;
+            }
+        }
+
+        return best;
+    }
+};
+
+</script>
+    <script>/* svg-transform.js */
+// @ts-check
+/**
+ * Affine transform maths, free of any DOM or parser state.
+ *
+ * Transforms are matrices {a,b,c,d,e,f}:
+ *   x' = a*x + c*y + e
+ *   y' = b*x + d*y + f
+ *
+ * They used to be carried as concatenated attribute strings, so only the
+ * outermost translate of a nested group ever applied and scale, rotate, skew
+ * and matrix were dropped entirely.
+ *
+ * @typedef {{a:number,b:number,c:number,d:number,e:number,f:number}} Matrix
+ */
+
+const SvgTransform = {
+    /** @type {Matrix} */
+    IDENTITY: Object.freeze({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }),
+
+
+    multiply(m1, m2) {
+        return {
+            a: m1.a * m2.a + m1.c * m2.b,
+            b: m1.b * m2.a + m1.d * m2.b,
+            c: m1.a * m2.c + m1.c * m2.d,
+            d: m1.b * m2.c + m1.d * m2.d,
+            e: m1.a * m2.e + m1.c * m2.f + m1.e,
+            f: m1.b * m2.e + m1.d * m2.f + m1.f
+        };
+    },
+
+    /** Parse a transform attribute (any number of chained functions). */
+    parseAttr(str, warn) {
+        if (!str) return null;
+        let m = null;
+        const fnRe = /([a-zA-Z]+)\s*\(([^)]*)\)/g;
+        let match;
+        while ((match = fnRe.exec(str)) !== null) {
+            const name = match[1].toLowerCase();
+            const args = match[2].trim().split(/[\s,]+/).map(parseFloat).filter(n => !isNaN(n));
+            const step = this.functionToMatrix(name, args);
+            if (!step) {
+                if (warn) warn(`transform "${name}()" is not supported and was ignored`);
+                continue;
+            }
+            m = m ? this.multiply(m, step) : step;
+        }
+        return m;
+    },
+
+    functionToMatrix(name, a) {
+        const rad = deg => deg * Math.PI / 180;
+        switch (name) {
+            case 'translate':
+                return { a: 1, b: 0, c: 0, d: 1, e: a[0] || 0, f: a[1] || 0 };
+            case 'scale': {
+                const sx = a[0] !== undefined ? a[0] : 1;
+                const sy = a[1] !== undefined ? a[1] : sx;
+                return { a: sx, b: 0, c: 0, d: sy, e: 0, f: 0 };
+            }
+            case 'rotate': {
+                const t = rad(a[0] || 0);
+                const cos = Math.cos(t), sin = Math.sin(t);
+                const rot = { a: cos, b: sin, c: -sin, d: cos, e: 0, f: 0 };
+                if (a.length < 3) return rot;
+                // rotate(angle cx cy) == translate(cx,cy) rotate(angle) translate(-cx,-cy)
+                const to = { a: 1, b: 0, c: 0, d: 1, e: a[1], f: a[2] };
+                const back = { a: 1, b: 0, c: 0, d: 1, e: -a[1], f: -a[2] };
+                return this.multiply(this.multiply(to, rot), back);
+            }
+            case 'skewx':
+                return { a: 1, b: 0, c: Math.tan(rad(a[0] || 0)), d: 1, e: 0, f: 0 };
+            case 'skewy':
+                return { a: 1, b: Math.tan(rad(a[0] || 0)), c: 0, d: 1, e: 0, f: 0 };
+            case 'matrix':
+                if (a.length < 6) return null;
+                return { a: a[0], b: a[1], c: a[2], d: a[3], e: a[4], f: a[5] };
+            default:
+                return null;
+        }
+    },
+
+    combine(parent, child, warn) {
+        const childMatrix = typeof child === 'string' ? this.parseAttr(child, warn) : child;
+        if (!parent) return childMatrix || null;
+        if (!childMatrix) return parent;
+        return this.multiply(parent, childMatrix);
+    },
+
+    apply(x, y, m) {
+        if (!m) return { x, y };
+        return {
+            x: m.a * x + m.c * y + m.e,
+            y: m.b * x + m.d * y + m.f
+        };
+    },
+
+    /** Uniform scale factor of a matrix (used for stroke widths and font sizes). */
+    scaleOf(m) {
+        if (!m) return 1;
+        const det = Math.abs(m.a * m.d - m.b * m.c);
+        return det > 0 ? Math.sqrt(det) : 1;
+    },
+
+    /**
+     * Map an axis-aligned box through a matrix. Pure translate/scale keeps it
+     * axis aligned; a rotation is reported separately so Visio can spin the
+     * shape via its Angle cell instead of distorting the geometry.
+     */
+    rect(x, y, w, h, m) {
+        if (!m) return { x, y, width: w, height: h, angle: 0 };
+
+        const centre = this.apply(x + w / 2, y + h / 2, m);
+        const sx = Math.hypot(m.a, m.b);
+        const sy = Math.hypot(m.c, m.d);
+        const width = w * sx;
+        const height = h * sy;
+        // SVG rotates clockwise (y grows downwards), Visio counter-clockwise.
+        const angle = -Math.atan2(m.b, m.a);
+
+        return {
+            x: centre.x - width / 2,
+            y: centre.y - height / 2,
+            width,
+            height,
+            angle: Math.abs(angle) < 1e-9 ? 0 : angle
+        };
+    },
+
+    /** Stroke widths and font sizes scale with the transform. */
+    scaleStyle(style, m) {
+        const s = this.scaleOf(m);
+        if (s === 1) return style;
+        return Object.assign({}, style, {
+            strokeWidth: style.strokeWidth * s,
+            fontSize: style.fontSize * s,
+            rx: style.rx * s,
+            ry: style.ry * s
+        });
+    }
+};
+
+</script>
+    <script>/* svg-style.js */
+// @ts-check
+/* global SceneModel */
+/**
+ * The SVG style cascade: presentation attributes, <style> rules and inline
+ * styles, plus inheritance down the element tree and paint-server resolution.
+ *
+ * Kept apart from the DOM walk because this is where class-styled diagrams
+ * used to lose every fill, stroke and font: only attributes and inline styles
+ * were read, so `class="box"` resolved to nothing.
+ */
+
+class SvgStyleResolver {
+    /**
+     * Presentation attributes that also exist as CSS properties.
+     * These form the lowest layer of the cascade (specificity 0).
+     */
+    static PRESENTATION_ATTRS = Object.freeze([
+        'fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-dasharray',
+        'stroke-opacity', 'stroke-linecap', 'stroke-linejoin', 'opacity',
+        'font-size', 'font-family', 'font-weight', 'font-style', 'text-anchor',
+        'rx', 'ry', 'color', 'visibility', 'stop-color'
+    ]);
+
+    /** Properties that SVG inherits from ancestor elements. */
+    static INHERITED_PROPS = Object.freeze([
+        'fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-dasharray',
+        'stroke-opacity', 'stroke-linecap', 'stroke-linejoin', 'font-size',
+        'font-family', 'font-weight', 'font-style', 'text-anchor', 'color',
+        'visibility'
+    ]);
+
+    /**
+     * @param {Element} svgEl   the root <svg>
+     * @param {(msg: string) => void} warn  conversion-caveat sink
+     */
+    constructor(svgEl, warn) {
+        this.svgEl = svgEl;
+        this.warn = warn || function () {};
+        this.cssRules = [];
+        /** @type {Object<string, Element>} */
+        this.gradients = {};
+        // resolve() walks the ancestor chain of every element, so the same
+        // ancestors get resolved over and over; cache both layers.
+        this._ownPropsCache = new Map();
+        this._ruleCache = new Map();
+
+        this.parseStyleSheet();
+        this.svgEl.querySelectorAll('linearGradient, radialGradient').forEach((g) => {
+            if (g.id) this.gradients[g.id] = g;
+        });
+    }
+
+    /** Colour of a gradient stop, from either the attribute or its style. */
+    stopColor(stop) {
+        if (!stop) return null;
+        const inline = stop.getAttribute('style');
+        if (inline) {
+            const decls = this.parseDeclarations(inline);
+            if (decls['stop-color']) return decls['stop-color'];
+        }
+        const own = this.ownProps(stop);
+        return stop.getAttribute('stop-color') || own['stop-color'] || null;
+    }
+
+    /**
+     * Visio has no gradient fill here, so a gradient is flattened to the blend
+     * of its first and last stop - far closer than the previous fallback,
+     * which turned every gradient into solid black.
+     */
+    resolveGradient(id) {
+        let g = this.gradients[id];
+        if (!g) return null;
+
+        // A gradient may inherit its stops from another one via href
+        let stops = g.querySelectorAll('stop');
+        let guard = 0;
+        while (stops.length === 0 && guard++ < 8) {
+            const href = g.getAttribute('href') || g.getAttribute('xlink:href');
+            if (!href || href[0] !== '#') break;
+            g = this.gradients[href.slice(1)];
+            if (!g) break;
+            stops = g.querySelectorAll('stop');
+        }
+        if (stops.length === 0) return null;
+
+        const first = this.stopColor(stops[0]);
+        const last = this.stopColor(stops[stops.length - 1]);
+        if (!first) return null;
+        if (!last || last === first) return first;
+
+        const mix = this.blend(first, last);
+        return mix || first;
+    }
+
+    /** Average two colours; returns null when either cannot be read as hex. */
+    blend(c1, c2) {
+        const toRgb = c => {
+            const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c.trim());
+            if (!m) return null;
+            let h = m[1];
+            if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+            return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+        };
+        const a = toRgb(c1), b = toRgb(c2);
+        if (!a || !b) return null;
+        const hex = n => Math.round(n).toString(16).padStart(2, '0');
+        return '#' + hex((a[0] + b[0]) / 2) + hex((a[1] + b[1]) / 2) + hex((a[2] + b[2]) / 2);
+    }
+
+    /** Turn a paint value into a plain colour, resolving url(#gradient). */
+    resolvePaint(value, what) {
+        if (!value) return value;
+        const url = /^url\(\s*['"]?#([^)'"\s]+)['"]?\s*\)/.exec(value.trim());
+        if (!url) return value;
+
+        const resolved = this.resolveGradient(url[1]);
+        if (resolved) {
+            this.warn(`gradient "#${url[1]}" was flattened to a single colour (${resolved})`);
+            return resolved;
+        }
+        this.warn(`${what} references "#${url[1]}" (pattern or unknown paint) and was left unpainted`);
+        return 'none';
+    }
+
+
+    /**
+     * Collect the rules of every <style> block so that class-based SVGs
+     * (.box, .fw, ...) keep their fills, strokes and fonts.
+     */
+    parseStyleSheet() {
+        this.cssRules = [];
+        this.svgEl.querySelectorAll('style').forEach(styleEl => {
+            const css = styleEl.textContent.replace(/\/\*[\s\S]*?\*\//g, '');
+            const ruleRe = /([^{}]+)\{([^{}]*)\}/g;
+            let m;
+            while ((m = ruleRe.exec(css)) !== null) {
+                const decls = this.parseDeclarations(m[2]);
+                if (Object.keys(decls).length === 0) continue;
+                for (const sel of m[1].split(',').map(x => x.trim()).filter(Boolean)) {
+                    const spec = this.selectorSpecificity(sel);
+                    if (spec === null) continue; // combinators / pseudo classes unsupported
+                    this.cssRules.push({ sel, spec, decls, order: this.cssRules.length });
+                }
+            }
+        });
+    }
+
+    parseDeclarations(text) {
+        const decls = {};
+        for (const prop of text.split(';')) {
+            const idx = prop.indexOf(':');
+            if (idx < 0) continue;
+            const key = prop.slice(0, idx).trim().toLowerCase();
+            const val = prop.slice(idx + 1).trim();
+            if (key && val) decls[key] = val;
+        }
+        return decls;
+    }
+
+    /** Specificity of a simple compound selector, or null when unsupported. */
+    selectorSpecificity(sel) {
+        if (/[\s>+~:[\]*]/.test(sel)) return null;
+        const ids = (sel.match(/#[\w-]+/g) || []).length;
+        const classes = (sel.match(/\.[\w-]+/g) || []).length;
+        const tag = /^[a-zA-Z]/.test(sel) ? 1 : 0;
+        return ids * 10000 + classes * 100 + tag;
+    }
+
+    selectorMatches(sel, el) {
+        const tagPart = sel.match(/^[a-zA-Z][\w-]*/);
+        if (tagPart && el.tagName.toLowerCase() !== tagPart[0].toLowerCase()) return false;
+        for (const id of sel.match(/#[\w-]+/g) || []) {
+            if (el.getAttribute('id') !== id.slice(1)) return false;
+        }
+        const classAttr = (el.getAttribute('class') || '').split(/\s+/);
+        for (const cls of sel.match(/\.[\w-]+/g) || []) {
+            if (classAttr.indexOf(cls.slice(1)) === -1) return false;
+        }
+        return true;
+    }
+
+    /**
+     * CSS cascade for a single element:
+     * presentation attributes < stylesheet rules (by specificity) < inline style.
+     */
+    ownProps(el) {
+        const cached = this._ownPropsCache.get(el);
+        if (cached) return cached;
+
+        const props = {};
+        for (const name of SvgStyleResolver.PRESENTATION_ATTRS) {
+            const v = el.getAttribute(name);
+            if (v !== null && v !== '') props[name] = v;
+        }
+        for (const r of this.matchingRules(el)) Object.assign(props, r.decls);
+
+        const inline = el.getAttribute('style');
+        if (inline) Object.assign(props, this.parseDeclarations(inline));
+
+        this._ownPropsCache.set(el, props);
+        return props;
+    }
+
+    /**
+     * Stylesheet rules that apply to an element, weakest first. Elements that
+     * share a tag/class/id share the answer, so this is resolved once per
+     * distinct selector target rather than once per element.
+     */
+    matchingRules(el) {
+        const rules = this.cssRules || [];
+        if (rules.length === 0) return rules;
+
+        const key = el.tagName.toLowerCase() + '|' +
+                    (el.getAttribute('class') || '') + '|' +
+                    (el.getAttribute('id') || '');
+        let matched = this._ruleCache.get(key);
+        if (!matched) {
+            matched = rules
+                .filter(r => this.selectorMatches(r.sel, el))
+                .sort((a, b) => (a.spec - b.spec) || (a.order - b.order));
+            this._ruleCache.set(key, matched);
+        }
+        return matched;
+    }
+
+    resolve(el) {
+        // Ancestor chain (root first) so inherited properties resolve correctly.
+        const chain = [];
+        let node = el;
+        while (node && node.nodeType === 1) {
+            chain.unshift(node);
+            if (node === this.svgEl) break;
+            node = node.parentNode;
+        }
+
+        const props = {};
+        for (let i = 0; i < chain.length; i++) {
+            const own = this.ownProps(chain[i]);
+            if (i === chain.length - 1) {
+                Object.assign(props, own);
+            } else {
+                for (const key of SvgStyleResolver.INHERITED_PROPS) {
+                    if (own[key] !== undefined) props[key] = own[key];
+                }
+            }
+        }
+
+        const num = (v, fallback) => {
+            const n = parseFloat(v);
+            return isNaN(n) ? fallback : n;
+        };
+        const dash = props['stroke-dasharray'];
+
+        return Object.assign(SceneModel.defaultStyle(), {
+            fill: this.resolvePaint(props['fill'] !== undefined ? props['fill'] : 'none', 'fill'),
+            fillOpacity: num(props['fill-opacity'], 1),
+            stroke: this.resolvePaint(props['stroke'] !== undefined ? props['stroke'] : 'none', 'stroke'),
+            strokeWidth: num(props['stroke-width'], 1),
+            strokeOpacity: num(props['stroke-opacity'], 1),
+            strokeDasharray: (dash && dash !== 'none') ? dash : null,
+            fontSize: num(props['font-size'], 14),
+            fontFamily: props['font-family'] || 'Calibri',
+            fontWeight: props['font-weight'] || 'normal',
+            // SVG default is "start" - "middle" silently re-centres every left-aligned label.
+            textAnchor: props['text-anchor'] || 'start',
+            opacity: num(props['opacity'], 1),
+            rx: num(props['rx'], 0),
+            ry: num(props['ry'], 0)
+        });
+    }
+}
+
+</script>
     <script>/* svg-parser.js */
+// @ts-check
+/* global SceneModel, SceneLayout, SvgTransform, SvgStyleResolver */
 /**
  * SVG Parser - Extracts shapes, connectors, and text from Claude-generated SVGs.
  *
@@ -228,6 +1346,23 @@ class SvgParser {
         this.connectors = [];
         this.texts = [];
         this.defs = {};
+        this.idMap = {};
+        this.warnings = [];
+        this._warned = new Set();
+        /** @type {SvgStyleResolver} */
+        this.style = null;
+    }
+
+    /** Combine a parent matrix with a child transform attribute. */
+    _combine(parent, child) {
+        return SvgTransform.combine(parent, child, (msg) => this._warn(msg));
+    }
+
+    /** Record a conversion caveat once, so the UI can surface what was dropped. */
+    _warn(message) {
+        if (this._warned.has(message)) return;
+        this._warned.add(message);
+        this.warnings.push(message);
     }
 
     parse() {
@@ -243,17 +1378,21 @@ class SvgParser {
         }
 
         this._parseViewBox();
+        this.style = new SvgStyleResolver(this.svgEl, (msg) => this._warn(msg));
         this._parseDefs();
         this._parseElements(this.svgEl, null);
-        this._associateTextsWithShapes();
-        this._detectConnectors();
 
-        return {
+        const scene = SceneModel.normalise({
+            warnings: this.warnings,
             viewBox: this.viewBox,
             shapes: this.shapes,
             connectors: this.connectors,
             texts: this.texts
-        };
+        });
+
+        // Container detection, label assignment and connector gluing are not
+        // SVG-specific, so they run on the scene for every input format.
+        return SceneLayout.apply(scene);
     }
 
     _parseViewBox() {
@@ -274,174 +1413,146 @@ class SvgParser {
     }
 
     _parseDefs() {
-        const defs = this.svgEl.querySelector('defs');
-        if (!defs) return;
+        // Markers (arrowheads) - only their existence matters for conversion
+        this.svgEl.querySelectorAll('marker').forEach(marker => {
+            if (marker.id) this.defs[marker.id] = { type: 'marker', id: marker.id };
+        });
 
-        // Parse markers (arrowheads)
-        defs.querySelectorAll('marker').forEach(marker => {
-            this.defs[marker.id] = {
-                type: 'marker',
-                id: marker.id
-            };
+        // Index every id once so <use> can resolve references cheaply
+        this.svgEl.querySelectorAll('[id]').forEach(el => {
+            const id = el.getAttribute('id');
+            if (id && !this.idMap[id]) this.idMap[id] = el;
         });
     }
 
-    _parseElements(parent, groupTransform) {
+
+    _parseElements(parent, groupTransform, depth) {
+        depth = depth || 0;
         for (const el of parent.children) {
             const tag = el.tagName.toLowerCase();
 
-            if (tag === 'defs' || tag === 'style' || tag === 'title' || tag === 'desc') continue;
-
-            if (tag === 'g') {
-                const transform = this._combineTransform(groupTransform, el.getAttribute('transform'));
-                this._parseElements(el, transform);
+            if (tag === 'defs' || tag === 'style' || tag === 'title' || tag === 'desc' ||
+                tag === 'metadata' || tag === 'marker' || tag === 'lineargradient' ||
+                tag === 'radialgradient' || tag === 'pattern' || tag === 'clippath' ||
+                tag === 'mask' || tag === 'filter' || tag === 'symbol' || tag === 'script') {
                 continue;
             }
 
-            const style = this._extractStyle(el);
-
-            switch (tag) {
-                case 'rect':
-                    this._parseRect(el, style, groupTransform);
-                    break;
-                case 'circle':
-                    this._parseCircle(el, style, groupTransform);
-                    break;
-                case 'ellipse':
-                    this._parseEllipse(el, style, groupTransform);
-                    break;
-                case 'polygon':
-                    this._parsePolygon(el, style, groupTransform);
-                    break;
-                case 'line':
-                    this._parseLine(el, style, groupTransform);
-                    break;
-                case 'polyline':
-                    this._parsePolyline(el, style, groupTransform);
-                    break;
-                case 'path':
-                    this._parsePath(el, style, groupTransform);
-                    break;
-                case 'text':
-                    this._parseText(el, style, groupTransform);
-                    break;
+            if (tag === 'g' || tag === 'a' || tag === 'switch') {
+                if (tag === 'switch') this._warn('<switch> was flattened - every branch was converted');
+                const transform = this._combine(groupTransform, el.getAttribute('transform'));
+                this._parseElements(el, transform, depth);
+                continue;
             }
-        }
-    }
 
-    _extractStyle(el) {
-        const style = {
-            fill: 'none',
-            fillOpacity: 1,
-            stroke: 'none',
-            strokeWidth: 1,
-            strokeDasharray: null,
-            fontSize: 14,
-            fontFamily: 'Calibri',
-            fontWeight: 'normal',
-            textAnchor: 'middle',
-            opacity: 1,
-            rx: 0,
-            ry: 0
-        };
-
-        // Read from attributes
-        const fillAttr = el.getAttribute('fill');
-        if (fillAttr) style.fill = fillAttr;
-
-        const strokeAttr = el.getAttribute('stroke');
-        if (strokeAttr) style.stroke = strokeAttr;
-
-        const strokeWidthAttr = el.getAttribute('stroke-width');
-        if (strokeWidthAttr) style.strokeWidth = parseFloat(strokeWidthAttr);
-
-        const strokeDashAttr = el.getAttribute('stroke-dasharray');
-        if (strokeDashAttr) style.strokeDasharray = strokeDashAttr;
-
-        const opacityAttr = el.getAttribute('opacity');
-        if (opacityAttr) style.opacity = parseFloat(opacityAttr);
-
-        const fillOpacityAttr = el.getAttribute('fill-opacity');
-        if (fillOpacityAttr) style.fillOpacity = parseFloat(fillOpacityAttr);
-
-        const fontSizeAttr = el.getAttribute('font-size');
-        if (fontSizeAttr) style.fontSize = parseFloat(fontSizeAttr);
-
-        const fontFamilyAttr = el.getAttribute('font-family');
-        if (fontFamilyAttr) style.fontFamily = fontFamilyAttr;
-
-        const fontWeightAttr = el.getAttribute('font-weight');
-        if (fontWeightAttr) style.fontWeight = fontWeightAttr;
-
-        const textAnchorAttr = el.getAttribute('text-anchor');
-        if (textAnchorAttr) style.textAnchor = textAnchorAttr;
-
-        const rxAttr = el.getAttribute('rx');
-        if (rxAttr) style.rx = parseFloat(rxAttr);
-
-        const ryAttr = el.getAttribute('ry');
-        if (ryAttr) style.ry = parseFloat(ryAttr);
-
-        // Override with inline style attribute
-        const inlineStyle = el.getAttribute('style');
-        if (inlineStyle) {
-            const props = inlineStyle.split(';');
-            for (const prop of props) {
-                const [key, val] = prop.split(':').map(s => s.trim());
-                if (!key || !val) continue;
-                switch (key) {
-                    case 'fill': style.fill = val; break;
-                    case 'stroke': style.stroke = val; break;
-                    case 'stroke-width': style.strokeWidth = parseFloat(val); break;
-                    case 'stroke-dasharray': style.strokeDasharray = val; break;
-                    case 'opacity': style.opacity = parseFloat(val); break;
-                    case 'fill-opacity': style.fillOpacity = parseFloat(val); break;
-                    case 'font-size': style.fontSize = parseFloat(val); break;
-                    case 'font-family': style.fontFamily = val; break;
-                    case 'font-weight': style.fontWeight = val; break;
-                    case 'text-anchor': style.textAnchor = val; break;
-                }
+            if (tag === 'use') {
+                this._parseUse(el, groupTransform, depth);
+                continue;
             }
+
+            if (el.getAttribute('clip-path') || el.getAttribute('mask') || el.getAttribute('filter')) {
+                this._warn('clip-path / mask / filter are ignored - shapes are converted unclipped');
+            }
+
+            const transform = this._combine(groupTransform, el.getAttribute('transform'));
+            const style = SvgTransform.scaleStyle(this.style.resolve(el), transform);
+            this._dispatchElement(tag, el, style, transform);
+        }
+    }
+
+    _dispatchElement(tag, el, style, transform) {
+        switch (tag) {
+            case 'rect':
+                this._parseRect(el, style, transform);
+                break;
+            case 'circle':
+                this._parseCircle(el, style, transform);
+                break;
+            case 'ellipse':
+                this._parseEllipse(el, style, transform);
+                break;
+            case 'polygon':
+                this._parsePolygon(el, style, transform);
+                break;
+            case 'line':
+                this._parseLine(el, style, transform);
+                break;
+            case 'polyline':
+                this._parsePolyline(el, style, transform);
+                break;
+            case 'path':
+                this._parsePath(el, style, transform);
+                break;
+            case 'text':
+                this._parseText(el, style, transform);
+                break;
+            case 'image':
+                this._warn('<image> was skipped - embedded bitmaps are not converted');
+                break;
+            case 'foreignobject':
+                this._warn('<foreignObject> was skipped - embedded HTML is not converted');
+                break;
+            default:
+                this._warn(`<${tag}> is not supported and was skipped`);
+        }
+    }
+
+    /** Expand <use> by converting the element it references. */
+    _parseUse(el, groupTransform, depth) {
+        if (depth >= 8) {
+            this._warn('<use> references nest too deeply and were not expanded');
+            return;
         }
 
-        return style;
-    }
-
-    _combineTransform(parent, child) {
-        if (!parent && !child) return null;
-        if (!child) return parent;
-        if (!parent) return child;
-        return parent + ' ' + child;
-    }
-
-    _applyTransform(x, y, transform) {
-        if (!transform) return { x, y };
-
-        const translateMatch = transform.match(/translate\(\s*([^,\s]+)[\s,]*([^)]*)\)/);
-        if (translateMatch) {
-            x += parseFloat(translateMatch[1]);
-            y += parseFloat(translateMatch[2] || 0);
+        const href = el.getAttribute('href') || el.getAttribute('xlink:href');
+        if (!href || href[0] !== '#') {
+            this._warn('<use> without a local #reference was skipped');
+            return;
         }
 
-        return { x, y };
+        const target = this.idMap[href.slice(1)];
+        if (!target) {
+            this._warn(`<use> references "${href}", which does not exist in this file`);
+            return;
+        }
+
+        let transform = this._combine(groupTransform, el.getAttribute('transform'));
+        const x = parseFloat(el.getAttribute('x') || 0);
+        const y = parseFloat(el.getAttribute('y') || 0);
+        if (x || y) {
+            transform = this._combine(transform, { a: 1, b: 0, c: 0, d: 1, e: x, f: y });
+        }
+
+        const tag = target.tagName.toLowerCase();
+        if (tag === 'g' || tag === 'symbol' || tag === 'svg') {
+            const inner = this._combine(transform, target.getAttribute('transform'));
+            this._parseElements(target, inner, depth + 1);
+            return;
+        }
+
+        const inner = this._combine(transform, target.getAttribute('transform'));
+        const style = SvgTransform.scaleStyle(this.style.resolve(target), inner);
+        this._dispatchElement(tag, target, style, inner);
     }
+
 
     _parseRect(el, style, transform) {
-        let x = parseFloat(el.getAttribute('x') || 0);
-        let y = parseFloat(el.getAttribute('y') || 0);
+        const x = parseFloat(el.getAttribute('x') || 0);
+        const y = parseFloat(el.getAttribute('y') || 0);
         const w = parseFloat(el.getAttribute('width') || 0);
         const h = parseFloat(el.getAttribute('height') || 0);
 
         if (w === 0 || h === 0) return;
 
-        const pos = this._applyTransform(x, y, transform);
+        const box = SvgTransform.rect(x, y, w, h, transform);
 
         this.shapes.push({
             type: 'rect',
-            x: pos.x,
-            y: pos.y,
-            width: w,
-            height: h,
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+            angle: box.angle,
             style,
             id: el.id || null,
             text: null
@@ -449,23 +1560,24 @@ class SvgParser {
     }
 
     _parseCircle(el, style, transform) {
-        let cx = parseFloat(el.getAttribute('cx') || 0);
-        let cy = parseFloat(el.getAttribute('cy') || 0);
+        const cx = parseFloat(el.getAttribute('cx') || 0);
+        const cy = parseFloat(el.getAttribute('cy') || 0);
         const r = parseFloat(el.getAttribute('r') || 0);
 
         if (r === 0) return;
 
-        const pos = this._applyTransform(cx, cy, transform);
+        const box = SvgTransform.rect(cx - r, cy - r, r * 2, r * 2, transform);
 
         this.shapes.push({
             type: 'circle',
-            x: pos.x - r,
-            y: pos.y - r,
-            width: r * 2,
-            height: r * 2,
-            cx: pos.x,
-            cy: pos.y,
-            r,
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+            angle: box.angle,
+            cx: box.x + box.width / 2,
+            cy: box.y + box.height / 2,
+            r: box.width / 2,
             style,
             id: el.id || null,
             text: null
@@ -473,21 +1585,22 @@ class SvgParser {
     }
 
     _parseEllipse(el, style, transform) {
-        let cx = parseFloat(el.getAttribute('cx') || 0);
-        let cy = parseFloat(el.getAttribute('cy') || 0);
+        const cx = parseFloat(el.getAttribute('cx') || 0);
+        const cy = parseFloat(el.getAttribute('cy') || 0);
         const rx = parseFloat(el.getAttribute('rx') || 0);
         const ry = parseFloat(el.getAttribute('ry') || 0);
 
         if (rx === 0 || ry === 0) return;
 
-        const pos = this._applyTransform(cx, cy, transform);
+        const box = SvgTransform.rect(cx - rx, cy - ry, rx * 2, ry * 2, transform);
 
         this.shapes.push({
             type: 'ellipse',
-            x: pos.x - rx,
-            y: pos.y - ry,
-            width: rx * 2,
-            height: ry * 2,
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+            angle: box.angle,
             style,
             id: el.id || null,
             text: null
@@ -503,7 +1616,7 @@ class SvgParser {
 
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         for (const p of points) {
-            const tp = this._applyTransform(p.x, p.y, transform);
+            const tp = SvgTransform.apply(p.x, p.y, transform);
             minX = Math.min(minX, tp.x);
             minY = Math.min(minY, tp.y);
             maxX = Math.max(maxX, tp.x);
@@ -519,7 +1632,7 @@ class SvgParser {
             y: minY,
             width: maxX - minX,
             height: maxY - minY,
-            points: points.map(p => this._applyTransform(p.x, p.y, transform)),
+            points: points.map(p => SvgTransform.apply(p.x, p.y, transform)),
             style,
             id: el.id || null,
             text: null
@@ -544,20 +1657,21 @@ class SvgParser {
     }
 
     _parseLine(el, style, transform) {
-        let x1 = parseFloat(el.getAttribute('x1') || 0);
-        let y1 = parseFloat(el.getAttribute('y1') || 0);
-        let x2 = parseFloat(el.getAttribute('x2') || 0);
-        let y2 = parseFloat(el.getAttribute('y2') || 0);
+        const x1 = parseFloat(el.getAttribute('x1') || 0);
+        const y1 = parseFloat(el.getAttribute('y1') || 0);
+        const x2 = parseFloat(el.getAttribute('x2') || 0);
+        const y2 = parseFloat(el.getAttribute('y2') || 0);
 
-        const p1 = this._applyTransform(x1, y1, transform);
-        const p2 = this._applyTransform(x2, y2, transform);
+        const p1 = SvgTransform.apply(x1, y1, transform);
+        const p2 = SvgTransform.apply(x2, y2, transform);
 
-        const hasArrow = this._hasArrowMarker(el);
+        const arrows = this._arrowMarkers(el);
 
         this.connectors.push({
             type: 'line',
             points: [p1, p2],
-            hasArrow,
+            arrowStart: arrows.start,
+            arrowEnd: arrows.end,
             style,
             id: el.id || null,
             text: null
@@ -569,17 +1683,18 @@ class SvgParser {
         if (!pointsStr) return;
 
         const points = this._parsePointsString(pointsStr).map(p =>
-            this._applyTransform(p.x, p.y, transform)
+            SvgTransform.apply(p.x, p.y, transform)
         );
 
         if (points.length < 2) return;
 
-        const hasArrow = this._hasArrowMarker(el);
+        const arrows = this._arrowMarkers(el);
 
         this.connectors.push({
             type: 'polyline',
             points,
-            hasArrow,
+            arrowStart: arrows.start,
+            arrowEnd: arrows.end,
             style,
             id: el.id || null,
             text: null
@@ -590,7 +1705,9 @@ class SvgParser {
         const d = el.getAttribute('d');
         if (!d) return;
 
-        const hasArrow = this._hasArrowMarker(el);
+        const arrows = this._arrowMarkers(el);
+        // An arrowhead is a strong hint that a path is a connector, not a shape
+        const hasArrow = arrows.start || arrows.end;
         const points = this._pathToPoints(d, transform);
 
         if (points.length < 2) return;
@@ -606,7 +1723,8 @@ class SvgParser {
             this.connectors.push({
                 type: 'path',
                 points,
-                hasArrow,
+                arrowStart: arrows.start,
+                arrowEnd: arrows.end,
                 style,
                 d,
                 id: el.id || null,
@@ -638,7 +1756,8 @@ class SvgParser {
             this.connectors.push({
                 type: 'path',
                 points,
-                hasArrow,
+                arrowStart: arrows.start,
+                arrowEnd: arrows.end,
                 style,
                 d,
                 id: el.id || null,
@@ -647,50 +1766,104 @@ class SvgParser {
         }
     }
 
+    /** Nearest xml:space declaration, walking up to the root. */
+    _xmlSpacePreserved(el) {
+        let node = el;
+        while (node && node.nodeType === 1) {
+            const v = node.getAttribute('xml:space');
+            if (v) return v === 'preserve';
+            if (node === this.svgEl) break;
+            node = node.parentNode;
+        }
+        return false;
+    }
+
     _parseText(el, style, transform) {
-        let x = parseFloat(el.getAttribute('x') || 0);
-        let y = parseFloat(el.getAttribute('y') || 0);
-
-        const pos = this._applyTransform(x, y, transform);
-
-        // Collect text from child <tspan> elements or direct text
-        let textContent = '';
-        const tspans = el.querySelectorAll('tspan');
-        if (tspans.length > 0) {
-            const lines = [];
-            tspans.forEach(ts => {
-                lines.push(ts.textContent.trim());
-            });
-            textContent = lines.join('\n');
-        } else {
-            textContent = el.textContent.trim();
+        if (el.querySelector('textPath')) {
+            this._warn('<textPath> is not supported - the text was placed at its anchor instead');
         }
 
-        if (!textContent) return;
+        const baseX = parseFloat(el.getAttribute('x') || 0);
+        const baseY = parseFloat(el.getAttribute('y') || 0);
 
-        // Read font styles from text element specifically
-        const fontSizeAttr = el.getAttribute('font-size');
-        if (fontSizeAttr) style.fontSize = parseFloat(fontSizeAttr);
+        // Walk the children rather than collecting every <tspan> at once: a
+        // tspan carrying its own x/y is a new line at a new position, and the
+        // bare text before it must not be thrown away.
+        const pieces = [];
+        let cur = { x: baseX, y: baseY, style, parts: [] };
 
-        const fontWeightAttr = el.getAttribute('font-weight');
-        if (fontWeightAttr) style.fontWeight = fontWeightAttr;
+        // SVG collapses runs of whitespace unless xml:space="preserve"
+        const preserve = this._xmlSpacePreserved(el);
 
-        const fillAttr = el.getAttribute('fill');
-        if (fillAttr) style.textColor = fillAttr;
+        const flush = () => {
+            const raw = cur.parts.join('');
+            const text = preserve ? raw.replace(/[\n\r\t]/g, ' ') : raw.replace(/\s+/g, ' ').trim();
+            if (text) pieces.push({ x: cur.x, y: cur.y, style: cur.style, text });
+            cur = { x: cur.x, y: cur.y, style: cur.style, parts: [] };
+        };
 
-        this.texts.push({
-            x: pos.x,
-            y: pos.y,
-            text: textContent,
-            style,
-            id: el.id || null
-        });
+        for (const node of el.childNodes) {
+            if (node.nodeType === 3) {           // text node
+                cur.parts.push(node.textContent);
+                continue;
+            }
+            if (node.nodeType !== 1) continue;
+
+            if (node.tagName.toLowerCase() !== 'tspan') {
+                cur.parts.push(node.textContent);
+                continue;
+            }
+
+            const hasOwnPos = node.hasAttribute('x') || node.hasAttribute('y') ||
+                              node.hasAttribute('dx') || node.hasAttribute('dy');
+            const spanStyle = SvgTransform.scaleStyle(this.style.resolve(node), transform);
+
+            if (!hasOwnPos) {
+                cur.parts.push(node.textContent);
+                continue;
+            }
+
+            flush();
+            const nx = node.hasAttribute('x') ? parseFloat(node.getAttribute('x'))
+                     : cur.x + parseFloat(node.getAttribute('dx') || 0);
+            const ny = node.hasAttribute('y') ? parseFloat(node.getAttribute('y'))
+                     : cur.y + parseFloat(node.getAttribute('dy') || 0);
+            cur = { x: nx, y: ny, style: spanStyle, parts: [node.textContent] };
+            flush();
+        }
+        flush();
+
+        for (const piece of pieces) {
+            const pos = SvgTransform.apply(piece.x, piece.y, transform);
+            const st = Object.assign({}, piece.style);
+            // Text is painted with `fill`; SVG's default text colour is black.
+            st.textColor = (st.fill && st.fill !== 'none') ? st.fill : '#000000';
+
+            this.texts.push({
+                x: pos.x,
+                y: pos.y,
+                text: piece.text,
+                style: st,
+                id: el.id || null
+            });
+        }
+    }
+
+    /**
+     * Which ends carry an arrowhead. Reporting only "has an arrow" put the
+     * head on the wrong end for marker-start, and lost one head on a
+     * double-headed connector.
+     */
+    _arrowMarkers(el) {
+        return {
+            start: !!el.getAttribute('marker-start'),
+            end: !!el.getAttribute('marker-end')
+        };
     }
 
     _hasArrowMarker(el) {
-        const markerEnd = el.getAttribute('marker-end');
-        const markerStart = el.getAttribute('marker-start');
-        return !!(markerEnd || markerStart);
+        const m = this._arrowMarkers(el);
+        return m.start || m.end;
     }
 
     _parsePointsString(str) {
@@ -721,7 +1894,7 @@ class SvgParser {
                     for (let i = 0; i < nums.length; i += 2) {
                         curX = nums[i]; curY = nums[i + 1];
                         startX = curX; startY = curY;
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
@@ -729,49 +1902,49 @@ class SvgParser {
                     for (let i = 0; i < nums.length; i += 2) {
                         curX += nums[i]; curY += nums[i + 1];
                         if (i === 0) { startX = curX; startY = curY; }
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
                 case 'L':
                     for (let i = 0; i < nums.length; i += 2) {
                         curX = nums[i]; curY = nums[i + 1];
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
                 case 'l':
                     for (let i = 0; i < nums.length; i += 2) {
                         curX += nums[i]; curY += nums[i + 1];
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
                 case 'H':
                     for (const n of nums) {
                         curX = n;
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
                 case 'h':
                     for (const n of nums) {
                         curX += n;
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
                 case 'V':
                     for (const n of nums) {
                         curY = n;
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
                 case 'v':
                     for (const n of nums) {
                         curY += n;
-                        const p = this._applyTransform(curX, curY, transform);
+                        const p = SvgTransform.apply(curX, curY, transform);
                         points.push(p);
                     }
                     break;
@@ -782,10 +1955,10 @@ class SvgParser {
                             // Add control points for curve approximation
                             const midX = (curX + nums[i + 4]) / 2;
                             const midY = (curY + nums[i + 5]) / 2;
-                            const mp = this._applyTransform(midX, midY, transform);
+                            const mp = SvgTransform.apply(midX, midY, transform);
                             points.push(mp);
                             curX = nums[i + 4]; curY = nums[i + 5];
-                            const p = this._applyTransform(curX, curY, transform);
+                            const p = SvgTransform.apply(curX, curY, transform);
                             points.push(p);
                         }
                     }
@@ -795,10 +1968,10 @@ class SvgParser {
                         if (i + 5 < nums.length) {
                             const midX = curX + nums[i + 4] / 2;
                             const midY = curY + nums[i + 5] / 2;
-                            const mp = this._applyTransform(midX, midY, transform);
+                            const mp = SvgTransform.apply(midX, midY, transform);
                             points.push(mp);
                             curX += nums[i + 4]; curY += nums[i + 5];
-                            const p = this._applyTransform(curX, curY, transform);
+                            const p = SvgTransform.apply(curX, curY, transform);
                             points.push(p);
                         }
                     }
@@ -807,7 +1980,7 @@ class SvgParser {
                     for (let i = 0; i < nums.length; i += 4) {
                         if (i + 3 < nums.length) {
                             curX = nums[i + 2]; curY = nums[i + 3];
-                            const p = this._applyTransform(curX, curY, transform);
+                            const p = SvgTransform.apply(curX, curY, transform);
                             points.push(p);
                         }
                     }
@@ -816,7 +1989,7 @@ class SvgParser {
                     for (let i = 0; i < nums.length; i += 4) {
                         if (i + 3 < nums.length) {
                             curX += nums[i + 2]; curY += nums[i + 3];
-                            const p = this._applyTransform(curX, curY, transform);
+                            const p = SvgTransform.apply(curX, curY, transform);
                             points.push(p);
                         }
                     }
@@ -830,7 +2003,7 @@ class SvgParser {
                             } else {
                                 curX = nums[i + 5]; curY = nums[i + 6];
                             }
-                            const p = this._applyTransform(curX, curY, transform);
+                            const p = SvgTransform.apply(curX, curY, transform);
                             points.push(p);
                         }
                     }
@@ -844,86 +2017,13 @@ class SvgParser {
         return points;
     }
 
-    _associateTextsWithShapes() {
-        // Try to associate each text with the nearest shape that contains it
-        for (const text of this.texts) {
-            let bestShape = null;
-            let bestDist = Infinity;
-
-            for (const shape of this.shapes) {
-                const cx = shape.x + shape.width / 2;
-                const cy = shape.y + shape.height / 2;
-
-                // Check if text is inside or near the shape
-                const inside = text.x >= shape.x - 10 && text.x <= shape.x + shape.width + 10 &&
-                               text.y >= shape.y - 10 && text.y <= shape.y + shape.height + 10;
-
-                if (inside) {
-                    const dist = Math.hypot(text.x - cx, text.y - cy);
-                    if (dist < bestDist) {
-                        bestDist = dist;
-                        bestShape = shape;
-                    }
-                }
-            }
-
-            if (bestShape) {
-                // Append text if shape already has text
-                if (bestShape.text) {
-                    bestShape.text += '\n' + text.text;
-                } else {
-                    bestShape.text = text.text;
-                }
-                bestShape.textStyle = text.style;
-                text._associated = true;
-            }
-        }
-
-        // Keep unassociated texts as standalone text shapes
-        this.texts = this.texts.filter(t => !t._associated);
-    }
-
-    _detectConnectors() {
-        // Try to detect which shapes connectors connect to
-        for (const conn of this.connectors) {
-            if (conn.points.length < 2) continue;
-
-            const startPt = conn.points[0];
-            const endPt = conn.points[conn.points.length - 1];
-
-            conn.fromShape = this._findNearestShape(startPt);
-            conn.toShape = this._findNearestShape(endPt);
-        }
-    }
-
-    _findNearestShape(point) {
-        let best = null;
-        let bestDist = 30; // Max distance threshold
-
-        for (let i = 0; i < this.shapes.length; i++) {
-            const shape = this.shapes[i];
-            const cx = shape.x + shape.width / 2;
-            const cy = shape.y + shape.height / 2;
-
-            // Distance to shape edge
-            const dx = Math.max(0, Math.abs(point.x - cx) - shape.width / 2);
-            const dy = Math.max(0, Math.abs(point.y - cy) - shape.height / 2);
-            const dist = Math.hypot(dx, dy);
-
-            if (dist < bestDist) {
-                bestDist = dist;
-                best = i;
-            }
-        }
-
-        return best;
-    }
 
     getStats() {
         return {
             shapes: this.shapes.length,
             connectors: this.connectors.length,
             texts: this.texts.length,
+            warnings: this.warnings,
             viewBox: this.viewBox
         };
     }
@@ -931,6 +2031,8 @@ class SvgParser {
 
 </script>
     <script>/* drawio-parser.js */
+// @ts-check
+/* global SceneModel, SceneLayout */
 /**
  * Draw.io Parser - Extracts shapes, connectors, and text from Draw.io XML files.
  *
@@ -950,13 +2052,15 @@ class DrawioParser {
         this.shapes = [];
         this.connectors = [];
         this.texts = [];
+        /** @type {string[]} */
+        this.warnings = [];
 
         // Maps Draw.io cell IDs to shape indices in this.shapes
         this.cellIdToShapeIndex = {};
     }
 
     parse() {
-        let xmlContent = this.xmlString;
+        const xmlContent = this.xmlString;
 
         // Handle <mxfile> wrapper — may contain compressed or raw <mxGraphModel>
         const doc = this.parser.parseFromString(xmlContent, 'text/xml');
@@ -987,12 +2091,18 @@ class DrawioParser {
 
         this._parseGraphModel(graphModel);
 
-        return {
+        const scene = SceneModel.normalise({
+            warnings: this.warnings,
             viewBox: this.viewBox,
             shapes: this.shapes,
             connectors: this.connectors,
             texts: this.texts
-        };
+        });
+
+        // Draw.io carries its own containment and edge information, so only
+        // the parts it does not express are derived here. Running the same
+        // stage as the SVG path keeps both formats behaving alike.
+        return SceneLayout.apply(scene);
     }
 
     getStats() {
@@ -1000,6 +2110,7 @@ class DrawioParser {
             shapes: this.shapes.length,
             connectors: this.connectors.length,
             texts: this.texts.length,
+            warnings: this.warnings,
             viewBox: this.viewBox
         };
     }
@@ -1182,10 +2293,10 @@ class DrawioParser {
         const strokeWidth = parseFloat(style['strokeWidth']) || 1;
         const dashed = style['dashed'] === '1';
 
-        // Detect arrows
-        const endArrow = style['endArrow'] || 'classic';
-        const startArrow = style['startArrow'] || 'none';
-        const hasArrow = endArrow !== 'none' && endArrow !== '0';
+        // Detect arrows. Draw.io defaults to a head at the target end only.
+        const isArrow = (v) => !!v && v !== 'none' && v !== '0';
+        const arrowEnd = isArrow(style['endArrow'] || 'classic');
+        const arrowStart = isArrow(style['startArrow']);
 
         const fromShape = sourceId != null ? (this.cellIdToShapeIndex[sourceId] ?? null) : null;
         const toShape = targetId != null ? (this.cellIdToShapeIndex[targetId] ?? null) : null;
@@ -1193,7 +2304,8 @@ class DrawioParser {
         this.connectors.push({
             type: 'line',
             points: points,
-            hasArrow: hasArrow,
+            arrowStart: arrowStart,
+            arrowEnd: arrowEnd,
             style: {
                 stroke: strokeColor,
                 strokeWidth: strokeWidth,
@@ -1213,6 +2325,7 @@ class DrawioParser {
                 x: midPt.x,
                 y: midPt.y,
                 text: text,
+                standalone: true,
                 style: {
                     fontSize: parseFloat(style['fontSize']) || 11,
                     textColor: style['fontColor'] || '#000000',
@@ -1223,30 +2336,30 @@ class DrawioParser {
         }
     }
 
+    /**
+     * Where a line from the box centre toward `toward` hits the rectangle.
+     * Centres make Visio draw the connector through the shape.
+     */
+    _boxEdgePoint(shape, toward) {
+        const cx = shape.x + shape.width / 2;
+        const cy = shape.y + shape.height / 2;
+        const dx = toward.x - cx;
+        const dy = toward.y - cy;
+        if (dx === 0 && dy === 0) return { x: cx, y: cy };
+        const tx = dx === 0 ? Infinity : (shape.width / 2) / Math.abs(dx);
+        const ty = dy === 0 ? Infinity : (shape.height / 2) / Math.abs(dy);
+        const t = Math.min(tx, ty);
+        return { x: cx + dx * t, y: cy + dy * t };
+    }
+
     _getEdgePoints(cell, sourceId, targetId) {
-        const points = [];
         const geom = cell.querySelector('mxGeometry');
-
-        // Source point
-        if (sourceId && this.cellIdToShapeIndex[sourceId] !== undefined) {
-            const shape = this.shapes[this.cellIdToShapeIndex[sourceId]];
-            points.push({ x: shape.x + shape.width / 2, y: shape.y + shape.height / 2 });
-        } else if (geom) {
-            const srcPt = geom.querySelector('mxPoint[as="sourcePoint"]');
-            if (srcPt) {
-                points.push({
-                    x: parseFloat(srcPt.getAttribute('x')) || 0,
-                    y: parseFloat(srcPt.getAttribute('y')) || 0
-                });
-            }
-        }
-
-        // Intermediate waypoints
+        const waypoints = [];
         if (geom) {
-            const waypoints = geom.querySelector('Array[as="points"]');
-            if (waypoints) {
-                for (const pt of waypoints.querySelectorAll('mxPoint')) {
-                    points.push({
+            const arr = geom.querySelector('Array[as="points"]');
+            if (arr) {
+                for (const pt of arr.querySelectorAll('mxPoint')) {
+                    waypoints.push({
                         x: parseFloat(pt.getAttribute('x')) || 0,
                         y: parseFloat(pt.getAttribute('y')) || 0
                     });
@@ -1254,20 +2367,52 @@ class DrawioParser {
             }
         }
 
-        // Target point
-        if (targetId && this.cellIdToShapeIndex[targetId] !== undefined) {
-            const shape = this.shapes[this.cellIdToShapeIndex[targetId]];
-            points.push({ x: shape.x + shape.width / 2, y: shape.y + shape.height / 2 });
+        const srcShape = sourceId && this.cellIdToShapeIndex[sourceId] !== undefined
+            ? this.shapes[this.cellIdToShapeIndex[sourceId]] : null;
+        const tgtShape = targetId && this.cellIdToShapeIndex[targetId] !== undefined
+            ? this.shapes[this.cellIdToShapeIndex[targetId]] : null;
+
+        const srcCentre = srcShape
+            ? { x: srcShape.x + srcShape.width / 2, y: srcShape.y + srcShape.height / 2 }
+            : null;
+        const tgtCentre = tgtShape
+            ? { x: tgtShape.x + tgtShape.width / 2, y: tgtShape.y + tgtShape.height / 2 }
+            : null;
+
+        let srcPt = null;
+        if (srcShape) {
+            const toward = waypoints[0] || tgtCentre || srcCentre;
+            srcPt = this._boxEdgePoint(srcShape, toward);
         } else if (geom) {
-            const tgtPt = geom.querySelector('mxPoint[as="targetPoint"]');
-            if (tgtPt) {
-                points.push({
-                    x: parseFloat(tgtPt.getAttribute('x')) || 0,
-                    y: parseFloat(tgtPt.getAttribute('y')) || 0
-                });
+            const el = geom.querySelector('mxPoint[as="sourcePoint"]');
+            if (el) {
+                srcPt = {
+                    x: parseFloat(el.getAttribute('x')) || 0,
+                    y: parseFloat(el.getAttribute('y')) || 0
+                };
             }
         }
 
+        let tgtPt = null;
+        if (tgtShape) {
+            const toward = waypoints.length
+                ? waypoints[waypoints.length - 1]
+                : srcCentre || tgtCentre;
+            tgtPt = this._boxEdgePoint(tgtShape, toward);
+        } else if (geom) {
+            const el = geom.querySelector('mxPoint[as="targetPoint"]');
+            if (el) {
+                tgtPt = {
+                    x: parseFloat(el.getAttribute('x')) || 0,
+                    y: parseFloat(el.getAttribute('y')) || 0
+                };
+            }
+        }
+
+        const points = [];
+        if (srcPt) points.push(srcPt);
+        for (const w of waypoints) points.push(w);
+        if (tgtPt) points.push(tgtPt);
         return points;
     }
 
@@ -1329,6 +2474,7 @@ class DrawioParser {
 
 </script>
     <script>/* vsdx-builder.js */
+// @ts-check
 /**
  * VSDX Builder - Generates Visio .vsdx files from parsed SVG data.
  *
@@ -1348,6 +2494,45 @@ class DrawioParser {
  */
 
 class VsdxBuilder {
+    /** Face 1, named by the No Style stylesheet, and the fallback for a
+     *  drawing that names no font at all. */
+    static DEFAULT_FACE = 'Calibri';
+
+    /**
+     * Advance widths in ems, grouped by width, for the Helvetica metrics that
+     * Arial matches.
+     *
+     * A flat average per character is wrong in the direction that hurts: it
+     * under-measures short uppercase text, which is exactly what a diagram's
+     * labels are full of. Measured against real Arial, a 0.6 em average
+     * under-measured "HA1" by 8% - and an under-measured line is one Visio
+     * wraps inside a box that had room for it.
+     */
+    static ADVANCES = {
+        '0.191': "'",
+        '0.222': "ijl",
+        '0.26': "|",
+        '0.278': " !,./:;I[\\]ft",
+        '0.333': "()-`{}",
+        '0.355': "\"",
+        '0.389': "*",
+        '0.469': "^",
+        '0.5': "Jcksvxz",
+        '0.556': "#$0123456789?_abdeghnopqu",
+        '0.584': "+<=>",
+        '0.611': "FTZ",
+        '0.667': "ABEKPRSVXY&",
+        '0.722': "CDHNRUw",
+        '0.778': "GOQ",
+        '0.833': "Mm",
+        '0.889': "%",
+        '0.944': "W",
+        '1.015': "@"
+    };
+
+    /** Built once from ADVANCES on first use. @type {Map<string, number>|null} */
+    static _advanceMap = null;
+
     constructor(parsedSvg) {
         this.data = parsedSvg;
         this.shapeIdCounter = 1;
@@ -1358,7 +2543,22 @@ class VsdxBuilder {
         if (this.pageWidthInches < 1) this.pageWidthInches = 8.5;
         if (this.pageHeightInches < 1) this.pageHeightInches = 11;
 
+        // A viewBox may start anywhere; without this offset a drawing with a
+        // negative origin lands off the page.
+        this.viewBoxX = this.data.viewBox.x || 0;
+        this.viewBoxY = this.data.viewBox.y || 0;
+
         this.scale = 1 / 96; // px to inches
+
+        // Text sits this far off the shape's border. Visio's own default is
+        // 4pt, which is a different size on every drawing because it does not
+        // scale; 4 user units matches the inset the source drawings use.
+        this.textMargin = 4 * this.scale;
+
+        // Typefaces, in the order they are first used. Calibri stays first
+        // because the No Style stylesheet names face 1 as its default.
+        this.faceNames = [VsdxBuilder.DEFAULT_FACE];
+        this.faceIds = new Map([[VsdxBuilder.DEFAULT_FACE.toLowerCase(), 1]]);
 
         // Track shape IDs for connector gluing
         this.shapeIds = []; // index = data.shapes index, value = Visio shape ID
@@ -1368,6 +2568,10 @@ class VsdxBuilder {
     async build() {
         const zip = new JSZip();
 
+        // The page first: it is what registers the typefaces that
+        // document.xml has to declare.
+        const pageXml = this._page1();
+
         // Add required VSDX structure
         zip.file('[Content_Types].xml', this._contentTypes());
         zip.file('_rels/.rels', this._rootRels());
@@ -1375,7 +2579,7 @@ class VsdxBuilder {
         zip.file('visio/_rels/document.xml.rels', this._documentRels());
         zip.file('visio/pages/pages.xml', this._pages());
         zip.file('visio/pages/_rels/pages.xml.rels', this._pagesRels());
-        zip.file('visio/pages/page1.xml', this._page1());
+        zip.file('visio/pages/page1.xml', pageXml);
         zip.file('docProps/app.xml', this._appProps());
         zip.file('docProps/core.xml', this._coreProps());
         zip.file('visio/windows.xml', this._windows());
@@ -1396,15 +2600,375 @@ class VsdxBuilder {
 
     // Convert SVG Y (top-down) to Visio Y (bottom-up) in inches
     _svgToVisioY(svgY) {
-        return this.pageHeightInches - (svgY * this.scale);
+        return this.pageHeightInches - ((svgY - this.viewBoxY) * this.scale);
     }
 
     _svgToVisioX(svgX) {
-        return svgX * this.scale;
+        return (svgX - this.viewBoxX) * this.scale;
+    }
+
+    /**
+     * Map stroke-dasharray onto Visio's line patterns instead of collapsing
+     * every dashed style into the same one.
+     * 1 = solid, 2 = dashed, 3 = dotted, 4 = dash-dot.
+     */
+    _linePattern(dasharray) {
+        if (!dasharray) return 1;
+        const nums = String(dasharray).split(/[\s,]+/)
+            .map(parseFloat).filter(n => !isNaN(n) && n >= 0);
+        if (nums.length === 0) return 1;
+
+        const dashes = nums.filter((n, i) => i % 2 === 0);
+        if (Math.max.apply(null, dashes) <= 2) return 3;
+        if (nums.length >= 4) return 4;
+        return 2;
+    }
+
+    /** Visio transparency (0..1) from the opacity pair on a style. */
+    _transparency(a, b) {
+        const v = (a === undefined ? 1 : a) * (b === undefined ? 1 : b);
+        return Math.min(1, Math.max(0, 1 - v));
+    }
+
+    // SVG text-anchor -> Visio HorzAlign (0 = left, 1 = centre, 2 = right)
+    _horzAlign(style) {
+        const anchor = (style && style.textAnchor) || 'start';
+        if (anchor === 'middle') return 1;
+        if (anchor === 'end') return 2;
+        return 0;
+    }
+
+    /**
+     * A geometry cell Visio can rescale.
+     *
+     * Visio resizes a shape by writing its Width and Height cells and then
+     * re-evaluating the geometry. A geometry cell holding a plain number has
+     * nothing to re-evaluate, so the outline stays put while the selection
+     * frame grows - the shape looks like it cannot be resized at all. Every
+     * coordinate therefore carries a formula in terms of Width/Height, with
+     * the computed value cached in V for readers that do not evaluate
+     * formulas.
+     *
+     * @param {string} name
+     * @param {number} value the cached value, in inches
+     * @param {string} formula
+     */
+    _geomCell(name, value, formula) {
+        return `<Cell N="${name}" V="${value}" F="${this._xmlEscape(formula)}"/>`;
+    }
+
+    /** A geometry coordinate as a fraction of the shape's Width or Height. */
+    _relGeomCell(name, value, extent, dimension) {
+        const fraction = extent > 0 ? value / extent : 0;
+        return this._geomCell(name, value, `${dimension}*${fraction}`);
+    }
+
+    /**
+     * The typeface a style asks for, as a Visio face name.
+     *
+     * A CSS font stack names fallbacks the drawing's author was willing to
+     * accept; Visio takes one name, so the first is it. The generic families
+     * have no meaning in Visio either, so they become the face Windows would
+     * have substituted anyway - and Helvetica, which no Windows install has,
+     * becomes the Arial it is always substituted with.
+     */
+    _faceName(style) {
+        const stack = (style && style.fontFamily) || '';
+        const first = String(stack).split(',')[0].trim().replace(/^["']|["']$/g, '');
+        const generic = {
+            'sans-serif': 'Arial',
+            'serif': 'Times New Roman',
+            'monospace': 'Courier New',
+            'cursive': 'Comic Sans MS',
+            'fantasy': 'Impact',
+            'helvetica': 'Arial',
+            'system-ui': 'Segoe UI',
+            'ui-sans-serif': 'Arial',
+            'ui-serif': 'Times New Roman',
+            'ui-monospace': 'Courier New'
+        };
+        if (!first) return VsdxBuilder.DEFAULT_FACE;
+        return generic[first.toLowerCase()] || first;
+    }
+
+    /**
+     * The Font cell value for a style, registering the face if it is new.
+     *
+     * Every run used to be written as face 1, which is Calibri, whatever the
+     * drawing asked for - so an Arial diagram came out of the converter in
+     * Calibri. The faces are collected as the page is built and declared in
+     * document.xml afterwards.
+     */
+    _fontId(style) {
+        const name = this._faceName(style);
+        const key = name.toLowerCase();
+        if (!this.faceIds.has(key)) {
+            this.faceNames.push(name);
+            this.faceIds.set(key, this.faceNames.length);
+        }
+        return this.faceIds.get(key);
+    }
+
+    /**
+     * Font size in inches.
+     *
+     * An SVG font size is in user units - the same units as every coordinate
+     * on the drawing - so it converts with the same scale. Treating it as
+     * points instead (a plain /72) made every label 96/72 = 33% too large for
+     * the box around it, which is why text that fitted in the SVG wrapped and
+     * spilled out in Visio.
+     */
+    _fontSizeInches(style) {
+        const size = style && style.fontSize ? style.fontSize : 14;
+        return size * this.scale;
+    }
+
+    /** Advance width of one character, in ems. */
+    _advance(ch) {
+        let map = VsdxBuilder._advanceMap;
+        if (!map) {
+            map = new Map();
+            for (const [width, chars] of Object.entries(VsdxBuilder.ADVANCES)) {
+                for (const c of chars) map.set(c, parseFloat(width));
+            }
+            VsdxBuilder._advanceMap = map;
+        }
+        const w = map.get(ch);
+        if (w !== undefined) return w;
+        const code = ch.codePointAt(0);
+        // Arrows in labels (→ ↔) are closer to an em than to a digit.
+        if (code >= 0x2190 && code <= 0x21FF) return 1.0;
+        if (code === 0x00B7 || code === 0x2022) return 0.35;
+        if (code === 0x2013 || code === 0x2014) return 0.6;
+        // Accented letters, CJK: a digit is the common case among them.
+        return 0.556;
+    }
+
+    /**
+     * Rendered width of one line, in inches.
+     *
+     * Erring wide is cheap - it only widens an invisible text block - while
+     * erring narrow makes Visio wrap a line that fitted in the source
+     * drawing, so the sum carries a few percent of slack. Bold is wider than
+     * regular in the same face by roughly that much again.
+     *
+     * @param {string} text
+     * @param {number} fontSizeInches
+     * @param {boolean} [bold]
+     */
+    _lineWidthInches(text, fontSizeInches, bold) {
+        let ems = 0;
+        for (const ch of text) ems += this._advance(ch);
+        // 1.08/1.15 still under-measured Arial in Visio: "Hauptstandort" at
+        // 18px bold wrapped the last letter inside a box sized to the estimate.
+        return ems * fontSizeInches * (bold ? 1.30 : 1.18);
+    }
+
+    /**
+     * Draw.io labels keep line breaks inside one run (`&#xa;`). Split them
+     * so each line is its own Visio paragraph.
+     *
+     * @param {{text: string, style: any}[]} runs
+     * @returns {{text: string, style: any}[]}
+     */
+    _flattenTextRuns(runs) {
+        const flat = [];
+        for (const run of runs) {
+            const parts = String(run.text == null ? '' : run.text).split(/\r?\n/);
+            for (const part of parts) {
+                flat.push({ text: part, style: run.style || {} });
+            }
+        }
+        return flat;
+    }
+
+    /**
+     * The text block: margins, and a block at least as large as the text.
+     *
+     * Visio wraps shape text at the shape's width, so a label wider than its
+     * box breaks into extra lines and spills out of a short tile - where the
+     * same label in the source SVG simply overflowed on one line. TxtWidth and
+     * TxtHeight keep the block as large as the text needs, and the block's pin
+     * follows the paragraph alignment so the overflow grows away from the edge
+     * the text is anchored to rather than back across it.
+     *
+     * When lockToShape is set, TxtWidth/TxtHeight follow the box so shrinking
+     * the field wraps the label. Values-only TxtWidth kept overflow on one
+     * line (matching the SVG) but left the text the original size when the
+     * user pulled the handles in.
+     *
+     * @param {{text: string, style: any}[]} runs
+     * @param {number} w shape width in inches
+     * @param {number} h shape height in inches
+     * @param {number} [vertAlign] 0 top, 1 middle, 2 bottom
+     * @param {boolean} [lockToShape]
+     */
+    _textBlockCells(runs, w, h, vertAlign, lockToShape) {
+        const margin = this.textMargin;
+        let needW = 0;
+        let needH = 2 * margin;
+        let overflowAlign = 0;
+
+        for (const run of this._flattenTextRuns(runs)) {
+            const size = this._fontSizeInches(run.style);
+            const bold = (run.style || {}).fontWeight === 'bold';
+            const lineW = this._lineWidthInches(run.text, size, bold) + 2 * margin + size;
+            if (lineW > needW) {
+                needW = lineW;
+                overflowAlign = this._horzAlign(run.style);
+            }
+            // One source line, plus extra rows if Visio still wraps at Width
+            // even though TxtWidth is larger (some viewers do).
+            const lines = lineW > w ? Math.max(1, Math.ceil(lineW / Math.max(w, 0.01))) : 1;
+            needH += size * 1.5 * lines;
+        }
+
+        const va = vertAlign == null ? 1 : vertAlign;
+        // A frame is huge; filling it with the text block makes a stray
+        // glyph as tall as the frame. Size the block to the text, then pin
+        // it to the top of a container or the centre of a tile.
+        const txtW = va === 0 ? Math.max(needW, 2 * margin + 0.1) : Math.max(w, needW);
+        const txtH = Math.max(needH, 2 * margin + 0.1);
+        const pin = overflowAlign === 1 ? 0.5 : (overflowAlign === 2 ? 1 : 0);
+        const txtPinY = va === 0 ? h - txtH / 2 : h / 2;
+        const pinF = pin === 1 ? 'Width' : (pin === 0.5 ? 'Width*0.5' : '0');
+        const locF = pin === 1 ? 'TxtWidth' : (pin === 0.5 ? 'TxtWidth*0.5' : '0');
+
+        let sizeCells;
+        if (lockToShape && va !== 0) {
+            sizeCells = `      <Cell N="TxtWidth" V="${w}" F="Width"/>
+      <Cell N="TxtHeight" V="${h}" F="Height"/>
+      <Cell N="TxtPinX" V="${w * 0.5}" F="Width*0.5"/>
+      <Cell N="TxtPinY" V="${h * 0.5}" F="Height*0.5"/>
+      <Cell N="TxtLocPinX" V="${w * 0.5}" F="TxtWidth*0.5"/>
+      <Cell N="TxtLocPinY" V="${h * 0.5}" F="TxtHeight*0.5"/>
+`;
+        } else if (lockToShape) {
+            sizeCells = `      <Cell N="TxtWidth" V="${w}" F="Width"/>
+      <Cell N="TxtHeight" V="${txtH}"/>
+      <Cell N="TxtPinX" V="${w * pin}" F="${pinF}"/>
+      <Cell N="TxtPinY" V="${txtPinY}"/>
+      <Cell N="TxtLocPinX" V="${w * pin}" F="${locF}"/>
+      <Cell N="TxtLocPinY" V="${txtH * 0.5}"/>
+`;
+        } else {
+            sizeCells = `      <Cell N="TxtWidth" V="${txtW}"/>
+      <Cell N="TxtHeight" V="${txtH}"/>
+      <Cell N="TxtPinX" V="${w * pin}"/>
+      <Cell N="TxtPinY" V="${txtPinY}"/>
+      <Cell N="TxtLocPinX" V="${txtW * pin}"/>
+      <Cell N="TxtLocPinY" V="${txtH * 0.5}"/>
+`;
+        }
+
+        return `      <Cell N="LeftMargin" V="${margin}"/>
+      <Cell N="RightMargin" V="${margin}"/>
+      <Cell N="TopMargin" V="${margin}"/>
+      <Cell N="BottomMargin" V="${margin}"/>
+      <Cell N="VerticalAlign" V="${va}"/>
+${sizeCells}`;
+    }
+
+    /**
+     * One character row, one paragraph row, and one marker pair per source line.
+     *
+     * A line feed in <Text> is the paragraph separator, and only immediately
+     * before <pp>. Any other newline is drawn as a missing-glyph box - which
+     * is what the second line of every tile became. Marker IXs are sequential
+     * and not reused: Visio rewrites reused IXs by inventing extra rows, and
+     * a .vsdx is less forgiving than the old VDX loader that used to do that
+     * for you. cp before pp is the order Visio itself writes.
+     *
+     * @param {{text: string, style: any}[]} runs
+     * @returns {{charRows: string, paraRows: string, body: string}}
+     */
+    _textRunsXml(runs) {
+        const lines = this._flattenTextRuns(runs);
+        let charRows = '';
+        let paraRows = '';
+        let body = '';
+        for (let i = 0; i < lines.length; i++) {
+            const st = lines[i].style || {};
+            const color = this._colorToRGB(st.textColor || st.fill) || '#000000';
+            const size = this._fontSizeInches(st);
+            const bold = st.fontWeight === 'bold' ? '1' : '0';
+            const align = this._horzAlign(st);
+            charRows += `
+        <Row IX="${i}">
+          <Cell N="Font" V="${this._fontId(st)}"/>
+          <Cell N="Color" V="${color}"/>
+          <Cell N="Size" V="${size}"/>
+          <Cell N="Style" V="${bold}"/>
+        </Row>`;
+            paraRows += `
+        <Row IX="${i}">
+          <Cell N="HorzAlign" V="${align}"/>
+        </Row>`;
+            // Never put a line feed in <Text>: Visio draws U+000A as a
+            // missing-glyph box, and if the text block is the size of a
+            // frame that box is inches tall. A <pp> starts the next
+            // paragraph. The first run has no marker - a leading cp/pp
+            // ate the first letter of every label.
+            body += this._xmlEscape(lines[i].text);
+        }
+        return { charRows, paraRows, body };
+    }
+
+    /**
+     * One child shape per source line, local to the parent box. Visio will
+     * not render a second paragraph in <Text> without a glyph box.
+     *
+     * @param {{text: string, style: any}[]} runs
+     * @param {number} w parent width in inches
+     * @param {number} h parent height in inches
+     * @param {number} ox lower-left of the tile in the parent, inches
+     * @param {number} oy
+     */
+    _lineTextShapes(runs, w, h, ox, oy) {
+        const margin = this.textMargin;
+        let yFromTop = margin;
+        let xml = '';
+        for (const run of runs) {
+            const st = run.style || {};
+            const size = this._fontSizeInches(st);
+            const bold = st.fontWeight === 'bold';
+            const align = this._horzAlign(st);
+            const lineW = Math.min(
+                w,
+                Math.max(this._lineWidthInches(run.text, size, bold) + 2 * margin, 0.2)
+            );
+            const lineH = 2 * margin + size * 1.2;
+            const pinX = ox + (align === 1 ? w / 2 : (align === 2 ? w - margin : margin));
+            const locPinX = align === 1 ? lineW / 2 : (align === 2 ? lineW : 0);
+            const pinY = oy + h - yFromTop - 0.8 * size;
+            const locPinY = lineH / 2 - 0.35 * size;
+            yFromTop += size * 1.5;
+            const one = this._textRunsXml([run]);
+            xml += `    <Shape ID="${this._nextId()}" Type="Shape" LineStyle="0" FillStyle="0" TextStyle="0">
+      <Cell N="PinX" V="${pinX}"/>
+      <Cell N="PinY" V="${pinY}"/>
+      <Cell N="Width" V="${lineW}"/>
+      <Cell N="Height" V="${lineH}"/>
+      <Cell N="LocPinX" V="${locPinX}"/>
+      <Cell N="LocPinY" V="${locPinY}"/>
+      <Cell N="Angle" V="0"/>
+      <Cell N="FillPattern" V="0"/>
+      <Cell N="LinePattern" V="0"/>
+${this._textBlockCells([run], lineW, lineH, 1, true)}      <Section N="Character">${one.charRows}
+      </Section>
+      <Section N="Paragraph">${one.paraRows}
+      </Section>
+      <Text>${one.body}</Text>
+    </Shape>
+`;
+        }
+        return xml;
     }
 
     _colorToRGB(color) {
         if (!color || color === 'none' || color === 'transparent') return null;
+        // Unresolved paint servers stay unpainted rather than turning black
+        if (/^url\(/i.test(color.trim())) return null;
 
         // Named colors
         const named = {
@@ -1521,9 +3085,7 @@ class VsdxBuilder {
     <SnapSettings>65847</SnapSettings>
     <SnapExtensions>34</SnapExtensions>
   </DocumentSettings>
-  <FaceNames>
-    <FaceName ID="1" Name="Calibri" UnicodeRanges="-536870145 1073786111 0 0" CharSets="536871327 0" Panos="2 15 5 2 2 2 4 3 2 4"/>
-    <FaceName ID="2" Name="Arial" UnicodeRanges="-536870145 1073786111 0 0" CharSets="536871327 0" Panos="2 11 6 4 2 2 2 2 2 4"/>
+  <FaceNames>${this._faceNamesXml()}
   </FaceNames>
   <StyleSheets>
     <StyleSheet ID="0" Name="No Style" NameU="No Style">
@@ -1555,6 +3117,27 @@ class VsdxBuilder {
     </StyleSheet>
   </StyleSheets>
 </VisioDocument>`;
+    }
+
+    /**
+     * The document's typeface table.
+     *
+     * Panose describes a face's shape and is what Visio falls back on when the
+     * named font is missing, so the two faces whose values are known keep
+     * them; for anything else naming the face is all this can honestly say.
+     */
+    _faceNamesXml() {
+        const known = {
+            calibri: 'Panos="2 15 5 2 2 2 4 3 2 4"',
+            arial: 'Panos="2 11 6 4 2 2 2 2 2 4"'
+        };
+        return this.faceNames.map((name, i) => {
+            const panose = known[name.toLowerCase()];
+            return `
+    <FaceName ID="${i + 1}" Name="${this._xmlEscape(name)}" ` +
+                `UnicodeRanges="-536870145 1073786111 0 0" CharSets="536871327 0"` +
+                (panose ? ' ' + panose : '') + '/>';
+        }).join('');
     }
 
     _documentRels() {
@@ -1630,46 +3213,36 @@ class VsdxBuilder {
 
     _page1() {
         let shapesXml = '';
-        this.shapeIds = [];
         this.connectorLinks = [];
+        // Building the page twice must produce the same IDs
+        this.shapeIdCounter = 1;
 
-        // Render shapes first (so we have their IDs for connectors)
-        for (let i = 0; i < this.data.shapes.length; i++) {
-            const shape = this.data.shapes[i];
-            const id = this._nextId();
-            this.shapeIds[i] = id;
-            shapesXml += this._buildShape(shape, id);
+        // IDs before geometry: a connector may glue to a box nested three
+        // frames deep, and <Connects> needs that ID before the tree is walked.
+        this.shapeIds = this.data.shapes.map(() => this._nextId());
+        this.textIds = this.data.texts.map(() => this._nextId());
+        this.connectorIds = this.data.connectors.map(() => this._nextId());
+
+        this.childShapes = new Map();
+        this.childTexts = new Map();
+        this.childConnectors = new Map();
+        this.data.shapes.forEach((shape, i) => this._addChild(this.childShapes, shape.parentShape, i));
+        this.data.texts.forEach((text, i) => this._addChild(this.childTexts, text.parentShape, i));
+        this.data.connectors.forEach((conn, i) => this._addChild(this.childConnectors, conn.parentShape, i));
+
+        // The page itself is the outermost coordinate system
+        const pageOrigin = { x: 0, y: 0 };
+        for (const i of (this.childShapes.get(null) || [])) {
+            shapesXml += this._buildShapeTree(i, pageOrigin);
         }
-
-        // Render standalone texts
-        for (const text of this.data.texts) {
-            shapesXml += this._buildTextShape(text);
+        for (const i of (this.childTexts.get(null) || [])) {
+            shapesXml += this._buildTextShape(this.data.texts[i], this.textIds[i], pageOrigin);
         }
-
-        // Render connectors
-        for (const conn of this.data.connectors) {
-            const id = this._nextId();
-            shapesXml += this._buildConnector(conn, id);
-
-            // Track connections for <Connects> section
-            if (conn.fromShape !== null) {
-                this.connectorLinks.push({
-                    connectorId: id,
-                    cell: 'BeginX',
-                    fromPart: 9,
-                    targetId: this.shapeIds[conn.fromShape],
-                    toPart: 3
-                });
-            }
-            if (conn.toShape !== null) {
-                this.connectorLinks.push({
-                    connectorId: id,
-                    cell: 'EndX',
-                    fromPart: 12,
-                    targetId: this.shapeIds[conn.toShape],
-                    toPart: 3
-                });
-            }
+        for (const i of (this.childConnectors.get(null) || [])) {
+            shapesXml += this._buildConnector(this.data.connectors[i], this.connectorIds[i], pageOrigin);
+        }
+        for (let i = 0; i < this.data.connectors.length; i++) {
+            this._trackGlue(this.data.connectors[i], this.connectorIds[i]);
         }
 
         // Build <Connects> section
@@ -1677,7 +3250,7 @@ class VsdxBuilder {
         if (this.connectorLinks.length > 0) {
             connectsXml = '\n  <Connects>';
             for (const link of this.connectorLinks) {
-                connectsXml += `\n    <Connect FromSheet="${link.connectorId}" FromCell="${link.cell}" FromPart="${link.fromPart}" ToSheet="${link.targetId}" ToCell="PinX" ToPart="${link.toPart}"/>`;
+                connectsXml += `\n    <Connect FromSheet="${link.connectorId}" FromCell="${link.cell}" FromPart="${link.fromPart}" ToSheet="${link.targetId}" ToCell="${link.toCell}" ToPart="${link.toPart}"/>`;
             }
             connectsXml += '\n  </Connects>';
         }
@@ -1692,17 +3265,178 @@ ${shapesXml}
 </PageContents>`;
     }
 
-    _buildShape(shape, id) {
+    /**
+     * Record a connector's glue for the page's <Connects> section.
+     *
+     * <Connects> lives on the page whatever depth the shapes sit at, so this
+     * runs for every connector, nested or not.
+     */
+    /**
+     * Four edge midpoints, Visio local (origin bottom-left). Row IX 0..3 =
+     * top, right, bottom, left; ToPart is 100+IX.
+     */
+    _connectionSection(w, h) {
+        const rows = [
+            { x: w / 2, y: h, xf: 'Width*0.5', yf: 'Height', dx: 0, dy: 1 },
+            { x: w, y: h / 2, xf: 'Width', yf: 'Height*0.5', dx: 1, dy: 0 },
+            { x: w / 2, y: 0, xf: 'Width*0.5', yf: '0', dx: 0, dy: -1 },
+            { x: 0, y: h / 2, xf: '0', yf: 'Height*0.5', dx: -1, dy: 0 }
+        ];
+        let xml = `
+      <Section N="Connection">`;
+        rows.forEach((r, i) => {
+            xml += `
+        <Row T="Connection" IX="${i}">
+          <Cell N="X" V="${r.x}" F="${r.xf}"/>
+          <Cell N="Y" V="${r.y}" F="${r.yf}"/>
+          <Cell N="DirX" V="${r.dx}"/>
+          <Cell N="DirY" V="${r.dy}"/>
+        </Row>`;
+        });
+        xml += `
+      </Section>`;
+        return xml;
+    }
+
+    /** Closest of the four edge midpoints to a page-space Visio point. */
+    _nearestConnection(shape, pagePt) {
+        const box = this._shapeBox(shape);
+        const cps = [
+            { ix: 0, x: box.left + box.w / 2, y: box.bottom + box.h },
+            { ix: 1, x: box.left + box.w, y: box.bottom + box.h / 2 },
+            { ix: 2, x: box.left + box.w / 2, y: box.bottom },
+            { ix: 3, x: box.left, y: box.bottom + box.h / 2 }
+        ];
+        let best = cps[0];
+        let bestD = Infinity;
+        for (const c of cps) {
+            const d = (c.x - pagePt.x) ** 2 + (c.y - pagePt.y) ** 2;
+            if (d < bestD) {
+                bestD = d;
+                best = c;
+            }
+        }
+        return best;
+    }
+
+    _trackGlue(conn, id) {
+        const begin = conn.points[0];
+        const end = conn.points[conn.points.length - 1];
+        const beginV = { x: this._svgToVisioX(begin.x), y: this._svgToVisioY(begin.y) };
+        const endV = { x: this._svgToVisioX(end.x), y: this._svgToVisioY(end.y) };
+        if (conn.fromShape !== null) {
+            const cp = this._nearestConnection(this.data.shapes[conn.fromShape], beginV);
+            this.connectorLinks.push({
+                connectorId: id,
+                cell: 'BeginX',
+                fromPart: 9,
+                targetId: this.shapeIds[conn.fromShape],
+                toPart: 100 + cp.ix,
+                toCell: 'Connections.X' + (cp.ix + 1)
+            });
+        }
+        if (conn.toShape !== null) {
+            const cp = this._nearestConnection(this.data.shapes[conn.toShape], endV);
+            this.connectorLinks.push({
+                connectorId: id,
+                cell: 'EndX',
+                fromPart: 12,
+                targetId: this.shapeIds[conn.toShape],
+                toPart: 100 + cp.ix,
+                toCell: 'Connections.X' + (cp.ix + 1)
+            });
+        }
+    }
+
+    /** Group children by their parent index, with null for the page itself. */
+    _addChild(map, parent, index) {
+        const key = parent === undefined ? null : parent;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(index);
+    }
+
+    /** A shape's box in absolute Visio inches. */
+    _shapeBox(shape) {
+        return {
+            w: shape.width * this.scale,
+            h: shape.height * this.scale,
+            left: this._svgToVisioX(shape.x),
+            bottom: this._svgToVisioY(shape.y + shape.height)
+        };
+    }
+
+    /**
+     * A shape and everything the layout stage nested inside it.
+     *
+     * A frame with contents becomes a group, so dragging the frame takes its
+     * contents along instead of sliding out from under them. A frame with
+     * nothing inside it stays an ordinary shape - a group of one would only
+     * make it harder to select.
+     */
+    _buildShapeTree(index, origin) {
+        const shape = this.data.shapes[index];
+        const kidShapes = this.childShapes.get(index) || [];
+        const kidTexts = this.childTexts.get(index) || [];
+        const kidConns = this.childConnectors.get(index) || [];
+
+        if (!kidShapes.length && !kidTexts.length && !kidConns.length) {
+            const xml = this._buildShape(shape, this.shapeIds[index], origin, '');
+            return xml + (this._afterShapeXml || '');
+        }
+
+        // A group's children are placed in the group's own coordinate system,
+        // whose origin is the group's lower-left corner.
+        const box = this._shapeBox(shape);
+        const inner = { x: box.left, y: box.bottom };
+        let childrenXml = '';
+        for (const i of kidShapes) childrenXml += this._buildShapeTree(i, inner);
+        for (const i of kidTexts) {
+            childrenXml += this._buildTextShape(this.data.texts[i], this.textIds[i], inner);
+        }
+        // Last, so a route draws over the boxes it runs between
+        for (const i of kidConns) {
+            childrenXml += this._buildConnector(this.data.connectors[i], this.connectorIds[i], inner);
+        }
+
+        return this._buildShape(shape, this.shapeIds[index], origin, childrenXml);
+    }
+
+    /**
+     * The cells that make a group a Visio container rather than a plain group.
+     *
+     * A container moves its members with it and still lets a single click
+     * select a member, instead of making you step into the group first. Visio
+     * drives that from this user-defined cell; a Visio that does not act on it
+     * falls back to ordinary group behaviour, which already fixes a frame
+     * dragging out from under its contents. Nothing here changes the layout
+     * either way.
+     */
+    _containerSection() {
+        return `
+      <Section N="User">
+        <Row N="msvStructureType"><Cell N="Value" V="Container"/><Cell N="Prompt" V=""/></Row>
+      </Section>`;
+    }
+
+    /**
+     * @param {any} shape
+     * @param {number} id
+     * @param {{x: number, y: number}} origin the coordinate system to place it in
+     * @param {string} childrenXml nested shapes, or '' for a leaf
+     */
+    _buildShape(shape, id, origin, childrenXml) {
         // Center position in Visio coordinates (inches, bottom-left origin)
-        const w = shape.width * this.scale;
-        const h = shape.height * this.scale;
-        const pinX = this._svgToVisioX(shape.x) + w / 2;
-        const pinY = this._svgToVisioY(shape.y + shape.height) + h / 2;
+        const box = this._shapeBox(shape);
+        const w = box.w;
+        const h = box.h;
+        const pinX = box.left - origin.x + w / 2;
+        const pinY = box.bottom - origin.y + h / 2;
 
         const fillColor = this._colorToRGB(shape.style.fill);
         const lineColor = this._colorToRGB(shape.style.stroke);
         const lineWeight = (shape.style.strokeWidth || 1) * this.scale;
 
+        this._afterShapeXml = '';
         let cellsXml = '';
         let sectionsXml = '';
         let textXml = '';
@@ -1714,7 +3448,7 @@ ${shapesXml}
       <Cell N="Height" V="${h}"/>
       <Cell N="LocPinX" V="${w / 2}"/>
       <Cell N="LocPinY" V="${h / 2}"/>
-      <Cell N="Angle" V="0"/>
+      <Cell N="Angle" V="${shape.angle || 0}"/>
 `;
 
         // Fill cells
@@ -1731,9 +3465,11 @@ ${shapesXml}
 
         // Line cells
         if (lineColor && shape.style.stroke !== 'none') {
-            const dashPattern = shape.style.strokeDasharray ? '2' : '1';
+            const dashPattern = this._linePattern(shape.style.strokeDasharray);
+            const lineTrans = this._transparency(shape.style.strokeOpacity, shape.style.opacity);
             cellsXml += `      <Cell N="LineWeight" V="${lineWeight}"/>
       <Cell N="LineColor" V="${lineColor}"/>
+      <Cell N="LineColorTrans" V="${lineTrans}"/>
       <Cell N="LinePattern" V="${dashPattern}"/>
 `;
         } else {
@@ -1767,30 +3503,59 @@ ${shapesXml}
                 sectionsXml += this._rectGeom(w, h, 0);
         }
 
-        // Text + character formatting
+        // Perimeter glue points. Gluing to PinX (the centre) makes Visio
+        // route the connector through the tile instead of to its edge.
+        sectionsXml += this._connectionSection(w, h);
+
+        // Visio cannot host a line feed or a <pp> in <Text> without drawing a
+        // missing-glyph box and dropping every line after the first. One
+        // source line stays on this shape; extra lines become child text
+        // shapes, so the parent is a group.
+        let childXml = childrenXml || '';
         if (shape.text) {
-            const textColor = (shape.textStyle && shape.textStyle.textColor) ?
-                this._colorToRGB(shape.textStyle.textColor) : '#000000';
-            const fontSize = ((shape.textStyle && shape.textStyle.fontSize) || 14) / 72;
-            const isBold = (shape.textStyle && shape.textStyle.fontWeight === 'bold');
-
-            sectionsXml += `
-      <Section N="Character">
-        <Row IX="0">
-          <Cell N="Font" V="1"/>
-          <Cell N="Color" V="${textColor || '#000000'}"/>
-          <Cell N="Size" V="${fontSize}"/>
-          <Cell N="Style" V="${isBold ? '1' : '0'}"/>
-        </Row>
+            const runs = this._flattenTextRuns(
+                (shape.textRuns && shape.textRuns.length)
+                    ? shape.textRuns
+                    : [{ text: shape.text, style: shape.textStyle || {} }]
+            );
+            if (runs.length <= 1) {
+                const text = this._textRunsXml(runs);
+                cellsXml += this._textBlockCells(runs, w, h, shape.isContainer ? 0 : 1, true);
+                sectionsXml += `
+      <Section N="Character">${text.charRows}
       </Section>
-      <Section N="Paragraph">
-        <Row IX="0">
-          <Cell N="HorzAlign" V="1"/>
-        </Row>
+      <Section N="Paragraph">${text.paraRows}
       </Section>`;
+                textXml = `
+      <Text>${text.body}</Text>`;
+            } else if (childXml) {
+                // Already a frame: title lines live in the group.
+                childXml += this._lineTextShapes(runs, w, h, 0, 0);
+            } else {
+                // A labelled tile stays a Shape, not a group-of-text. The
+                // extra lines sit next to it in the parent, so a click hits
+                // the box or a line instead of a nested group.
+                const ox = box.left - origin.x;
+                const oy = box.bottom - origin.y;
+                this._afterShapeXml = this._lineTextShapes(runs, w, h, ox, oy);
+            }
+        }
 
-            textXml = `
-      <Text>${this._xmlEscape(shape.text)}</Text>`;
+        if (childXml) {
+            // DisplayMode 1 = draw the frame behind its members. Leaving the
+            // cell unset makes Visio (and Aspose) show only the empty frame.
+            cellsXml += `      <Cell N="DisplayMode" V="1"/>
+      <Cell N="SelectMode" V="1"/>
+      <Cell N="DontMoveChildren" V="1"/>
+      <Cell N="IsTextEditTarget" V="0"/>
+`;
+            sectionsXml += this._containerSection();
+            return `    <Shape ID="${id}" Type="Group" LineStyle="0" FillStyle="0" TextStyle="0">
+${cellsXml}${sectionsXml}${textXml}
+      <Shapes>
+${childXml}      </Shapes>
+    </Shape>
+`;
         }
 
         return `    <Shape ID="${id}" Type="Shape" LineStyle="0" FillStyle="0" TextStyle="0">
@@ -1799,23 +3564,16 @@ ${cellsXml}${sectionsXml}${textXml}
 `;
     }
 
+    /**
+    /**
+     * A rectangle in relative coordinates, so it follows Width and Height.
+     *
+     * @param {number} w width in inches, for the cached corner values
+     * @param {number} h
+     * @param {number} rx corner radius in inches, 0 for square corners
+     */
     _rectGeom(w, h, rx) {
-        if (rx > 0) {
-            return `
-      <Section N="Geometry" IX="0">
-        <Cell N="NoFill" V="0"/>
-        <Cell N="NoLine" V="0"/>
-        <Row T="MoveTo" IX="1"><Cell N="X" V="0"/><Cell N="Y" V="${rx}"/></Row>
-        <Row T="ArcTo" IX="2"><Cell N="X" V="${rx}"/><Cell N="Y" V="0"/><Cell N="A" V="${rx * 0.4142}"/></Row>
-        <Row T="LineTo" IX="3"><Cell N="X" V="${w - rx}"/><Cell N="Y" V="0"/></Row>
-        <Row T="ArcTo" IX="4"><Cell N="X" V="${w}"/><Cell N="Y" V="${rx}"/><Cell N="A" V="${rx * 0.4142}"/></Row>
-        <Row T="LineTo" IX="5"><Cell N="X" V="${w}"/><Cell N="Y" V="${h - rx}"/></Row>
-        <Row T="ArcTo" IX="6"><Cell N="X" V="${w - rx}"/><Cell N="Y" V="${h}"/><Cell N="A" V="${rx * 0.4142}"/></Row>
-        <Row T="LineTo" IX="7"><Cell N="X" V="${rx}"/><Cell N="Y" V="${h}"/></Row>
-        <Row T="ArcTo" IX="8"><Cell N="X" V="0"/><Cell N="Y" V="${h - rx}"/><Cell N="A" V="${rx * 0.4142}"/></Row>
-        <Row T="LineTo" IX="9"><Cell N="X" V="0"/><Cell N="Y" V="${rx}"/></Row>
-      </Section>`;
-        }
+        if (rx > 0) return this._roundedRectGeom(w, h, rx);
 
         return `
       <Section N="Geometry" IX="0">
@@ -1829,20 +3587,63 @@ ${cellsXml}${sectionsXml}${textXml}
       </Section>`;
     }
 
+    /**
+     * A rounded rectangle, with the corners drawn as arcs.
+     *
+     * The Rounding cell would express this in one line, but it is a Visio
+     * refinement that other readers of the format ignore - libvisio, which
+     * LibreOffice and every Linux viewer use, draws such a shape with square
+     * corners - and a file whose rounded boxes are only round in Visio is not
+     * worth the shorter geometry. The arcs are drawn from the Rounding cell,
+     * so the radius stays editable in one place.
+     *
+     * The radius is a constant, because stretching a box should not fatten its
+     * corners, and it is clamped through MIN so a box dragged narrower than
+     * two radii still closes cleanly instead of turning inside out.
+     *
+     * A is the arc's bow: the distance from the arc's midpoint to the midpoint
+     * of its chord. For a quarter circle of radius r that is r(1 - 1/sqrt 2),
+     * and not the r(sqrt 2 - 1) this used to emit - a corner 41% too deep.
+     */
+    _roundedRectGeom(w, h, rx) {
+        const r = Math.min(rx, w / 2, h / 2);
+        const R = 'MIN(Rounding,Width/2,Height/2)';
+        const BOW = 1 - Math.SQRT1_2;
+        const cell = (name, value, formula) => this._geomCell(name, value, formula);
+        const arc = (x, fx, y, fy) =>
+            cell('X', x, fx) + cell('Y', y, fy) + cell('A', r * BOW, `${R}*${BOW}`);
+
+        return `
+      <Section N="Geometry" IX="0">
+        <Cell N="NoFill" V="0"/>
+        <Cell N="NoLine" V="0"/>
+        <Row T="MoveTo" IX="1">${cell('X', 0, '0')}${cell('Y', r, R)}</Row>
+        <Row T="ArcTo" IX="2">${arc(r, R, 0, '0')}</Row>
+        <Row T="LineTo" IX="3">${cell('X', w - r, `Width-${R}`)}${cell('Y', 0, '0')}</Row>
+        <Row T="ArcTo" IX="4">${arc(w, 'Width', r, R)}</Row>
+        <Row T="LineTo" IX="5">${cell('X', w, 'Width')}${cell('Y', h - r, `Height-${R}`)}</Row>
+        <Row T="ArcTo" IX="6">${arc(w - r, `Width-${R}`, h, 'Height')}</Row>
+        <Row T="LineTo" IX="7">${cell('X', r, R)}${cell('Y', h, 'Height')}</Row>
+        <Row T="ArcTo" IX="8">${arc(0, '0', h - r, `Height-${R}`)}</Row>
+        <Row T="LineTo" IX="9">${cell('X', 0, '0')}${cell('Y', r, R)}</Row>
+      </Section>`;
+    }
+
     _ellipseGeom(w, h) {
         return `
       <Section N="Geometry" IX="0">
         <Cell N="NoFill" V="0"/>
         <Cell N="NoLine" V="0"/>
         <Row T="Ellipse" IX="1">
-          <Cell N="X" V="${w / 2}"/><Cell N="Y" V="${h / 2}"/>
-          <Cell N="A" V="${w}"/><Cell N="B" V="${h / 2}"/>
-          <Cell N="C" V="${w / 2}"/><Cell N="D" V="${h}"/>
+          ${this._geomCell('X', w / 2, 'Width*0.5')}${this._geomCell('Y', h / 2, 'Height*0.5')}
+          ${this._geomCell('A', w, 'Width*1')}${this._geomCell('B', h / 2, 'Height*0.5')}
+          ${this._geomCell('C', w / 2, 'Width*0.5')}${this._geomCell('D', h, 'Height*1')}
         </Row>
       </Section>`;
     }
 
-    _diamondGeom(w, h) {
+    // The diamond is drawn with relative coordinates, so its size is implied
+    _diamondGeom(_w, _h) {
         return `
       <Section N="Geometry" IX="0">
         <Cell N="NoFill" V="0"/>
@@ -1873,10 +3674,10 @@ ${cellsXml}${sectionsXml}${textXml}
 
             if (i === 0) {
                 xml += `
-        <Row T="MoveTo" IX="1"><Cell N="X" V="${lx}"/><Cell N="Y" V="${ly}"/></Row>`;
+        <Row T="MoveTo" IX="1">${this._relGeomCell('X', lx, w, 'Width')}${this._relGeomCell('Y', ly, h, 'Height')}</Row>`;
             } else {
                 xml += `
-        <Row T="LineTo" IX="${i + 1}"><Cell N="X" V="${lx}"/><Cell N="Y" V="${ly}"/></Row>`;
+        <Row T="LineTo" IX="${i + 1}">${this._relGeomCell('X', lx, w, 'Width')}${this._relGeomCell('Y', ly, h, 'Height')}</Row>`;
             }
         }
 
@@ -1884,7 +3685,7 @@ ${cellsXml}${sectionsXml}${textXml}
         const lx0 = (pts[0].x - shape.x) * this.scale;
         const ly0 = h - (pts[0].y - shape.y) * this.scale;
         xml += `
-        <Row T="LineTo" IX="${pts.length + 1}"><Cell N="X" V="${lx0}"/><Cell N="Y" V="${ly0}"/></Row>`;
+        <Row T="LineTo" IX="${pts.length + 1}">${this._relGeomCell('X', lx0, w, 'Width')}${this._relGeomCell('Y', ly0, h, 'Height')}</Row>`;
 
         xml += `
       </Section>`;
@@ -1892,126 +3693,1068 @@ ${cellsXml}${sectionsXml}${textXml}
         return xml;
     }
 
-    _buildTextShape(text) {
-        const id = this._nextId();
-
-        // Estimate text size
-        const fontSize = (text.style.fontSize || 14);
-        const estWidth = Math.max(text.text.length * fontSize * 0.6 * this.scale, 1);
-        const estHeight = fontSize * 1.5 * this.scale;
-
-        const pinX = this._svgToVisioX(text.x);
-        const pinY = this._svgToVisioY(text.y);
-
-        const textColor = this._colorToRGB(text.style.textColor || text.style.fill) || '#000000';
-        const fontSizeInches = fontSize / 72;
+    /**
+     * @param {any} text
+     * @param {number} id
+     * @param {{x: number, y: number}} origin the coordinate system to place it in
+     */
+    _buildTextShape(text, id, origin) {
+        // Estimate text size from the widest line, not the whole string
+        const fontSizeInches = this._fontSizeInches(text.style);
+        const lines = text.text.split('\n');
+        const runs = lines.map(line => ({ text: line, style: text.style }));
         const isBold = text.style.fontWeight === 'bold';
+        const margin = this.textMargin;
+        // Widest by measurement, not by character count: a short run of
+        // capitals easily beats a longer lowercase one.
+        const widest = lines.reduce((a, b) =>
+            (this._lineWidthInches(b, fontSizeInches, isBold) >
+             this._lineWidthInches(a, fontSizeInches, isBold) ? b : a), '');
+        const estWidth = Math.max(
+            this._lineWidthInches(widest, fontSizeInches, isBold) +
+            2 * margin + fontSizeInches, 1);
+        const estHeight = 2 * margin + Math.max(lines.length, 1) * fontSizeInches * 1.15;
+
+        const pinX = this._svgToVisioX(text.x) - origin.x;
+        const pinY = this._svgToVisioY(text.y) - origin.y;
+
+        // In SVG, x is the anchor point and y is the baseline. Visio positions a
+        // box by its local pin, so move the pin to match the anchor and lift the
+        // box off the baseline - otherwise every label drifts left and down.
+        const horzAlign = this._horzAlign(text.style);
+        const locPinX = horzAlign === 1 ? estWidth / 2 : (horzAlign === 2 ? estWidth : 0);
+        const locPinY = estHeight / 2 - 0.35 * fontSizeInches;
+
+        const textXml = this._textRunsXml(runs);
 
         return `    <Shape ID="${id}" Type="Shape" LineStyle="0" FillStyle="0" TextStyle="0">
       <Cell N="PinX" V="${pinX}"/>
       <Cell N="PinY" V="${pinY}"/>
       <Cell N="Width" V="${estWidth}"/>
       <Cell N="Height" V="${estHeight}"/>
-      <Cell N="LocPinX" V="${estWidth / 2}"/>
-      <Cell N="LocPinY" V="${estHeight / 2}"/>
+      <Cell N="LocPinX" V="${locPinX}"/>
+      <Cell N="LocPinY" V="${locPinY}"/>
       <Cell N="Angle" V="0"/>
       <Cell N="FillPattern" V="0"/>
       <Cell N="LinePattern" V="0"/>
-      <Section N="Character">
-        <Row IX="0">
-          <Cell N="Font" V="1"/>
-          <Cell N="Color" V="${textColor}"/>
-          <Cell N="Size" V="${fontSizeInches}"/>
-          <Cell N="Style" V="${isBold ? '1' : '0'}"/>
-        </Row>
+${this._textBlockCells(runs, estWidth, estHeight, 1, true)}      <Section N="Character">${textXml.charRows}
       </Section>
-      <Section N="Paragraph">
-        <Row IX="0">
-          <Cell N="HorzAlign" V="1"/>
-        </Row>
+      <Section N="Paragraph">${textXml.paraRows}
       </Section>
-      <Text>${this._xmlEscape(text.text)}</Text>
+      <Text>${textXml.body}</Text>
     </Shape>
 `;
     }
 
-    _buildConnector(conn, id) {
+    /**
+     * A connector, as a Visio 1-D shape.
+     *
+     * Visio only treats a shape as a connector - and only honours the glue
+     * recorded in <Connects> - when OneD is set. Without it the Begin/End
+     * cells describe endpoints of a shape that has none, so the arrows sat on
+     * the page unattached and stayed behind when a box moved.
+     *
+     * A 1-D shape lives in the frame its own endpoints define: local X runs
+     * from the begin point to the end point, local Y is the perpendicular
+     * offset. Elbows therefore survive as drawn.
+     *
+     * The transform cells are plain values. Visio derives a 1-D shape's
+     * transform from its endpoints itself, so writing formulas that do the
+     * same job by hand does not help - and Visio will not open a file that
+     * has them, which is how this was found: the drawing came up with every
+     * labelled box missing.
+     *
+     * A connector usually stays on the page: page-level glue reaches a shape
+     * at any depth, and a route crossing a frame boundary belongs to neither
+     * frame. One whose whole route and both ends are inside a single frame is
+     * nested into it, so it travels with the frame instead of stretching.
+     *
+     * @param {any} conn
+     * @param {number} id
+     * @param {{x: number, y: number}} origin the coordinate system to place it in
+     */
+    _buildConnector(conn, id, origin) {
         const pts = conn.points;
         if (pts.length < 2) return '';
 
-        const startPt = pts[0];
-        const endPt = pts[pts.length - 1];
-
-        // Calculate bounding box
-        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-        for (const p of pts) {
-            minX = Math.min(minX, p.x);
-            minY = Math.min(minY, p.y);
-            maxX = Math.max(maxX, p.x);
-            maxY = Math.max(maxY, p.y);
+        // Visio coordinates, y growing upwards, before any local frame
+        const vpts = pts.map(p => ({
+            x: this._svgToVisioX(p.x) - origin.x,
+            y: this._svgToVisioY(p.y) - origin.y
+        }));
+        // Pull an arrowed end off the box edge so the head is a triangle
+        // on the line, not a blob sitting on the tile.
+        const arrowIn = 0.12;
+        const pull = (from, toward) => {
+            const dx = toward.x - from.x;
+            const dy = toward.y - from.y;
+            const len = Math.hypot(dx, dy);
+            if (len < arrowIn * 2) return from;
+            return {
+                x: from.x + dx / len * arrowIn,
+                y: from.y + dy / len * arrowIn
+            };
+        };
+        if (conn.arrowStart && vpts.length >= 2) vpts[0] = pull(vpts[0], vpts[1]);
+        if (conn.arrowEnd && vpts.length >= 2) {
+            vpts[vpts.length - 1] = pull(vpts[vpts.length - 1], vpts[vpts.length - 2]);
         }
 
-        const w = Math.max((maxX - minX) * this.scale, 0.01);
-        const h = Math.max((maxY - minY) * this.scale, 0.01);
-        const pinX = this._svgToVisioX(minX) + w / 2;
-        const pinY = this._svgToVisioY(maxY) + h / 2;
+        const begin = vpts[0];
+        const end = vpts[vpts.length - 1];
+
+        const spanX = end.x - begin.x;
+        const spanY = end.y - begin.y;
+        const length = Math.hypot(spanX, spanY);
+        // A connector whose ends coincide has no direction to lay a local
+        // frame along; keep it visible rather than dividing by zero.
+        const w = Math.max(length, 0.01);
+        const angle = length > 0 ? Math.atan2(spanY, spanX) : 0;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        const local = vpts.map(p => {
+            const dx = p.x - begin.x;
+            const dy = p.y - begin.y;
+            return { x: dx * cos + dy * sin, y: -dx * sin + dy * cos };
+        });
+
+        // Height is the route's perpendicular extent, doubled so the line
+        // itself keeps Visio's usual place at half the shape's height.
+        // A straight connector with Height 0 cannot be selected or glued.
+        const perp = local.reduce((m, p) => Math.max(m, Math.abs(p.y)), 0);
+        const h = Math.max(2 * perp, 0.0625);
 
         const lineColor = this._colorToRGB(conn.style.stroke) || '#000000';
         const lineWeight = (conn.style.strokeWidth || 1) * this.scale;
-        const dashPattern = conn.style.strokeDasharray ? '2' : '1';
+        const dashPattern = this._linePattern(conn.style.strokeDasharray);
+        const lineTrans = this._transparency(conn.style.strokeOpacity, conn.style.opacity);
 
         // Arrow: 5 = filled triangle
-        const endArrow = conn.hasArrow ? '5' : '0';
+        // SceneModel guarantees both ends are present and boolean
+        const beginArrow = conn.arrowStart ? '5' : '0';
+        const endArrow = conn.arrowEnd ? '5' : '0';
 
-        // Build geometry
         let geomXml = `
       <Section N="Geometry" IX="0">
         <Cell N="NoFill" V="1"/>
         <Cell N="NoLine" V="0"/>`;
 
-        for (let i = 0; i < pts.length; i++) {
-            const lx = (pts[i].x - minX) * this.scale;
-            const ly = h - (pts[i].y - minY) * this.scale;
-
-            if (i === 0) {
-                geomXml += `
-        <Row T="MoveTo" IX="1"><Cell N="X" V="${lx}"/><Cell N="Y" V="${ly}"/></Row>`;
-            } else {
-                geomXml += `
-        <Row T="LineTo" IX="${i + 1}"><Cell N="X" V="${lx}"/><Cell N="Y" V="${ly}"/></Row>`;
-            }
-        }
+        local.forEach((p, i) => {
+            const ly = h / 2 + p.y;
+            const row = i === 0 ? 'MoveTo' : 'LineTo';
+            geomXml += `
+        <Row T="${row}" IX="${i + 1}">${this._relGeomCell('X', p.x, w, 'Width')}${this._relGeomCell('Y', ly, h, 'Height')}</Row>`;
+        });
 
         geomXml += `
       </Section>`;
 
+        const fromId = conn.fromShape !== null ? this.shapeIds[conn.fromShape] : null;
+        const toId = conn.toShape !== null ? this.shapeIds[conn.toShape] : null;
+        let glueCells = `      <Cell N="ObjType" V="2"/>
+      <Cell N="GlueType" V="2"/>
+`;
+        if (fromId !== null) {
+            glueCells += `      <Cell N="BegTrigger" F="_XFTRIGGER(Sheet.${fromId}!EventXFMod)" V="${fromId}"/>
+`;
+        }
+        if (toId !== null) {
+            glueCells += `      <Cell N="EndTrigger" F="_XFTRIGGER(Sheet.${toId}!EventXFMod)" V="${toId}"/>
+`;
+        }
+
+        // The XForm follows the endpoints, the way Visio's own connectors do,
+        // so re-gluing an end moves and re-aims the whole shape.
         return `    <Shape ID="${id}" Type="Shape" LineStyle="0" FillStyle="0" TextStyle="0">
-      <Cell N="PinX" V="${pinX}"/>
-      <Cell N="PinY" V="${pinY}"/>
+      <Cell N="OneD" V="1"/>
+      <Cell N="BeginX" V="${begin.x}"/>
+      <Cell N="BeginY" V="${begin.y}"/>
+      <Cell N="EndX" V="${end.x}"/>
+      <Cell N="EndY" V="${end.y}"/>
+      <Cell N="PinX" V="${(begin.x + end.x) / 2}"/>
+      <Cell N="PinY" V="${(begin.y + end.y) / 2}"/>
       <Cell N="Width" V="${w}"/>
       <Cell N="Height" V="${h}"/>
       <Cell N="LocPinX" V="${w / 2}"/>
       <Cell N="LocPinY" V="${h / 2}"/>
-      <Cell N="Angle" V="0"/>
-      <Cell N="BeginX" V="${this._svgToVisioX(startPt.x)}"/>
-      <Cell N="BeginY" V="${this._svgToVisioY(startPt.y)}"/>
-      <Cell N="EndX" V="${this._svgToVisioX(endPt.x)}"/>
-      <Cell N="EndY" V="${this._svgToVisioY(endPt.y)}"/>
+      <Cell N="Angle" V="${angle}"/>
       <Cell N="FillPattern" V="0"/>
       <Cell N="LineWeight" V="${lineWeight}"/>
       <Cell N="LineColor" V="${lineColor}"/>
       <Cell N="LinePattern" V="${dashPattern}"/>
-      <Cell N="BeginArrow" V="0"/>
+      <Cell N="BeginArrow" V="${beginArrow}"/>
       <Cell N="EndArrow" V="${endArrow}"/>
-      <Cell N="BeginArrowSize" V="2"/>
-      <Cell N="EndArrowSize" V="2"/>${geomXml}
+      <Cell N="BeginArrowSize" V="3"/>
+      <Cell N="EndArrowSize" V="3"/>
+      <Cell N="LineColorTrans" V="${lineTrans}"/>
+${glueCells}${geomXml}
     </Shape>
 `;
     }
 }
 
 </script>
+    <script>/* drawio-builder.js */
+// @ts-check
+/**
+ * Native draw.io (.drawio / mxGraph) export from the scene model.
+ *
+ * VSDX import in draw.io already glues edges, but it drops polyline
+ * waypoints (edgeStyle=none, straight diagonals). Writing mxGraph ourselves
+ * keeps the route, puts every label inside its tile, and uses real groups.
+ */
+
+class DrawioBuilder {
+    /**
+     * @param {any} scene
+     */
+    constructor(scene) {
+        this.scene = scene;
+        this.vb = scene.viewBox;
+        this.nextId = 2;
+        /** @type {number[]} */
+        this.shapeCell = [];
+        /** @type {number[]} */
+        this.textCell = [];
+        /** @type {number[]} */
+        this.connectorCell = [];
+        /** @type {Map<number|null, number[]>} */
+        this.childShapes = new Map();
+        /** @type {Map<number|null, number[]>} */
+        this.childTexts = new Map();
+    }
+
+    /** @returns {string} */
+    build() {
+        this.nextId = 2;
+        this.shapeCell = this.scene.shapes.map(() => this._id());
+        this.textCell = this.scene.texts.map(() => this._id());
+        this.connectorCell = this.scene.connectors.map(() => this._id());
+        this.childShapes = new Map();
+        this.childTexts = new Map();
+        this.scene.shapes.forEach((s, i) => this._add(this.childShapes, s.parentShape, i));
+        this.scene.texts.forEach((t, i) => this._add(this.childTexts, t.parentShape, i));
+
+        const cells = ['<mxCell id="0"/>', '<mxCell id="1" parent="0"/>'];
+        this._emitTree(null, '1', { x: this.vb.x, y: this.vb.y }, cells);
+        // Edges live on the page. Nested in a group, glue double-moves when
+        // the frame is dragged; mxGraph expects source/target on the default
+        // parent and waypoints in page coordinates.
+        const pageOrigin = { x: this.vb.x, y: this.vb.y };
+        this.scene.connectors.forEach((_, i) => this._emitConnector(i, '1', pageOrigin, cells));
+
+        const pw = Math.max(1, Math.round(this.vb.width));
+        const ph = Math.max(1, Math.round(this.vb.height));
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="svgtovisio" type="device" version="21">
+  <diagram id="page1" name="Page-1">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="${pw}" pageHeight="${ph}" math="0" shadow="0">
+      <root>
+        ${cells.join('\n        ')}
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+`;
+    }
+
+    _id() {
+        return this.nextId++;
+    }
+
+    /**
+     * @param {Map<number|null, number[]>} map
+     * @param {number|null} parent
+     * @param {number} index
+     */
+    _add(map, parent, index) {
+        const key = parent == null ? null : parent;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(index);
+    }
+
+    /**
+     * @param {number|null} parentIndex
+     * @param {string} parentId
+     * @param {{x: number, y: number}} origin
+     * @param {string[]} cells
+     */
+    _emitTree(parentIndex, parentId, origin, cells) {
+        for (const i of (this.childShapes.get(parentIndex) || [])) {
+            const shape = this.scene.shapes[i];
+            this._emitShape(i, parentId, origin, cells);
+            if (shape.isContainer) {
+                this._emitTree(i, String(this.shapeCell[i]), { x: shape.x, y: shape.y }, cells);
+            }
+        }
+        for (const i of (this.childTexts.get(parentIndex) || [])) {
+            this._emitText(i, parentId, origin, cells);
+        }
+    }
+
+    /**
+     * @param {number} i
+     * @param {string} parentId
+     * @param {{x: number, y: number}} origin
+     * @param {string[]} cells
+     */
+    _emitShape(i, parentId, origin, cells) {
+        const shape = this.scene.shapes[i];
+        const id = this.shapeCell[i];
+        const x = this._n(shape.x - origin.x);
+        const y = this._n(shape.y - origin.y);
+        const w = this._n(Math.max(shape.width, 1));
+        const h = this._n(Math.max(shape.height, 1));
+        const style = this._shapeStyle(shape);
+        const value = this._shapeValue(shape);
+        cells.push(
+            `<mxCell id="${id}" parent="${parentId}" vertex="1" value="${this._html(value)}" style="${style}">` +
+            `<mxGeometry x="${x}" y="${y}" width="${w}" height="${h}" as="geometry"/>` +
+            `</mxCell>`
+        );
+    }
+
+    /**
+     * @param {any} shape
+     * @returns {string}
+     */
+    _shapeStyle(shape) {
+        const st = shape.style || {};
+        const parts = ['html=1', 'whiteSpace=wrap', 'overflow=width'];
+        if (shape.isContainer) {
+            parts.push('container=1', 'collapsible=0', 'recursiveResize=0', 'expand=0');
+        }
+        if (shape.type === 'ellipse' || shape.type === 'circle') parts.push('ellipse');
+        else if (shape.type === 'diamond') parts.push('rhombus');
+        else if (shape.type === 'polygon' || shape.type === 'path-shape') {
+            const pts = this._relPoly(shape);
+            if (pts) parts.push('shape=mxgraph.basic.polygon', `polyCoords=${pts}`);
+        }
+        const rx = st.rx || 0;
+        if (rx > 0 && shape.type === 'rect') {
+            parts.push('rounded=1');
+            const min = Math.min(shape.width, shape.height) || 1;
+            parts.push(`arcSize=${this._n(Math.min(50, (rx / min) * 100))}`);
+        }
+        if (shape.angle) {
+            parts.push(`rotation=${this._n(-shape.angle * 180 / Math.PI)}`);
+        }
+        this._paint(parts, st, false);
+        const ts = shape.textStyle || st;
+        this._font(parts, ts, shape.isContainer ? 'left' : 'center',
+            shape.isContainer ? 'top' : 'middle');
+        return parts.join(';') + ';';
+    }
+
+    /**
+     * @param {any} shape
+     * @returns {string}
+     */
+    _shapeValue(shape) {
+        const runs = this._runs(shape.textRuns, shape.text);
+        if (!runs.length) return '';
+        return runs.map(r => r.text).join('\n');
+    }
+
+    /**
+     * @param {any} shape
+     * @returns {string|null}
+     */
+    _relPoly(shape) {
+        const pts = shape.points;
+        if (!pts || pts.length < 3) return null;
+        const w = shape.width || 1;
+        const h = shape.height || 1;
+        const coords = pts.map(p => {
+            const x = this._n((p.x - shape.x) / w);
+            const y = this._n((p.y - shape.y) / h);
+            return `[${x},${y}]`;
+        });
+        return `[${coords.join(',')}]`;
+    }
+
+    /**
+     * @param {number} i
+     * @param {string} parentId
+     * @param {{x: number, y: number}} origin
+     * @param {string[]} cells
+     */
+    _emitText(i, parentId, origin, cells) {
+        const text = this.scene.texts[i];
+        const id = this.textCell[i];
+        const st = text.style || {};
+        const fs = st.fontSize || 14;
+        const raw = String(text.text || '');
+        const lines = raw.split('\n');
+        const width = Math.max(24, this._textWidth(raw, fs, st.fontWeight) + 8);
+        const height = Math.max(fs * 1.25, lines.length * fs * 1.25);
+        const anchor = st.textAnchor || 'start';
+        let x = text.x - origin.x;
+        const y = text.y - origin.y - fs * 0.85;
+        if (anchor === 'middle') x -= width / 2;
+        else if (anchor === 'end') x -= width;
+        const align = anchor === 'middle' ? 'center' : anchor === 'end' ? 'right' : 'left';
+        const parts = ['text', 'html=1', 'whiteSpace=wrap', 'strokeColor=none',
+            'fillColor=none', 'overflow=width', 'verticalAlign=bottom'];
+        this._font(parts, st, align, 'bottom');
+        cells.push(
+            `<mxCell id="${id}" parent="${parentId}" vertex="1" value="${this._html(raw)}" style="${parts.join(';')};">` +
+            `<mxGeometry x="${this._n(x)}" y="${this._n(y)}" width="${this._n(width)}" height="${this._n(height)}" as="geometry"/>` +
+            `</mxCell>`
+        );
+    }
+
+    /**
+     * @param {number} i
+     * @param {string} parentId
+     * @param {{x: number, y: number}} origin
+     * @param {string[]} cells
+     */
+    _emitConnector(i, parentId, origin, cells) {
+        const conn = this.scene.connectors[i];
+        const id = this.connectorCell[i];
+        const pts = conn.points || [];
+        if (pts.length < 2) return;
+        const st = conn.style || {};
+        const parts = ['html=1', 'edgeStyle=none', 'curved=0', 'rounded=0',
+            'endCap=flat', 'startCap=flat'];
+        parts.push(`endArrow=${conn.arrowEnd ? 'classic' : 'none'}`);
+        parts.push(`startArrow=${conn.arrowStart ? 'classic' : 'none'}`);
+        if (conn.arrowEnd || conn.arrowStart) {
+            parts.push('endFill=1', 'startFill=1', 'endSize=6', 'startSize=6');
+        }
+        this._paint(parts, st, true);
+        const src = conn.fromShape != null ? this.shapeCell[conn.fromShape] : null;
+        const tgt = conn.toShape != null ? this.shapeCell[conn.toShape] : null;
+        if (src != null && conn.fromShape != null) {
+            const ex = this._port(this.scene.shapes[conn.fromShape], pts[0]);
+            parts.push(`exitX=${ex.x}`, `exitY=${ex.y}`, 'exitPerimeter=1');
+        }
+        if (tgt != null && conn.toShape != null) {
+            const en = this._port(this.scene.shapes[conn.toShape], pts[pts.length - 1]);
+            parts.push(`entryX=${en.x}`, `entryY=${en.y}`, 'entryPerimeter=1');
+        }
+        const srcAttr = src != null ? ` source="${src}"` : '';
+        const tgtAttr = tgt != null ? ` target="${tgt}"` : '';
+        const mids = pts.slice(1, -1);
+        let geoInner = '';
+        if (mids.length) {
+            geoInner = `<Array as="points">${mids.map(p =>
+                `<mxPoint x="${this._n(p.x - origin.x)}" y="${this._n(p.y - origin.y)}"/>`
+            ).join('')}</Array>`;
+        }
+        if (src == null || tgt == null) {
+            const a = pts[0];
+            const b = pts[pts.length - 1];
+            geoInner +=
+                `<mxPoint x="${this._n(a.x - origin.x)}" y="${this._n(a.y - origin.y)}" as="sourcePoint"/>` +
+                `<mxPoint x="${this._n(b.x - origin.x)}" y="${this._n(b.y - origin.y)}" as="targetPoint"/>`;
+        }
+        const value = conn.text ? this._html(conn.text) : '';
+        cells.push(
+            `<mxCell id="${id}" parent="${parentId}" edge="1"${srcAttr}${tgtAttr} value="${value}" style="${parts.join(';')};">` +
+            `<mxGeometry relative="1" as="geometry">${geoInner}</mxGeometry>` +
+            `</mxCell>`
+        );
+    }
+
+    /**
+     * @param {any} shape
+     * @param {{x: number, y: number}} pt
+     */
+    _port(shape, pt) {
+        const w = shape.width || 1;
+        const h = shape.height || 1;
+        const x = (pt.x - shape.x) / w;
+        const y = (pt.y - shape.y) / h;
+        return {
+            x: this._n(Math.max(0, Math.min(1, x))),
+            y: this._n(Math.max(0, Math.min(1, y)))
+        };
+    }
+
+    /**
+     * @param {string[]} parts
+     * @param {any} st
+     * @param {boolean} lineOnly
+     */
+    _paint(parts, st, lineOnly) {
+        const stroke = this._hex(st.stroke);
+        const fill = this._hex(st.fill);
+        const sw = st.strokeWidth == null ? 1 : st.strokeWidth;
+        if (!lineOnly) {
+            parts.push(fill ? `fillColor=${fill}` : 'fillColor=none');
+            const fo = (st.fillOpacity == null ? 1 : st.fillOpacity) * (st.opacity == null ? 1 : st.opacity);
+            if (fo < 0.999) parts.push(`fillOpacity=${this._n(fo * 100)}`);
+        }
+        parts.push(stroke ? `strokeColor=${stroke}` : 'strokeColor=none');
+        if (sw !== 1) parts.push(`strokeWidth=${this._n(sw)}`);
+        const so = (st.strokeOpacity == null ? 1 : st.strokeOpacity) * (st.opacity == null ? 1 : st.opacity);
+        if (so < 0.999) parts.push(`strokeOpacity=${this._n(so * 100)}`);
+        if (st.strokeDasharray) {
+            parts.push('dashed=1');
+            const nums = String(st.strokeDasharray).split(/[\s,]+/).map(Number).filter(n => n > 0);
+            if (nums.length) parts.push(`dashPattern=${nums.map(n => this._n(n)).join(' ')}`);
+        }
+    }
+
+    /**
+     * @param {string[]} parts
+     * @param {any} st
+     * @param {string} align
+     * @param {string} valign
+     */
+    _font(parts, st, align, valign) {
+        const fs = st.fontSize || 14;
+        const color = this._hex(st.textColor || st.fill) || '#000000';
+        parts.push(`fontSize=${this._n(fs)}`, `fontColor=${color}`, `align=${align}`, `verticalAlign=${valign}`);
+        const weight = st.fontWeight;
+        if (weight === 'bold' || Number(weight) >= 700) parts.push('fontStyle=1');
+        const family = this._face(st.fontFamily);
+        if (family) parts.push(`fontFamily=${family}`);
+        parts.push('spacing=2');
+    }
+
+    /**
+     * @param {any[]|undefined} runs
+     * @param {string|null} text
+     */
+    _runs(runs, text) {
+        const src = (runs && runs.length) ? runs : (text ? [{ text, style: null }] : []);
+        const out = [];
+        for (const run of src) {
+            for (const line of String(run.text || '').split('\n')) {
+                if (line === '' && out.length === 0) continue;
+                out.push({ text: line, style: run.style });
+            }
+        }
+        return out;
+    }
+
+    /**
+     * @param {string} text
+     * @param {number} fs
+     * @param {string|number} [weight]
+     */
+    _textWidth(text, fs, weight) {
+        const bold = weight === 'bold' || Number(weight) >= 700;
+        return [...String(text)].length * fs * (bold ? 0.62 : 0.56);
+    }
+
+    /** @param {string} [stack] */
+    _face(stack) {
+        if (!stack) return 'Arial';
+        const first = String(stack).split(',')[0].trim().replace(/^["']|["']$/g, '');
+        if (!first || first === 'sans-serif' || first === 'system-ui') return 'Arial';
+        return first;
+    }
+
+    /** @param {string} [color] */
+    _hex(color) {
+        if (!color || color === 'none' || color === 'transparent') return null;
+        if (/^url\(/i.test(color.trim())) return null;
+        const named = {
+            white: '#FFFFFF', black: '#000000', red: '#FF0000', green: '#008000',
+            blue: '#0000FF', yellow: '#FFFF00', orange: '#FFA500', gray: '#808080',
+            grey: '#808080', silver: '#C0C0C0', navy: '#000080', teal: '#008080'
+        };
+        const lower = color.toLowerCase().trim();
+        if (named[lower]) return named[lower];
+        const rgb = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+        if (rgb) {
+            const h = (n) => Number(n).toString(16).padStart(2, '0');
+            return ('#' + h(rgb[1]) + h(rgb[2]) + h(rgb[3])).toUpperCase();
+        }
+        if (color.startsWith('#') && color.length === 4) {
+            return ('#' + color[1] + color[1] + color[2] + color[2] + color[3] + color[3]).toUpperCase();
+        }
+        if (color.startsWith('#') && color.length >= 7) return color.slice(0, 7).toUpperCase();
+        return '#000000';
+    }
+
+    /** @param {number} n */
+    _n(n) {
+        if (!isFinite(n)) return 0;
+        return Math.round(n * 100) / 100;
+    }
+
+    /** @param {string} s */
+    _esc(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    /**
+     * html=1 values: each source line is escaped text, joined with &lt;br/&gt;.
+     * A raw newline in an attribute is legal XML but draw.io treats &lt;br/&gt;
+     * as the line break.
+     * @param {string} s
+     */
+    _html(s) {
+        return String(s).split('\n').map((line) => this._esc(line)).join('&lt;br/&gt;');
+    }
+}
+
+</script>
+    <script>/* odg-builder.js */
+// @ts-check
+/**
+ * Native LibreOffice Draw export (flat ODG / .fodg) from the scene model.
+ *
+ * VSDX import in Draw turns connectors into paths, so they do not glue.
+ * Two-point tile edges become draw:connector (glue). Polylines become
+ * draw:polyline — LibreOffice ignores svg:d on a glued connector and
+ * reroutes around groups. draw:g keeps frames together.
+ */
+
+class OdgBuilder {
+    /**
+     * @param {any} scene
+     */
+    constructor(scene) {
+        this.scene = scene;
+        this.vb = scene.viewBox;
+        this.pxToCm = 2.54 / 96;
+        /** @type {string[]} */
+        this.autoStyles = [];
+        this.styleSeq = 0;
+        /** @type {Map<string, string>} */
+        this.styleCache = new Map();
+        /** @type {boolean} */
+        this.needDash = false;
+        /** @type {boolean} */
+        this.needArrow = false;
+        /** @type {string[]} */
+        this.shapeXmlId = [];
+        /** @type {Map<number|null, number[]>} */
+        this.childShapes = new Map();
+        /** @type {Map<number|null, number[]>} */
+        this.childTexts = new Map();
+    }
+
+    /** @returns {string} */
+    build() {
+        this.autoStyles = [];
+        this.styleSeq = 0;
+        this.styleCache = new Map();
+        this.needDash = false;
+        this.needArrow = false;
+        this.shapeXmlId = this.scene.shapes.map((_, i) => `id_s${i}`);
+        this.childShapes = new Map();
+        this.childTexts = new Map();
+        this.scene.shapes.forEach((s, i) => this._add(this.childShapes, s.parentShape, i));
+        this.scene.texts.forEach((t, i) => this._add(this.childTexts, t.parentShape, i));
+
+        const body = this._emitTree(null);
+
+        const pageW = this._cm(this.vb.width);
+        const pageH = this._cm(this.vb.height);
+        const dashDef = this.needDash
+            ? `<draw:stroke-dash draw:name="Dash" draw:style="rect" draw:dots1="1" draw:dots1-length="0.2cm" draw:dots2="1" draw:dots2-length="0.2cm" draw:distance="0.15cm"/>`
+            : '';
+        const arrowDef = this.needArrow
+            ? `<draw:marker draw:name="Arrow" draw:display-name="Arrow" svg:viewBox="0 0 20 30" svg:d="M0 0 L20 15 L0 30 z"/>`
+            : '';
+
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<office:document
+ xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+ xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+ xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+ xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+ xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+ xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+ office:version="1.3"
+ office:mimetype="application/vnd.oasis.opendocument.graphics">
+ <office:meta>
+  <meta:generator>svgtovisio</meta:generator>
+ </office:meta>
+ <office:font-face-decls>
+  <style:font-face style:name="Arial" svg:font-family="Arial" style:font-family-generic="swiss" style:font-pitch="variable"/>
+ </office:font-face-decls>
+ <office:styles>
+  <draw:layer-set>
+   <draw:layer draw:name="layout" draw:display="true" draw:protected="false"/>
+   <draw:layer draw:name="background" draw:display="true" draw:protected="false"/>
+   <draw:layer draw:name="controls" draw:display="true" draw:protected="false"/>
+   <draw:layer draw:name="measurelines" draw:display="true" draw:protected="false"/>
+  </draw:layer-set>
+  ${dashDef}
+  ${arrowDef}
+  <style:style style:name="standard" style:family="graphic">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-color="#000000" draw:fill="solid" draw:fill-color="#ffffff"/>
+  </style:style>
+ </office:styles>
+ <office:automatic-styles>
+  <style:page-layout style:name="PM1">
+   <style:page-layout-properties fo:page-width="${pageW}cm" fo:page-height="${pageH}cm" fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm"/>
+  </style:page-layout>
+  <style:style style:name="dp1" style:family="drawing-page">
+   <style:drawing-page-properties draw:background-size="full" draw:fill="none"/>
+  </style:style>
+  ${this.autoStyles.join('\n  ')}
+ </office:automatic-styles>
+ <office:master-styles>
+  <style:master-page style:name="Default" style:page-layout-name="PM1"/>
+ </office:master-styles>
+ <office:body>
+  <office:drawing>
+   <draw:page draw:name="page1" draw:style-name="dp1" draw:master-page-name="Default">
+${body}
+   </draw:page>
+  </office:drawing>
+ </office:body>
+</office:document>
+`;
+    }
+
+    /**
+     * @param {Map<number|null, number[]>} map
+     * @param {number|null} parent
+     * @param {number} index
+     */
+    _add(map, parent, index) {
+        const key = parent == null ? null : parent;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(index);
+    }
+
+    /**
+     * @param {number|null} parentIndex
+     * @returns {string}
+     */
+    _emitTree(parentIndex) {
+        let xml = '';
+        for (const i of (this.childShapes.get(parentIndex) || [])) {
+            const shape = this.scene.shapes[i];
+            const kids = this._emitTree(i) + this._emitTexts(i);
+            if (shape.isContainer) {
+                xml += `    <draw:g>\n${this._shape(shape, i)}${kids}    </draw:g>\n`;
+            } else {
+                xml += this._shape(shape, i) + kids;
+            }
+        }
+        if (parentIndex == null) {
+            xml += this._emitTexts(null);
+            // Connectors stay on the page. svg:d is page-absolute; inside
+            // draw:g LibreOffice treats it as group-local and drops the route.
+            this.scene.connectors.forEach((c, i) => {
+                xml += this._connector(c, i);
+            });
+        }
+        return xml;
+    }
+
+    /**
+     * @param {number|null} parentIndex
+     * @returns {string}
+     */
+    _emitTexts(parentIndex) {
+        let xml = '';
+        for (const i of (this.childTexts.get(parentIndex) || [])) {
+            xml += this._text(this.scene.texts[i], i);
+        }
+        return xml;
+    }
+
+    /**
+     * @param {any} shape
+     * @param {number} i
+     * @returns {string}
+     */
+    _shape(shape, i) {
+        const id = this.shapeXmlId[i];
+        const style = this._graphic(shape.style, {
+            arrowStart: false,
+            arrowEnd: false,
+            line: false,
+            align: shape.isContainer ? 'left' : 'center',
+            valign: shape.isContainer ? 'top' : 'middle',
+            fitText: !shape.isContainer
+        });
+        const x = this._cm(shape.x - this.vb.x);
+        const y = this._cm(shape.y - this.vb.y);
+        const w = this._cm(Math.max(shape.width, 1));
+        const h = this._cm(Math.max(shape.height, 1));
+        const para = this._para(shape.textStyle || shape.style, shape.isContainer ? 'start' : 'center');
+        const textXml = this._textContent(shape, para);
+        const common = `draw:style-name="${style}" draw:id="${id}" xml:id="${id}" draw:layer="layout" svg:x="${x}cm" svg:y="${y}cm" svg:width="${w}cm" svg:height="${h}cm"`;
+
+        if (shape.type === 'ellipse' || shape.type === 'circle') {
+            return `    <draw:ellipse ${common}>${textXml}</draw:ellipse>\n`;
+        }
+        if (shape.type === 'diamond') {
+            const pts = this._diamondPoints(w, h);
+            return `    <draw:polygon ${common} svg:viewBox="0 0 ${this._hmm(shape.width)} ${this._hmm(shape.height)}" draw:points="${pts}">${textXml}</draw:polygon>\n`;
+        }
+        if ((shape.type === 'polygon' || shape.type === 'path-shape') && shape.points && shape.points.length >= 3) {
+            const pts = shape.points.map(p =>
+                `${this._hmm(p.x - shape.x)},${this._hmm(p.y - shape.y)}`
+            ).join(' ');
+            return `    <draw:polygon ${common} svg:viewBox="0 0 ${this._hmm(shape.width)} ${this._hmm(shape.height)}" draw:points="${pts}">${textXml}</draw:polygon>\n`;
+        }
+        const rx = shape.style && shape.style.rx ? shape.style.rx : 0;
+        const corner = rx > 0 ? ` draw:corner-radius="${this._cm(rx)}cm"` : '';
+        return `    <draw:rect ${common}${corner}>${textXml}</draw:rect>\n`;
+    }
+
+    /**
+     * @param {any} shape
+     * @param {string} para
+     */
+    _textContent(shape, para) {
+        const runs = this._runs(shape.textRuns, shape.text);
+        if (!runs.length) return '';
+        return runs.map(r => {
+            const p = r.style ? this._para(r.style, shape.isContainer ? 'start' : 'center') : para;
+            return `<text:p text:style-name="${p}">${this._esc(r.text)}</text:p>`;
+        }).join('');
+    }
+
+    /**
+     * @param {any} text
+     * @param {number} i
+     * @returns {string}
+     */
+    _text(text, i) {
+        const st = text.style || {};
+        const fs = st.fontSize || 14;
+        const raw = String(text.text || '');
+        const lines = raw.split('\n');
+        const widthPx = Math.max(24, [...raw].length * fs * 0.56 + 8);
+        const heightPx = Math.max(fs * 1.3, lines.length * fs * 1.3);
+        const anchor = st.textAnchor || 'start';
+        let xPx = text.x - this.vb.x;
+        if (anchor === 'middle') xPx -= widthPx / 2;
+        else if (anchor === 'end') xPx -= widthPx;
+        const yPx = text.y - this.vb.y - fs * 0.85;
+        const style = this._graphic({
+            fill: 'none', stroke: 'none', fillOpacity: 0, strokeOpacity: 0,
+            strokeWidth: 0, opacity: 1, strokeDasharray: null
+        }, { arrowStart: false, arrowEnd: false, line: false, align: 'left', valign: 'top', fitText: true });
+        const para = this._para(st, anchor);
+        const paras = lines.map(l => `<text:p text:style-name="${para}">${this._esc(l)}</text:p>`).join('');
+        const id = `id_t${i}`;
+        return `    <draw:rect draw:style-name="${style}" draw:id="${id}" xml:id="${id}" draw:layer="layout" svg:x="${this._cm(xPx)}cm" svg:y="${this._cm(yPx)}cm" svg:width="${this._cm(widthPx)}cm" svg:height="${this._cm(heightPx)}cm">${paras}</draw:rect>\n`;
+    }
+
+    /**
+     * @param {any} conn
+     * @param {number} i
+     * @returns {string}
+     */
+    _connector(conn, i) {
+        const pts = conn.points || [];
+        if (pts.length < 2) return '';
+        const style = this._graphic(conn.style, {
+            arrowStart: !!conn.arrowStart,
+            arrowEnd: !!conn.arrowEnd,
+            line: true,
+            align: 'center',
+            valign: 'middle'
+        });
+        const id = `id_c${i}`;
+        let label = '';
+        if (conn.text) {
+            const para = this._para(conn.style, 'center');
+            label = `<text:p text:style-name="${para}">${this._esc(conn.text)}</text:p>`;
+        }
+
+        // LibreOffice drops svg:d on draw:connector as soon as the edge is
+        // glued, then auto-routes around groups. A polyline keeps the SVG
+        // route. Two-point tile-to-tile edges stay connectors so they glue.
+        const poly = pts.length > 2;
+        const fromBox = conn.fromShape != null && !this.scene.shapes[conn.fromShape].isContainer;
+        const toBox = conn.toShape != null && !this.scene.shapes[conn.toShape].isContainer;
+        const glue = !poly && fromBox && toBox;
+        if (poly) return this._polyline(conn, style, id, label);
+
+        const a = pts[0];
+        const b = pts[pts.length - 1];
+        const start = glue ? ` draw:start-shape="${this.shapeXmlId[conn.fromShape]}"` : '';
+        const end = glue ? ` draw:end-shape="${this.shapeXmlId[conn.toShape]}"` : '';
+        return `    <draw:connector draw:style-name="${style}" draw:id="${id}" xml:id="${id}" draw:layer="layout" draw:type="line"${start}${end} svg:x1="${this._cm(a.x - this.vb.x)}cm" svg:y1="${this._cm(a.y - this.vb.y)}cm" svg:x2="${this._cm(b.x - this.vb.x)}cm" svg:y2="${this._cm(b.y - this.vb.y)}cm">${label}</draw:connector>\n`;
+    }
+
+    /**
+     * @param {any} conn
+     * @param {string} style
+     * @param {string} id
+     * @param {string} label
+     */
+    _polyline(conn, style, id, label) {
+        const pts = conn.points;
+        const xs = pts.map((p) => p.x - this.vb.x);
+        const ys = pts.map((p) => p.y - this.vb.y);
+        const minX = Math.min.apply(null, xs);
+        const minY = Math.min.apply(null, ys);
+        const w = Math.max(Math.max.apply(null, xs) - minX, 1);
+        const h = Math.max(Math.max.apply(null, ys) - minY, 1);
+        const vbW = Math.max(this._hmmInt(w), 1);
+        const vbH = Math.max(this._hmmInt(h), 1);
+        const points = pts.map((p) => {
+            const x = this._hmmInt((p.x - this.vb.x) - minX);
+            const y = this._hmmInt((p.y - this.vb.y) - minY);
+            return `${x},${y}`;
+        }).join(' ');
+        return `    <draw:polyline draw:style-name="${style}" draw:id="${id}" xml:id="${id}" draw:layer="layout" svg:x="${this._cm(minX)}cm" svg:y="${this._cm(minY)}cm" svg:width="${this._cm(w)}cm" svg:height="${this._cm(h)}cm" svg:viewBox="0 0 ${vbW} ${vbH}" draw:points="${points}">${label}</draw:polyline>\n`;
+    }
+
+    /**
+     * @param {any} st
+     * @param {{arrowStart: boolean, arrowEnd: boolean, line: boolean, align?: string, valign?: string, fitText?: boolean}} opt
+     * @returns {string}
+     */
+    _graphic(st, opt) {
+        const fill = this._hex(st && st.fill);
+        const stroke = this._hex(st && st.stroke);
+        const sw = st && st.strokeWidth != null ? st.strokeWidth : 1;
+        const fo = st ? (st.fillOpacity == null ? 1 : st.fillOpacity) * (st.opacity == null ? 1 : st.opacity) : 1;
+        const so = st ? (st.strokeOpacity == null ? 1 : st.strokeOpacity) * (st.opacity == null ? 1 : st.opacity) : 1;
+        const dash = !!(st && st.strokeDasharray);
+        const align = opt.align || 'center';
+        const valign = opt.valign || 'middle';
+        const fitText = !!opt.fitText;
+        const key = [fill, stroke, sw, fo, so, dash, opt.arrowStart, opt.arrowEnd, opt.line, align, valign, fitText].join('|');
+        if (this.styleCache.has(key)) return /** @type {string} */ (this.styleCache.get(key));
+        const name = 'gr' + (++this.styleSeq);
+        if (dash) this.needDash = true;
+        if (opt.arrowStart || opt.arrowEnd) this.needArrow = true;
+        const fillAttr = (!opt.line && fill)
+            ? `draw:fill="solid" draw:fill-color="${fill}" draw:opacity="${this._n(fo * 100)}%"`
+            : 'draw:fill="none"';
+        const strokeAttr = stroke
+            ? `draw:stroke="${dash ? 'dash' : 'solid'}" svg:stroke-color="${stroke}" svg:stroke-width="${this._cm(Math.max(sw, 0.4))}cm" svg:stroke-opacity="${this._n(so)}"`
+            : 'draw:stroke="none"';
+        const dashAttr = dash ? ' draw:stroke-dash="Dash"' : '';
+        const mw = this._cm(6);
+        const startM = opt.arrowStart ? ` draw:marker-start="Arrow" draw:marker-start-width="${mw}cm"` : '';
+        const endM = opt.arrowEnd ? ` draw:marker-end="Arrow" draw:marker-end-width="${mw}cm"` : '';
+        const fit = fitText ? ' draw:fit-to-size="true" style:shrink-to-fit="true"' : '';
+        this.autoStyles.push(
+            `<style:style style:name="${name}" style:family="graphic" style:parent-style-name="standard">` +
+            `<style:graphic-properties ${fillAttr} ${strokeAttr}${dashAttr}${startM}${endM} draw:textarea-horizontal-align="${align}" draw:textarea-vertical-align="${valign}" draw:auto-grow-width="false" draw:auto-grow-height="false"${fit} fo:padding-top="0.04cm" fo:padding-bottom="0.04cm" fo:padding-left="0.06cm" fo:padding-right="0.06cm"/>` +
+            `</style:style>`
+        );
+        this.styleCache.set(key, name);
+        return name;
+    }
+
+    /**
+     * @param {any} st
+     * @param {string} anchor
+     * @returns {string}
+     */
+    _para(st, anchor) {
+        const fs = (st && st.fontSize) || 14;
+        const color = this._hex(st && (st.textColor || st.fill)) || '#000000';
+        const weight = st && st.fontWeight;
+        const bold = weight === 'bold' || Number(weight) >= 700;
+        const align = anchor === 'middle' ? 'center' : anchor === 'end' ? 'end' : 'start';
+        const key = `p|${fs}|${color}|${bold}|${align}`;
+        if (this.styleCache.has(key)) return /** @type {string} */ (this.styleCache.get(key));
+        const name = 'P' + (++this.styleSeq);
+        const pt = this._n(fs * 72 / 96);
+        this.autoStyles.push(
+            `<style:style style:name="${name}" style:family="paragraph">` +
+            `<style:paragraph-properties fo:text-align="${align}"/>` +
+            `<style:text-properties fo:color="${color}" fo:font-size="${pt}pt" fo:font-weight="${bold ? 'bold' : 'normal'}" style:font-name="Arial"/>` +
+            `</style:style>`
+        );
+        this.styleCache.set(key, name);
+        return name;
+    }
+
+    /**
+     * @param {number} wcm
+     * @param {number} hcm
+     */
+    _diamondPoints(wcm, hcm) {
+        const w = this._hmmFromCm(wcm);
+        const h = this._hmmFromCm(hcm);
+        return `${w / 2},0 ${w},${h / 2} ${w / 2},${h} 0,${h / 2}`;
+    }
+
+    /**
+     * @param {any[]|undefined} runs
+     * @param {string|null} text
+     */
+    _runs(runs, text) {
+        const src = (runs && runs.length) ? runs : (text ? [{ text, style: null }] : []);
+        const out = [];
+        for (const run of src) {
+            for (const line of String(run.text || '').split('\n')) out.push({ text: line, style: run.style });
+        }
+        return out.filter(r => r.text !== '' || out.length === 1);
+    }
+
+    /** px → cm, 2 decimals */
+    _cm(px) {
+        return this._n(px * this.pxToCm);
+    }
+
+    /** px → 1/100 mm (ODF polygon / connector path space) */
+    _hmm(px) {
+        return this._n(px * 25.4 / 96 * 100);
+    }
+
+    _hmmInt(px) {
+        return Math.round(px * 25.4 / 96 * 100);
+    }
+
+    _hmmFromCm(cm) {
+        return this._n(cm * 1000);
+    }
+
+    /** @param {string} [color] */
+    _hex(color) {
+        if (!color || color === 'none' || color === 'transparent') return null;
+        if (/^url\(/i.test(String(color).trim())) return null;
+        const named = {
+            white: '#FFFFFF', black: '#000000', red: '#FF0000', green: '#008000',
+            blue: '#0000FF', yellow: '#FFFF00', orange: '#FFA500', gray: '#808080',
+            grey: '#808080', silver: '#C0C0C0', navy: '#000080', teal: '#008080'
+        };
+        const lower = String(color).toLowerCase().trim();
+        if (named[lower]) return named[lower];
+        const rgb = String(color).match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+        if (rgb) {
+            const h = (n) => Number(n).toString(16).padStart(2, '0');
+            return ('#' + h(rgb[1]) + h(rgb[2]) + h(rgb[3])).toUpperCase();
+        }
+        if (color.startsWith('#') && color.length === 4) {
+            return ('#' + color[1] + color[1] + color[2] + color[2] + color[3] + color[3]).toUpperCase();
+        }
+        if (color.startsWith('#') && color.length >= 7) return color.slice(0, 7).toUpperCase();
+        return '#000000';
+    }
+
+    /** @param {number} n */
+    _n(n) {
+        if (!isFinite(n)) return 0;
+        return Math.round(n * 100) / 100;
+    }
+
+    /** @param {string} s */
+    _esc(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+}
+
+</script>
     <script>/* app.js */
+// @ts-check
+/* global SvgParser, DrawioParser, VsdxBuilder, DrawioBuilder, OdgBuilder */
 /**
  * App - Ties together the UI, SVG parser, and VSDX builder.
  */
@@ -2019,14 +4762,17 @@ ${cellsXml}${sectionsXml}${textXml}
 (function () {
     const dropZone = document.getElementById('dropZone');
     const browseBtn = document.getElementById('browseBtn');
-    const fileInput = document.getElementById('fileInput');
-    const svgInput = document.getElementById('svgInput');
-    const convertBtn = document.getElementById('convertBtn');
+    const fileInput = /** @type {HTMLInputElement} */ (document.getElementById('fileInput'));
+    const svgInput = /** @type {HTMLTextAreaElement} */ (document.getElementById('svgInput'));
+    const convertBtn = /** @type {HTMLButtonElement} */ (document.getElementById('convertBtn'));
+    const drawioBtn = /** @type {HTMLButtonElement} */ (document.getElementById('drawioBtn'));
+    const odgBtn = /** @type {HTMLButtonElement} */ (document.getElementById('odgBtn'));
     const statusText = document.getElementById('statusText');
     const logEl = document.getElementById('log');
     const previewSection = document.getElementById('previewSection');
     const previewContainer = document.getElementById('previewContainer');
     const statsEl = document.getElementById('stats');
+    const warningsEl = document.getElementById('warnings');
 
     let currentInput = '';
     let currentFormat = 'svg'; // 'svg' or 'drawio'
@@ -2063,24 +4809,37 @@ ${cellsXml}${sectionsXml}${textXml}
         if (val && val.includes('<svg')) {
             currentInput = val;
             currentFormat = 'svg';
-            convertBtn.disabled = false;
+            setReady(true);
             showPreview(val);
         } else if (val && (val.includes('<mxGraphModel') || val.includes('<mxfile'))) {
             currentInput = val;
             currentFormat = 'drawio';
-            convertBtn.disabled = false;
+            setReady(true);
             showDrawioPreview(currentInput);
             log('Draw.io XML detected', 'info');
         } else {
-            convertBtn.disabled = !currentInput;
+            setReady(!!currentInput);
         }
     });
 
-    // --- Convert button ---
     convertBtn.addEventListener('click', async () => {
         if (!currentInput) return;
-        await convert(currentInput, currentFormat);
+        await convert(currentInput, currentFormat, 'vsdx');
     });
+    drawioBtn.addEventListener('click', async () => {
+        if (!currentInput) return;
+        await convert(currentInput, currentFormat, 'drawio');
+    });
+    odgBtn.addEventListener('click', async () => {
+        if (!currentInput) return;
+        await convert(currentInput, currentFormat, 'fodg');
+    });
+
+    function setReady(on) {
+        convertBtn.disabled = !on;
+        drawioBtn.disabled = !on;
+        odgBtn.disabled = !on;
+    }
 
     function loadFile(file) {
         const name = file.name.toLowerCase();
@@ -2093,8 +4852,9 @@ ${cellsXml}${sectionsXml}${textXml}
         }
 
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
+        reader.onload = () => {
+            // readAsText always yields a string; narrow it for the checker
+            const content = String(reader.result);
             currentInput = content;
             svgInput.value = content;
 
@@ -2109,7 +4869,7 @@ ${cellsXml}${sectionsXml}${textXml}
                 log(`Loaded SVG: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`, 'info');
             }
 
-            convertBtn.disabled = false;
+            setReady(true);
         };
         reader.readAsText(file);
     }
@@ -2123,7 +4883,19 @@ ${cellsXml}${sectionsXml}${textXml}
                 svg.style.maxWidth = '100%';
                 svg.style.height = 'auto';
             }
+            // The preview shows the browser's rendering, which always looks
+            // right. Parse it here as well so anything the converter cannot
+            // reproduce is visible before the download, not after.
+            try {
+                const probe = new SvgParser(svgString);
+                probe.parse();
+                showWarnings(probe.warnings);
+            } catch {
+                // An unparseable preview is not fatal; the convert step reports it
+                showWarnings([]);
+            }
         } else {
+            showWarnings([]);
             previewContainer.innerHTML = '<p style="color:#888; padding:2rem;">Draw.io XML loaded (no visual preview)</p>';
         }
     }
@@ -2195,7 +4967,7 @@ ${cellsXml}${sectionsXml}${textXml}
                     const fw = (s.textStyle && s.textStyle.fontWeight) || 'normal';
                     const vAlign = s.verticalAlign || 'middle';
 
-                    let tx = s.x + s.width / 2;
+                    const tx = s.x + s.width / 2;
                     let ty, baseline;
                     if (vAlign === 'top') {
                         ty = s.y + fs + 4;
@@ -2218,7 +4990,7 @@ ${cellsXml}${sectionsXml}${textXml}
                 svg += `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${sw}"${dash}/>`;
 
                 // Draw arrowhead
-                if (c.hasArrow && c.points.length >= 2) {
+                if (c.arrowEnd && c.points.length >= 2) {
                     const last = c.points[c.points.length - 1];
                     const prev = c.points[c.points.length - 2];
                     const angle = Math.atan2(last.y - prev.y, last.x - prev.x);
@@ -2246,14 +5018,18 @@ ${cellsXml}${sectionsXml}${textXml}
         }
     }
 
-    async function convert(inputString, format) {
+    /**
+     * @param {string} inputString
+     * @param {string} format
+     * @param {'vsdx'|'drawio'|'fodg'} target
+     */
+    async function convert(inputString, format, target) {
         logEl.style.display = 'block';
         logEl.innerHTML = '';
-        convertBtn.disabled = true;
+        setReady(false);
         statusText.textContent = 'Converting...';
 
         try {
-            // Parse input based on format
             const isDrawio = format === 'drawio';
             log(isDrawio ? 'Parsing Draw.io XML...' : 'Parsing SVG...', 'info');
 
@@ -2263,19 +5039,32 @@ ${cellsXml}${sectionsXml}${textXml}
 
             log(`Found ${stats.shapes} shapes, ${stats.connectors} connectors, ${stats.texts} standalone texts`, 'info');
             showStats(stats);
+            showWarnings(stats.warnings);
+            (stats.warnings || []).forEach(w => log(w, 'warn'));
 
-            // Build VSDX
-            log('Building VSDX file...', 'info');
-            const builder = new VsdxBuilder(parsed);
-            const blob = await builder.build();
+            let blob;
+            let filename;
+            if (target === 'drawio') {
+                log('Building draw.io file...', 'info');
+                const xml = new DrawioBuilder(parsed).build();
+                blob = new Blob([xml], { type: 'application/xml' });
+                filename = 'diagram.drawio';
+            } else if (target === 'fodg') {
+                log('Building LibreOffice Draw file...', 'info');
+                const xml = new OdgBuilder(parsed).build();
+                blob = new Blob([xml], { type: 'application/vnd.oasis.opendocument.graphics-flat-xml' });
+                filename = 'diagram.fodg';
+            } else {
+                log('Building VSDX file...', 'info');
+                blob = await new VsdxBuilder(parsed).build();
+                filename = 'diagram.vsdx';
+            }
 
-            log(`Generated VSDX: ${(blob.size / 1024).toFixed(1)} KB`, 'success');
-
-            // Download
+            log(`Generated ${filename}: ${(blob.size / 1024).toFixed(1)} KB`, 'success');
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'diagram.vsdx';
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -2288,8 +5077,25 @@ ${cellsXml}${sectionsXml}${textXml}
             statusText.textContent = 'Conversion failed.';
             console.error(err);
         } finally {
-            convertBtn.disabled = false;
+            setReady(true);
         }
+    }
+
+    function showWarnings(warnings) {
+        if (!warningsEl) return;
+        if (!warnings || warnings.length === 0) {
+            warningsEl.style.display = 'none';
+            warningsEl.innerHTML = '';
+            return;
+        }
+        const esc = (t) => String(t)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        warningsEl.style.display = 'block';
+        warningsEl.innerHTML =
+            `<strong>${warnings.length} thing${warnings.length === 1 ? '' : 's'} the ` +
+            `.vsdx cannot reproduce exactly:</strong><ul>` +
+            warnings.map(w => `<li>${esc(w)}</li>`).join('') +
+            `</ul>`;
     }
 
     function showStats(stats) {

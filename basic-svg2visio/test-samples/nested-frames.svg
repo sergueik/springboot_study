@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" width="400" height="260">
+  <style>
+    .frame{fill:none;stroke:#0078D4;stroke-width:2;stroke-dasharray:6 4}
+    .box{fill:#ffffff;stroke:#333333;stroke-width:1.5}
+    .hdr{font-size:16px;font-weight:bold;fill:#222222}
+    .sub{font-size:11px;fill:#666666}
+  </style>
+
+  <!-- Outer frame; the inner frame fills ~70% of it, which is exactly the
+       band where containerAreaRatio decides frame vs. labelled box. -->
+  <rect x="20" y="20" width="200" height="200" class="frame"/>
+  <text x="28" y="38" class="hdr">Outer</text>
+
+  <rect x="35" y="50" width="168" height="160" class="frame"/>
+  <text x="43" y="68" class="hdr">Inner</text>
+
+  <rect x="55" y="90" width="120" height="50" class="box"/>
+  <text x="115" y="112" text-anchor="middle" class="hdr">Leaf</text>
+  <text x="115" y="130" text-anchor="middle" class="sub">a detail line</text>
+
+  <rect x="260" y="90" width="110" height="50" class="box"/>
+  <text x="315" y="120" text-anchor="middle" class="hdr">Sibling</text>
+
+  <line x1="175" y1="115" x2="260" y2="115" stroke="#333333" stroke-width="2"/>
+
+  <!-- A frame whose only child fills ~63% of it: nothing else is inside, so
+       this is the one place where containerAreaRatio alone decides whether
+       the frame keeps its own label or swallows the child's. -->
+  <rect x="245" y="165" width="130" height="80" class="frame"/>
+  <text x="250" y="180" class="sub">Solo frame</text>
+  <rect x="258" y="185" width="105" height="52" class="box"/>
+  <text x="310" y="215" text-anchor="middle" class="hdr">Only child</text>
+</svg>

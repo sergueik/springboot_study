@@ -1,3 +1,5 @@
+// @ts-check
+/* global SvgParser, DrawioParser, VsdxBuilder, DrawioBuilder, OdgBuilder */
 /**
  * App - Ties together the UI, SVG parser, and VSDX builder.
  */
@@ -5,14 +7,17 @@
 (function () {
     const dropZone = document.getElementById('dropZone');
     const browseBtn = document.getElementById('browseBtn');
-    const fileInput = document.getElementById('fileInput');
-    const svgInput = document.getElementById('svgInput');
-    const convertBtn = document.getElementById('convertBtn');
+    const fileInput = /** @type {HTMLInputElement} */ (document.getElementById('fileInput'));
+    const svgInput = /** @type {HTMLTextAreaElement} */ (document.getElementById('svgInput'));
+    const convertBtn = /** @type {HTMLButtonElement} */ (document.getElementById('convertBtn'));
+    const drawioBtn = /** @type {HTMLButtonElement} */ (document.getElementById('drawioBtn'));
+    const odgBtn = /** @type {HTMLButtonElement} */ (document.getElementById('odgBtn'));
     const statusText = document.getElementById('statusText');
     const logEl = document.getElementById('log');
     const previewSection = document.getElementById('previewSection');
     const previewContainer = document.getElementById('previewContainer');
     const statsEl = document.getElementById('stats');
+    const warningsEl = document.getElementById('warnings');
 
     let currentInput = '';
     let currentFormat = 'svg'; // 'svg' or 'drawio'
@@ -49,24 +54,37 @@
         if (val && val.includes('<svg')) {
             currentInput = val;
             currentFormat = 'svg';
-            convertBtn.disabled = false;
+            setReady(true);
             showPreview(val);
         } else if (val && (val.includes('<mxGraphModel') || val.includes('<mxfile'))) {
             currentInput = val;
             currentFormat = 'drawio';
-            convertBtn.disabled = false;
+            setReady(true);
             showDrawioPreview(currentInput);
             log('Draw.io XML detected', 'info');
         } else {
-            convertBtn.disabled = !currentInput;
+            setReady(!!currentInput);
         }
     });
 
-    // --- Convert button ---
     convertBtn.addEventListener('click', async () => {
         if (!currentInput) return;
-        await convert(currentInput, currentFormat);
+        await convert(currentInput, currentFormat, 'vsdx');
     });
+    drawioBtn.addEventListener('click', async () => {
+        if (!currentInput) return;
+        await convert(currentInput, currentFormat, 'drawio');
+    });
+    odgBtn.addEventListener('click', async () => {
+        if (!currentInput) return;
+        await convert(currentInput, currentFormat, 'fodg');
+    });
+
+    function setReady(on) {
+        convertBtn.disabled = !on;
+        drawioBtn.disabled = !on;
+        odgBtn.disabled = !on;
+    }
 
     function loadFile(file) {
         const name = file.name.toLowerCase();
@@ -79,8 +97,9 @@
         }
 
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
+        reader.onload = () => {
+            // readAsText always yields a string; narrow it for the checker
+            const content = String(reader.result);
             currentInput = content;
             svgInput.value = content;
 
@@ -95,7 +114,7 @@
                 log(`Loaded SVG: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`, 'info');
             }
 
-            convertBtn.disabled = false;
+            setReady(true);
         };
         reader.readAsText(file);
     }
@@ -109,7 +128,19 @@
                 svg.style.maxWidth = '100%';
                 svg.style.height = 'auto';
             }
+            // The preview shows the browser's rendering, which always looks
+            // right. Parse it here as well so anything the converter cannot
+            // reproduce is visible before the download, not after.
+            try {
+                const probe = new SvgParser(svgString);
+                probe.parse();
+                showWarnings(probe.warnings);
+            } catch {
+                // An unparseable preview is not fatal; the convert step reports it
+                showWarnings([]);
+            }
         } else {
+            showWarnings([]);
             previewContainer.innerHTML = '<p style="color:#888; padding:2rem;">Draw.io XML loaded (no visual preview)</p>';
         }
     }
@@ -181,7 +212,7 @@
                     const fw = (s.textStyle && s.textStyle.fontWeight) || 'normal';
                     const vAlign = s.verticalAlign || 'middle';
 
-                    let tx = s.x + s.width / 2;
+                    const tx = s.x + s.width / 2;
                     let ty, baseline;
                     if (vAlign === 'top') {
                         ty = s.y + fs + 4;
@@ -204,7 +235,7 @@
                 svg += `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${sw}"${dash}/>`;
 
                 // Draw arrowhead
-                if (c.hasArrow && c.points.length >= 2) {
+                if (c.arrowEnd && c.points.length >= 2) {
                     const last = c.points[c.points.length - 1];
                     const prev = c.points[c.points.length - 2];
                     const angle = Math.atan2(last.y - prev.y, last.x - prev.x);
@@ -232,14 +263,18 @@
         }
     }
 
-    async function convert(inputString, format) {
+    /**
+     * @param {string} inputString
+     * @param {string} format
+     * @param {'vsdx'|'drawio'|'fodg'} target
+     */
+    async function convert(inputString, format, target) {
         logEl.style.display = 'block';
         logEl.innerHTML = '';
-        convertBtn.disabled = true;
+        setReady(false);
         statusText.textContent = 'Converting...';
 
         try {
-            // Parse input based on format
             const isDrawio = format === 'drawio';
             log(isDrawio ? 'Parsing Draw.io XML...' : 'Parsing SVG...', 'info');
 
@@ -249,19 +284,32 @@
 
             log(`Found ${stats.shapes} shapes, ${stats.connectors} connectors, ${stats.texts} standalone texts`, 'info');
             showStats(stats);
+            showWarnings(stats.warnings);
+            (stats.warnings || []).forEach(w => log(w, 'warn'));
 
-            // Build VSDX
-            log('Building VSDX file...', 'info');
-            const builder = new VsdxBuilder(parsed);
-            const blob = await builder.build();
+            let blob;
+            let filename;
+            if (target === 'drawio') {
+                log('Building draw.io file...', 'info');
+                const xml = new DrawioBuilder(parsed).build();
+                blob = new Blob([xml], { type: 'application/xml' });
+                filename = 'diagram.drawio';
+            } else if (target === 'fodg') {
+                log('Building LibreOffice Draw file...', 'info');
+                const xml = new OdgBuilder(parsed).build();
+                blob = new Blob([xml], { type: 'application/vnd.oasis.opendocument.graphics-flat-xml' });
+                filename = 'diagram.fodg';
+            } else {
+                log('Building VSDX file...', 'info');
+                blob = await new VsdxBuilder(parsed).build();
+                filename = 'diagram.vsdx';
+            }
 
-            log(`Generated VSDX: ${(blob.size / 1024).toFixed(1)} KB`, 'success');
-
-            // Download
+            log(`Generated ${filename}: ${(blob.size / 1024).toFixed(1)} KB`, 'success');
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'diagram.vsdx';
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -274,8 +322,25 @@
             statusText.textContent = 'Conversion failed.';
             console.error(err);
         } finally {
-            convertBtn.disabled = false;
+            setReady(true);
         }
+    }
+
+    function showWarnings(warnings) {
+        if (!warningsEl) return;
+        if (!warnings || warnings.length === 0) {
+            warningsEl.style.display = 'none';
+            warningsEl.innerHTML = '';
+            return;
+        }
+        const esc = (t) => String(t)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        warningsEl.style.display = 'block';
+        warningsEl.innerHTML =
+            `<strong>${warnings.length} thing${warnings.length === 1 ? '' : 's'} the ` +
+            `.vsdx cannot reproduce exactly:</strong><ul>` +
+            warnings.map(w => `<li>${esc(w)}</li>`).join('') +
+            `</ul>`;
     }
 
     function showStats(stats) {

@@ -1,8 +1,10 @@
 ### Info
 
-Replica of [McMarius11/svgtovisio](https://github.com/McMarius11/svgtovisio) the standalone browser hosted __SVG__ & __Draw.io__ to __Visio__ Converter
-useful for creating Visio resources *without* the __Visio__ itself
+Replica of [McMarius11/svgtovisio](https://github.com/McMarius11/svgtovisio) the standalone statically browser-hosted __Scalable Vector Graphics__ [SVG](https://en.wikipedia.org/wiki/SVG) and [Draw.io](https://en.wikipedia.org/wiki/Diagrams.net) graph drawing application officially rebranded as [diagrams.net](https://app.diagrams.net) into modern [Visio](https://en.wikipedia.org/wiki/Microsoft_Visio) Converter useful for creating __Visio__ resources _without_ the __Visio__ itself (or the properyly initialized [Microsoft Visio Viewer](https://learn.microsoft.com/en-us/answers/questions/4767940/when-i-start-the-microsoft-ofiice-visio-viwever-th) [Viewer Bootstrap Application](https://github.com/sergueik/springboot_study/tree/master/basic-vpreview))
 
+
+
+Unlike Visio and real [Workflow Foundation]() derived tools like [UIPath](https://en.wikipedia.org/wiki/UiPath) or [Blue Prism](https://en.wikipedia.org/wiki/Blue_Prism) and the like the __SVG__ fundamentally does not store relationships between shapes, connectors, and their labels.
 
 ### Usage
 
@@ -15,103 +17,108 @@ IMAGE=svg2visio
 docker build -t $IMAGE -f Dockerfile .
 ```
 ```text
-Sending build context to Docker daemon  1.192MB
+Sending build context to Docker daemon  1.871MB
 Step 1/15 : FROM node:22.12.0-alpine AS builder
  ---> 3448d7ddbc59
 Step 2/15 : WORKDIR /app
- ---> Running in cf76642e0bac
-Removing intermediate container cf76642e0bac
- ---> 1edd1d0ab760
+ ---> Using cache
+ ---> 19b679f74235
 Step 3/15 : COPY package*.json /app/
- ---> c8a612bbf175
+ ---> 5a46abda3e05
 Step 4/15 : ARG NPM_REGISTRY
- ---> Running in bd5a1bc2e18f
-Removing intermediate container bd5a1bc2e18f
- ---> aa04ca504fd3
+ ---> Running in 2863f20e6c18
+Removing intermediate container 2863f20e6c18
+ ---> ee0ca52cdb16
 Step 5/15 : RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
- ---> Running in 6dcc84b1705d
-Removing intermediate container 6dcc84b1705d
- ---> 409d7c0bd5f0
+ ---> Running in 6b874cf585e9
+Removing intermediate container 6b874cf585e9
+ ---> 49524438420d
 Step 6/15 : RUN npm install || { cat /root/.npm/_logs/*.log; exit 1; }
- ---> Running in a23bd4c675da
+ ---> Running in 2bb5fbff2383
 npm warn EBADENGINE Unsupported engine {
 npm warn EBADENGINE   package: 'jsdom@29.0.1',
 npm warn EBADENGINE   required: { node: '^20.19.0 || ^22.13.0 || >=24.0.0' },
 npm warn EBADENGINE   current: { node: 'v22.12.0', npm: '10.9.0' }
 npm warn EBADENGINE }
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
 
-added 52 packages, and audited 53 packages in 8s
+added 141 packages, and audited 142 packages in 8s
 
-8 packages are looking for funding
+32 packages are looking for funding
   run `npm fund` for details
 
-1 high severity vulnerability
+3 high severity vulnerabilities
 
 To address all issues, run:
   npm audit fix
 
 Run `npm audit` for details.
 npm notice
-npm notice New major version of npm available! 10.9.0 -> 12.0.2
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
-npm notice To update run: npm install -g npm@12.0.2
+npm notice New major version of npm available! 10.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
 npm notice
-Removing intermediate container a23bd4c675da
- ---> 1a5ce95d8ba2
+Removing intermediate container 2bb5fbff2383
+ ---> 523c40613993
 Step 7/15 : COPY app.js build.js index.html *-parser.js vsdx-builder.js test.js test-samples/ ./
- ---> 2c345a1b7427
+ ---> bc577621b089
 Step 8/15 : RUN node build.js
- ---> Running in 3cbe8f56456c
+ ---> Running in 23adf0fba88c
 Inlined: jszip.min.js (95.3 KB)
 Inlined: pako.min.js (45.8 KB)
-Inlined: svg-parser.js (25.3 KB)
-Inlined: drawio-parser.js (14.1 KB)
-Inlined: vsdx-builder.js (27.6 KB)
-Inlined: app.js (13.0 KB)
+WARNING: scene-model.js not found
+WARNING: scene-layout.js not found
+WARNING: svg-transform.js not found
+WARNING: svg-style.js not found
+Inlined: svg-parser.js (25.8 KB)
+Inlined: drawio-parser.js (15.9 KB)
+Inlined: vsdx-builder.js (59.6 KB)
+WARNING: drawio-builder.js not found
+WARNING: odg-builder.js not found
+Inlined: app.js (15.9 KB)
 
-Built: dist/index.html (227.2 KB)
-Removing intermediate container 3cbe8f56456c
- ---> 4a775be93f35
+Built: dist/index.html (265.8 KB)
+Removing intermediate container 23adf0fba88c
+ ---> a17c5f5cc7cd
 Step 9/15 : FROM nginx:1.30.3-alpine3.23
  ---> d0701bd41f82
 Step 10/15 : WORKDIR /usr/share/nginx/html
- ---> Running in 2153ef848ea8
-Removing intermediate container 2153ef848ea8
- ---> 9c300351b656
+ ---> Using cache
+ ---> 78841bda93ca
 Step 11/15 : COPY --from=builder /app/dist/index.html ./
- ---> de642adf477e
+ ---> 259a00140f64
 Step 12/15 : COPY --from=builder /app/*js ./
- ---> dc11548d027f
+ ---> a2d0be3d1620
 Step 13/15 : RUN  touch .nojekyll
- ---> Running in 6dfe576d5340
-Removing intermediate container 6dfe576d5340
- ---> 791e23de7407
+ ---> Running in bc684039ce2d
+Removing intermediate container bc684039ce2d
+ ---> 38fbf4af22c9
 Step 14/15 : EXPOSE 80
- ---> Running in cde655b8ced2
-Removing intermediate container cde655b8ced2
- ---> 3f68d61c0686
+ ---> Running in 08a2f40bd547
+Removing intermediate container 08a2f40bd547
+ ---> 5b12acefaf7a
 Step 15/15 : CMD ["nginx", "-g", "daemon off;"]
- ---> Running in fb8eb250e46b
-Removing intermediate container fb8eb250e46b
- ---> 2c4efd63f39c
-Successfully built 2c4efd63f39c
+ ---> Running in 50e912f717d1
+Removing intermediate container 50e912f717d1
+ ---> c8c972700501
+Successfully built c8c972700501
 Successfully tagged svg2visio:latest
 ```
-```sh    
+```sh
 NAME=svg2visio
 docker run --name $NAME -d -p 8080:80 $IMAGE
 ```
-
 ![capture app in container](screenshots/capture-app-docker.png)
 
 ### Background
 
-Convert [SVG](https://en.wikipedia.org/wiki/SVG) diagrams and [Draw.io](https://en.wikipedia.org/wiki/Diagrams.net) files to editable legacy [Visio](https://en.wikipedia.org/wiki/Microsoft_Visio) `.vsdx` files (a well documented [DatadiagramML](https://github.com/slebok/zoo/blob/master/zoo/markup/graphical/datadiagramml/xform/README.txt) XML schema honoring successor of the original Visio's `VSD` proprietary binary-file format that is still the default here and there).
+Convert [SVG](https://en.wikipedia.org/wiki/SVG) diagrams and [Draw.io](https://en.wikipedia.org/wiki/Diagrams.net) files to editable legacy [Visio](https://en.wikipedia.org/wiki/Microsoft_Visio) `.vsdx` files - a well documented [DatadiagramML](https://github.com/slebok/zoo/blob/master/zoo/markup/graphical/datadiagramml/xform/README.txt) [XML schema](https://en.wikipedia.org/wiki/XML_schema) honoring successor of the original Visio's `VSD` proprietary binary-file format that is still the default here and there.
 
-###NAME=svg2visio
+```
+NAME=svg2visio
 docker run --name $NAME -d -p 8080:80 $IMAGE
- Note
-
+```
+> Note
 
  * Download the __Graphviz__ binaries from [Graphviz](https://graphviz.org/download/)
 
@@ -120,11 +127,16 @@ curl -skLo ~/Downloads/graphviz-installer.exe https://gitlab.com/api/v4/projects
 ```
 and install it
 
-* Pick any of gallery examples e.e. [Finite Automaton](https://graphviz.org/Gallery/directed/fsm.html) and convert it to SVG remotely or locally.
+* Pick any of __Graph Visualization Software__ [Graphviz](https://en.wikipedia.org/wiki/Graphviz) [Gallery](https://graphviz.org/Gallery) examples e.g. [Finite Automaton](https://graphviz.org/Gallery/directed/fsm.html) and convert it to __SVG__ remotely through [PlayGround](https://magjac.com/graphviz-visual-editor) or locally using static [rendering app](https://github.com/sergueik/springboot_study/tree/master/basic-graphviz-plain-viz)
+
 ```sh
 curl -skLo ~/Downloads/fsm.svg https://graphviz.org/Gallery/directed/fsm.svg
 ```
 * convert to VISIO using the static page form:
+
+![capture app in container](screenshots/capture-app4-docker.png)
+
+the older verson was slightly less flexible:
 
 ![capture app in container](screenshots/capture-app2-docker.png)
 
@@ -132,9 +144,11 @@ The app simply downloads the result
 
 ![Saving the result](screenshots/capture-app3-docker.png)
 
-Use MS [Free Visio Viewer](https://www.microsoft.com/en-us/microsoft-365/visio/free-visio-viewer) 
+Use MS [Free Visio Viewer](https://www.microsoft.com/en-us/microsoft-365/visio/free-visio-viewer)
+
 > CAUTION! Desktop app requires some kind of installation. Consider the risks!
 > NOTE:  the default page contains *no* download link. The real download is available on [old page](https://www.microsoft.com/en-us/microsoft-365/blog/2012/11/28/download-the-free-microsoft-visio-viewer) [link](https://www.microsoft.com/en-us/download/details.aspx?id=35811)
+
 ```cmd
 curl -skLo ~/Downloads/visioviewer64bit.exe https://download.microsoft.com/download/a/6/8/a682a83b-4866-4f88-ae83-61388629a891/visioviewer64bit.exe
 ```
@@ -193,7 +207,7 @@ It's essentially the executable/component that __Office__ / __IE__ uses to provi
 functionality, and it expects to be invoked exclusively through its Office integration/host mechanism.
 
 
-blind dump registry 
+blind dump registry
 ```cmd
 reg.exe query HKCR /s | findstr /ic:"Visio Viewer"
 ```
@@ -353,12 +367,13 @@ That last answer is the thing worth __keeping__.
 
   * [live](https://McMarius11.github.io/svgtovisio)
   * [related reddit discussion](https://www.reddit.com/r/drawio/comments/1r9j05c/free_tool_to_convert_between_visio_and_drawio/)
+  * https://dreampuf.github.io/GraphvizOnline/?engine=dot#digraph
+  * https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.axhost.-ctor?view=netframework-4.5#system-windows-forms-axhost-ctor(system-string)
   * __Google Transcribe__  latest speech-to-text model designed for precise and intelligent real-time transcription.
     + [release new feature info](https://habr.com/ru/news/1075046/) (in Russian)
  - the model able to understand not only the words, but also what the person meant to convey
- + [original](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5-transcribe/)
-
----  
+   + [original](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5-transcribe/)
+---
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

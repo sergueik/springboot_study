@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3C3C3B"/>
+    </marker>
+    <marker id="arrg" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#009640"/>
+    </marker>
+  </defs>
+  <style>
+    .t{font-size:16px;fill:#3C3C3B}
+    .ts{font-size:13px;fill:#5A5A5A}
+    .tb{font-size:18px;font-weight:bold;fill:#3C3C3B}
+    .th{font-size:22px;font-weight:bold;fill:#009640}
+    .box{fill:#FFFFFF;stroke:#3C3C3B;stroke-width:1.5}
+    .fw{fill:#FBE3D5;stroke:#C8641E;stroke-width:2}
+    .sub{fill:#F4F8F5;stroke:#8DB79C;stroke-width:1.2;stroke-dasharray:6 4}
+    .ln{stroke:#3C3C3B;stroke-width:2;fill:none}
+    .lng{stroke:#009640;stroke-width:2.5;fill:none}
+    .lnd{stroke:#3C3C3B;stroke-width:1.5;fill:none;stroke-dasharray:5 5}
+  </style>
+
+  <!-- Titel -->
+  <text x="40" y="45" class="th">Palo Alto VM-300 HA-Cluster – Azure Hub-VNet mit ExpressRoute</text>
+
+  <!-- ===== Internet ===== -->
+  <ellipse cx="1370" cy="130" rx="130" ry="55" class="box" stroke-dasharray="6 4"/>
+  <text x="1370" y="125" text-anchor="middle" class="tb">Internet</text>
+  <text x="1370" y="148" text-anchor="middle" class="ts">Breakout, GlobalProtect, Partner-VPN (künftig)</text>
+
+  <!-- ===== Hauptstandort ===== -->
+  <rect x="40" y="80" width="300" height="240" rx="8" class="box"/>
+  <text x="60" y="110" class="tb">Hauptstandort</text>
+  <rect x="60" y="130" width="260" height="60" rx="6" class="box"/>
+  <text x="70" y="155" class="t">Panorama</text>
+  <text x="70" y="178" class="ts">Management + Logging (Migration nach Azure geplant)</text>
+  <rect x="60" y="205" width="260" height="60" rx="6" class="box"/>
+  <text x="70" y="230" class="t">Core-Router / LAN</text>
+  <text x="70" y="253" class="ts">RFC1918-Netze Hauptstandort</text>
+  <rect x="60" y="278" width="260" height="30" rx="6" class="box"/>
+  <text x="70" y="299" class="ts">Telekom ExpressRoute Circuit – Private Peering</text>
+
+  <!-- ER Linie -->
+  <path d="M340 293 L500 293 L500 970 L600 970" class="lng" marker-end="url(#arrg)"/>
+  <text x="380" y="283" class="ts" fill="#009640">ExpressRoute</text>
+
+  <g transform="translate(0,100)">
+  <!-- ===== Azure ===== -->
+  <rect x="520" y="80" width="1040" height="880" rx="12" fill="none" stroke="#0078D4" stroke-width="2"/>
+  <text x="540" y="110" class="tb" fill="#0078D4">Azure Subscription</text>
+
+  <!-- Hub VNet -->
+  <rect x="540" y="130" width="640" height="810" rx="10" fill="#F7FBFF" stroke="#0078D4" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="560" y="158" class="tb">Hub-VNet</text>
+  <text x="560" y="178" class="ts">[CIDR]</text>
+
+  <!-- Untrust Subnetz -->
+  <rect x="560" y="200" width="600" height="110" rx="8" class="sub"/>
+  <text x="575" y="222" class="t">snet-fw-untrust  [CIDR]  – Zone Untrust</text>
+  <rect x="600" y="240" width="200" height="50" rx="6" class="box"/>
+  <text x="700" y="262" text-anchor="middle" class="t">Untrust FIP [IP]</text>
+  <text x="700" y="282" text-anchor="middle" class="ts">+ Public IP [IP]</text>
+  <text x="830" y="262" class="ts">NSG: 443, UDP 4501 (GP),</text>
+  <text x="830" y="282" class="ts">UDP 500/4500 (IPsec)</text>
+
+  <!-- Firewalls -->
+  <rect x="560" y="330" width="600" height="230" rx="8" fill="#FFFFFF" stroke="#C8641E" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="575" y="352" class="t">Active/Passive HA – Azure HA-Plugin (Service Principal)</text>
+
+  <rect x="600" y="375" width="220" height="160" rx="8" class="fw"/>
+  <text x="710" y="400" text-anchor="middle" class="tb">FW-A  (active)</text>
+  <text x="710" y="422" text-anchor="middle" class="t">VM-300 · PAN-OS [Ver]</text>
+  <text x="710" y="446" text-anchor="middle" class="ts">Mgmt [IP]</text>
+  <text x="710" y="464" text-anchor="middle" class="ts">eth1/1 Untrust [IP]</text>
+  <text x="710" y="482" text-anchor="middle" class="ts">eth1/2 Trust [IP]</text>
+  <text x="710" y="500" text-anchor="middle" class="ts">eth1/3 HA2 [IP]</text>
+  <text x="710" y="522" text-anchor="middle" class="ts">Zone [1]</text>
+
+  <rect x="900" y="375" width="220" height="160" rx="8" class="fw" stroke-dasharray="6 3"/>
+  <text x="1010" y="400" text-anchor="middle" class="tb">FW-B  (passive)</text>
+  <text x="1010" y="422" text-anchor="middle" class="t">VM-300 · PAN-OS [Ver]</text>
+  <text x="1010" y="446" text-anchor="middle" class="ts">Mgmt [IP]</text>
+  <text x="1010" y="464" text-anchor="middle" class="ts">eth1/1 Untrust [IP]</text>
+  <text x="1010" y="482" text-anchor="middle" class="ts">eth1/2 Trust [IP]</text>
+  <text x="1010" y="500" text-anchor="middle" class="ts">eth1/3 HA2 [IP]</text>
+  <text x="1010" y="522" text-anchor="middle" class="ts">Zone [2]</text>
+
+  <!-- HA links -->
+  <path d="M820 440 L900 440" class="ln"/>
+  <text x="860" y="432" text-anchor="middle" class="ts">HA1</text>
+  <path d="M820 500 L900 500" class="ln"/>
+  <text x="860" y="518" text-anchor="middle" class="ts">HA2 (snet-fw-ha)</text>
+  <!-- FIP-Move Pfeil -->
+  <path d="M760 375 C 800 340, 920 340, 960 375" class="lnd" marker-end="url(#arr)"/>
+  <text x="860" y="470" text-anchor="middle" class="ts">FIPs wandern</text><text x="860" y="486" text-anchor="middle" class="ts">im Failover</text>
+
+  <!-- Trust Subnetz -->
+  <rect x="560" y="580" width="600" height="110" rx="8" class="sub"/>
+  <text x="575" y="602" class="t">snet-fw-trust  [CIDR]  – Zone Trust</text>
+  <rect x="600" y="620" width="200" height="50" rx="6" class="box"/>
+  <text x="700" y="642" text-anchor="middle" class="t">Trust FIP [IP]</text>
+  <text x="700" y="662" text-anchor="middle" class="ts">Next Hop aller UDRs</text>
+  <text x="830" y="642" class="ts">Statische Routen: RFC1918 → Trust-GW</text>
+  <text x="830" y="662" class="ts">0.0.0.0/0 → Untrust-GW</text>
+
+  <!-- Mgmt Subnetz -->
+  <rect x="560" y="710" width="290" height="70" rx="8" class="sub"/>
+  <text x="575" y="732" class="t">snet-fw-mgmt  [CIDR]</text>
+  <text x="575" y="752" class="ts">Panorama, Updates, Azure-API, NTP/DNS</text>
+  <text x="575" y="770" class="ts">Admin-Zugriff nur aus [Admin-Netz]</text>
+
+  <!-- Gateway Subnetz -->
+  <rect x="560" y="800" width="600" height="120" rx="8" class="sub"/>
+  <text x="575" y="822" class="t">GatewaySubnet</text>
+  <rect x="600" y="840" width="260" height="60" rx="6" class="box"/>
+  <text x="730" y="863" text-anchor="middle" class="t">ExpressRoute Gateway</text>
+  <text x="730" y="883" text-anchor="middle" class="ts">SKU [x] · Circuit Telekom</text>
+  <text x="880" y="863" class="ts">UDR: Spoke-Netze →</text>
+  <text x="880" y="883" class="ts">Trust FIP (Rückweg über FW)</text>
+
+  <!-- Verbindungen intern -->
+  <path d="M700 310 L700 375" class="ln"/>
+  <path d="M700 535 L700 620" class="ln"/>
+  <path d="M730 840 L730 690" class="lng" marker-end="url(#arrg)"/>
+  <path d="M640 710 L640 580" class="lnd"/>
+  <!-- ER Gateway <-> Untrust to Internet -->
+  <path d="M1160 255 L1370 85" class="ln" marker-end="url(#arr)"/>
+
+  <!-- ===== Spokes ===== -->
+  <rect x="1210" y="330" width="330" height="590" rx="10" fill="#F7FBFF" stroke="#0078D4" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="1230" y="358" class="tb">Spoke-VNets (18)</text>
+  <text x="1230" y="378" class="ts">VNet-Peering zum Hub · UDR Next Hop Trust FIP</text>
+
+  <g id="spokes">
+    <rect x="1235" y="400" width="280" height="40" rx="6" class="box"/><text x="1250" y="426" class="t">vnet-spoke-identity</text>
+    <rect x="1235" y="450" width="280" height="40" rx="6" class="box"/><text x="1250" y="476" class="t">vnet-spoke-security</text>
+    <rect x="1235" y="500" width="280" height="40" rx="6" class="box"/><text x="1250" y="526" class="t">vnet-spoke-management</text>
+    <rect x="1235" y="550" width="280" height="40" rx="6" class="box"/><text x="1250" y="576" class="t">vnet-spoke-exchange</text>
+    <rect x="1235" y="600" width="280" height="40" rx="6" class="box"/><text x="1250" y="626" class="t">vnet-spoke-file</text>
+    <rect x="1235" y="650" width="280" height="40" rx="6" class="box"/><text x="1250" y="676" class="t">vnet-spoke-avd-core</text>
+    <rect x="1235" y="700" width="280" height="40" rx="6" class="box"/><text x="1250" y="726" class="t">vnet-spoke-avd-shared</text>
+    <rect x="1235" y="750" width="280" height="40" rx="6" class="box"/><text x="1250" y="776" class="t">vnet-spoke-content</text>
+    <rect x="1235" y="800" width="280" height="40" rx="6" class="box"/><text x="1250" y="826" class="t">vnet-spoke-finance</text>
+    <rect x="1235" y="850" width="280" height="40" rx="6" class="box" stroke-dasharray="4 3"/><text x="1250" y="876" class="ts">… 9 weitere Spokes</text>
+  </g>
+
+  <!-- Spoke <-> Trust -->
+  <path d="M1235 645 L1160 645" class="lng" marker-end="url(#arrg)"/>
+  <path d="M1160 660 L1235 660" class="lng" marker-end="url(#arrg)"/>
+  <text x="1197" y="632" text-anchor="middle" class="ts">Peering + UDR</text>
+
+  <!-- Legende -->
+  <rect x="40" y="820" width="470" height="130" rx="8" class="box"/>
+  <text x="55" y="845" class="tb">Legende</text>
+  <line x1="55" y1="868" x2="115" y2="868" class="lng"/><text x="125" y="873" class="ts">Verkehr über Trust (Spokes, HQ)</text>
+  <line x1="55" y1="893" x2="115" y2="893" class="ln"/><text x="125" y="898" class="ts">Untrust / HA-Links</text>
+  <line x1="55" y1="918" x2="115" y2="918" class="lnd"/><text x="125" y="923" class="ts">Mgmt / Failover-Aktion</text>
+  <rect x="300" y="880" width="30" height="20" class="fw"/><text x="340" y="896" class="ts">Firewall (Bechtle)</text>
+  <rect x="300" y="910" width="30" height="20" class="sub"/><text x="340" y="926" class="ts">Azure-Ressource (anderes Team)</text>
+
+  </g>
+  <!-- Hinweis Panorama-Pfad -->
+  <path d="M320 160 L455 160 L455 845 L560 845" class="lnd"/>
+  <text x="345" y="150" class="ts">Panorama ↔ FW Mgmt via ER</text>
+</svg>

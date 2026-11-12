@@ -1,0 +1,275 @@
+{
+  "connectors": [
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "d": "M240 145 L340 145",
+      "fromShape": 1,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 240,
+          "y": 195
+        },
+        {
+          "x": 340,
+          "y": 195
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#009640",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 2.5,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 2,
+      "type": "path"
+    }
+  ],
+  "shapes": [
+    {
+      "angle": 0,
+      "height": 220,
+      "id": null,
+      "isContainer": true,
+      "parentShape": null,
+      "style": {
+        "fill": "#F7FBFF",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 10,
+        "ry": 0,
+        "stroke": "#0078D4",
+        "strokeDasharray": "8 5",
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "textRuns": [],
+      "textStyle": null,
+      "type": "rect",
+      "width": 500,
+      "x": 40,
+      "y": 90
+    },
+    {
+      "angle": 0,
+      "height": 90,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#FFFFFF",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 6,
+        "ry": 0,
+        "stroke": "#333333",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1.5,
+        "textAnchor": "start"
+      },
+      "text": "Node A\ndetail line",
+      "textRuns": [
+        {
+          "style": {
+            "fill": "#009640",
+            "fillOpacity": 1,
+            "fontFamily": "Arial, Helvetica, sans-serif",
+            "fontSize": 18,
+            "fontWeight": "bold",
+            "opacity": 1,
+            "rx": 0,
+            "ry": 0,
+            "stroke": "none",
+            "strokeDasharray": null,
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "textAnchor": "middle",
+            "textColor": "#009640"
+          },
+          "text": "Node A"
+        },
+        {
+          "style": {
+            "fill": "#777777",
+            "fillOpacity": 1,
+            "fontFamily": "Arial, Helvetica, sans-serif",
+            "fontSize": 11,
+            "fontWeight": "normal",
+            "opacity": 1,
+            "rx": 0,
+            "ry": 0,
+            "stroke": "none",
+            "strokeDasharray": null,
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "textAnchor": "middle",
+            "textColor": "#777777"
+          },
+          "text": "detail line"
+        }
+      ],
+      "textStyle": {
+        "fill": "#009640",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "middle",
+        "textColor": "#009640"
+      },
+      "type": "rect",
+      "width": 160,
+      "x": 80,
+      "y": 150
+    },
+    {
+      "angle": 0,
+      "height": 90,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#FFFFFF",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 6,
+        "ry": 0,
+        "stroke": "#333333",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1.5,
+        "textAnchor": "start"
+      },
+      "text": "Node B",
+      "textRuns": [
+        {
+          "style": {
+            "fill": "#009640",
+            "fillOpacity": 1,
+            "fontFamily": "Arial, Helvetica, sans-serif",
+            "fontSize": 18,
+            "fontWeight": "bold",
+            "opacity": 1,
+            "rx": 0,
+            "ry": 0,
+            "stroke": "none",
+            "strokeDasharray": null,
+            "strokeOpacity": 1,
+            "strokeWidth": 1,
+            "textAnchor": "middle",
+            "textColor": "#009640"
+          },
+          "text": "Node B"
+        }
+      ],
+      "textStyle": {
+        "fill": "#009640",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "middle",
+        "textColor": "#009640"
+      },
+      "type": "rect",
+      "width": 160,
+      "x": 340,
+      "y": 150
+    }
+  ],
+  "texts": [
+    {
+      "id": null,
+      "parentShape": null,
+      "standalone": false,
+      "style": {
+        "fill": "#009640",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 18,
+        "fontWeight": "bold",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start",
+        "textColor": "#009640"
+      },
+      "text": "Title left aligned",
+      "x": 20,
+      "y": 30
+    },
+    {
+      "id": null,
+      "parentShape": 0,
+      "standalone": false,
+      "style": {
+        "fill": "#333333",
+        "fillOpacity": 1,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start",
+        "textColor": "#333333"
+      },
+      "text": "Frame label",
+      "x": 55,
+      "y": 115
+    }
+  ],
+  "viewBox": {
+    "height": 400,
+    "width": 600,
+    "x": 0,
+    "y": 0
+  },
+  "warnings": []
+}

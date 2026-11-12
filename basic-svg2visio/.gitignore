@@ -1,3 +1,6 @@
 node_modules/
 *.vsdx
 .DS_Store
+
+# Output of tools/preview.js
+*.preview.svg

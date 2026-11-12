@@ -1,15 +1,26 @@
 {
   "name": "svgtovisio",
   "version": "1.0.0",
-  "description": "Convert Claude-generated SVG diagrams to Visio (.vsdx) files",
-  "main": "index.js",
+  "description": "Convert SVG and Draw.io diagrams to Visio (.vsdx), Draw.io (.drawio) and LibreOffice Draw (.fodg)",
   "scripts": {
     "start": "npx serve .",
-    "test": "node test.js"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "node test.js",
+    "test:golden": "node test-golden.js",
+    "test:vsdx": "node test-vsdx.js",
+    "test:behavior": "node test-behavior.js",
+    "test:export": "node test-export.js",
+    "test:render": "node tools/verify-render.js",
+    "test": "node test.js && node test-golden.js && node test-vsdx.js && node test-behavior.js && node test-export.js",
+    "export": "node tools/export.js",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "build": "node build.js",
+    "preview": "node tools/preview.js"
   },
   "repository": {
     "type": "git",
-    "url": "http://local_proxy@127.0.0.1:35507/git/McMarius11/svgtovisio"
+    "url": "git+https://github.com/McMarius11/svgtovisio.git"
   },
   "keywords": [
     "svg",
@@ -18,10 +29,20 @@
     "converter"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "jsdom": "^29.0.1",
     "jszip": "^3.10.1",
     "pako": "^2.1.0"
+  },
+  "homepage": "https://McMarius11.github.io/svgtovisio",
+  "bugs": {
+    "url": "https://github.com/McMarius11/svgtovisio/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "eslint": "^9.39.5",
+    "globals": "^17.12.0",
+    "jsdom": "^29.0.1",
+    "typescript": "^5.9.3"
   }
 }

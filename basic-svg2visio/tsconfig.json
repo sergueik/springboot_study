@@ -1,0 +1,19 @@
+{
+  "//": "TypeScript is used as a checker only - never as a build step. The sources stay plain JavaScript that the browser loads directly, which is why this project needs no bundler.",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "node",
+    "types": ["node"],
+    "strict": false,
+    "noImplicitAny": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": false,
+    "skipLibCheck": true
+  },
+  "include": ["*.js", "*.d.ts", "tools/*.js"],
+  "exclude": ["node_modules", "dist"]
+}

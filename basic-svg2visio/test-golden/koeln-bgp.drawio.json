@@ -1,0 +1,945 @@
+{
+  "connectors": [
+    {
+      "arrowEnd": true,
+      "arrowStart": true,
+      "fromShape": 1,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 310,
+          "y": 96
+        },
+        {
+          "x": 310,
+          "y": 96
+        },
+        {
+          "x": 630,
+          "y": 96
+        },
+        {
+          "x": 630,
+          "y": 96
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#b85450",
+        "strokeDasharray": "5,5",
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 2,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": true,
+      "fromShape": 1,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 310,
+          "y": 118
+        },
+        {
+          "x": 310,
+          "y": 118
+        },
+        {
+          "x": 630,
+          "y": 118
+        },
+        {
+          "x": 630,
+          "y": 118
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#b85450",
+        "strokeDasharray": "5,5",
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 2,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 1,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 243.6765,
+          "y": 136
+        },
+        {
+          "x": 314.9265,
+          "y": 170
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 3,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 3,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 342.0988,
+          "y": 318
+        },
+        {
+          "x": 276.4198,
+          "y": 356
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 6,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 3,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 597.9012,
+          "y": 318
+        },
+        {
+          "x": 663.5802,
+          "y": 356
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 2,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 7,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 6,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 190,
+          "y": 456
+        },
+        {
+          "x": 190,
+          "y": 496
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 8,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 7,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 750,
+          "y": 456
+        },
+        {
+          "x": 750,
+          "y": 496
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 9,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 8,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 289.661,
+          "y": 580
+        },
+        {
+          "x": 384.5763,
+          "y": 620
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 10,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 9,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 650.339,
+          "y": 580
+        },
+        {
+          "x": 555.4237,
+          "y": 620
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 10,
+      "type": "line"
+    },
+    {
+      "arrowEnd": true,
+      "arrowStart": false,
+      "fromShape": 10,
+      "id": null,
+      "parentShape": 0,
+      "points": [
+        {
+          "x": 470,
+          "y": 692
+        },
+        {
+          "x": 470,
+          "y": 726
+        }
+      ],
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": null,
+      "toShape": 11,
+      "type": "line"
+    }
+  ],
+  "shapes": [
+    {
+      "angle": 0,
+      "height": 760,
+      "id": null,
+      "isContainer": true,
+      "parentShape": null,
+      "style": {
+        "fill": "#dae8fc",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 0.3,
+        "rx": 76,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "Köln – on-premises\nPrivate AS 65001",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 14,
+            "fontWeight": "bold",
+            "textColor": "#0c447c"
+          },
+          "text": "Köln – on-premises\nPrivate AS 65001"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "textColor": "#0c447c"
+      },
+      "type": "rect",
+      "verticalAlign": "top",
+      "width": 900,
+      "x": 20,
+      "y": 20
+    },
+    {
+      "angle": 0,
+      "height": 56,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#f8cecc",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 5.6,
+        "ry": 0,
+        "stroke": "#b85450",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "PA NGFW – Active\nRouting, Policy, NAT",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#6f0000"
+          },
+          "text": "PA NGFW – Active\nRouting, Policy, NAT"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#6f0000"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 250,
+      "x": 60,
+      "y": 80
+    },
+    {
+      "angle": 0,
+      "height": 56,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#f8cecc",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 0.55,
+        "rx": 5.6,
+        "ry": 0,
+        "stroke": "#b85450",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "PA NGFW – Passive\nSync via HA2-Link",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#6f0000"
+          },
+          "text": "PA NGFW – Passive\nSync via HA2-Link"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#6f0000"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 250,
+      "x": 630,
+      "y": 80
+    },
+    {
+      "angle": 0,
+      "height": 148,
+      "id": null,
+      "isContainer": true,
+      "parentShape": 0,
+      "style": {
+        "fill": "#dae8fc",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 0.25,
+        "rx": 14.8,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "Virtual Router",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 13,
+            "fontWeight": "bold",
+            "textColor": "#0c447c"
+          },
+          "text": "Virtual Router"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 13,
+        "fontWeight": "bold",
+        "textColor": "#0c447c"
+      },
+      "type": "rect",
+      "verticalAlign": "top",
+      "width": 820,
+      "x": 60,
+      "y": 170
+    },
+    {
+      "angle": 0,
+      "height": 100,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 3,
+      "style": {
+        "fill": "#dae8fc",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 10,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "BGP Prozess\nRouter-ID: 10.0.0.2\nLocal AS: 65001\nGraceful Restart: aktiv\nReflector: nein",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#0c447c"
+          },
+          "text": "BGP Prozess\nRouter-ID: 10.0.0.2\nLocal AS: 65001\nGraceful Restart: aktiv\nReflector: nein"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#0c447c"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 260,
+      "x": 80,
+      "y": 200
+    },
+    {
+      "angle": 0,
+      "height": 100,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 3,
+      "style": {
+        "fill": "#dae8fc",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 10,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "Route Map / Policy\nExport: nur 10.10.0.0/16\nImport: nur 10.20.0.0/16\nMax-prefix: 200\nPrefix-list: explicit permit",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#0c447c"
+          },
+          "text": "Route Map / Policy\nExport: nur 10.10.0.0/16\nImport: nur 10.20.0.0/16\nMax-prefix: 200\nPrefix-list: explicit permit"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#0c447c"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 260,
+      "x": 600,
+      "y": 200
+    },
+    {
+      "angle": 0,
+      "height": 100,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#f5f5f5",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 10,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "eth1/1 – WAN Leitung 1\nIP: 10.0.0.2/30\nNeighbor: 10.0.0.1 (CE-1)\nRemote-AS: 3320\nMD5-Auth: aktiv",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#333333"
+          },
+          "text": "eth1/1 – WAN Leitung 1\nIP: 10.0.0.2/30\nNeighbor: 10.0.0.1 (CE-1)\nRemote-AS: 3320\nMD5-Auth: aktiv"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#333333"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 260,
+      "x": 60,
+      "y": 356
+    },
+    {
+      "angle": 0,
+      "height": 100,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#f5f5f5",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 10,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "eth1/2 – WAN Leitung 2\nIP: 10.0.0.6/30\nNeighbor: 10.0.0.5 (CE-2)\nRemote-AS: 3320\nMD5-Auth: aktiv",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#333333"
+          },
+          "text": "eth1/2 – WAN Leitung 2\nIP: 10.0.0.6/30\nNeighbor: 10.0.0.5 (CE-2)\nRemote-AS: 3320\nMD5-Auth: aktiv"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#333333"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 260,
+      "x": 620,
+      "y": 356
+    },
+    {
+      "angle": 0,
+      "height": 84,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#f5f5f5",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 8.4,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "BGP Timer\nHold-Time: 30s\nKeepalive: 10s\nConnect-Retry: 60s",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#333333"
+          },
+          "text": "BGP Timer\nHold-Time: 30s\nKeepalive: 10s\nConnect-Retry: 60s"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#333333"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 260,
+      "x": 60,
+      "y": 496
+    },
+    {
+      "angle": 0,
+      "height": 84,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#f5f5f5",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 8.4,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "BFD\nMin-Interval: 300ms\nMultiplier: 3\nFailover unter 1s",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#333333"
+          },
+          "text": "BFD\nMin-Interval: 300ms\nMultiplier: 3\nFailover unter 1s"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#333333"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 260,
+      "x": 620,
+      "y": 496
+    },
+    {
+      "angle": 0,
+      "height": 72,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#dae8fc",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 7.2,
+        "ry": 0,
+        "stroke": "#6c8ebf",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "Pfadsteuerung\nLeitung 1 bevorzugt: Local Preference 200 (inbound CE-1)  |  Leitung 2: Local Preference 100\nRückweg Azure → Köln: AS-Path Prepend auf Leitung 2  (65001 65001)",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#0c447c"
+          },
+          "text": "Pfadsteuerung\nLeitung 1 bevorzugt: Local Preference 200 (inbound CE-1)  |  Leitung 2: Local Preference 100\nRückweg Azure → Köln: AS-Path Prepend auf Leitung 2  (65001 65001)"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#0c447c"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 820,
+      "x": 60,
+      "y": 620
+    },
+    {
+      "angle": 0,
+      "height": 44,
+      "id": null,
+      "isContainer": false,
+      "parentShape": 0,
+      "style": {
+        "fill": "#f5f5f5",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 14,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 4.4,
+        "ry": 0,
+        "stroke": "#666666",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start"
+      },
+      "text": "Tunnel Monitor\nLink-local 169.254.0.1 ↔ 169.254.0.2  ·  Failover-Action: fail-over",
+      "textRuns": [
+        {
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "textColor": "#333333"
+          },
+          "text": "Tunnel Monitor\nLink-local 169.254.0.1 ↔ 169.254.0.2  ·  Failover-Action: fail-over"
+        }
+      ],
+      "textStyle": {
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "textColor": "#333333"
+      },
+      "type": "rect",
+      "verticalAlign": "middle",
+      "width": 820,
+      "x": 60,
+      "y": 726
+    }
+  ],
+  "texts": [
+    {
+      "id": null,
+      "parentShape": 0,
+      "standalone": true,
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 11,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start",
+        "textColor": "#b85450"
+      },
+      "text": "HA1 control",
+      "x": 630,
+      "y": 96
+    },
+    {
+      "id": null,
+      "parentShape": 0,
+      "standalone": true,
+      "style": {
+        "fill": "none",
+        "fillOpacity": 1,
+        "fontFamily": "Calibri",
+        "fontSize": 11,
+        "fontWeight": "normal",
+        "opacity": 1,
+        "rx": 0,
+        "ry": 0,
+        "stroke": "none",
+        "strokeDasharray": null,
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "textAnchor": "start",
+        "textColor": "#b85450"
+      },
+      "text": "HA2 data sync",
+      "x": 630,
+      "y": 118
+    }
+  ],
+  "viewBox": {
+    "height": 827,
+    "width": 1169,
+    "x": 0,
+    "y": 0
+  },
+  "warnings": []
+}

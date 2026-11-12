@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -10 420 320" width="420" height="320">
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <linearGradient id="grad">
+      <stop offset="0" stop-color="#ff0000"/>
+      <stop offset="1" stop-color="#0000ff"/>
+    </linearGradient>
+    <rect id="stamp" x="0" y="0" width="40" height="20" fill="#eeeeee" stroke="#444444"/>
+  </defs>
+
+  <g transform="translate(100,100)">
+    <g transform="translate(20,30)">
+      <rect x="10" y="10" width="60" height="40" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+    </g>
+  </g>
+
+  <g transform="scale(2)">
+    <rect x="5" y="5" width="30" height="15" fill="#cccccc" stroke="#000000" stroke-width="1.5"/>
+  </g>
+
+  <rect x="200" y="200" width="50" height="50" fill="url(#grad)"/>
+  <rect x="270" y="200" width="40" height="40" fill="none" stroke="#000000" stroke-opacity="0.25"/>
+
+  <use href="#stamp" x="250" y="120"/>
+
+  <line x1="20" y1="270" x2="120" y2="270" stroke="#000000" marker-start="url(#head)"/>
+  <line x1="150" y1="270" x2="250" y2="270" stroke="#000000" stroke-dasharray="1 2"/>
+  <line x1="150" y1="285" x2="250" y2="285" stroke="#000000" stroke-dasharray="10 4 2 4"/>
+
+  <text x="30" y="100">First<tspan x="30" y="120">Second</tspan></text>
+  <text x="300" y="30">Bare <tspan font-weight="bold">bold</tspan></text>
+
+  <image href="nope.png" x="0" y="290" width="10" height="10"/>
+</svg>
