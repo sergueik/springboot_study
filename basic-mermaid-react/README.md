@@ -19,23 +19,13 @@ $url = 'https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.
 
 $builder = new-object System.UriBuilder($url)
 $builder.Path = $builder.Path -replace '/blob/', '/'
-<#
-$segments = $builder.Path.Trim('/').Split('/')
-n
-if ($segments[2] -ne 'blob') {
-  throw 'Expected GitHub blob URL'
-}
-
-$segments[2] = 'master'
-$builder.Path = '/' + ($segments -join '/')
-#>
 $builder.Host = 'raw.githubusercontent.com'
 $raw_url = $builder.Uri.AbsoluteUri
-
+# NOTE: not handling invoke-WebRequest : The remote name could not be resolved
 $webResponseObject = (invoke-WebRequest -usebasicparsing -uri $raw_url)
 $scriptCode = $webResponseObject.Content
 
-$scriptCode = ('{0}{3}{1}{3}{2}' -f 'param ( [string]$Source, [string]$DestinationLnk, [string]$Arguments )' , $scriptCode ,'Create-Shortcut -Source $Source -Arguments $Arguments -DestinationLnk $DestinationLnk -Verbose' )
+$scriptCode = ('{0}{3}{1}{3}{2}' -f 'param ( [string]$Source, [string]$DestinationLnk, [string]$Arguments )', $scriptCode ,'Create-Shortcut -Source $Source -Arguments $Arguments -DestinationLnk $DestinationLnk -Verbose', [char]10 )
 $scriptBlock = [scriptblock]::Create($scriptCode)
 $filepath = (resolve-path -path 'dist\index.html').path
 [Uri] $fileUri = new-object Uri($filepath)
@@ -45,6 +35,30 @@ $arguments =  ('--user-data-dir=C:\temp\chrome-file-test --allow-file-access-fro
 $key = 'HKLM:\SOFTWARE\Classes\ChromeHTML\shell\open\command'
 $source =  (Get-Item -Path $key).GetValue('') -replace ' *--.*', ''
 & $scriptBlock -Source $source -Arguments "$arguments" -DestinationLnk "$destination" -Verbose
+
+# [enum]::GetValues([Environment+SpecialFolder])
+
+$desktop_directory = [Environment]::GetFolderPath( [Environment+SpecialFolder]::DesktopDirectory )
+
+if ([string]::IsNullOrEmpty($desktop_directory)) {
+  throw 'Cannot resolve user Desktop directory'
+}
+
+if (-not (Test-Path -LiteralPath $desktop_directory -PathType Container)) {
+  throw "Desktop directory is unavailable: $desktop_directory"
+}
+# TODO update
+# NOTE: the https://github.com/gangstanthony/PowerShell/blob/master/Create-Shortcut.ps1 does not handle one
+# https://learn.microsoft.com/en-us/troubleshoot/windows-client/admin-development/create-desktop-shortcut-with-wsh
+# Calling CreateShortcut on an existing path opens the file so you can read properties like TargetPath, Arguments, WorkingDirectory, IconLocation, and Hotkey
+# changes you make to the object's properties stay in memory until the .Save method explicitly called.
+# File extensions in the file path string passed to `CreateShortcut` must end in `.lnk` or `.url`, otherwise the method will fail
+#
+# $destination.IconLocation
+
+$desktop_link = Join-Path $desktop_directory 'launch.lnk'
+
+& $scriptBlock -Source $destination -DestinationLnk $desktop_link
 
 ```
 > NOTE: `Invoke-Expression` does not recognize `ArgumentList` nor `Parameter` parameter
@@ -390,7 +404,7 @@ docker run --name $NAME -d -p 8080:80 $IMAGE
 ```sh
 curl -I http://$(docker-machine ip):8080
 ```
-or 
+or
 ```sh
 curl -I http://localhost:8080
 ```
@@ -1028,6 +1042,47 @@ And unlike containers, Kubernetes, serverless architecture, browser runtimes, or
 Here, I don't care about reality.
 
 I care about sound myths.
+
+#### Destination
+
+  * *Information aggregation junkyard confused for information organization wizard*
+  * *Today Anybody Can Accomplish Their Aims With The Push Of The Button Part __2__* [reddit](https://www.reddit.com/r/musicsuggestions/comments/16uucfk/songs_with_hilariously_long_titles_almost_to_the/)
+  * *Everything everywhere, all at once, whether you asked for it or not*
+  * *Your documents are here. Or there. Or available on demand*
+  * *Known Folder Redirection*
+
+ Microsoft explicitly distinguishes the logical `Desktop` from `DesktopDirectory`,
+ which is the physical filesystem location. `GetFolderPath()` also accounts for user-configured special-folder locations.
+
+|Enum value|Explanation|Suitable as  file destination|
+|----------|-------|-----------------------------|
+|`Desktop`|Logical, virtual Windows Desktop|No|
+|`DesktopDirectory`|Physical filesystem directory for the current user's desktop objects|Yes|
+|`CommonDesktopDirectory`|Shared desktop for all users (Public Desktop)|No|
+
+
+A fallback such as:
+```powershell
+$desktop_directory = Join-Path $env:USERPROFILE 'Desktop'
+```
+is not recommended - a disconnected network share should produce an error, not cause deployment to fall back to a local Desktop that the user might not even see
+
+
+For OneDrive, there are several possible states:
+
+|Status|Meaning|
+|------|-------|
+|Stored locally|Folder is on the local filesystem, not necessarily redirected into OneDrive|
+|OneDrive - Company|Folder is associated with the organization's OneDrive|
+|Available on this device|File has a local copy, but OneDrive may remove it|
+|Always available on this device|Local copy is pinned and retained|
+
+Microsoft [Files On-Demand](https://learn.microsoft.com/en-us/answers/questions/5988140/difference-in-the-storage-of-locally-available-fil)
+distinguishes between local availability and permanent local retention.
+
+* Home is an aggregation view, not a filesystem directory. It can combine locations, recent files, favorites and activity.
+* Individual document histories are surfaced as recent or recommended items. They can originate from different locations, including SharePoint and OneDrive.
+* The cloud-status column provides synchronization/availability information. A cloud icon generally indicates an online-only OneDrive file; other icons distinguish locally available or synchronized files.
 
 ### See Also:
   * https://github.com/mermaid-js/mermaid
