@@ -2,7 +2,7 @@ function Create-Shortcut {
   param (
     [string]$Source,
     [string]$DestinationLnk,
-    [string]$IconLocation = (resolve-path -path '.').path + '\launch.ico' ,
+    [string]$IconLocation = (resolve-path -path '.').path + '\launch-resource.dll,0' ,
     [string]$Arguments
   )
 
@@ -60,4 +60,4 @@ if (-not (Test-Path -LiteralPath $desktop_directory -PathType Container)) {
 
 $desktop_link = Join-Path $desktop_directory 'launch.lnk'
 
-& $scriptBlock -Source $destination -DestinationLnk $desktop_link
+Create-Shortcut -Source $destination -DestinationLnk $desktop_link
