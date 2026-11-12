@@ -1,0 +1,499 @@
+
+### Local Install
+
+password: `okUcu2y1`
+
+### Troubleshooting
+
+"Blue Prism Learning Edition: The Runtime Dependency Saga"
+
+w
+https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
+
+Get-ItemProperty HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64 |
+Select-Object Installed, Version, Major, Minor, Bld
+
+
+Get-ItemProperty HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64 |
+Select-Object Installed, Version, Major, Minor, Bld
+
+
+Installed : 1
+Version   : v14.51.36247.00
+Major     : 14
+Minor     : 51
+Bld       : 36247
+
+
+Get-ItemProperty HKLM:\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x64 |
+Select-Object Installed, Version, Major, Minor, Bld
+
+
+Installed : 1
+Version   : v14.51.36247.00
+Major     : 14
+Minor     : 51
+Bld       : 36247
+
+
+ HKLM:\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86 |
+>> Select-Object Installed, Version, Major, Minor, Bld
+
+
+Installed : 1
+Version   : v14.51.36247.00
+Major     : 14
+Minor     : 51
+Bld       : 36247
+
+
+where.exe /r C:\Windows vcruntime140_1.dll
+C:\Windows\System32\vcruntime140_1.dll
+
+dir C:\Windows\System32\vcruntime140_1.dll  Volume in drive C has no label.
+ Volume Serial Number is 547E-685D
+
+ Directory of C:\Windows\System32
+
+05/27/2026  04:59 AM            50,112 vcruntime140_1.dll
+               1 File(s)         50,112 bytes
+               0 Dir(s)   2,222,141,440 bytes free
+ Volume in drive C has no label.
+ Volume Serial Number is 547E-685D
+ dir C:\Windows\SysWOW64\vcruntime140_1.dll
+
+ Directory of C:\Windows\SysWOW64
+
+
+
+path=%path%;"c:\Program Files\Microsoft SQL Server\160\LocalDB\Binn"
+
+sqllocaldb.exe info
+BluePrismLocalDB
+MSSQLLocalDB
+
+sqllocaldb.exe info MSSQLLocalDB
+The automatic instance "MSSQLLocalDB" is not created.
+
+sqllocaldb.exe info BluePrismLocalDB
+Name:               BluePrismLocalDB
+Version:            16.0.1000.6
+Shared name:
+Owner:              DESKTOP-RNOG166\sergueik
+Auto-create:        No
+State:              Stopped
+Instance pipe name:
+
+DO not
+
+sqllocaldb delete MSSQLLocalDB
+sqllocaldb create MSSQLLocalDB
+sqllocaldb start MSSQLLocalDB
+
+instead
+
+sqllocaldb.exe start BluePrismLocalDB
+Start of LocalDB instance "BluePrismLocalDB" failed because of the following error:
+Error occurred during LocalDB instance startup: SQL Server process failed to start.
+
+
+examine
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\
+
+
+```
+dir /b/s "C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB"
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\error.log
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\error1.log
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\error2.log
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\error3.log
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\error4.log
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\error5.log
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\error6.log
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696207970000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696241330000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696266820000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696301970000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696339160000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696369940000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696425570000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696467600000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300696499000000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\HkEngineEventFile_0_134300701623690000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\log_5.trc
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\log_6.trc
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\log_7.trc
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\log_8.trc
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\log_9.trc
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\master.mdf
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\mastlog.ldf
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\model.mdf
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\modellog.ldf
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\msdbdata.mdf
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\msdblog.ldf
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696222380000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696250270000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696277750000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696312440000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696353220000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696391660000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696445570000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696478690000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300696509010000.xel
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB\system_health_0_134300701633220000.xel
+
+```
+
+run:
+```
+pushd  "C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB"
+"c:\program files\git\usr\bin\tail.exe" -n 20 error.log
+```
+```
+C:\Users\sergueik\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\BluePrismLocalDB>"c:\program files\git\usr\bin\tail.exe" -n 20 error.log
+2026-08-01 08:02:43.34 spid15s     Starting up database 'mssqlsystemresource'.
+2026-08-01 08:02:43.35 spid21s     Dedicated administrator connection support was not started because it is disabled on this edition of SQL Server. If you want to use a dedicated administrator connection, restart SQL Server using the trace flag 7806. This is an informational message only. No user action is required.
+2026-08-01 08:02:43.35 spid21s     SQL Server is now ready for client connections. This is an informational message; no user action is required.
+2026-08-01 08:02:43.35 spid15s     The resource database build version is 16.00.1000. This is an informational message only. No user action is required.
+2026-08-01 08:02:43.41 spid15s     Starting up database 'model'.
+2026-08-01 08:02:43.93 spid13s     Error: 17204, Severity: 16, State: 1.
+2026-08-01 08:02:43.93 spid13s     FCB::Open failed: Could not open file D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\MSDBData.mdf for file number 0.  OS error: 21(The device is not ready.).
+2026-08-01 08:02:43.94 spid13s     Error: 5120, Severity: 16, State: 101.
+2026-08-01 08:02:43.94 spid13s     Unable to open the physical file "D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\MSDBData.mdf". Operating system error 21: "21(The device is not ready.)".
+2026-08-01 08:02:43.98 spid15s     Error: 17204, Severity: 16, State: 1.
+2026-08-01 08:02:43.98 spid15s     FCB::Open failed: Could not open file D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\model.mdf for file number 1.  OS error: 21(The device is not ready.).
+2026-08-01 08:02:43.98 spid15s     Error: 5120, Severity: 16, State: 101.
+2026-08-01 08:02:43.98 spid15s     Unable to open the physical file "D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\model.mdf". Operating system error 21: "21(The device is not ready.)".
+2026-08-01 08:02:44.27 spid15s     Error: 17207, Severity: 16, State: 1.
+2026-08-01 08:02:44.27 spid15s     FileMgr::StartLogFiles: Operating system error 2(The system cannot find the file specified.) occurred while creating or opening file 'D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\modellog.ldf'. Diagnose and correct the operating system error, and retry the operation.
+2026-08-01 08:02:44.27 spid15s     File activation failure. The physical file name "D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\modellog.ldf" may be incorrect.
+2026-08-01 08:02:44.27 spid15s     Error: 945, Severity: 14, State: 2.
+2026-08-01 08:02:44.27 spid15s     Database 'model' cannot be opened due to inaccessible files or insufficient memory or disk space.  See the SQL Server errorlog for details.
+2026-08-01 08:02:44.27 spid15s     SQL Trace was stopped due to server shutdown. Trace ID = '1'. This is an informational message only; no user action is required.
+
+```
+
+
+It is not VC++ anymore. SQL Server actually starts:
+
+SQL Server is now ready for client connections.
+
+Then it dies because the system database files are pointing to impossible build-machine paths:
+
+D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\MSDBData.mdf
+
+and:
+
+D:\dbs\sh\5uj5\1008_054209\cmd\11\obj\x64retail\sql\mkmastr\databases\mkmastr.nativeproj\model.mdf
+
+That path is not from your machine. It is an internal Microsoft SQL build path that should only exist during SQL Server compilation.
+
+The key line:
+
+```
+Error: 945
+
+Database 'model' cannot be opened due to inaccessible files
+
+```
+
+```
+sqllocaldb stop BluePrismLocalDB
+sqllocaldb delete BluePrismLocalDB
+```
+
+```
+sqllocaldb info
+MSSQLLocalDB
+```
+
+use dummy password it prompts earlier okUcu2y1
+
+copy licence file
+net use
+New connections will be remembered.
+
+
+Status       Local     Remote                    Network
+
+-------------------------------------------------------------------------------
+             E:        \\vboxsrv\Downloads       VirtualBox Shared Folders
+The command completed successfully.
+
+
+C:\Users\sergueik>copy e:\*lic Desktop
+e:\sergueik.lic
+        1 file(s) copied.
+
+
+#### Exploring
+
+Volume serial number is 000000C4 547E:685D
+C:\%APPDATA
+└───%
+    └───Blue Prism Limited
+        └───Automate V3
+
+type "C:\%appdata\%\Blue Prism Limited\Automate V3\Automate.config"
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <editsummariesarecompulsory>True</editsummariesarecompulsory>
+  <startprocessengine>True</startprocessengine>
+  <currentconnection>
+  </currentconnection>
+  <sqlcommandtimeout>30</sqlcommandtimeout>
+  <sqlcommandtimeoutlong>600</sqlcommandtimeoutlong>
+  <sqlcommandtimeoutlog>0</sqlcommandtimeoutlog>
+  <databaseinstallcommandtimeout>15</databaseinstallcommandtimeout>
+  <datapipelinecommandsendtimeout>3</datapipelinecommandsendtimeout>
+  <archivepath>C:\Users\sergueik\Documents</archivepath>
+  <workerCommsReceiveDataTimeoutInSeconds>300</workerCommsReceiveDataTimeoutInSeconds>
+  <workerCommsInstructionalKeepAliveInSeconds>10</workerCommsInstructionalKeepAliveInSeconds>
+  <config-encryption-method>0</config-encryption-method>
+  <connections>
+    <connection>
+      <name>LocalDB Connection</name>
+      <kerberosRealm>
+      </kerberosRealm>
+      <forceNtlm>False</forceNtlm>
+      <server>(LocalDB)\BluePrismLocalDB</server>
+      <dbname>BluePrism</dbname>
+      <databasefilepath>C:\Users\sergueik\AppData\Local\Blue Prism Limited\databases\BluePrism.mdf</databasefilepath>
+      <windowsauth />
+      <extraparams>
+      </extraparams>
+    </connection>
+  </connections>
+  <businessobjects />
+</config>
+```
+
+That's actually a very informative find.
+
+The key part is this:
+
+<connections>
+  <connection>
+    <name>LocalDB Connection</name>
+    <server>(LocalDB)\BluePrismLocalDB</server>
+    <dbname>BluePrism</dbname>
+    <databasefilepath>
+      C:\Users\sergueik\AppData\Local\Blue Prism Limited\databases\BluePrism.mdf
+    </databasefilepath>
+    <windowsauth />
+  </connection>
+</connections>
+
+A few observations:
+
+The connection is not hardcoded in the executable.
+It's stored in a user-editable XML file.
+They already anticipated multiple connections.
+Notice the schema:
+<connections>
+    <connection>...</connection>
+    <connection>...</connection>
+    ...
+</connections>
+
+<currentconnection>
+</currentconnection>
+
+That isn't a one-off configuration; it's a list of named connection profiles.
+
+<currentconnection> is empty.
+That's interesting. It suggests either:
+this is a default configuration,
+another file stores the selected profile,
+or the application chooses the first entry if none is selected.
+The server name is just a string.
+<server>(LocalDB)\BluePrismLocalDB</server>
+
+Nothing about that is inherently tied to LocalDB. It could just as well be
+
+<server>.\SQLEXPRESS</server>
+
+or
+
+<server>localhost</server>
+
+or
+
+<server>SQLSERVER01</server>
+
+provided the rest of the code doesn't explicitly reject it.
+
+
+type "C:\%appdata\%\Blue Prism Limited\Automate V3\User.config"
+<?xml version="1.0" encoding="utf-8"?>
+<user-config>
+  <connection-map>
+    <connection name="LocalDB Connection" user="admin" />
+  </connection-map>
+  <last-connection>LocalDB Connection</last-connection>
+</user-config>
+```
+> NOTE sing a literal % directory to make
+
+```
+C:\%APPDATA\%\...
+```
+expand to
+```
+C:\Users\sergueik\AppData\Roaming\...
+```
+via the command processor is a clever little trick. It lets you type a path that looks like an environment variable without needing to remember the full roaming profile path. It's unusual, but once you realize what it's doing, it's quite handy.
+
+https://fontlibrary.org/en/font/code-new-roman
+
+
+findstr -smic:"<?xml" "c:\Program Files\Blue Prism Limited\Blue Prism Automate"\*xml
+c:\Program Files\Blue Prism Limited\Blue Prism Automate\Actions.xml
+c:\Program Files\Blue Prism Limited\Blue Prism Automate\SAPElements.xml
+
+C:\Users\sergueik\Desktop>findstr -smic:"<!doctype" "c:\Program Files\Blue Prism Limited\Blue Prism Automate"\*xml
+
+
+In Blue Prism, an Object file is structurally an XML document that contains metadata, application models, attributes, and stage logic. When exported individually, these files carry a .xml extension, while packaged objects use the .bprelease format.Below is a structural representation of what a minimal, valid Blue Prism Business Object (VBO) XML file looks like when exported from Object Studio.
+https://community.blueprism.com/hfgie69872/attachments/hfgie69872/product-support/7213/1/5.Object%20Design%20Guide.pdf
+
+https://community.blueprism.com/t5/Product-Forum/Sample-Processes-Projects-for-Training/td-p/78664
+
+https://www.google.com/aclk?sa=L&ai=DChsSEwjs6a2QrICWAxXwsloFHa6GN0sYACICCAIQABoCdnU&ae=2&co=1&ase=2&gclid=CjwKCAjwsrbTBhAvEiwA0Bpp4QSL4CVQM0pQhOhY23mCo8ng5YElBCQhM1PA5Bdx_xkof0Z1ne6gbhoCqYMQAvD_BwE&cid=CAASuwHkaDBOYdGoZsppiEmIPa3oM8RaCSDuqIWBC3N8-6ff9VFuXaqrJyp6dXrBczceDa62puv1I-wguLxfBXfhbNDIWKT8Dpg5mYyNPpx4zB1qwFum0GEtIjs5pM5ygRuWBGscthH8WDN22vYxG6Za7-lEhX8CgGnJfh43wSBPBkKFIX2AqSfWI4wM5zyzoqSe7uzIQTFKbfwB-_y122BKzSE1oAFG3zGCI1S8Ur5NSYixp9_d2ohoGV_VjcIQ&cce=2&category=acrcp_v1_71&sig=AOD64_0qcuOXVVb-CBi3O16IyQutlEeW0A&q&nis=4&adurl&ved=2ahUKEwjHgaeQrICWAxVrfTABHVyELZ4Q0Qx6BAhDEAE
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<bndlschema xmlns:xsi="http://w3.org" xmlns:xsd="http://w3.org" version="1.0" ProcessesCount="1">
+  <!-- Business Object Core Metadata -->
+  <process name="Example Utility Object" id="a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d" version="1.0" description="An example object handling core application logic." type="vbo" businessobject="ExampleUtility">
+    
+    <!-- Object Initialization Page (Constructor) -->
+    <subpage stageid="00000000-0000-0000-0000-000000000001" name="Initialize" type="Normal" comment="Runs when the object is loaded.">
+      <stage stageid="11111111-2222-3333-4444-555555555555" name="Start" type="Start">
+        <onsuccess>22222222-3333-4444-5555-666666666666</onsuccess>
+      </stage>
+      <stage stageid="22222222-3333-4444-5555-666666666666" name="End" type="End" />
+    </subpage>
+
+    <!-- Object Clean Up Page (Destructor) -->
+    <subpage stageid="00000000-0000-0000-0000-000000000002" name="CleanUp" type="Normal" comment="Runs when the object is destroyed.">
+      <stage stageid="33333333-4444-5555-6666-777777777777" name="Start" type="Start">
+        <onsuccess>44444444-5555-6666-7777-888888888888</onsuccess>
+      </stage>
+      <stage stageid="44444444-5555-6666-7777-888888888888" name="End" type="End" />
+    </subpage>
+
+    <!-- Custom Functional Action (e.g., Launch Application) -->
+    <subpage stageid="a9b8c7d6-e5f4-3a2b-1c0d-ef9e8d7c6b5a" name="Launch Application" type="Normal" published="true" comment="Launches target application.">
+      <stage stageid="55555555-6666-7777-8888-999999999999" name="Start" type="Start">
+        <onsuccess>66666666-7777-8888-9999-000000000000</onsuccess>
+      </stage>
+      <!-- Object Studio exclusive Navigate Stage -->
+      <stage stageid="66666666-7777-8888-9999-000000000000" name="Launch App" type="Navigate">
+        <narrative>Launches the application defined in the Application Modeler.</narrative>
+        <onsuccess>77777777-8888-9999-0000-111111111111</onsuccess>
+        <step>
+          <element id="app-root-element-id" />
+          <action name="Launch" />
+        </step>
+      </stage>
+      <stage stageid="77777777-8888-9999-0000-111111111111" name="End" type="End" />
+    </subpage>
+
+    <!-- Application Modeler Configurations -->
+    <appdef>
+      <apptype>Windowed</apptype>
+      <root-element id="app-root-element-id" name="Target App">
+        <attributes />
+        <children>
+          <element id="sub-element-id" name="Login Button">
+            <attributes>
+              <attribute name="matchindex" value="1" />
+              <attribute name="windowtext" value="Login" />
+            </attributes>
+          </element>
+        </children>
+      </root-element>
+    </appdef>
+
+  </process>
+</bndlschema>
+
+```
+
+https://www.google.com/aclk?sa=L&ai=DChsSEwjnkZWtrYCWAxUALdQBHcsiJ98YACICCAEQABoCb2E&ae=2&co=1&ase=2&gclid=CjwKCAjwsrbTBhAvEiwA0Bpp4Sg5wgWzbHGAY91T7bT8UaNbMNk1jLXhKvkqxJfM474y3ohzetDjixoCmBgQAvD_BwE&cid=CAASuwHkaKreoRTrq8PkGH3usZv-OF4JrCBhNxmHJwJE3tWlCvee6hQdWh8xizpvqirmlZR18e5q1l_f-scs1IUuhl6OFml_TERVGdNpfVgPIfj553NvnZtVwQoHrWdq3TCvQXRSOlAPsRhQj_YICzol0qOoKB3YQ4Fd5kraY2SMCPx8JydE7VeNOnsuMuKvXw5OhzG5xxWgjGjPQAki2FMcSSwujFjWWvMp_WWqs1s_nAqU-qvd52_ReM4KfOYA&cce=2&category=acrcp_v1_71&sig=AOD64_2Y5QEyVXglNVA6CMQVL3LJqIwtPw&q&nis=4&adurl&ved=2ahUKEwj3hI-trYCWAxV6_skDHXG1PRMQ0Qx6BAgQEAE
+
+
+A Blue Prism .bpobject file is an XML document structured with root and sub-elements defining visual business objects. Key structural sections include process/object metadata, stage definitions, and page flow layou
+
+
+<process name="Example Object" version="1.0" bpversion="6.9.0.26970" narrative="Sample business object XML structure">
+  <manifest>
+    <designtime>0</designtime>
+    <panion>False</panion>
+  </manifest>
+  <stage stageid="00000000-0000-0000-0000-000000000000" name="Start" type="Start">
+    <narrative>Starting point of the action page.</narrative>
+    <display x="15" y="-105" w="90" h="30" />
+    <onsuccess>11111111-1111-1111-1111-111111111111</onsuccess>
+  </stage>
+  <stage stageid="11111111-1111-1111-1111-111111111111" name="End" type="End">
+    <narrative>Ending point of the action page.</narrative>
+    <display x="15" y="105" w="90" h="30" />
+  </stage>
+</process>
+
+https://github.com/mclayan/blueprism-schemas
+XML Schemas for the Blue Prism file formats and follow the specification of XSD 1.1 from the W3C in 2012. It was created by hand because Blue Prism was not providing schemas at the time of the initial commit and auto-generated XSD from exiting XML files were found to lack a maintainable and comprehensible quality. The schemas were tested against exported XML files using an XSD 1.1 library.
+
+
+https://learn.microsoft.com/en-us/dotnet/framework/tools/ildasm-exe-il-disassembler
+
+
+Blue Prism has a fairly graph-like execution model:
+
+Action
+Calculation
+Choice
+Decision
+Loop
+Data Item
+Read/Write
+Subprocess
+Navigate
+Wait
+Exception handling
+
+Those map naturally to Mermaid shapes.
+
+Those map naturally to Mermaid shapes.
+
+A useful first pass would probably ignore 80% of the XML and extract only:
+
+Stage ID
+Stage type
+Stage name
+X/Y position (optional)
+Outgoing links
+Link condition
+
+The positions are worth keeping because Blue Prism Studio already contains the human-designed layout. Mermaid can use that information imperfectly, or you can let Mermaid's layout engine decide.
+
+reate an intermediate JSON model:
+
+{
+  "nodes": [
+    {
+      "id": "stage1",
+      "type": "decision",
+      "label": "Customer exists?"
+    }
+  ],
+  "edges": [
+    {
+      "from": "stage1",
+      "to": "stage2",
+      "label": "Yes"
+    }
+  ]
+}
