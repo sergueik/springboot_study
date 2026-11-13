@@ -1051,6 +1051,276 @@ distinguishes between local availability and permanent local retention.
 * Individual document histories are surfaced as recent or recommended items. They can originate from different locations, including SharePoint and OneDrive.
 * The cloud-status column provides synchronization/availability information. A cloud icon generally indicates an online-only OneDrive file; other icons distinguish locally available or synchronized files.
 
+### Enterprise WAF Challenge
+
+
+### npm Is Not Maven: Dependency Management and Offline Reproducibility
+
+An enterprise build environment that successfully supports Maven repositories cannot automatically be assumed to provide equivalent support for npm.
+
+Although both ecosystems support dependency declarations, transitive dependency resolution, local caching, and repository managers, their operational models differ considerably.
+
+Several distinctions are worth remembering:
+
+- **Repository semantics:** Maven uses relatively predictable artifact coordinates and repository layouts. npm relies on registry metadata, package names, versions, and tarball references.
+- **Scoped packages:** npm package names such as `@vitejs/plugin-react` introduce URL-encoded path separators (`%2F`). Reverse proxies and WAF configurations may reject, decode, or rewrite these separators, breaking otherwise valid package-resolution requests.
+- **Lockfiles:** `package-lock.json` records the resolved dependency tree and integrity information. It is not a self-contained package repository.
+- **Local caches:** npm's offline mode can use previously cached data, but a lockfile alone does not guarantee that all required package contents are available.
+- **Transitive dependencies:** Manually downloading a direct dependency does not eliminate the need to resolve and retrieve its own dependencies.
+- **Lifecycle scripts:** Even a complete collection of package tarballs does not necessarily guarantee an offline build. Installation scripts may invoke external tools or retrieve additional resources.
+
+#### Practical lesson
+
+A successful Maven integration is not evidence of a successful npm integration.
+
+Enterprise readiness should include an explicit test of dependency provisioning and reproducibility:
+
+1. Resolve a representative dependency tree through the internal npm registry.
+2. Preserve the resulting `package-lock.json`.
+3. Verify that all package artifacts are available internally.
+4. Perform a clean installation using `npm ci --offline` with an isolated, pre-populated cache.
+5. Verify whether the subsequent build requires any external network access.
+
+The objective is not merely to make `npm install` succeed. It is to establish a reproducible dependency supply chain that does not depend on public Internet availability.
+
+**A lockfile describes what to install; it does not guarantee that everything needed to install it is available.**
+
+#### An additional observation: developer environment versus enterprise build environment
+
+The initial assumption was that `mermaid-react` represented a relatively conventional npm dependency tree, rather than an unusually demanding or bleeding-edge package selection.
+
+The unusually large number of unresolved package requests raised another question: are local developer environments actually traversing the same registry and network-security path as enterprise builds?
+
+If local installations succeed consistently while enterprise installations encounter cascading failures involving encoded URL separators and unavailable package versions, the difference may be attributable to network topology, registry configuration, existing caches, or WAF policy rather than package compatibility.
+
+This remains a hypothesis pending confirmation. Nevertheless, it suggests an important diagnostic question:
+
+**Are developers and enterprise build agents consuming dependencies through equivalent infrastructure, or are they operating against materially different package-resolution environments?**
+
+The investigation also identified a missing package version, which is now being tested independently. Testing against an unrestricted external network provides a useful control experiment, although it does not by itself establish that the internal registry or firewall configuration is correct.
+
+```sh
+curl -skLI https://registry.npmjs.org/@types/d3/-/d3-7.4.3.tgz
+```
+```text
+HTTP/1.1 200 OK
+Date: Fri, 13 Nov 2026 16:32:47 GMT
+Content-Type: application/octet-stream
+Connection: keep-alive
+CF-Ray: a59f2caa6e85c53a-MIA
+CF-Cache-Status: HIT
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: *
+Age: 1401343
+Cache-Control: public, must-revalidate, max-age=31557600
+ETag: "e0e6cf569417dca59a6fee6dccf6f71c"
+Last-Modified: Tue, 07 Nov 2023 19:52:31 GMT
+Server: cloudflare
+set-cookie: __cf_bm=NxGORy.celnAZusZOae39Nr9QknVb6M3k.F9RoZQ1oE-1794587567.7468243-1.0.1.1-P8RM2zSjn3KjMQHBMqahMfNrvU9V7ZmTsvcB8TsIYfavxo2LZsIgwhj0GLhLsrQCwtRmVOprPWknTor9YC4HbaLpV7uDrNJnW.blzE1NSF9yI6qV2ou0UF6QBuPozJnG; HttpOnly; SameSite=None; Partitioned; Secure; Path=/; Domain=npmjs.org; Expires=Fri, 13 Nov 2026 17:02:47 GMT
+```
+equivalent
+
+```sh
+curl -fsSI https://registry.npmjs.org/@types/d3/-/d3-7.4.3.tgz
+```
+```text
+HTTP/1.1 200 OK
+Date: Fri, 13 Nov 2026 16:34:05 GMT
+Content-Type: application/octet-stream
+Connection: keep-alive
+CF-Ray: a59f2e913c2db805-MIA
+CF-Cache-Status: HIT
+Accept-Ranges: bytes
+Access-Control-Allow-Origin: *
+Age: 1401421
+Cache-Control: public, must-revalidate, max-age=31557600
+ETag: "e0e6cf569417dca59a6fee6dccf6f71c"
+Last-Modified: Tue, 07 Nov 2023 19:52:31 GMT
+Server: cloudflare
+set-cookie: __cf_bm=C9KR1pGdqY8VwYdUCnKNQgm9OzyYEHDpYZajgWq_.UM-1794587645.6364202-1.0.1.1-v1nGv11i50ndBgOtWOA_M9x7X1ksvo8sgHmgJnfuWVkF3Ndeh2gdsv4gwhuKM3RH3fitJi5RRL_72FRp_ZYsOkVaIRyf4kGMI0aQQ9pDJEucW3a9wDoUDFemleEFZyVy; HttpOnly; SameSite=None; Partitioned; Secure; Path=/; Domain=npmjs.org; Expires=Fri, 13 Nov 2026 17:04:05 GMT
+```
+
+```sh
+sudo apt-get install -qqy npm
+```
+```sh
+npm view '@types/d3@>=7.4.3 <8.0.0' version --registry='https://registry.npmjs.org/'
+```
+```text
+7.4.3
+```
+```sh
+npm view '@types/d3@=7.4.3'
+```
+```text
+@types/d3@7.4.3 | MIT | deps: 30 | versions: 110
+TypeScript definitions for d3
+https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/d3
+
+dist
+.tarball: https://registry.npmjs.org/@types/d3/-/d3-7.4.3.tgz
+.shasum: d4550a85d08f4978faf0a4c36b848c61eaac07e2
+.integrity: sha512-lZXZ9ckh5R8uiFVt8ogUNf+pIrK4EsWrx2Np75WvF/eTpJ0FMHNhjXk8CKEx/+gpHbNQyJWehbFaTvqmHWB3ww==
+.unpackedSize: 8.4 kB
+
+dependencies:
+@types/d3-array: *    @types/d3-drag: *     @types/d3-polygon: *
+@types/d3-axis: *     @types/d3-dsv: *      @types/d3-quadtree: *
+@types/d3-brush: *    @types/d3-ease: *     @types/d3-random: *
+@types/d3-chord: *    @types/d3-fetch: *    @types/d3-scale: *
+@types/d3-color: *    @types/d3-force: *    @types/d3-shape: *
+@types/d3-contour: *  @types/d3-format: *   @types/d3-time: *
+@types/d3-delaunay: * @types/d3-geo: *      @types/d3-timer: *
+@types/d3-dispatch: * @types/d3-path: *     @types/d3-zoom: *
+(...and 6 more.)
+
+maintainers:
+- types <ts-npm-types@microsoft.com>
+
+dist-tags:
+latest: 7.4.3  ts2.8: 5.7.2   ts3.7: 7.1.0   ts4.6: 7.4.3   ts5.5: 7.4.3
+ts2.0: 4.11.0  ts2.9: 5.7.2   ts3.8: 7.1.0   ts4.7: 7.4.3   ts5.6: 7.4.3
+ts2.1: 4.11.0  ts3.0: 5.7.2   ts3.9: 7.4.0   ts4.8: 7.4.3   ts5.7: 7.4.3
+ts2.2: 4.11.0  ts3.1: 5.7.2   ts4.0: 7.4.0   ts4.9: 7.4.3   ts5.8: 7.4.3
+ts2.3: 5.7.2   ts3.2: 6.2.0   ts4.1: 7.4.0   ts5.0: 7.4.3   ts5.9: 7.4.3
+ts2.4: 5.7.2   ts3.3: 6.2.0   ts4.2: 7.4.0   ts5.1: 7.4.3   ts6.0: 7.4.3
+ts2.5: 5.7.2   ts3.4: 6.3.0   ts4.3: 7.4.0   ts5.2: 7.4.3   ts7.0: 7.4.3
+ts2.6: 5.7.2   ts3.5: 6.7.0   ts4.4: 7.4.0   ts5.3: 7.4.3   ts7.1: 7.4.3
+ts2.7: 5.7.2   ts3.6: 7.0.0   ts4.5: 7.4.3   ts5.4: 7.4.3
+
+published over a year ago by types <ts-npm-types@microsoft.com>
+
+```
+```sh
+npm view '@types/d3@7.4.3' dependencies --json
+```
+```json
+{
+  "@types/d3-dsv": "*",
+  "@types/d3-geo": "*",
+  "@types/d3-axis": "*",
+  "@types/d3-drag": "*",
+  "@types/d3-ease": "*",
+  "@types/d3-path": "*",
+  "@types/d3-time": "*",
+  "@types/d3-zoom": "*",
+  "@types/d3-array": "*",
+  "@types/d3-brush": "*",
+  "@types/d3-chord": "*",
+  "@types/d3-color": "*",
+  "@types/d3-fetch": "*",
+  "@types/d3-force": "*",
+  "@types/d3-scale": "*",
+  "@types/d3-shape": "*",
+  "@types/d3-timer": "*",
+  "@types/d3-format": "*",
+  "@types/d3-random": "*",
+  "@types/d3-contour": "*",
+  "@types/d3-polygon": "*",
+  "@types/d3-delaunay": "*",
+  "@types/d3-dispatch": "*",
+  "@types/d3-quadtree": "*",
+  "@types/d3-hierarchy": "*",
+  "@types/d3-selection": "*",
+  "@types/d3-transition": "*",
+  "@types/d3-interpolate": "*",
+  "@types/d3-time-format": "*",
+  "@types/d3-scale-chromatic": "*"
+}
+
+```
+On your unrestricted machine, create a clean working copy containing exactly the original project `package.json`.
+
+Then run:
+
+```sh
+docker pull node:22.12.0-alpine
+```
+```sh
+docker run -it -w /tmp  node:22.12.0-alpine sh
+```
+copy the `package.json` through clipboard
+```json
+{
+  "name": "mermaid-react",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "blob-stream": "^0.1.3",
+    "blob-stream-browserify": "^0.1.3",
+    "mermaid": "^12.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "svg-exportjs-browser": "^2.1.0",
+    "umd": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.0.4",
+    "vite": "^8.0.0"
+  }
+}
+
+```   
+```sh
+npm install --registry=https://registry.npmjs.org/ --ignore-scripts --verbose
+```
+
+```text
+
+added 140 packages, and audited 141 packages in 57s
+
+11 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm verbose cwd /tmp
+npm verbose os Linux 5.4.0-150-generic
+npm verbose node v22.12.0
+npm verbose npm  v10.9.0
+npm notice
+npm notice New major version of npm available! 10.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+npm verbose exit 0
+npm info ok
+```
+```sh
+docker cp $ID:/tmp/package-lock.json .
+```
+```text
+Successfully copied 79.4kB to /home/sergueik/.
+```
+```sh
+npm ls --all | tee npmls.log
+```
+```sh
+docker cp $ID:/tmp/npmls.log .
+```
+```text
+Successfully copied 10.8kB to /home/sergueik/src/springboot_study/basic-mermaid-react/.
+```
+doing this direclty will fail if / when the npm is old. it is alsways the case.
+
+save `package-lock.json`. discard the container and locally installed ancient npm.
+
+#### Note
+```sh
+/c/Program\ Files/7-Zip/7z.exe a p.zip package-lock.json
+```
+```sh
+ base64 p.zip  > p.zip.64
+```
+```text
+-rw-r--r-- 1 kouzm 197609 25670 Nov 13 12:23 p.zip.64
+-rw-r--r-- 1 kouzm 197609 77518 Nov 13 12:18 package-lock.json
+
+```
 ### See Also:
   * https://github.com/mermaid-js/mermaid
   * [Mermaid Live Editor](https://mermaid.live/edit): Online FlowChart & Diagrams Editor
