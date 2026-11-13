@@ -1777,7 +1777,7 @@ Archive:  /home/sergueik/Downloads/Unconfirmed 617944.crdownload
 
 after the completion of import, which largely is a VMDK file copy, it runs old school:
 
-![Running the VM](screenshots/capture-cludera-quickstart-desktop.jpg)
+![Running the VM](screenshots/capture-cloudera-quickstart-desktop.jpg)
 
 
 #### Standalone Container
@@ -2006,7 +2006,7 @@ Started Impala Catalog Server (catalogd) :                 [  OK  ]
 Started Impala Server (impalad):                           [  OK  ]
 ```
 
-![Running the Landing Page in browser](screenshots/capture-cludera-quickstart.png)
+![Running the Landing Page in browser](screenshots/capture-cloudera-quickstart.png)
 
 
 ![Running the Hue](screenshots/capture-hue.png)
