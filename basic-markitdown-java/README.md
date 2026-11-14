@@ -3,6 +3,10 @@
 replica of [DuanYan007/markitdown](https://github.com/DuanYan007/markitdown)  - an Java reimplementation of Microsoft MarkItDown for document-to-Markdown conversion, built as an open-source rewrite project and delivered as a CLI and Java library
 
 Relies on [poi](https://poi.apache.org/apidocs/index.html), 
+[pdfbox](https://pdfbox.apache.org/), [tika](https://tika.apache.org)
+[jsoup](https://jsoup.org/apidocs/)
+ - does not currently use [jsonpath](https://github.com/json-path/JsonPath)
+
 
 ### Usage
 
@@ -10,7 +14,7 @@ Relies on [poi](https://poi.apache.org/apidocs/index.html),
 mvn package -DskipTests
 ```
 ```sh
-java -jar target\markitdown4j-0.0.4.jar --help
+java -jar target\example.markitdown4j.jar --help 
 ```
 ```text
 Usage:
@@ -130,7 +134,8 @@ stream
 
   * [elbruno/MarkItDownServer](https://github.com/elbruno/MarkItDownServer) - an FastAPI web server exposing the markitdown functionality to convert files to markitdown through REST API
   * [dezoito/markitdown-api](https://github.com/dezoito/markitdown-api) - ltra lightweight API server to convert files (`.pdf`, `.docx`, `.xlsx`) into formatted markdown
-
+  * [basic-poislideshow](https://github.com/sergueik/springboot_study/tree/master/basic-poislideshow)
+  * [scanner/searcher](https://github.com/sergueik/powershell_samples/tree/master/csharp/basic-budget-searcher)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

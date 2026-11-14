@@ -28,6 +28,9 @@ import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+// based on:
+// https://stackoverflow.com/questions/24873725/how-to-get-pptx-slide-notes-text-using-apache-poi
+//
 public class Example {
 	private final static Options options = new Options();
 	private static CommandLineParser commandLineparser = new DefaultParser();
