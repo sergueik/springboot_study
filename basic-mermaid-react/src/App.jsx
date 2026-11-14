@@ -4,6 +4,8 @@ import umd from "umd";
 import blobStreamBrowserify from "blob-stream-browserify";
 import * as svgExport from "svg-exportjs-browser";
 
+import "./App.css";
+
 function MermaidVersion() {
   return <span>v{__MERMAID_VERSION__}</span>;
 }
@@ -227,9 +229,6 @@ window.exportSvg = async function(sourceSvg) {
     'Mermaid diagram'
   );
 };
-console.log("svgExport module:", svgExport);
-console.log("downloadSvg:", typeof svgExport.downloadSvg);
-console.log("downloadPng:", typeof svgExport.downloadPng);
 
 export default function App() {
   // ReferenceError: svgExport is not defined
@@ -266,33 +265,57 @@ architecture-beta
 
   }, [diagram]);
 
-
   return (
-    <>
-      <textarea
-        rows="10"
-        cols="50"
-        value={diagram}
-        onChange={
-          e => setDiagram(e.target.value)
-        }
-      />
-      <hr/>
-       <div>
-         <span>
-           <button 
-             disabled={!rendered} 
-             onClick={() => window.exportSvg()} >Export SVG</button>
-	  </span>
-	  <span> Mermaid React <MermaidVersion />
-	  </span>
+    <div className="app-shell">
+
+      <div className="titlebar">
+        <span>Ultra Basic Mermaid Renderer</span>
+        <span className="titlebar-meta">
+          Mermaid React <MermaidVersion />
+        </span>
+      </div>
+
+      <div className="split">
+
+        <div className="pane-input">
+
+          <div className="panel-label">
+            Mermaid Input
+          </div>
+
+          <textarea
+            className="diagram-input"
+            value={diagram}
+            spellCheck={false}
+            onChange={e => setDiagram(e.target.value)}
+          />
+
+          <div className="toolbar">
+            <button
+              disabled={!rendered}
+              onClick={() => window.exportSvg()}
+            >
+              Export SVG
+            </button>
+          </div>
+
         </div>
-      <hr/>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: svg
-        }}
-      />
-</>
+
+        <div className="pane-output">
+
+          <div className="panel-label">
+            Rendered Diagram
+          </div>
+
+          <div
+            id="diagramOutput"
+            className="diagram-output"
+            dangerouslySetInnerHTML={{
+              __html: svg
+            }}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
