@@ -9,6 +9,29 @@ import "./App.css";
 function MermaidVersion() {
   return <span>v{__MERMAID_VERSION__}</span>;
 }
+
+let scale = 1;
+
+window.zoomIn = function() {
+    scale += 0.1;
+    window.applyZoom();
+};
+
+window.zoomOut = function() {
+    scale = Math.max(0.2, scale - 0.1);
+    window.applyZoom();
+};
+
+window.applyZoom = function() {
+
+    const svg = document.querySelector('svg#output');
+
+    if (svg) {
+        svg.style.transform = 'scale(' + scale + ')';
+        svg.style.transformOrigin = '0 0';
+    }
+};
+
 window.prepareSvgForExport = function(sourceSvg) {
   var data = sourceSvg.outerHTML;
 
@@ -231,19 +254,23 @@ window.exportSvg = async function(sourceSvg) {
 };
 
 export default function App() {
-  // ReferenceError: svgExport is not defined
   const [diagram, setDiagram] = useState(`
-architecture-beta
-    group api(cloud)[API]
-
-    service db(database)[Database] in api
-    service disk1(disk)[Storage] in api
-    service disk2(disk)[Storage] in api
-    service server(server)[Server] in api
-
-    db:L -- R:server
-    disk1:T -- B:server
-    disk2:T -- B:db
+  swimlane-beta LR
+  subgraph Customer
+    Browse[Browse catalogue]
+    Pay[Pay]
+  end
+  subgraph Warehouse
+    Pick[Pick items]
+    Ship[Ship order]
+  end
+  subgraph Finance
+    Invoice[Raise invoice]
+  end
+  Browse --> Pay
+  Pay --> Pick
+  Pick --> Ship
+  Pay --> Invoice
 `);
 
   const [svg, setSvg] = useState("");
@@ -291,6 +318,20 @@ architecture-beta
           />
 
           <div className="toolbar">
+
+            <button
+              disabled={!rendered}
+              onClick={() => window.zoomIn()}
+            >
+              +
+            </button>
+
+            <button
+              disabled={!rendered}
+              onClick={() => window.zoomOut()}
+            >
+              -
+            </button>
             <button
               disabled={!rendered}
               onClick={() => window.exportSvg()}
