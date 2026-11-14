@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 const mermaidPackage = require('mermaid/package.json');
 
 export default defineConfig({
+  base: './',
   plugins: [react()],
   resolve: {
     dedupe: [

@@ -181,251 +181,36 @@ docker pull nginx:1.30.3-alpine3.23
 ```
 ```sh
 IMAGE=mermaid-react
-docker build -t $IMAGE -f Dockerfile .
-```
-> NOTE: the log will vary with precence of `package-lock.json`:
-```text
-Sending build context to Docker daemon  6.878MB
-Step 1/15 : FROM node:22.12.0-alpine AS builder
- ---> 3448d7ddbc59
-Step 2/15 : WORKDIR /app
- ---> Running in 06520e020674
-Removing intermediate container 06520e020674
- ---> 3995ed6a4ed4
-Step 3/15 : COPY package*.json /app/
- ---> 02ff1d0889fb
-Step 4/15 : ARG NPM_REGISTRY
- ---> Running in b308177194e5
-Removing intermediate container b308177194e5
- ---> e22bde84e170
-Step 5/15 : RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
- ---> Running in d97466f88667
-Removing intermediate container d97466f88667
- ---> 7b01ea8c39a9
-Step 6/15 : RUN npm install || { cat /root/.npm/_logs/*.log; exit 1; }
- ---> Running in 2f23468d4f30
-
-added 141 packages, and audited 142 packages in 60s
-
-12 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-npm notice
-npm notice New major version of npm available! 10.9.0 -> 12.2.0
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
-npm notice To update run: npm install -g npm@12.2.0
-npm notice
-Removing intermediate container 2f23468d4f30
- ---> 409456927b62
-Step 7/15 : COPY index.html vite.config.js favicon.png /app/
- ---> 9a7ff6bdc259
-Step 8/15 : ADD src /app/src
- ---> dcfd2be0d0cd
-Step 9/15 : RUN npm run build
- ---> Running in fe4b5e3838d6
-
-> mermaid-react@0.1.0 build
-> vite build
-
-vite v8.3.4 building client environment for production...
-transforming...
-[plugin rolldown:vite-resolve] Module "util" has been externalized for browser compatibility, imported by "/app/node_modules/blob-stream/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
-[plugin rolldown:vite-resolve] Module "stream" has been externalized for browser compatibility, imported by "/app/node_modules/blob-stream/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
-✓ 2136 modules transformed.
-rendering chunks...
-computing gzip size...
-dist/assets/favicon-BzgZYuLl.png                                                         0.27 kB
-dist/index.html                                                                          1.55 kB │ gzip:   0.48 kB
-dist/assets/array-BifhSqXX.js                                                            0.10 kB │ gzip:   0.11 kB
-dist/assets/pie-XZMESJXO-D9uK1TBU.js                                                     0.10 kB │ gzip:   0.12 kB
-dist/assets/info-OHQRW6UA-5k-2wDr-.js                                                    0.10 kB │ gzip:   0.12 kB
-dist/assets/radar-ABXABTNO-BG79TOQu.js                                                   0.10 kB │ gzip:   0.12 kB
-dist/assets/packet-JDAUHWVQ-VI40AKm0.js                                                  0.11 kB │ gzip:   0.12 kB
-dist/assets/cynefin-EF2NZ3EQ-DxlP0wo2.js                                                 0.11 kB │ gzip:   0.12 kB
-dist/assets/treemap-SAJKECNS-CrQlD4WC.js                                                 0.11 kB │ gzip:   0.12 kB
-dist/assets/wardley-7MLQ67FV-CZJgM5lu.js                                                 0.11 kB │ gzip:   0.12 kB
-dist/assets/gitGraph-VSP46ZUC-5t59wuMM.js                                                0.11 kB │ gzip:   0.12 kB
-dist/assets/railroad-I3PHUGI6-YpLnH9Lv.js                                                0.11 kB │ gzip:   0.12 kB
-dist/assets/treeView-D4JQ5SDB-BIgHhB0l.js                                                0.11 kB │ gzip:   0.12 kB
-dist/assets/channel-BY_PS-7b.js                                                          0.11 kB │ gzip:   0.12 kB
-dist/assets/railroad-peg-JR7BVNR7-D_QHCCim.js                                            0.11 kB │ gzip:   0.13 kB
-dist/assets/architecture-WOLXFQ4H--iY1Rf9X.js                                            0.11 kB │ gzip:   0.12 kB
-dist/assets/railroad-abnf-LNEFI6M7-DK39nafI.js                                           0.11 kB │ gzip:   0.13 kB
-dist/assets/railroad-ebnf-DWYD2UWJ-CvDu8lFV.js                                           0.11 kB │ gzip:   0.13 kB
-dist/assets/eventmodeling-K75KTNOO-Dh_aowfk.js                                           0.11 kB │ gzip:   0.13 kB
-dist/assets/__vite-optional-peer-dep_canvg_svg-exportjs-browser-mNUDxd_4.js              0.12 kB │ gzip:   0.12 kB
-dist/assets/__vite-optional-peer-dep_pdfkit_svg-exportjs-browser-N1KX9UJ0.js             0.12 kB │ gzip:   0.12 kB
-dist/assets/__vite-optional-peer-dep_svg-to-pdfkit_svg-exportjs-browser-va1HP462.js      0.13 kB │ gzip:   0.13 kB
-dist/assets/init-C-OQMol4.js                                                             0.14 kB │ gzip:   0.12 kB
-dist/assets/chunk-Y2CYZVJY-DsF7k-Jl.js                                                   0.15 kB │ gzip:   0.14 kB
-dist/assets/chunk-2Q5K7J3B-C1jixKkw.js                                                   0.19 kB │ gzip:   0.16 kB
-dist/assets/chunk-JWPE2WC7-DVXcaiue.js                                                   0.22 kB │ gzip:   0.17 kB
-dist/assets/chunk-XXDRQBXY-CnbRkih_.js                                                   0.26 kB │ gzip:   0.22 kB
-dist/assets/chunk-5VM5RSS4-ZNzvKenW.js                                                   0.36 kB │ gzip:   0.27 kB
-dist/assets/flowDiagram-IUGLLWBU-B4JMx7uK.js                                             0.47 kB │ gzip:   0.27 kB
-dist/assets/chunk-VQ5W62QI-B3V-ihEq.js                                                   0.57 kB │ gzip:   0.40 kB
-dist/assets/chunk-J5ZVWO5B-oDCd-gWO.js                                                   0.63 kB │ gzip:   0.43 kB
-dist/assets/infoDiagram-MVDRKAX5-4QnCegB_.js                                             0.64 kB │ gzip:   0.42 kB
-dist/assets/swimlanesDiagram-AYQRV4AK-BrPcYsEw.js                                        0.74 kB │ gzip:   0.45 kB
-dist/assets/sizeCapture-INFHLROL-3uHXrFqA.js                                             0.87 kB │ gzip:   0.51 kB
-dist/assets/line-BaF37E_l.js                                                             0.94 kB │ gzip:   0.47 kB
-dist/assets/rolldown-runtime-COiEfhsA.js                                                 1.11 kB │ gzip:   0.62 kB
-dist/assets/ordinal-BDEzSJ7C.js                                                          1.17 kB │ gzip:   0.56 kB
-dist/assets/chunk-ZAUX2LTX-C0X4hJRH.js                                                   1.41 kB │ gzip:   0.79 kB
-dist/assets/blob-stream-CvQ_hpSk.js                                                      1.55 kB │ gzip:   0.70 kB
-dist/assets/railroadDiagram-Y72NRBL7-C-IdDioK.js                                         1.66 kB │ gzip:   0.77 kB
-dist/assets/abnfDiagram-WEYOIA3C-B4vjE6V7.js                                             1.84 kB │ gzip:   0.89 kB
-dist/assets/chunk-UHW7PFBP-CnVuEF3i.js                                                   1.95 kB │ gzip:   0.95 kB
-dist/assets/chunk-55XCU76K-Cw66zIE4.js                                                   1.97 kB │ gzip:   0.88 kB
-dist/assets/pegDiagram-ECIUJNBX-C-jS4rLr.js                                              2.00 kB │ gzip:   0.94 kB
-dist/assets/ebnfDiagram-V4P3TTPT-4wqFpXtJ.js                                             2.06 kB │ gzip:   0.89 kB
-dist/assets/dist-CumnGVmJ.js                                                             2.17 kB │ gzip:   0.97 kB
-dist/assets/path-fybaL0A-.js                                                             2.27 kB │ gzip:   0.98 kB
-dist/assets/arc-Y1ARJVZ4.js                                                              3.47 kB │ gzip:   1.46 kB
-dist/assets/diagram-I5XIIV2D-Dnzf4nhR.js                                                 4.34 kB │ gzip:   1.90 kB
-dist/assets/defaultLocale-BFoDCU3G.js                                                    4.63 kB │ gzip:   2.12 kB
-dist/assets/chunk-4EMNKR2T-QSZWtTv-.js                                                   5.43 kB │ gzip:   2.49 kB
-dist/assets/linear-C9iwaMOi.js                                                           5.51 kB │ gzip:   2.25 kB
-dist/assets/chunk-YZO67HFG-C3JoPMiI.js                                                   5.83 kB │ gzip:   2.68 kB
-dist/assets/diagram-RJA3I4VV-Cc-lBqAM.js                                                 6.06 kB │ gzip:   2.56 kB
-dist/assets/pieDiagram-GNMPY74T-imQ07yqL.js                                              6.20 kB │ gzip:   2.59 kB
-dist/assets/diagram-ODIL2UCW-CY8X6bpf.js                                                 8.12 kB │ gzip:   3.65 kB
-dist/assets/cynefinDiagram-WF24UDRP--zoTGJUw.js                                          9.93 kB │ gzip:   3.51 kB
-dist/assets/chunk-ZCHMQSOR-Cbk5q1Lw.js                                                  10.29 kB │ gzip:   4.28 kB
-dist/assets/diagram-PFBEJUXE-CPkcQYPb.js                                                10.93 kB │ gzip:   4.26 kB
-dist/assets/chunk-2E7WHVMD-gCahdMFX.js                                                  15.63 kB │ gzip:   4.35 kB
-dist/assets/diagram-CBK3MWTC-DvVHT3tD.js                                                15.74 kB │ gzip:   5.52 kB
-dist/assets/mermaid-parser.core-DEw4vXfS.js                                             16.45 kB │ gzip:   3.92 kB
-dist/assets/ishikawaDiagram-HPEHV2GE-n1Df4Noc.js                                        17.29 kB │ gzip:   6.53 kB
-dist/assets/kanban-definition-FNSA4HC5-D5DPrzPG.js                                      20.21 kB │ gzip:   7.13 kB
-dist/assets/sankeyDiagram-SY24JHO5-CJ-xq4va.js                                          22.79 kB │ gzip:   8.25 kB
-dist/assets/journeyDiagram-BOSHW7O7-BIWivP33.js                                         23.15 kB │ gzip:   8.16 kB
-dist/assets/mindmap-definition-6OY57UG3-B7uQbc7z.js                                     23.58 kB │ gzip:   8.04 kB
-dist/assets/graphlib-DS17s2tU.js                                                        23.90 kB │ gzip:   8.31 kB
-dist/assets/wardleyDiagram-IVAIDKWA-BfjPuN6E.js                                         25.20 kB │ gzip:   6.55 kB
-dist/assets/rough.esm-Dy-Kn_BL.js                                                       27.10 kB │ gzip:   8.85 kB
-dist/assets/gitGraphDiagram-PDYL7XHY-KRM-8AHU.js                                        29.01 kB │ gzip:   8.57 kB
-dist/assets/timeline-definition-JXYKGLGB-BwfZjkkk.js                                    30.45 kB │ gzip:  10.03 kB
-dist/assets/erDiagram-KYQIGQAA-DbbGunAj.js                                              30.57 kB │ gzip:  10.53 kB
-dist/assets/chunk-7S6XSTFO-DQsHG4Zn.js                                                  30.75 kB │ gzip:   8.51 kB
-dist/assets/requirementDiagram-EQYSW5RA-BqIIjhC4.js                                     30.98 kB │ gzip:   9.78 kB
-dist/assets/quadrantDiagram-D57K4MC3-CEzyKcbu.js                                        33.52 kB │ gzip:   9.74 kB
-dist/assets/vennDiagram-Q3Y3IDCW-DHh5RC2c.js                                            41.17 kB │ gzip:  15.11 kB
-dist/assets/stateDiagram-v2-A6IESKWZ-BqIs6bxg.js                                        41.47 kB │ gzip:  13.84 kB
-dist/assets/blockDiagram-RJAE7QA3-iTZ-YK7w.js                                           42.39 kB │ gzip:  13.84 kB
-dist/assets/xychartDiagram-4URNHDU4-DWUIXmBs.js                                         44.50 kB │ gzip:  12.34 kB
-dist/assets/src-BWF7jMDv.js                                                             45.66 kB │ gzip:  16.00 kB
-dist/assets/dagre-NK4GIZVX-BcXZ8r5K.js                                                  47.78 kB │ gzip:  17.07 kB
-dist/assets/classDiagram-v2-4MYWR3UA-BV0a6Jhm.js                                        49.62 kB │ gzip:  16.11 kB
-dist/assets/chunk-AQDTSKZB-ChFvvfjA.js                                                  51.23 kB │ gzip:  16.64 kB
-dist/assets/chunk-NQOKRVIF-BOuSLQZQ.js                                                  62.79 kB │ gzip:  20.37 kB
-dist/assets/c4Diagram-XDPPPE54-D0a_9dg9.js                                              65.08 kB │ gzip:  18.61 kB
-dist/assets/ganttDiagram-R7GPNTJY-B0WIi6Rh.js                                           70.02 kB │ gzip:  23.02 kB
-dist/assets/diagram-TYUNFSNR-BjcLQDQb.js                                                80.37 kB │ gzip:  25.12 kB
-dist/assets/cose-bilkent-JH36ORCC-lWVj4msc.js                                           81.22 kB │ gzip:  21.52 kB
-dist/assets/swimlanes-B3ENRKFQ-B5NN7L09.js                                             106.39 kB │ gzip:  36.19 kB
-dist/assets/chunk-HAGFOTED-CykB6HDZ.js                                                 115.55 kB │ gzip:  29.28 kB
-dist/assets/sequenceDiagram-BLEHNHQU-CtFYJXN-.js                                       117.67 kB │ gzip:  31.37 kB
-dist/assets/architectureDiagram-ZHVYKT53-BMu9zIvx.js                                   148.87 kB │ gzip:  41.10 kB
-dist/assets/usecaseDiagram-WPOLBNNX-z6owHKkO.js                                        187.82 kB │ gzip:  49.16 kB
-dist/assets/chunk-DSNLSHJZ-C7nvC8CS.js                                                 242.86 kB │ gzip:  40.91 kB
-dist/assets/katex-B_JcIwqj.js                                                          258.80 kB │ gzip:  77.65 kB
-dist/assets/cytoscape.esm-BegBNzOV.js                                                  434.75 kB │ gzip: 137.75 kB
-dist/assets/index-BRr-X6hH.js                                                          447.50 kB │ gzip: 136.01 kB
-dist/assets/chunk-NGNAAXSQ-C2Wy9Xmz.js                                                 629.04 kB │ gzip: 127.32 kB
-dist/assets/elk-QONTBCTQ-Yfp5xNdm.js                                                 1,462.86 kB │ gzip: 455.86 kB
-
-[plugin builtin:vite-reporter]
-(!) Some chunks are larger than 500 kB after minification. Consider:
-- Using dynamic import() to code-split the application
-- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
-- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 8.54s
-Removing intermediate container fe4b5e3838d6
- ---> e525c1e6e0bf
-Step 10/15 : FROM nginx:1.30.3-alpine3.23
- ---> d0701bd41f82
-Step 11/15 : WORKDIR /usr/share/nginx/html
- ---> Running in 269d4b655afe
-Removing intermediate container 269d4b655afe
- ---> d0e283eaf279
-Step 12/15 : COPY --from=builder /app/dist ./
- ---> 597fa4160a20
-Step 13/15 : COPY default.conf /etc/nginx/conf.d/
- ---> 70c6b653d13b
-Step 14/15 : EXPOSE 80
- ---> Running in a44c35e610a1
-Removing intermediate container a44c35e610a1
- ---> 688d7a020223
-Step 15/15 : CMD ["nginx", "-g", "daemon off;"]
- ---> Running in 0c6f641f4dc0
-Removing intermediate container 0c6f641f4dc0
- ---> 991dbbf11c74
-Successfully built 991dbbf11c74
-Successfully tagged mermaid-react:latest
-```
-rebuilt clean with `package-lock.json` 
-```
-docker-machine rm -f default
-```
-```
-...successfully deleted message...
-```
-```sh
-docker pull node:22.12.0-alpine
-docker pull nginx:1.30.3-alpine3.23
-```
-```
-22.12.0-alpine: Pulling from library/node
-245043d9199c: Pull complete
-b2bed185b63d: Pull complete
-4231f288e206: Pull complete
-d7c06c1c0e2a: Pull complete
-Digest: sha256:51eff88af6dff26f59316b6e356188ffa2c422bd3c3b76f2556a2e7e89d080bd
-Status: Downloaded newer image for node:22.12.0-alpine
-docker.io/library/node:22.12.0-alpine
-1.30.3-alpine3.23: Pulling from library/nginx
-e6f31ffc071e: Pull complete
-1deb20213977: Pull complete
-c79d40162f28: Pull complete
-7d9cfad643ec: Pull complete
-278fa14e43da: Pull complete
-b264ebfe1e42: Pull complete
-440503bb46ca: Pull complete
-f72ca0003135: Pull complete
-Digest: sha256:0d3b80406a13a767339fbe2f41406d6c7da727ab89cf8fae399e81f780f814d1
-Status: Downloaded newer image for nginx:1.30.3-alpine3.23
-docker.io/library/nginx:1.30.3-alpine3.23
+docker ps -aq --filter ancestor=%IMAGE|xargs -r docker rm -f
 ```
 ```sh
 IMAGE=mermaid-react
 docker build -t $IMAGE -f Dockerfile .
 ```
-```
-Sending build context to Docker daemon  15.56MB
+> NOTE: the log will vary with precence of `package-lock.json` that only kept to workaround enterprise `%2f` trouble in certain commits (e.g. `1ebe810ae82df4b22ad13bdd0f7e90b9e34decf6`):
+
+```text
+Sending build context to Docker daemon  15.59MB
 Step 1/15 : FROM node:22.12.0-alpine AS builder
  ---> 3448d7ddbc59
 Step 2/15 : WORKDIR /app
- ---> Running in 356cc16b1597
-Removing intermediate container 356cc16b1597
- ---> 2f465ab2c059
+ ---> Using cache
+ ---> 53cfdb8bb677
 Step 3/15 : COPY package*.json /app/
- ---> c27a2640267d
+ ---> Using cache
+ ---> 631799504f66
 Step 4/15 : ARG NPM_REGISTRY
- ---> Running in 30ce78ce16fc
-Removing intermediate container 30ce78ce16fc
- ---> eb326e65d552
+ ---> Using cache
+ ---> 9c569fb31141
 Step 5/15 : RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
- ---> Running in f42b8537ccf7
-Removing intermediate container f42b8537ccf7
- ---> 4808bc6b28bc
-Step 6/15 : RUN npm ci --ignore-scripts || { cat /root/.npm/_logs/*.log; exit 1; }
- ---> Running in 51a166be29f9
+ ---> Using cache
+ ---> a21cd7941b65
+Step 6/15 : RUN npm install || { cat /root/.npm/_logs/*.log; exit 1; }
+ ---> Running in 1f6870e0451e
 
-added 142 packages, and audited 143 packages in 28s
+added 140 packages, and audited 141 packages in 1m
 
-12 packages are looking for funding
+11 packages are looking for funding
   run `npm fund` for details
 
 found 0 vulnerabilities
@@ -434,14 +219,14 @@ npm notice New major version of npm available! 10.9.0 -> 12.2.2
 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
 npm notice To update run: npm install -g npm@12.2.2
 npm notice
-Removing intermediate container 51a166be29f9
- ---> 002a69ec34ac
+Removing intermediate container 1f6870e0451e
+ ---> b43e574b198c
 Step 7/15 : COPY index.html vite.config.js favicon.png /app/
- ---> e70184bf162b
+ ---> 7a46485ae33c
 Step 8/15 : ADD src /app/src
- ---> 257de8226a20
+ ---> ed46526a5ffd
 Step 9/15 : RUN npm run build
- ---> Running in ea192e0df9b4
+ ---> Running in 7a771ad51d88
 
 > mermaid-react@0.2.0 build
 > vite build
@@ -454,22 +239,22 @@ transforming...
 rendering chunks...
 computing gzip size...
 dist/assets/favicon-Zy_Yp00f.png                                                         0.66 kB
-dist/index.html                                                                          1.34 kB │ gzip:   0.46 kB
-dist/assets/pie-XZMESJXO-nEBlzpYE.js                                                     0.10 kB │ gzip:   0.12 kB
-dist/assets/info-OHQRW6UA-DdNRKGvf.js                                                    0.10 kB │ gzip:   0.12 kB
-dist/assets/radar-ABXABTNO-ClFGE7IY.js                                                   0.10 kB │ gzip:   0.12 kB
-dist/assets/packet-JDAUHWVQ-BpT2AxYc.js                                                  0.11 kB │ gzip:   0.12 kB
-dist/assets/cynefin-EF2NZ3EQ-BBvHqvmc.js                                                 0.11 kB │ gzip:   0.12 kB
-dist/assets/treemap-SAJKECNS-BZftI4Ok.js                                                 0.11 kB │ gzip:   0.12 kB
-dist/assets/wardley-7MLQ67FV-DScwRFDS.js                                                 0.11 kB │ gzip:   0.12 kB
-dist/assets/gitGraph-VSP46ZUC-BrVO8xuM.js                                                0.11 kB │ gzip:   0.12 kB
-dist/assets/railroad-I3PHUGI6-BkOXL6j4.js                                                0.11 kB │ gzip:   0.12 kB
-dist/assets/treeView-D4JQ5SDB-DiT39FTt.js                                                0.11 kB │ gzip:   0.12 kB
-dist/assets/railroad-peg-JR7BVNR7-zPsHcoi9.js                                            0.11 kB │ gzip:   0.13 kB
-dist/assets/architecture-WOLXFQ4H-DdbCi3Yg.js                                            0.11 kB │ gzip:   0.13 kB
-dist/assets/railroad-abnf-LNEFI6M7-BX015sAx.js                                           0.11 kB │ gzip:   0.13 kB
-dist/assets/railroad-ebnf-DWYD2UWJ-CeC07PMa.js                                           0.11 kB │ gzip:   0.13 kB
-dist/assets/eventmodeling-K75KTNOO-CUbrNkc-.js                                           0.11 kB │ gzip:   0.13 kB
+dist/index.html                                                                          1.36 kB │ gzip:   0.46 kB
+dist/assets/pie-XZMESJXO-BkOyCedx.js                                                     0.10 kB │ gzip:   0.12 kB
+dist/assets/info-OHQRW6UA-D3f9en0a.js                                                    0.10 kB │ gzip:   0.12 kB
+dist/assets/radar-ABXABTNO-CfxPUqgx.js                                                   0.10 kB │ gzip:   0.12 kB
+dist/assets/packet-JDAUHWVQ-BPtF6PPI.js                                                  0.11 kB │ gzip:   0.12 kB
+dist/assets/cynefin-EF2NZ3EQ-BoCGwdk4.js                                                 0.11 kB │ gzip:   0.12 kB
+dist/assets/treemap-SAJKECNS-DIm4KacE.js                                                 0.11 kB │ gzip:   0.12 kB
+dist/assets/wardley-7MLQ67FV-ZJCQVSPx.js                                                 0.11 kB │ gzip:   0.12 kB
+dist/assets/gitGraph-VSP46ZUC-CF3RSxCv.js                                                0.11 kB │ gzip:   0.12 kB
+dist/assets/railroad-I3PHUGI6-C7pKS08o.js                                                0.11 kB │ gzip:   0.12 kB
+dist/assets/treeView-D4JQ5SDB-Dr_ne_22.js                                                0.11 kB │ gzip:   0.12 kB
+dist/assets/railroad-peg-JR7BVNR7-D_Us9wAk.js                                            0.11 kB │ gzip:   0.13 kB
+dist/assets/architecture-WOLXFQ4H-BVmOKT6g.js                                            0.11 kB │ gzip:   0.13 kB
+dist/assets/railroad-abnf-LNEFI6M7-ChrckDFx.js                                           0.11 kB │ gzip:   0.13 kB
+dist/assets/railroad-ebnf-DWYD2UWJ-29s4hWqg.js                                           0.11 kB │ gzip:   0.13 kB
+dist/assets/eventmodeling-K75KTNOO-BII2i0MJ.js                                           0.11 kB │ gzip:   0.13 kB
 dist/assets/__vite-optional-peer-dep_canvg_svg-exportjs-browser-mNUDxd_4.js              0.12 kB │ gzip:   0.12 kB
 dist/assets/__vite-optional-peer-dep_pdfkit_svg-exportjs-browser-N1KX9UJ0.js             0.12 kB │ gzip:   0.12 kB
 dist/assets/__vite-optional-peer-dep_svg-to-pdfkit_svg-exportjs-browser-va1HP462.js      0.13 kB │ gzip:   0.13 kB
@@ -478,105 +263,124 @@ dist/assets/chunk-2Q5K7J3B-C1jixKkw.js                                          
 dist/assets/chunk-JWPE2WC7-DVXcaiue.js                                                   0.22 kB │ gzip:   0.17 kB
 dist/assets/chunk-XXDRQBXY-i7MKP1NY.js                                                   0.26 kB │ gzip:   0.22 kB
 dist/assets/chunk-5VM5RSS4-ZNzvKenW.js                                                   0.36 kB │ gzip:   0.27 kB
-dist/assets/flowDiagram-MALGAFMO-CJrCyyns.js                                             0.45 kB │ gzip:   0.26 kB
-dist/assets/chunk-TU62E6Q5-CfFigNcW.js                                                   0.57 kB │ gzip:   0.40 kB
+dist/assets/flowDiagram-MALGAFMO-DZPsClzt.js                                             0.45 kB │ gzip:   0.26 kB
+dist/assets/chunk-TU62E6Q5-vp5xeYd1.js                                                   0.57 kB │ gzip:   0.40 kB
 dist/assets/chunk-J5ZVWO5B-oDCd-gWO.js                                                   0.63 kB │ gzip:   0.43 kB
-dist/assets/infoDiagram-KBXO4MBG-CvDBx9hc.js                                             0.65 kB │ gzip:   0.42 kB
-dist/assets/swimlanesDiagram-OMPLPG4O-CFkjBa-j.js                                        0.71 kB │ gzip:   0.43 kB
+dist/assets/infoDiagram-KBXO4MBG-cMfV9Cfe.js                                             0.65 kB │ gzip:   0.42 kB
+dist/assets/swimlanesDiagram-OMPLPG4O-tjaOqoKA.js                                        0.71 kB │ gzip:   0.43 kB
 dist/assets/sizeCapture-INFHLROL-3uHXrFqA.js                                             0.87 kB │ gzip:   0.51 kB
 dist/assets/rolldown-runtime-COiEfhsA.js                                                 1.11 kB │ gzip:   0.62 kB
-dist/assets/chunk-LEVMRMFU-83TcH_hr.js                                                   1.42 kB │ gzip:   0.79 kB
+dist/assets/chunk-LEVMRMFU-aarFh5Aq.js                                                   1.42 kB │ gzip:   0.79 kB
 dist/assets/blob-stream-CvQ_hpSk.js                                                      1.55 kB │ gzip:   0.70 kB
-dist/assets/railroadDiagram-MRQ6NCDL-D-XsYCWp.js                                         1.67 kB │ gzip:   0.78 kB
-dist/assets/abnfDiagram-S7VZAUFO-RClfzy0T.js                                             1.85 kB │ gzip:   0.90 kB
-dist/assets/chunk-X4PVCEUW-KHS2S82V.js                                                   1.95 kB │ gzip:   0.95 kB
-dist/assets/chunk-HFQBQIA3-BfO9hvzD.js                                                   1.98 kB │ gzip:   0.90 kB
-dist/assets/pegDiagram-FD4XPPHP-Ck7p4Gn4.js                                              2.01 kB │ gzip:   0.94 kB
-dist/assets/ebnfDiagram-UZSYDL2S-CCdTo78w.js                                             2.07 kB │ gzip:   0.90 kB
-dist/assets/diagram-DNEMPZML-PukqMTBH.js                                                 4.34 kB │ gzip:   1.90 kB
-dist/assets/pieDiagram-J4AKIIQI-PKUJcexz.js                                              5.00 kB │ gzip:   2.12 kB
+dist/assets/railroadDiagram-MRQ6NCDL-BSSrokUV.js                                         1.67 kB │ gzip:   0.78 kB
+dist/assets/abnfDiagram-S7VZAUFO-Dg0bp650.js                                             1.85 kB │ gzip:   0.90 kB
+dist/assets/chunk-X4PVCEUW-DlehkGvG.js                                                   1.95 kB │ gzip:   0.95 kB
+dist/assets/chunk-HFQBQIA3-DM7z7zhg.js                                                   1.98 kB │ gzip:   0.90 kB
+dist/assets/pegDiagram-FD4XPPHP-DKCKRHKE.js                                              2.01 kB │ gzip:   0.94 kB
+dist/assets/ebnfDiagram-UZSYDL2S-B_rHXYQ6.js                                             2.07 kB │ gzip:   0.89 kB
+dist/assets/diagram-DNEMPZML-CUdiLG4-.js                                                 4.34 kB │ gzip:   1.90 kB
+dist/assets/pieDiagram-J4AKIIQI-tCsE-HwC.js                                              5.00 kB │ gzip:   2.12 kB
 dist/assets/bpmnIcons-APHXDYXF-C0jbCElo.js                                               5.21 kB │ gzip:   1.15 kB
-dist/assets/chunk-KS47KZWR-B5dCq4dc.js                                                   5.43 kB │ gzip:   2.49 kB
-dist/assets/chunk-R3KSYZAL-DyRr0u_L.js                                                   5.89 kB │ gzip:   2.71 kB
-dist/assets/diagram-L3MUGCDN-BgfMNVfN.js                                                 6.07 kB │ gzip:   2.57 kB
-dist/assets/diagram-XPFHEONP-FdMKz34S.js                                                 8.12 kB │ gzip:   3.63 kB
-dist/assets/cynefinDiagram-L36ESFBY-B6RG3V3O.js                                          9.94 kB │ gzip:   3.51 kB
-dist/assets/chunk-KQLB2F66-Cnpty487.js                                                  10.31 kB │ gzip:   4.29 kB
-dist/assets/diagram-MHCOC4E2-Eg0fC8X0.js                                                10.94 kB │ gzip:   4.24 kB
-dist/assets/chunk-6MUBBAK2-CJJCRgnx.js                                                  15.39 kB │ gzip:   6.10 kB
-dist/assets/chunk-OY52VR5R-Df8G3X1f.js                                                  15.64 kB │ gzip:   4.35 kB
-dist/assets/diagram-LA4NIPWU-9lyHBL2v.js                                                16.12 kB │ gzip:   5.65 kB
-dist/assets/mermaid-parser.core-CHEZx3rH.js                                             16.45 kB │ gzip:   3.93 kB
-dist/assets/ishikawaDiagram-M35NCXHK-Dcxb7OQa.js                                        17.30 kB │ gzip:   6.54 kB
-dist/assets/kanban-definition-BZKZHSQY-CI0qbc3f.js                                      20.22 kB │ gzip:   7.15 kB
+dist/assets/chunk-KS47KZWR-B-Y-fHLo.js                                                   5.43 kB │ gzip:   2.49 kB
+dist/assets/chunk-R3KSYZAL-C-y1wYKj.js                                                   5.89 kB │ gzip:   2.71 kB
+dist/assets/diagram-L3MUGCDN-DlB7lfFQ.js                                                 6.07 kB │ gzip:   2.57 kB
+dist/assets/diagram-XPFHEONP-BIlQamyb.js                                                 8.12 kB │ gzip:   3.63 kB
+dist/assets/cynefinDiagram-L36ESFBY-DGl8i2Iv.js                                          9.94 kB │ gzip:   3.51 kB
+dist/assets/chunk-KQLB2F66-mjbj8J5J.js                                                  10.32 kB │ gzip:   4.29 kB
+dist/assets/diagram-MHCOC4E2-_7J2qqho.js                                                10.94 kB │ gzip:   4.24 kB
+dist/assets/chunk-6MUBBAK2-B2a72OhG.js                                                  15.39 kB │ gzip:   6.10 kB
+dist/assets/chunk-OY52VR5R-C2JfAhOt.js                                                  15.64 kB │ gzip:   4.35 kB
+dist/assets/diagram-LA4NIPWU-CzR8X1f_.js                                                16.12 kB │ gzip:   5.65 kB
+dist/assets/mermaid-parser.core-Ct0f9kDv.js                                             16.61 kB │ gzip:   3.93 kB
+dist/assets/ishikawaDiagram-M35NCXHK-RkxjP3-6.js                                        17.30 kB │ gzip:   6.53 kB
+dist/assets/kanban-definition-BZKZHSQY-I1LVVxL0.js                                      20.22 kB │ gzip:   7.14 kB
 dist/assets/d3-selection-COWvaQNI.js                                                    20.94 kB │ gzip:   7.36 kB
-dist/assets/mindmap-definition-I2QAS2VK-CYHf8TKt.js                                     22.80 kB │ gzip:   7.63 kB
-dist/assets/journeyDiagram-OPLOXDXO-ERfH_wzJ.js                                         23.17 kB │ gzip:   8.15 kB
+dist/assets/mindmap-definition-I2QAS2VK-zU8nJO8L.js                                     22.80 kB │ gzip:   7.63 kB
+dist/assets/journeyDiagram-OPLOXDXO-DiTZE0ce.js                                         23.17 kB │ gzip:   8.15 kB
 dist/assets/graphlib-DS17s2tU.js                                                        23.90 kB │ gzip:   8.31 kB
-dist/assets/wardleyDiagram-S7YFUSEH-DLTjIqZn.js                                         25.20 kB │ gzip:   6.55 kB
+dist/assets/wardleyDiagram-S7YFUSEH-Cvek152z.js                                         25.20 kB │ gzip:   6.55 kB
 dist/assets/d3-shape-D-5p59x6.js                                                        25.62 kB │ gzip:   6.39 kB
 dist/assets/rough.esm-Dy-Kn_BL.js                                                       27.10 kB │ gzip:   8.85 kB
-dist/assets/gitGraphDiagram-STJD7YCW-DLecyQoE.js                                        29.00 kB │ gzip:   8.53 kB
-dist/assets/timeline-definition-SEUHKTQE-CK6E_W-v.js                                    30.46 kB │ gzip:  10.03 kB
-dist/assets/erDiagram-EYBAPDEH-BTfgpACW.js                                              30.54 kB │ gzip:  10.54 kB
-dist/assets/requirementDiagram-Y7LWUY3S-CZ5spYHT.js                                     30.98 kB │ gzip:   9.79 kB
-dist/assets/quadrantDiagram-XTYBLID2-T8wWpUN8.js                                        33.52 kB │ gzip:   9.74 kB
-dist/assets/sankeyDiagram-WGJFYUXA-DWS1Y9EY.js                                          38.82 kB │ gzip:  14.66 kB
+dist/assets/gitGraphDiagram-STJD7YCW-DrH9CAO5.js                                        29.00 kB │ gzip:   8.53 kB
+dist/assets/timeline-definition-SEUHKTQE-DPT5UTuj.js                                    30.46 kB │ gzip:  10.02 kB
+dist/assets/erDiagram-EYBAPDEH-BGFwQB9_.js                                              30.54 kB │ gzip:  10.53 kB
+dist/assets/requirementDiagram-Y7LWUY3S-Dxxhnbw7.js                                     30.98 kB │ gzip:   9.79 kB
+dist/assets/quadrantDiagram-XTYBLID2-GkyZRPGg.js                                        33.52 kB │ gzip:   9.74 kB
+dist/assets/sankeyDiagram-WGJFYUXA-WAUgPgbH.js                                          38.82 kB │ gzip:  14.66 kB
 dist/assets/d3-scale-CElPUUud.js                                                        40.67 kB │ gzip:  14.78 kB
-dist/assets/vennDiagram-NNMJR3RB-BY47fHZ3.js                                            41.18 kB │ gzip:  15.12 kB
-dist/assets/stateDiagram-v2-FJ4FJNEA-Du5tlutD.js                                        41.45 kB │ gzip:  13.83 kB
-dist/assets/blockDiagram-APKKGZFW-B16BDN8u.js                                           42.35 kB │ gzip:  13.85 kB
-dist/assets/xychartDiagram-GGNKY7IX-BLBGu_zQ.js                                         43.21 kB │ gzip:  11.87 kB
-dist/assets/dagre-SPEB5RXH-mGqazjvA.js                                                  47.80 kB │ gzip:  17.07 kB
-dist/assets/classDiagram-v2-L25IHNXF-aCbIhg1E.js                                        49.63 kB │ gzip:  16.12 kB
-dist/assets/chunk-STOXU5M4-qvaE9xHA.js                                                  51.23 kB │ gzip:  16.63 kB
-dist/assets/ganttDiagram-23REXITY-Dp8vP0dA.js                                           53.01 kB │ gzip:  17.64 kB
-dist/assets/chunk-QB3YPZ4I-JVmcIwYM.js                                                  64.35 kB │ gzip:  20.87 kB
-dist/assets/c4Diagram-KJ2TOQU5-BcghP5Df.js                                              65.09 kB │ gzip:  18.63 kB
-dist/assets/diagram-3B7GL73J-CmCtKND9.js                                                80.37 kB │ gzip:  25.13 kB
+dist/assets/vennDiagram-NNMJR3RB-B8MEIBUb.js                                            41.18 kB │ gzip:  15.11 kB
+dist/assets/stateDiagram-v2-FJ4FJNEA-BWuTj7OJ.js                                        41.45 kB │ gzip:  13.83 kB
+dist/assets/blockDiagram-APKKGZFW-Ds6g4tse.js                                           42.35 kB │ gzip:  13.85 kB
+dist/assets/xychartDiagram-GGNKY7IX-Bx85A-Rz.js                                         43.21 kB │ gzip:  11.86 kB
+dist/assets/dagre-SPEB5RXH-C5QlJ7aq.js                                                  47.80 kB │ gzip:  17.07 kB
+dist/assets/classDiagram-v2-L25IHNXF-BgmgHTL9.js                                        49.63 kB │ gzip:  16.12 kB
+dist/assets/chunk-STOXU5M4-lNwrFBkV.js                                                  51.23 kB │ gzip:  16.63 kB
+dist/assets/ganttDiagram-23REXITY-oLeJwOkW.js                                           53.01 kB │ gzip:  17.63 kB
+dist/assets/chunk-QB3YPZ4I-DfeRDiex.js                                                  64.35 kB │ gzip:  20.87 kB
+dist/assets/c4Diagram-KJ2TOQU5-CvLRT6AC.js                                              65.09 kB │ gzip:  18.63 kB
+dist/assets/diagram-3B7GL73J-Bi_MOWIz.js                                                80.37 kB │ gzip:  25.13 kB
 dist/assets/cose-bilkent-JH36ORCC-C6J2IoHg.js                                           81.23 kB │ gzip:  21.53 kB
-dist/assets/sequenceDiagram-5NDRBG5M-CRmw0Drm.js                                       117.68 kB │ gzip:  31.28 kB
-dist/assets/swimlanes-UMQ2AFYF-BZbiKwGw.js                                             117.80 kB │ gzip:  40.48 kB
-dist/assets/chunk-AXFCVDMN-BXM7IFY3.js                                                 122.72 kB │ gzip:  31.42 kB
-dist/assets/architectureDiagram-YGSQEFNW-BS4agfrh.js                                   148.87 kB │ gzip:  41.11 kB
-dist/assets/usecaseDiagram-AFA6YXN4-DhgajzWb.js                                        187.82 kB │ gzip:  49.23 kB
-dist/assets/chunk-BG4553SI-YKbzpxUJ.js                                                 242.99 kB │ gzip:  41.00 kB
+dist/assets/sequenceDiagram-5NDRBG5M-Bncegqtd.js                                       117.68 kB │ gzip:  31.28 kB
+dist/assets/swimlanes-UMQ2AFYF-kYNojH_t.js                                             117.80 kB │ gzip:  40.48 kB
+dist/assets/chunk-AXFCVDMN-XL0kFDxy.js                                                 122.74 kB │ gzip:  31.43 kB
+dist/assets/architectureDiagram-YGSQEFNW-B-UDOd8v.js                                   148.87 kB │ gzip:  41.11 kB
+dist/assets/usecaseDiagram-AFA6YXN4-Bqy9s3qI.js                                        187.82 kB │ gzip:  49.22 kB
+dist/assets/chunk-BG4553SI-Di8yMrb5.js                                                 243.02 kB │ gzip:  41.01 kB
 dist/assets/katex-MEuSR36T.js                                                          258.78 kB │ gzip:  77.66 kB
 dist/assets/cytoscape.esm-nTrd5EVq.js                                                  441.71 kB │ gzip: 139.68 kB
-dist/assets/index-CDCI_XWV.js                                                          458.75 kB │ gzip: 139.94 kB
+dist/assets/index-Cmi_YQ-f.js                                                          459.13 kB │ gzip: 139.95 kB
 dist/assets/chunk-NGNAAXSQ-DI_UYJZ4.js                                                 629.04 kB │ gzip: 127.32 kB
-dist/assets/elk-XV6XMXQE-BH78h59u.js                                                 1,498.89 kB │ gzip: 465.88 kB
+dist/assets/elk-XV6XMXQE-B-GY9hV0.js                                                 1,498.89 kB │ gzip: 465.88 kB
 
 [plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 4.72s
-Removing intermediate container ea192e0df9b4
- ---> 834a51c1942f
+✓ built in 7.78s
+Removing intermediate container 7a771ad51d88
+ ---> 4a0b3bb79659
 Step 10/15 : FROM nginx:1.30.3-alpine3.23
  ---> d0701bd41f82
 Step 11/15 : WORKDIR /usr/share/nginx/html
- ---> Running in 7440f1bf2b1e
-Removing intermediate container 7440f1bf2b1e
- ---> f098958e692d
+ ---> Running in 9f4a939bfc7f
+Removing intermediate container 9f4a939bfc7f
+ ---> 7e90ca262b7a
 Step 12/15 : COPY --from=builder /app/dist ./
- ---> 62a9fff898e1
+ ---> e407f2da0349
 Step 13/15 : COPY default.conf /etc/nginx/conf.d/
- ---> 8bcb8d434438
+ ---> 45b136166dd6
 Step 14/15 : EXPOSE 80
- ---> Running in 80d8f0e196f7
-Removing intermediate container 80d8f0e196f7
- ---> d28d4adcc3d6
+ ---> Running in 3a176938b07d
+Removing intermediate container 3a176938b07d
+ ---> 62de0178b407
 Step 15/15 : CMD ["nginx", "-g", "daemon off;"]
- ---> Running in bf7ba48444f4
-Removing intermediate container bf7ba48444f4
- ---> 7e15cba77399
-Successfully built 7e15cba77399
+ ---> Running in 2c8bda964166
+Removing intermediate container 2c8bda964166
+ ---> b8851ecce844
+Successfully built b8851ecce844
 Successfully tagged mermaid-react:latest
-SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
 ```
+Save the web root into `dist`:
+
+```sh
+NAME=mermaid-react
+docker container stop $NAME
+docker container rm $NAME
+docker create --name $NAME $IMAGE
+NAME=mermaid-react
+rm -fr dist
+if test -d dist ; then echo "cannot continue"; else
+docker cp $NAME:/usr/share/nginx/html dist
+fi
+docker container rm $NAME
+```
+```text
+Successfully copied 5.56MB to /home/sergueik/src/springboot_study/basic-mermaid-react/dist
+```
+> NOTE: if `dist` is under source control it will be difficult to track the drift since all filenames will change.
+
+if need to run the container
 ```sh
 NAME=mermaid-react
 docker container stop $NAME
@@ -623,19 +427,7 @@ If the version is too old it will not be rendering (the contents of `Diagram` ta
 
 > NOTE: the following command expects the `dist` directory be deleted
 
-```sh
-NAME=mermaid-react
-rm -fr dist
-if test -d dist ; then echo "cannot continue"; else
-docker cp $NAME:/usr/share/nginx/html dist
-fi
-```
-```text
-Successfully copied 5.56MB to /home/sergueik/src/springboot_study/basic-mermaid-react/dist
-```
-> NOTE: if `dist` is under source control it will be difficult to track the drift since all filenames will change.
-
-(You may need to switch to Windows environment shell)
+if need to run web server on Windows (You may need to switch to Windows environment shell)
 ```cmd
 pushd dist
 python.exe -m http.server
