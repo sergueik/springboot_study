@@ -1,0 +1,8 @@
+FROM tgagor/centos:stream8
+
+RUN dnf install -y \
+    curl \
+    file \
+    binutils \
+    rpm \
+    && dnf clean all
