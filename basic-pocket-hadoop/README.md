@@ -1,15 +1,9 @@
 ### Laptop Setup
 
-```
-lsblk -o NAME,SIZE,MODEL,FSTYPE,UUID,MOUNTPOINTS
-```
-```text
-lsblk: unknown column: MOUNTPOINTS
-```
-```
+```sh
 lsblk -o NAME,SIZE,MODEL,FSTYPE,UUID
 ```
-```
+```txt
 
 NAME     SIZE MODEL            FSTYPE UUID
 sda      477G SAMSUNG MZ7TE512
@@ -25,6 +19,16 @@ sdb     58.6G Cruzer Fit
 ├─sdb2     1G                  swap   ff0f0548-b1de-4da7-870a-61c7ee7d13db
 └─sdb3  53.5G                  ext4   df6307c6-7f8e-4b3c-9d29-3058848f4da3
 ```
+
+> NOTE:  some columns are not recognized on Ubuntu
+```sh
+lsblk -o NAME,SIZE,MODEL,FSTYPE,UUID,MOUNTPOINTS
+```
+```text
+lsblk: unknown column: MOUNTPOINTS
+```
+
+
 ```mermaid
 
 block
@@ -143,9 +147,9 @@ Filesystem      Size  Used Avail Use% Mounted on
 /dev/sda7        13G  9.1G  3.8G  71% /media/sergueik/UNKNOWN2
 ```
 
-* Schrinked lenovo disk to approx 5 G  creating ~ 20 G  unallocated space
+* After schrinked lenovo disk to approx 5Gb  creating ~ 20Gb  unallocated space
 
-```
+```sh
 lsblk -o NAME,SIZE,MODEL,FSTYPE,UUID
 ```
 ```text
@@ -212,7 +216,7 @@ sdb     58.6G Cruzer Fit
 ```sh
 sudo mkdir -p /data/docker
 ```
-insert in `/etc/fstab`:
+insert permanent mount record in `/etc/fstab`:
 ```text
 UUID=0b180fc0-24e7-45dd-9630-00021add73bf /data/docker ext4 defaults,noatime,nofail 0 2
 ```
@@ -227,7 +231,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 /dev/sda8        20G   24K   19G   1% /data/docker
 ```
 
-check docker version
+check the __Docker__ version
 
 ```text
 Client:
@@ -239,7 +243,8 @@ Client:
  OS/Arch:           linux/amd64
  Context:           default
  Experimental:      true
-
+```
+```text
 Server:
  Engine:
   Version:          20.10.21
@@ -317,7 +322,7 @@ don't have the newer containerd image-store complication.
 
 #### Shrinking the Windows Disk
 
-On Windows, open token elevated Command Prompt and use commands:
+On __Windows__, open token elevated Command Prompt and use commands:
 
 
 ```cmd
@@ -479,7 +484,7 @@ A volume shrink analysis was initiated on volume Windows8_OS (C:). This event lo
  
 ``` 
 and
-perfomed the command advised:
+performed the command advised:
 ```cmd 
 fsutil volume querycluster \\?\Volume{b1b74bcb-3cb9-4ab4-8afc-2d1e07b55a3e} 0x10bd740
 ```
@@ -517,7 +522,6 @@ docker volume ls
 ```
 ```text
 DRIVER    VOLUME NAME
-
 ```
 ```sh
 sudo du -sh /var/lib/docker /var/lib/containerd
@@ -526,7 +530,7 @@ sudo du -sh /var/lib/docker /var/lib/containerd
 3.1M    /var/lib/docker
 608K    /var/lib/containerd
 ```
-```
+```sh
 sudo mount -a
 findmnt /data/docker
 df -h /data/docker
@@ -547,10 +551,10 @@ sudo vi /etc/docker/daemon.json
   "data-root": "/data/docker"
 }
 ```
-```
+```sh
 sudo mkdir -p /etc/systemd/system/docker.service.d
 ```
-```
+```sh
 sudo vi /etc/systemd/system/docker.service.d/storage.conf
 ```
 ```text
@@ -561,15 +565,15 @@ RequiresMountsFor=/data/docker
 ```sh
 sudo systemctl daemon-reload
 ```
-```
+```sh
 sudo systemctl stop docker
 ```
 
-```
+```sh
 sudo sudo mv /var/lib/docker /var/lib/docker.OLD
 ```
 
-```
+```sh
 sudo systemctl start docker
 ```
 ```sh
@@ -592,7 +596,7 @@ io.containerd.runtime.v2.task      tmpmounts
 io.containerd.snapshotter.v1.aufs
 ```
 
-```
+```sh
 sudo du -sh !$
 ```
 ```text
@@ -606,7 +610,7 @@ docker pull alpine
 sudo find /data/docker/
 ```
 (output truncated):
-```
+```text
 /data/docker/
 /data/docker/runtimes
 /data/docker/image
@@ -668,7 +672,7 @@ run the container
 docker run -d --name storage-test alpine sleep 300
 ```
 the hash is returned
-``` 
+```text
 2dbe4ddd76962ccc2670145da4f6ae49c8c5d3a5bd5ac66b8c29c48c82c9dcf0
 ```
 ```sh
@@ -681,10 +685,10 @@ docker inspect --format='{{.GraphDriver.Data.UpperDir}}' storage-test
 confirm configuration survives reboot
 
 ```sh
-sudo  shutdown -r now
+sudo shutdown -r now
 ```
 monitor the computer to boot successfully
-```
+```sh
 docker ps -a
 ```
 ```text
@@ -706,7 +710,6 @@ findmnt /data/docker
 ```text
 TARGET       SOURCE    FSTYPE OPTIONS
 /data/docker /dev/sda8 ext4   rw,noatime,data=ordered
-
 ```
 ```sh
 df -h /data/docker
@@ -1655,7 +1658,6 @@ basic-pocket-hadoop-master-1          panovvv/hadoop-hive-spark:2.5.2   "/entryp
 basic-pocket-hadoop-worker1-1         panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         worker1             About a minute ago   Up About a minute (health: starting)   0.0.0.0:8081->8081/tcp, :::8081->8081/tcp, 0/tcp, 0.0.0.0:9864->9864/tcp, :::9864->9864/tcp
 basic-pocket-hadoop-worker2-1         panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         worker2             About a minute ago   Up About a minute (health: starting)   0.0.0.0:8082->8082/tcp, :::8082->8082/tcp, 0/tcp, 0.0.0.0:9865->9865/tcp, :::9865->9865/tcp
 basic-pocket-hadoop-zeppelin-1        panovvv/zeppelin-bigdata:2.5.2    "/entrypoint.sh"         zeppelin            About a minute ago   Up About a minute (health: starting)   0.0.0.0:8890->8890/tcp, :::8890->8890/tcp
-
 ```
 later
 ```text
@@ -1697,9 +1699,9 @@ docker ps -q |awk '{print $1}' | xargs -IX docker logs X
 ```sh
 (docker ps -q |awk '{print $1}' | xargs -IX docker logs X ) 2>&1 | grep ERROR
 ```
-(there isn't any ERROR messages in docker container logs)
+ - there isn't any ERROR messages in docker container logs
 
-### Using
+### Using Standalone Vendor Image
 
 Hadoop nodes on [localhost:9870](http://localhost:9870)
 ![Capture Hadoop Node](screenshots/capture-hadoop-node.png) 
@@ -1749,7 +1751,9 @@ Filesystem      Size  Used Avail Use% Mounted on
 ```
 
 
-#### Virtual Box
+#### Using Standalone Virtual Box Appliance
+
+This QuickStart VM is a single-node "pseudo-distributed cluster" provided by Claudera.
 
 ```sh
 curl -skLo ~/Downloads/cloudera-quickstart-vm-5.13.0-0-virtualbox.zip https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-5.13.0-0-virtualbox.zip
@@ -1778,7 +1782,336 @@ Archive:  /home/sergueik/Downloads/Unconfirmed 617944.crdownload
 after the completion of import, which largely is a VMDK file copy, it runs old school:
 
 ![Running the VM](screenshots/capture-cloudera-quickstart-desktop.jpg)
+```sh
+pstree
+```
+```text
+init─┬─NetworkManager─┬─dhclient
+     │                └─{NetworkManager}
+     ├─3*[VBoxClient───VBoxClient───{VBoxClient}]
+     ├─VBoxClient───VBoxClient───2*[{VBoxClient}]
+     ├─VBoxService───7*[{VBoxService}]
+     ├─abrtd
+     ├─acpid
+     ├─atd
+     ├─auditd───{auditd}
+     ├─bash───java───117*[{java}]
+     ├─bash───java───22*[{java}]
+     ├─bash───java───19*[{java}]
+     ├─bash───java───130*[{java}]
+     ├─bonobo-activati───{bonobo-activat}
+     ├─catalogd───44*[{catalogd}]
+     ├─clock-applet
+     ├─console-kit-dae───63*[{console-kit-da}]
+     ├─crond
+     ├─2*[dbus-daemon]
+     ├─dbus-launch
+     ├─devkit-power-da
+     ├─gconfd-2
+     ├─gdm-binary─┬─gdm-simple-slav─┬─Xorg
+     │            │                 ├─gdm-session-wor─┬─gnome-session─┬─firefox+
+     │            │                 │                 │               ├─gnome-p+
+     │            │                 │                 │               ├─gnome-p+
+     │            │                 │                 │               ├─gnome-v+
+     │            │                 │                 │               ├─metacity
+     │            │                 │                 │               ├─nautilus
+     │            │                 │                 │               ├─nm-appl+
+     │            │                 │                 │               ├─polkit-+
+     │            │                 │                 │               └─{gnome-+
+     │            │                 │                 └─{gdm-session-wo}
+     │            │                 └─{gdm-simple-sla}
+     │            └─{gdm-binary}
+     ├─gdm-user-switch
+     ├─gnome-keyring-d───2*[{gnome-keyring-}]
+     ├─gnome-screensav
+     ├─gnome-settings-───{gnome-settings}
+     ├─gnome-terminal─┬─bash───pstree
+     │                ├─gnome-pty-helpe
+     │                └─{gnome-terminal}
+     ├─gvfs-gdu-volume
+     ├─gvfsd
+     ├─gvfsd-metadata
+     ├─gvfsd-trash
+     ├─hald─┬─hald-runner─┬─hald-addon-acpi
+     │      │             └─hald-addon-inpu
+     │      └─{hald}
+     ├─impalad───242*[{impalad}]
+     ├─irqbalance
+     ├─java───21*[{java}]
+     ├─java───41*[{java}]
+     ├─java───22*[{java}]
+     ├─2*[java───24*[{java}]]
+     ├─java───44*[{java}]
+     ├─java───69*[{java}]
+     ├─java───203*[{java}]
+     ├─java───47*[{java}]
+     ├─java───25*[{java}]
+     ├─java───56*[{java}]
+     ├─java───19*[{java}]
+     ├─java───30*[{java}]
+     ├─java───29*[{java}]
+     ├─java───16*[{java}]
+     ├─master─┬─pickup
+     │        └─qmgr
+     ├─5*[mingetty]
+     ├─modem-manager
+     ├─mysqld_safe───mysqld───17*[{mysqld}]
+     ├─notification-ar
+     ├─ntpd
+     ├─polkitd
+     ├─pulseaudio─┬─gconf-helper
+     │            └─{pulseaudio}
+     ├─python
+     ├─python2.6─┬─python2.6───40*[{python2.6}]
+     │           └─{python2.6}
+     ├─rpcbind
+     ├─rsyslogd───3*[{rsyslogd}]
+     ├─rtkit-daemon───2*[{rtkit-daemon}]
+     ├─sshd
+     ├─statestored───29*[{statestored}]
+     ├─trashapplet
+     ├─udevd───2*[udevd]
+     ├─udisks-daemon───udisks-daemon
+     ├─wnck-applet
+     └─wpa_supplicant
 
+```
+to ilustrate dentification of which Hadoop/Cloudera Java services are running, what they execute, and which native executables coexist with them
+
+```sh
+jps -lmv
+```
+```text
+9921 sun.tools.jps.Jps -lmv -Dapplication.home=/usr/java/jdk1.7.0_67-cloudera -Xms8m
+```
+```sh
+sudo netstat -antp | grep LISTEN
+```
+
+```text
+sudo netstat -antp | grep LISTEN
+tcp        0      0 0.0.0.0:60030               0.0.0.0:*                   LISTEN      7615/java           
+tcp        0      0 0.0.0.0:8030                0.0.0.0:*                   LISTEN      6224/java           
+tcp        0      0 0.0.0.0:8031                0.0.0.0:*                   LISTEN      6224/java           
+tcp        0      0 0.0.0.0:24000               0.0.0.0:*                   LISTEN      7837/statestored    
+tcp        0      0 0.0.0.0:12000               0.0.0.0:*                   LISTEN      7458/java           
+tcp        0      0 0.0.0.0:60000               0.0.0.0:*                   LISTEN      6496/java           
+tcp        0      0 0.0.0.0:8032                0.0.0.0:*                   LISTEN      6224/java           
+tcp        0      0 0.0.0.0:8480                0.0.0.0:*                   LISTEN      5430/java           
+tcp        0      0 127.0.0.1:12001             0.0.0.0:*                   LISTEN      7458/java           
+tcp        0      0 0.0.0.0:8033                0.0.0.0:*                   LISTEN      6224/java           
+tcp        0      0 0.0.0.0:9090                0.0.0.0:*                   LISTEN      6781/java           
+tcp        0      0 127.0.0.1:44034             0.0.0.0:*                   LISTEN      5324/java           
+tcp        0      0 0.0.0.0:10020               0.0.0.0:*                   LISTEN      5841/java           
+tcp        0      0 0.0.0.0:50020               0.0.0.0:*                   LISTEN      5324/java           
+tcp        0      0 0.0.0.0:44357               0.0.0.0:*                   LISTEN      5945/java           
+tcp        0      0 0.0.0.0:8485                0.0.0.0:*                   LISTEN      5430/java           
+tcp        0      0 0.0.0.0:2181                0.0.0.0:*                   LISTEN      5246/java           
+tcp        0      0 0.0.0.0:8070                0.0.0.0:*                   LISTEN      6641/java           
+tcp        0      0 0.0.0.0:9095                0.0.0.0:*                   LISTEN      6781/java           
+tcp        0      0 0.0.0.0:21000               0.0.0.0:*                   LISTEN      8292/impalad        
+tcp        0      0 0.0.0.0:25000               0.0.0.0:*                   LISTEN      8292/impalad        
+tcp        0      0 0.0.0.0:18088               0.0.0.0:*                   LISTEN      7489/java           
+tcp        0      0 0.0.0.0:8040                0.0.0.0:*                   LISTEN      5945/java           
+tcp        0      0 0.0.0.0:60010               0.0.0.0:*                   LISTEN      6496/java           
+tcp        0      0 0.0.0.0:8042                0.0.0.0:*                   LISTEN      5945/java           
+tcp        0      0 0.0.0.0:50090               0.0.0.0:*                   LISTEN      5658/java           
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN      5037/mysqld         
+tcp        0      0 0.0.0.0:23020               0.0.0.0:*                   LISTEN      8250/catalogd       
+tcp        0      0 0.0.0.0:111                 0.0.0.0:*                   LISTEN      4466/rpcbind        
+tcp        0      0 0.0.0.0:26000               0.0.0.0:*                   LISTEN      8250/catalogd       
+tcp        0      0 0.0.0.0:22000               0.0.0.0:*                   LISTEN      8292/impalad        
+tcp        0      0 0.0.0.0:19888               0.0.0.0:*                   LISTEN      5841/java           
+tcp        0      0 0.0.0.0:14000               0.0.0.0:*                   LISTEN      5784/java           
+tcp        0      0 0.0.0.0:80                  0.0.0.0:*                   LISTEN      5079/python         
+tcp        0      0 127.0.0.1:14001             0.0.0.0:*                   LISTEN      5784/java           
+tcp        0      0 0.0.0.0:10033               0.0.0.0:*                   LISTEN      5841/java           
+tcp        0      0 0.0.0.0:25010               0.0.0.0:*                   LISTEN      7837/statestored    
+tcp        0      0 0.0.0.0:60020               0.0.0.0:*                   LISTEN      7615/java           
+tcp        0      0 0.0.0.0:8020                0.0.0.0:*                   LISTEN      5521/java           
+tcp        0      0 0.0.0.0:57396               0.0.0.0:*                   LISTEN      5246/java           
+tcp        0      0 0.0.0.0:8085                0.0.0.0:*                   LISTEN      6641/java           
+tcp        0      0 0.0.0.0:8022                0.0.0.0:*                   LISTEN      5521/java           
+tcp        0      0 0.0.0.0:50070               0.0.0.0:*                   LISTEN      5521/java           
+tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      4862/sshd           
+tcp        0      0 0.0.0.0:8983                0.0.0.0:*                   LISTEN      8209/java           
+tcp        0      0 0.0.0.0:23000               0.0.0.0:*                   LISTEN      8292/impalad        
+tcp        0      0 127.0.0.1:8984              0.0.0.0:*                   LISTEN      8209/java           
+tcp        0      0 0.0.0.0:8888                0.0.0.0:*                   LISTEN      7771/python2.6      
+tcp        0      0 0.0.0.0:11000               0.0.0.0:*                   LISTEN      8001/java           
+tcp        0      0 0.0.0.0:8088                0.0.0.0:*                   LISTEN      6224/java           
+tcp        0      0 127.0.0.1:11001             0.0.0.0:*                   LISTEN      8001/java           
+tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      5207/master         
+tcp        0      0 0.0.0.0:21050               0.0.0.0:*                   LISTEN      8292/impalad        
+tcp        0      0 0.0.0.0:13562               0.0.0.0:*                   LISTEN      5945/java           
+tcp        0      0 0.0.0.0:50010               0.0.0.0:*                   LISTEN      5324/java           
+tcp        0      0 0.0.0.0:9083                0.0.0.0:*                   LISTEN      6902/java           
+tcp        0      0 0.0.0.0:50075               0.0.0.0:*                   LISTEN      5324/java           
+tcp        0      0 0.0.0.0:25020               0.0.0.0:*                   LISTEN      8250/catalogd
+```
+
+```sh
+ps ax | grep java | awk '{print $1}' | sort | head -1 | xargs -IX pstree -cap X
+```
+```text
+java,5246 -Dzookeeper.datadir.autocreate=false-Dz
+  ├─{java},5249
+  ├─{java},5250
+  ├─{java},5251
+  ├─{java},5252
+  ├─{java},5253
+  ├─{java},5254
+  ├─{java},5255
+  ├─{java},5256
+  ├─{java},5257
+  ├─{java},5258
+  ├─{java},5262
+  ├─{java},5263
+  ├─{java},5264
+  ├─{java},5265
+  ├─{java},5266
+  └─{java},5267
+```
+
+```sh
+sudo ps -awwwx | grep java |awk '{$1=""; $2=""; $3=""; $4=""; print}' | tee  a.log
+```
+```text
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dzookeeper.datadir.autocreate=false -Dzookeeper.log.dir=/var/log/zookeeper -Dzookeeper.root.logger=INFO,ROLLINGFILE -cp /usr/lib/zookeeper/bin/../build/classes:/usr/lib/zookeeper/bin/../build/lib/*.jar:/usr/lib/zookeeper/bin/../lib/slf4j-log4j12.jar:/usr/lib/zookeeper/bin/../lib/slf4j-log4j12-1.7.5.jar:/usr/lib/zookeeper/bin/../lib/slf4j-api-1.7.5.jar:/usr/lib/zookeeper/bin/../lib/netty-3.10.5.Final.jar:/usr/lib/zookeeper/bin/../lib/log4j-1.2.16.jar:/usr/lib/zookeeper/bin/../lib/jline-2.11.jar:/usr/lib/zookeeper/bin/../zookeeper-3.4.5-cdh5.13.0.jar:/usr/lib/zookeeper/bin/../src/java/lib/*.jar:/etc/zookeeper/conf::/etc/zookeeper/conf:/usr/lib/zookeeper/*:/usr/lib/zookeeper/lib/* -Dzookeeper.log.threshold=INFO -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false org.apache.zookeeper.server.quorum.QuorumPeerMain /etc/zookeeper/conf/zoo.cfg
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_datanode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-datanode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -server -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.datanode.DataNode
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_journalnode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-journalnode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.qjournal.server.JournalNode
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_namenode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-namenode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.namenode.NameNode
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_secondarynamenode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-secondarynamenode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/hadoop-httpfs/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Dproc_httpfs -Dhttpfs.log.dir=/var/log/hadoop-httpfs/ -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/hadoop-httpfs/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/run/hadoop-httpfs org.apache.catalina.startup.Bootstrap httpfs start
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_historyserver -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.root.logger=INFO,console -Dhadoop.id.str=mapred -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=mapred-mapred-historyserver-quickstart.cloudera.log -Dhadoop.root.logger=INFO,console -Dmapred.jobsummary.logger=INFO,JSA -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_nodemanager -Xmx1000m -server -Dhadoop.log.dir=/var/log/hadoop-yarn -Dyarn.log.dir=/var/log/hadoop-yarn -Dhadoop.log.file=yarn-yarn-nodemanager-quickstart.cloudera.log -Dyarn.log.file=yarn-yarn-nodemanager-quickstart.cloudera.log -Dyarn.home.dir=/usr/lib/hadoop-yarn -Dhadoop.home.dir=/usr/lib/hadoop-yarn -Dhadoop.root.logger=INFO,RFA -Dyarn.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -classpath /etc/hadoop/conf:/etc/hadoop/conf:/etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/.//*::/usr/lib/llama/*:/usr/lib/llama/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-yarn/lib/*:/etc/hadoop/conf/nm-config/log4j.properties org.apache.hadoop.yarn.server.nodemanager.NodeManager
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_resourcemanager -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-yarn -Dyarn.log.dir=/var/log/hadoop-yarn -Dhadoop.log.file=yarn-yarn-resourcemanager-quickstart.cloudera.log -Dyarn.log.file=yarn-yarn-resourcemanager-quickstart.cloudera.log -Dyarn.home.dir=/usr/lib/hadoop-yarn -Dhadoop.home.dir=/usr/lib/hadoop-yarn -Dhadoop.root.logger=INFO,RFA -Dyarn.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -classpath /etc/hadoop/conf:/etc/hadoop/conf:/etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/.//*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-yarn/lib/*:/etc/hadoop/conf/rm-config/log4j.properties org.apache.hadoop.yarn.server.resourcemanager.ResourceManager
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_master -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-master-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.master.HMaster start
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_rest -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-rest-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.rest.RESTServer start
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_thrift -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-thrift-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.thrift.ThriftServer start
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Xmx256m -Dhive.log.dir=/var/log/hive -Dhive.log.file=hive-metastore.log -Dhive.log.threshold=INFO -Dhadoop.log.dir=/usr/lib/hadoop/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/lib/hive/lib/hive-service-1.1.0-cdh5.13.0.jar org.apache.hadoop.hive.metastore.HiveMetaStore
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Xmx256m -Dhive.log.dir=/var/log/hive -Dhive.log.file=hive-server2.log -Dhive.log.threshold=INFO -Dhadoop.log.dir=/usr/lib/hadoop/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/lib/hive/lib/hive-service-1.1.0-cdh5.13.0.jar org.apache.hive.service.server.HiveServer2 --hiveconf hive.aux.jars.path=file:///usr/lib/hive/auxlib/hive-exec-1.1.0-cdh5.13.0-core.jar,file:///usr/lib/hive/auxlib/hive-exec-core.jar
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/sqoop2/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dsqoop.config.dir=/etc/sqoop2/conf -Djdk.tls.ephemeralDHKeySize=2048 -Xmx1024m -Dsqoop.http.port=12000 -Dsqoop.admin.port=12001 -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/sqoop2/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/tmp/sqoop2 org.apache.catalina.startup.Bootstrap start
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -cp /etc/spark/conf/:/usr/lib/spark/lib/spark-assembly-1.6.0-cdh5.13.0-hadoop2.6.0-cdh5.13.0.jar:/etc/hadoop/conf/:/usr/lib/spark/lib/spark-assembly.jar:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/*:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/*:/usr/lib/hive/lib/*:/usr/lib/flume-ng/lib/*:/usr/lib/parquet/lib/*:/usr/lib/avro/* -Dspark.history.fs.logDirectory=hdfs:///user/spark/applicationHistory -Dspark.history.ui.port=18088 -Xms1g -Xmx1g -XX:MaxPermSize=256m org.apache.spark.deploy.history.HistoryServer
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_regionserver -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-regionserver-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.regionserver.HRegionServer start
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/oozie/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Dderby.stream.error.file=/var/log/oozie/derby.log -Doozie.home.dir=/usr/lib/oozie -Doozie.config.dir=/etc/oozie/conf -Doozie.log.dir=/var/log/oozie -Doozie.data.dir=/var/lib/oozie -Doozie.instance.id=quickstart.cloudera -Doozie.config.file=oozie-site.xml -Doozie.log4j.file=oozie-log4j.properties -Doozie.log4j.reload=10 -Doozie.http.hostname=quickstart.cloudera -Doozie.admin.port=11001 -Doozie.http.port=11000 -Doozie.https.port=11443 -Doozie.base.url=http://quickstart.cloudera:11000/oozie -Doozie.https.keystore.file=/var/lib/oozie/.keystore -Doozie.https.keystore.pass=password -Doozie.https.ciphers=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA -Djava.library.path=:/usr/lib/hadoop/lib/native:/usr/lib/hadoop/lib/native -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/oozie/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/lib/oozie org.apache.catalina.startup.Bootstrap start
+    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/solr/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -DzkHost=quickstart.cloudera:2181/solr -Dsolr.solrxml.location=zookeeper -Dsolr.hdfs.home=hdfs://quickstart.cloudera:8020/solr -Dsolr.hdfs.confdir=/etc/hadoop/conf -Dsolr.authentication.type=simple -Dsolr.authentication.simple.anonymous.allowed=true -Dsolr.security.proxyuser.hue.hosts=* -Dsolr.security.proxyuser.hue.groups=* -Dhost=quickstart.cloudera -Djetty.port=8983 -Dsolr.host=quickstart.cloudera -Dsolr.port=8983 -DuseCachedStatsBetweenGetMBeanInfoCalls=true -DdisableSolrFieldCacheMBeanEntryListJmx=true -Dlog4j.configuration=file:///etc/solr/conf/log4j.properties -Dsolr.log=/var/log/solr -Dsolr.admin.port=8984 -Dsolr.tomcat.backlog=4096 -Dsolr.tomcat.connectionTimeout=180000 -Dsolr.tomcat.keepAliveTimeout=600000 -Dsolr.tomcat.maxKeepAliveRequests=-1 -Dsolr.max.connector.thread=10000 -Dsolr.tomcat.connectionLinger=300 -Dsolr.tomcat.bufferSize=131072 -Dsolr.solr.home=/var/lib/solr -Djava.endorsed.dirs=/usr/lib/solr/../bigtop-tomcat/endorsed -classpath /usr/lib/solr/../bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/solr/tomcat-deployment -Dcatalina.home=/usr/lib/solr/../bigtop-tomcat -Djava.io.tmpdir=/var/lib/solr/ org.apache.catalina.startup.Bootstrap start
+```
+this has 
+ captured a running Cloudera CDH 5.13 ecosystem:
+
+  - __HDFS__: `NameNode`, `DataNode`, `JournalNode`, `SecondaryNameNode`
+  - __YARN__: `ResourceManager`, `NodeManager`
+  - __MapReduce__: `JobHistoryServer`
+  - __Hive__: `Metastore` and `HiveServer2`
+  - __HBase__: `Master`, `RegionServer`, `REST`, `Thrift`
+  - __ZooKeeper__
+  - __Spark__ `HistoryServer`
+  - __Sqoop2__, __Oozie__, __Solr__
+  - __Impala__'s native C++ daemons.
+
+This VM uses JDK 7u67, Cloudera's bundled Java installation, and CDH 5.13.0 components
+It runs a static welcomepage on 80 on VM GUI desktop.
+
+Separate web applications of interest:
+| port  | app |
+|-------|-----|
+|  8888 | Hue |
+|  7180 | Cloudera Manager|
+|  10000 |HiveServer2|
+|  21000 / 25000 |Impala|
+
+next steps are: 
+
+* Open the inherited .hql file.
+* Paste its contents into the Hive editor.
+* Inspect syntax highlighting and formatting.
+* Save a copy without executing it.
+* Feed the original and, optionally, the formatted copy to your LLM.
+
+![capture hue](screenshots/capture-hue-vm.png)
+
+Typical entries in a Cloudera QuickStart VM might include:
+
+|Service|What to look for|
+|-------|----------------|
+|NameNode|NameNode|
+|DataNode|DataNode|
+|ResourceManager|ResourceManager|
+|NodeManager|NodeManager|
+|SecondaryNameNode|SecondaryNameNode|
+|Hive|HiveServer2, RunJar|
+|ZooKeeper|QuorumPeerMain|
+|HBase|HMaster, HRegionServer|
+|Oozie|Oozie server entry point|
+
+|Process|Implementation|Why it matters|
+|-------|--------------|--------------|
+|impalad|Native C++|Impala query engine|
+|statestored|Native C++|Impala state coordination|
+|catalogd|Native C++|Impala metadata/catalog service|
+|java|JVM|Hadoop ecosystem services|
+|mysqld|Native C/C++|Hive metastore backing database|
+|python2.6|Python|Supporting management/services|
+|mysqld_safe|Shell wrapper|Database process supervision|
+
+```mermaid
+
+
+flowchart TB
+    subgraph WEB["Web access"]
+        HUE["Hue"]
+        LANDING["Cloudera landing page"]
+    end
+
+    subgraph CORE["Hadoop core"]
+        HDFS["HDFS"]
+        YARN["YARN"]
+        MR["MapReduce"]
+    end
+
+    subgraph DATA["Data services"]
+        HIVE["Hive"]
+        HBASE["HBase"]
+        SPARK["Spark"]
+        IMPALA["Impala"]
+    end
+
+    subgraph SUPPORT["Coordination and supporting services"]
+        ZK["ZooKeeper"]
+        MYSQL["MySQL"]
+        OOZIE["Oozie"]
+        SQOOP["Sqoop"]
+        SOLR["Solr"]
+    end
+
+    HUE --> HIVE
+    HUE --> HDFS
+    HUE --> YARN
+    HUE --> OOZIE
+
+    HIVE --> HDFS
+    HIVE --> YARN
+    HBASE --> HDFS
+    SPARK --> YARN
+    SPARK --> HDFS
+    IMPALA --> HDFS
+
+    OOZIE --> YARN
+    SQOOP --> HDFS
+    HBASE --> ZK
+    HIVE --> MYSQL
+
+    classDef jvm fill:#dceeff,stroke:#3975a5,color:#172b40
+    classDef native fill:#ffe6cc,stroke:#b36b19,color:#49300e
+    classDef web fill:#e4f2df,stroke:#52834b,color:#20391d
+
+    class HDFS,YARN,MR,HIVE,HBASE,SPARK,ZK,OOZIE,SQOOP,SOLR,MYSQL jvm
+    class IMPALA native
+    class HUE,LANDING web
+
+```
+![capture processes](screenshots/capture-processes.png)
 
 #### Standalone Container
 
