@@ -1,8 +1,47 @@
-FROM tgagor/centos:stream8
+FROM quay.io/centos/centos:stream9
 
+ARG VERSION=2.1.2
+ENV VERSION=${VERSION}
+ENV URL=https://github.com/jniemann66/ReSampler/releases/download/v${VERSION}/ReSampler-${VERSION}-Linux.rpm
+# NOTE: The base image already has curl-minimal installed.
+
+# Probe the chosen version RPM availability
+RUN curl --write-out 'HTTP %{http_code}\n' --fail --silent --output /dev/null "$URL"
+
+
+# Runtime prerequisites and tools for RPM payload inspection.
 RUN dnf install -y \
-    curl \
-    file \
-    binutils \
-    rpm \
+    ca-certificates \
+#    curl \
+    fftw \
+    fftw-libs-double \
+    libsndfile \
+    rpm-build \
+    cpio \
     && dnf clean all
+
+# Download the RPM and report the HTTP status.
+RUN curl -fLsSo /tmp/resampler.rpm "$URL"
+
+# Inspect package metadata BEFORE installation.
+RUN rpm -qpi /tmp/resampler.rpm \
+    && rpm -qpl /tmp/resampler.rpm \
+    && rpm -qp --provides /tmp/resampler.rpm \
+    && rpm -qp --requires /tmp/resampler.rpm \
+    && rpm -qp --scripts /tmp/resampler.rpm
+
+# Attempt installation. If dependencies are unresolved, retain the
+# diagnostic container and inspect the RPM payload directly.
+RUN if dnf install -y /tmp/resampler.rpm; then \
+        echo "RPM installation succeeded"; \
+        rpm -ql resampler; \
+        rpm -V resampler; \
+        ldd /usr/bin/ReSampler; \
+    else \
+        echo "RPM installation failed; inspecting uninstalled payload"; \
+        mkdir -p /tmp/resampler-root; \
+        cd /tmp/resampler-root; \
+        rpm2cpio /tmp/resampler.rpm | cpio -idm --quiet; \
+        find . -type f -print; \
+        ldd ./usr/bin/ReSampler; \
+    fi
