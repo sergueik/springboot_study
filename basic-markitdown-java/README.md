@@ -129,6 +129,95 @@ convert it
 stream
 
 ```
+### Installing Eclipse IDE
+
+examine `https://www.eclipse.org/downloads/packages/release/2024-09/r`:
+choose __Eclipse IDE for Java Developers__
+```sh
+URL=https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-09/R/eclipse-java-2024-09-R-win32-x86_64.zip
+curl -skLo /home/$USER/Downloads/eclipse.zip $URL
+```
+```sh
+URL=https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/2024-09/R/eclipse-java-2024-09-R-linux-gtk-x86_64.tar.gz
+curl -skLo /home/$USER/Downloads/eclipse.tar.gz "$URL"
+```
+```sh
+tar tzvf /home/$USER/Downloads/eclipse.tar.gz 1>/dev/null
+
+echo $?
+```
+ignore warnings
+```text
+tar: Ignoring unknown extended header keyword 'LIBARCHIVE.creationtime'
+```
+```sh
+unzip -qt /home/$USER/Downloads/eclipse.zip 
+```
+```text
+No errors detected in compressed data of /home/sergueik/Downloads/eclipse.zip.
+```
+```sh
+which eclipse
+```
+```text
+/usr/local/bin/eclipse
+```
+```sh
+readlink $(which eclipse)
+```
+```text
+/opt/eclipse/eclipse
+```
+```sh
+ls -ld $(dirname $(readlink $(which eclipse)))
+```
+```text
+drwxrwxr-x 9 sergueik sergueik 4096 Nov 17 10:00 /opt/eclipse
+```
+```sh
+pushd /tmp
+rm -fr /tmp/eclipse
+tar xzf /home/$USER/Downloads/eclipse.tar.gz 2>/dev/null
+ls -d eclipse*
+```
+```sh
+sudo mv /opt/eclipse /opt/eclipse.OLD
+sudo mv eclipse /opt
+```
+With this version will need to import the `org.eclipse.m2e.core.maven2Nature` to import maven `pom.xml`.
+Eclipse will not be wrapping the packagee in the Project explorer making it barely useful with source file navication. a pseudo folders with partial package names are to be opened individually:
+`src`▸ `main`▸ `java` ▸`com`▸ `markdown` ▸`engine`▸ `config` 
+`src`▸ `main`▸ `java` ▸`com`▸ `github` ▸`sergueik`▸ `slenium` etc. 
+for proper Java development, the desired presentation is folded:
+```text
+src/main/java
+ ├─ com.markdown.engine.config
+ └─ com.github.sergueik.selenium
+```
+
+this is difference between __Project__ and __Package Exlorer__
+Try switch to __Package Explorer__
+
+In Eclipse:
+
+`Window` → `Show View` → `Package Explorer`
+
+If it isn't listed:
+
+`Window` → `Show View` → `Other...` → `Java` → `Package Explorer`
+
+the error is explicit:
+```text
+Plug-in org.eclipse.jdt.ui was unable to load class org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart.
+```
+NOTE: The Eclipse Marketplace is not always the best way to install m2e. If Marketplace reports "The latest version is not available" and offers no alternatives, bypass Marketplace and install Maven support directly from the Eclipse update site. - Will need to install `m2e` through __Eclipse Update Sites__
+  * Open Help → Install New Software...
+  * In Work with, enter: `https://download.eclipse.org/technology/m2e/releases/latest/`
+
+these links are not workin:
+```
+ERR_ADDRESS_UNREACHABLE
+```
 ### See Also:
 
 
