@@ -841,7 +841,470 @@ The test cases differ in their business inputs and expected results, but much of
 
 same distinction applies to __BlueZone__, with one important difference: terminal automation often exposes business workflows that are less explicit than modern web application interfaces.
 
+### Lexer
+
+|Mechanism|What it can discover:|
+|---------|------------|
+|`IUnknown::QueryInterface(IID)`|Whether a particular known interface is supported|
+|`IDispatch::GetIDsOfNames()`|Whether a named member can be resolved|
+|`IDispatch::GetTypeInfo()`|Type information, when implemented|
+|`ITypeLib`|Registered or otherwise available type-library descriptions|
+|`ITypeInfo`|Methods, properties, parameter types and __DISPID__s|
+
+
+Static inspection — no Wine COM runtime required
+
+can inspect `bzwhll.dll` directly from Linux.
+
+|Tool|Purpose|Requires Wine?|
+|----|-------|--------------|
+|file|Identify PE architecture|No|
+|objdump|PE headers and exports|No|
+|wrestool|Extract Windows resources|No|
+|7z|Inspect PE resources in some cases|No|
+|strings|Find interface names, GUIDs and ProgIDs|No|
+|llvm-readobj|Inspect PE structures|No|
+
+```sh
+cd ~/Desktop/
+/c/Program\ Files/7-Zip/7z.exe  l ~/Desktop/bzwhll.cab
+```
+```text
+Path = C:\Users\sergueik\Desktop\bzwhll.cab
+Type = Cab
+WARNINGS:
+There are data after the end of archive
+Physical Size = 216576
+Tail Size = 11384
+Method = LZX:21
+Blocks = 1
+Volumes = 1
+Volume Index = 0
+ID = 1111
+
+   Date      Time    Attr         Size   Compressed  Name
+------------------- ----- ------------ ------------  ------------------------
+2017-01-31 21:35:44 ....A       691776               bzwhll.dll1
+------------------- ----- ------------ ------------  ------------------------
+2017-01-31 21:35:44             691776       227960  1 files
+```
+```sh
+/c/Program\ Files/7-Zip/7z.exe  x ~/Desktop/bzwhll.cab
+file bzwhll.dll1
+```
+```text
+bzwhll.dll: PE32 executable (DLL) (GUI) Intel 80386, for MS Windows
+```
+```sh
+mv bzwhll.dll1 bzwhll.dll
+```
+> NOTE: can install `msi` if this iis not good enough
+
+```sh  
+strings -el bzwhll.dll | tee a.log
+```
+```sh
+objdump -p bzwhll.dll | tee -a a.log
+```
+
+```text
+trings -el bzwhll.dll
+
+bzwhll.dll:     file format pei-i386
+bzwhll.dll
+architecture: i386, flags 0x0000012f:
+HAS_RELOC, EXEC_P, HAS_LINENO, HAS_DEBUG, HAS_LOCALS, D_PAGED
+start address 0x1003d629
+
+Characteristics 0x2102
+|executable
+|32 bit words
+|DLL
+
+Time/Date||Tue Jan 31 17:35:41 2017
+Magic|||010b|(PE32)
+MajorLinkerVersion|10
+MinorLinkerVersion|0
+SizeOfCode||0003d600
+SizeOfInitializedData|00069600
+SizeOfUninitializedData|00000000
+AddressOfEntryPoint|0003d629
+BaseOfCode||00001000
+BaseOfData||0003f000
+ImageBase||10000000
+SectionAlignment|00001000
+FileAlignment||00000200
+MajorOSystemVersion|5
+MinorOSystemVersion|1
+MajorImageVersion|0
+MinorImageVersion|0
+MajorSubsystemVersion|5
+MinorSubsystemVersion|1
+Win32Version||00000000
+SizeOfImage||000a9000
+SizeOfHeaders||00000400
+CheckSum||000b1245
+Subsystem||00000002|(Windows GUI)
+DllCharacteristics|00000140
+SizeOfStackReserve|00100000
+SizeOfStackCommit|00001000
+SizeOfHeapReserve|00100000
+SizeOfHeapCommit|00001000
+LoaderFlags||00000000
+NumberOfRvaAndSizes|00000010
+
+The Data Directory
+Entry 0 00053c90 000000a3 Export Directory [.edata (or where ever we found it)]
+Entry 1 00052564 00000118 Import Directory [parts of .idata]
+Entry 2 0005e000 00042cd0 Resource Directory [.rsrc]
+Entry 3 00000000 00000000 Exception Directory [.pdata]
+Entry 4 000a6200 00002c40 Security Directory
+Entry 5 000a1000 0000732c Base Relocation Directory [.reloc]
+Entry 6 0003f490 0000001c Debug Directory
+Entry 7 00000000 00000000 Description Directory
+Entry 8 00000000 00000000 Special Directory
+Entry 9 00000000 00000000 Thread Storage Directory [.tls]
+Entry a 0004dba8 00000040 Load Configuration Directory
+Entry b 00000000 00000000 Bound Import Directory
+Entry c 0003f000 00000460 Import Address Table Directory
+Entry d 00000000 00000000 Delay Import Directory
+Entry e 00000000 00000000 CLR Runtime Header
+Entry f 00000000 00000000 Reserved
+
+There is an import table in .rdata at 0x10052564
+
+The Import Tables (interpreted .rdata section contents)
+ vma:            Hint    Time      Forward  DLL       First
+                 Table   Stamp     Chain    Name      Thunk
+ 00052564|000526cc 00000000 00000000 00052af4 0003f050
+...
+
+There is an export table in .rdata at 0x10053c90
+
+The Export Tables (interpreted .rdata section contents)
+
+Export Flags |||0
+Time/Date stamp ||58913b6d
+Major/Minor |||0/0
+Name ||||00053ce0 BZWhll.DLL
+Ordinal Base |||1
+Number in:
+|Export Address Table ||00000004
+|[Name Pointer/Ordinal] Table|00000004
+Table Addresses
+|Export Address Table ||00053cb8
+|Name Pointer Table ||00053cc8
+|Ordinal Table |||00053cd8
+
+Export Address Table -- Ordinal Base 1
+|[   0] +base[   1] 5d76 Export RVA
+|[   1] +base[   2] cc8e Export RVA
+|[   2] +base[   3] 5d85 Export RVA
+|[   3] +base[   4] 6fa5 Export RVA
+
+[Ordinal/Name Pointer] Table
+|[   0] DllCanUnloadNow
+|[   1] DllGetClassObject
+|[   2] DllRegisterServer
+|[   3] DllUnregisterServer
+
+
+PE File Base Relocations (interpreted .reloc section contents)
+
+Virtual Address: 00001000 Chunk size 212 (0xd4) Number of fixups 102
+|reloc    0 offset   34 [1034] HIGHLOW
+|reloc    1 offset   44 [1044] HIGHLOW
+|reloc    2 offset   73 [1073] HIGHLOW
+...
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0003d4ac  10001000  10001000  00000400  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .rdata        00014d33  1003f000  1003f000  0003da00  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  2 .data         00009000  10054000  10054000  00052800  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  3 .rsrc         00042cd0  1005e000  1005e000  0005b800  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .reloc        00007b2a  100a1000  100a1000  0009e600  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+SYMBOL TABLE:
+no symbols
+
+```
+
+`bzwhll.dll` is a native 32-bit __COM__ in-process server, not a .NET assembly.
+It exports the four conventional __COM__ server entry points:
+
+|Export|Usage  |
+|------|-------|
+|`DllCanUnloadNow`|Whether the COM server can unload|
+|`DllGetClassObject`|Obtain a class factory|
+|`DllRegisterServer`|Register COM classes and associated metadata|
+|`DllUnregisterServer`|Remove COM registration|
+
+One can write a small Windows executable that:
+
+  1. Loads `bzwhll.dll` as a type library
+  2. Calls `ITypeLib::GetTypeInfoCount`
+  3. Enumerates each `ITypeInfo`
+  4. Extracts interfaces, coclasses, methods, properties and parameter types
+  5. Prints reconstructed IDL-like declarations
+```cpp
+LoadTypeLibEx(
+    L"bzwhll.dll",
+    REGKIND_NONE,
+    &typeLib
+);
+
+UINT count = typeLib->GetTypeInfoCount();
+
+for (UINT i = 0; i < count; i++) {
+    ITypeInfo *typeInfo = NULL;
+    typeLib->GetTypeInfo(i, &typeInfo);
+
+    // GetTypeAttr()
+    // GetDocumentation()
+    // GetFuncDesc()
+    // GetNames()
+}
+
+```
+
+```vb
+Dim screen
+Set screen = CreateObject("BZWhll.WhllObj")
+value = screen.GetText(10, 5, 12)
+```
+
+ * The VBScript variable screen, initially an Empty Variant.
+ * The COM object referenced by that Variant after CreateObject.
+ * The terminal screen buffer maintained by BlueZone internally.
+
+the underlying call sequence is substantially deeper:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant VB as VBScript Engine
+    participant COM as COM Runtime
+    participant REG as Windows Registry
+    participant DLL as bzwhll.dll
+    participant OBJ as BlueZone COM Object
+    participant SCR as Terminal Screen Buffer
+
+    VB->>VB: Dim screen
+    Note over VB: Create Empty Variant
+
+    VB->>COM: CoCreateInstance / CreateObject
+    COM->>REG: Resolve ProgID to CLSID
+    REG-->>COM: CLSID and InprocServer32
+    COM->>DLL: LoadLibrary(bzwhll.dll)
+    COM->>DLL: DllGetClassObject(CLSID)
+    DLL-->>COM: IClassFactory
+    COM->>DLL: IClassFactory::CreateInstance
+    DLL->>OBJ: Construct COM object
+    OBJ-->>COM: IDispatch interface
+    COM-->>VB: COM object reference
+    Note over VB: screen = VT_DISPATCH
+
+    VB->>OBJ: IDispatch::GetIDsOfNames("GetText")
+    OBJ-->>VB: DISPID
+
+    VB->>OBJ: IDispatch::Invoke(DISPID, DISPPARAMS)
+    Note over VB,OBJ: Arguments marshalled as VARIANTs
+    OBJ->>SCR: Read screen buffer coordinates
+    SCR-->>OBJ: Screen characters
+    OBJ-->>VB: HRESULT + result VARIANT
+    Note over VB: Convert result to VBScript value
+```
+```jscript
+
+xml = 'file.xml'
+arg = WSH.arguments(0).split(':')
+x = WSH.CreateObject('MSXML2.DOMDocument.6.0')
+x.async = 0; x.load(xml)
+x.selectSingleNode('//Address').text = arg[0]
+x.selectSingleNode('//Port').text = arg[1]
+x.save(xml); x = null; CollectGarbage()
+```
+```mermaid
+sequenceDiagram
+    autonumber
+    participant VBA as Excel / Access VBA
+    participant COM as COM Runtime
+    participant DLL as COM Server DLL
+    participant OBJ as Automation Object
+
+    Note over VBA: Dim doc As Object
+    VBA->>COM: CreateObject("MSXML2.DOMDocument.6.0")
+    COM->>COM: Resolve ProgID to CLSID
+    COM->>DLL: Load server and call DllGetClassObject
+    DLL-->>COM: Return IClassFactory
+    COM->>DLL: IClassFactory.CreateInstance
+    DLL-->>COM: Return IDispatch interface
+    COM-->>VBA: Return object reference
+
+    Note over VBA: doc.async = False
+    VBA->>COM: GetIDsOfNames("async")
+    COM-->>VBA: Return DISPID
+    VBA->>COM: Invoke(DISPATCH_PROPERTYPUT)
+    COM->>OBJ: Set async property
+    OBJ-->>COM: HRESULT
+    COM-->>VBA: Property assignment result
+
+    Note over VBA: doc.Load(fileName)
+    VBA->>COM: GetIDsOfNames("Load")
+    COM-->>VBA: Return DISPID
+    VBA->>COM: Invoke(DISPATCH_METHOD, arguments)
+    COM->>OBJ: Execute Load
+    OBJ-->>COM: HRESULT and result VARIANT
+    COM-->>VBA: Return result
+
+    Note over VBA: Set node = doc.SelectSingleNode(xpath)
+    VBA->>COM: Invoke("SelectSingleNode")
+    COM->>OBJ: Execute method
+    OBJ-->>COM: Return another IDispatch reference
+    COM-->>VBA: Return node object
+
+    Note over VBA: node.Text = newValue
+    VBA->>COM: Invoke("Text", DISPATCH_PROPERTYPUT)
+    COM->>OBJ: Set Text property
+    OBJ-->>COM: HRESULT
+    COM-->>VBA: Assignment result
+```
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Script as BlueZone VB-family Script
+    participant COM as COM Runtime
+    participant DLL as bzwhll.dll
+    participant OBJ as BlueZone Automation Object
+
+    Note over Script: Dim screen
+    Script->>COM: CreateObject("BZWhll.WhllObj")
+    COM->>COM: Resolve ProgID to CLSID
+    COM->>DLL: Load server and call DllGetClassObject
+    DLL-->>COM: Return IClassFactory
+    COM->>DLL: IClassFactory.CreateInstance
+    DLL-->>COM: Return IDispatch interface
+    COM-->>Script: Return object reference
+
+    Note over Script: Read a screen field (illustrative)
+    Script->>COM: GetIDsOfNames("GetText")
+    COM-->>Script: Return DISPID
+    Script->>COM: Invoke(DISPATCH_METHOD, arguments)
+    COM->>OBJ: Execute GetText
+    OBJ->>OBJ: Read terminal screen buffer
+    OBJ-->>COM: Return result VARIANT
+    COM-->>Script: Return value
+```
+
+```vbscript
+
+Option Explicit
+
+Dim obj
+Dim typeInfo
+Dim typeAttr
+
+Set obj = CreateObject("BZWhll.WhllObj")
+
+WScript.Echo "Object created: " & TypeName(obj)
+
+On Error Resume Next
+
+Set typeInfo = obj.GetTypeInfo(0, 0)
+
+If Err.Number <> 0 Then
+    WScript.Echo "GetTypeInfo unavailable: " & Err.Description
+    Err.Clear
+Else
+    WScript.Echo "Type information obtained"
+End If
+
+On Error GoTo 0
+```
+```vbscript
+
+Option Explicit
+
+Dim target
+Dim tli
+Dim interfaceInfo
+Dim member
+Dim param
+Dim fso
+Dim output
+Dim obj
+
+target = "BZWhll.WhllObj"
+
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set output = fso.CreateTextFile("bluezone-api.txt", True)
+
+output.WriteLine "ProgID: " & target
+output.WriteLine String(70, "-")
+
+' Create the COM object being inspected.
+Set obj = CreateObject(target)
+
+' Create the TypeLib Information inspector.
+' Requires TLBINF32.DLL / TLI.TLIApplication.
+Set tli = CreateObject("TLI.TLIApplication")
+
+' Obtain type information for the object's Automation interface.
+Set interfaceInfo = tli.InterfaceInfoFromObject(obj)
+
+output.WriteLine "Interface: " & interfaceInfo.Name
+output.WriteLine "GUID: " & interfaceInfo.GUID
+output.WriteLine ""
+
+For Each member In interfaceInfo.Members
+
+    output.WriteLine "Member: " & member.Name
+    output.WriteLine "Member ID: " & member.MemberId
+    output.WriteLine "Invoke kind: " & member.InvokeKind
+
+    On Error Resume Next
+    output.WriteLine "Return VARTYPE: " & member.ReturnType.VarType
+    Err.Clear
+    On Error GoTo 0
+
+    output.WriteLine "Parameters:"
+
+    For Each param In member.Parameters
+        output.WriteLine "  Name: " & param.Name
+        output.WriteLine "  VARTYPE: " & param.VarTypeInfo.VarType
+        output.WriteLine "  Flags: " & param.Flags
+    Next
+
+    output.WriteLine String(50, "-")
+
+Next
+
+output.Close
+
+WScript.Echo "Inventory written to bluezone-api.txt"
+
+
+```
+> NOTE: `TLBINF32.DLL` is not a standard component of every Windows installation.
+
+JScript can enumerate the properties exposed through an object's Automation dispatch interface, but that does not mean it can enumerate every method and interface implemented by the underlying COM class.
+For example, using the MSXML object as a familiar reference:
+```jscript
+var doc = WScript.CreateObject("MSXML2.DOMDocument.6.0");
+
+WScript.Echo("Object: " + doc);
+
+for (var name in doc) {
+    WScript.Echo(name);
+}
+```
 ### See Also
+
 
 
   * https://www.softpedia.com/get/Internet/Servers/WEB-Servers/BlueZone.shtml#download
