@@ -1,3 +1,78 @@
+### Background
+```mermaid
+
+flowchart TB
+N(["query submitted by the client"]) 
+
+subgraph N2["Lexer and parser<br/>Syntax validation" ]
+N21[Tokenization]
+N22[Grammar matching]
+N23[Abstract syntax tree construction]
+end
+subgraph N3["Semantic analysis<br/>Meaning validation<br/><br/>"]
+
+N31[Does the table exist?]
+N32[Are the columns valid?]
+N33[Are the data types compatible?] 
+N34[Are the operations meaningful?]
+end
+
+subgraph N4["Query planning and optimization" ]
+N41[Build execution plan]
+N42[Determine joins and data access]
+N43[Optimize operations]
+end
+subgraph N5["Distributed execution"]
+N51[MapReduce, Tez or Spark]
+N52["YARN resource allocation (where applicable)"]
+N53[Parallel execution across workers]
+N54[Failure recovery and task coordination]
+end
+
+N-->N2  --> N3 --> N4 --> N5
+```
+
+[Hive](https://en.wikipedia.org/wiki/Apache_Hive) uses [ANTLR](https://en.wikipedia.org/wiki/ANTLR)
+rather than the traditional [MySQL](https://en.wikipedia.org/wiki/MySQL) 
+[Bison](https://en.wikipedia.org/wiki/GNU_Bison)/[Yacc](https://en.wikipedia.org/wiki/Yacc) approach:
+
+```antlr
+
+parser grammar HiveParser;
+
+options {
+    tokenVocab=HiveLexer;
+    output=AST;
+    ASTLabelType=CommonTree;
+    backtrack=false;
+    k=3;
+}
+
+statement
+    : explainStatement EOF
+    | execStatement EOF
+    ;
+
+execStatement
+    : queryStatementExpression
+    | loadStatement
+    | exportStatement
+    | importStatement
+    | ddlStatement
+    | deleteStatement
+    | updateStatement
+    ;
+
+loadStatement
+    : KW_LOAD KW_DATA
+      (KW_LOCAL)?
+      KW_INPATH StringLiteral
+      (KW_OVERWRITE)?
+      KW_INTO KW_TABLE tableOrPartition
+    ;
+    
+```
+> NOTE: to recognize classic __SQL__ functiions e.g. ` COALESCE(TRIM(customer_name), 'Unknown')`, Hadoop will  introduce fuction registry to Resolve those functions to Java implementations. 
 ### Laptop Setup
 
 ```sh
