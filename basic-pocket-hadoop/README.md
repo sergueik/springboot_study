@@ -1977,25 +1977,25 @@ java,5246 -Dzookeeper.datadir.autocreate=false-Dz
 sudo ps -awwwx | grep java |awk '{$1=""; $2=""; $3=""; $4=""; print}' | tee  a.log
 ```
 ```text
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dzookeeper.datadir.autocreate=false -Dzookeeper.log.dir=/var/log/zookeeper -Dzookeeper.root.logger=INFO,ROLLINGFILE -cp /usr/lib/zookeeper/bin/../build/classes:/usr/lib/zookeeper/bin/../build/lib/*.jar:/usr/lib/zookeeper/bin/../lib/slf4j-log4j12.jar:/usr/lib/zookeeper/bin/../lib/slf4j-log4j12-1.7.5.jar:/usr/lib/zookeeper/bin/../lib/slf4j-api-1.7.5.jar:/usr/lib/zookeeper/bin/../lib/netty-3.10.5.Final.jar:/usr/lib/zookeeper/bin/../lib/log4j-1.2.16.jar:/usr/lib/zookeeper/bin/../lib/jline-2.11.jar:/usr/lib/zookeeper/bin/../zookeeper-3.4.5-cdh5.13.0.jar:/usr/lib/zookeeper/bin/../src/java/lib/*.jar:/etc/zookeeper/conf::/etc/zookeeper/conf:/usr/lib/zookeeper/*:/usr/lib/zookeeper/lib/* -Dzookeeper.log.threshold=INFO -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false org.apache.zookeeper.server.quorum.QuorumPeerMain /etc/zookeeper/conf/zoo.cfg
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_datanode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-datanode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -server -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.datanode.DataNode
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_journalnode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-journalnode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.qjournal.server.JournalNode
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_namenode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-namenode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.namenode.NameNode
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_secondarynamenode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-secondarynamenode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/hadoop-httpfs/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Dproc_httpfs -Dhttpfs.log.dir=/var/log/hadoop-httpfs/ -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/hadoop-httpfs/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/run/hadoop-httpfs org.apache.catalina.startup.Bootstrap httpfs start
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_historyserver -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.root.logger=INFO,console -Dhadoop.id.str=mapred -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=mapred-mapred-historyserver-quickstart.cloudera.log -Dhadoop.root.logger=INFO,console -Dmapred.jobsummary.logger=INFO,JSA -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_nodemanager -Xmx1000m -server -Dhadoop.log.dir=/var/log/hadoop-yarn -Dyarn.log.dir=/var/log/hadoop-yarn -Dhadoop.log.file=yarn-yarn-nodemanager-quickstart.cloudera.log -Dyarn.log.file=yarn-yarn-nodemanager-quickstart.cloudera.log -Dyarn.home.dir=/usr/lib/hadoop-yarn -Dhadoop.home.dir=/usr/lib/hadoop-yarn -Dhadoop.root.logger=INFO,RFA -Dyarn.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -classpath /etc/hadoop/conf:/etc/hadoop/conf:/etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/.//*::/usr/lib/llama/*:/usr/lib/llama/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-yarn/lib/*:/etc/hadoop/conf/nm-config/log4j.properties org.apache.hadoop.yarn.server.nodemanager.NodeManager
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_resourcemanager -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-yarn -Dyarn.log.dir=/var/log/hadoop-yarn -Dhadoop.log.file=yarn-yarn-resourcemanager-quickstart.cloudera.log -Dyarn.log.file=yarn-yarn-resourcemanager-quickstart.cloudera.log -Dyarn.home.dir=/usr/lib/hadoop-yarn -Dhadoop.home.dir=/usr/lib/hadoop-yarn -Dhadoop.root.logger=INFO,RFA -Dyarn.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -classpath /etc/hadoop/conf:/etc/hadoop/conf:/etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/.//*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-yarn/lib/*:/etc/hadoop/conf/rm-config/log4j.properties org.apache.hadoop.yarn.server.resourcemanager.ResourceManager
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_master -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-master-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.master.HMaster start
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_rest -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-rest-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.rest.RESTServer start
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_thrift -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-thrift-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.thrift.ThriftServer start
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Xmx256m -Dhive.log.dir=/var/log/hive -Dhive.log.file=hive-metastore.log -Dhive.log.threshold=INFO -Dhadoop.log.dir=/usr/lib/hadoop/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/lib/hive/lib/hive-service-1.1.0-cdh5.13.0.jar org.apache.hadoop.hive.metastore.HiveMetaStore
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Xmx256m -Dhive.log.dir=/var/log/hive -Dhive.log.file=hive-server2.log -Dhive.log.threshold=INFO -Dhadoop.log.dir=/usr/lib/hadoop/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/lib/hive/lib/hive-service-1.1.0-cdh5.13.0.jar org.apache.hive.service.server.HiveServer2 --hiveconf hive.aux.jars.path=file:///usr/lib/hive/auxlib/hive-exec-1.1.0-cdh5.13.0-core.jar,file:///usr/lib/hive/auxlib/hive-exec-core.jar
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/sqoop2/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dsqoop.config.dir=/etc/sqoop2/conf -Djdk.tls.ephemeralDHKeySize=2048 -Xmx1024m -Dsqoop.http.port=12000 -Dsqoop.admin.port=12001 -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/sqoop2/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/tmp/sqoop2 org.apache.catalina.startup.Bootstrap start
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -cp /etc/spark/conf/:/usr/lib/spark/lib/spark-assembly-1.6.0-cdh5.13.0-hadoop2.6.0-cdh5.13.0.jar:/etc/hadoop/conf/:/usr/lib/spark/lib/spark-assembly.jar:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/*:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/*:/usr/lib/hive/lib/*:/usr/lib/flume-ng/lib/*:/usr/lib/parquet/lib/*:/usr/lib/avro/* -Dspark.history.fs.logDirectory=hdfs:///user/spark/applicationHistory -Dspark.history.ui.port=18088 -Xms1g -Xmx1g -XX:MaxPermSize=256m org.apache.spark.deploy.history.HistoryServer
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_regionserver -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-regionserver-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.regionserver.HRegionServer start
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/oozie/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Dderby.stream.error.file=/var/log/oozie/derby.log -Doozie.home.dir=/usr/lib/oozie -Doozie.config.dir=/etc/oozie/conf -Doozie.log.dir=/var/log/oozie -Doozie.data.dir=/var/lib/oozie -Doozie.instance.id=quickstart.cloudera -Doozie.config.file=oozie-site.xml -Doozie.log4j.file=oozie-log4j.properties -Doozie.log4j.reload=10 -Doozie.http.hostname=quickstart.cloudera -Doozie.admin.port=11001 -Doozie.http.port=11000 -Doozie.https.port=11443 -Doozie.base.url=http://quickstart.cloudera:11000/oozie -Doozie.https.keystore.file=/var/lib/oozie/.keystore -Doozie.https.keystore.pass=password -Doozie.https.ciphers=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA -Djava.library.path=:/usr/lib/hadoop/lib/native:/usr/lib/hadoop/lib/native -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/oozie/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/lib/oozie org.apache.catalina.startup.Bootstrap start
-    /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/solr/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -DzkHost=quickstart.cloudera:2181/solr -Dsolr.solrxml.location=zookeeper -Dsolr.hdfs.home=hdfs://quickstart.cloudera:8020/solr -Dsolr.hdfs.confdir=/etc/hadoop/conf -Dsolr.authentication.type=simple -Dsolr.authentication.simple.anonymous.allowed=true -Dsolr.security.proxyuser.hue.hosts=* -Dsolr.security.proxyuser.hue.groups=* -Dhost=quickstart.cloudera -Djetty.port=8983 -Dsolr.host=quickstart.cloudera -Dsolr.port=8983 -DuseCachedStatsBetweenGetMBeanInfoCalls=true -DdisableSolrFieldCacheMBeanEntryListJmx=true -Dlog4j.configuration=file:///etc/solr/conf/log4j.properties -Dsolr.log=/var/log/solr -Dsolr.admin.port=8984 -Dsolr.tomcat.backlog=4096 -Dsolr.tomcat.connectionTimeout=180000 -Dsolr.tomcat.keepAliveTimeout=600000 -Dsolr.tomcat.maxKeepAliveRequests=-1 -Dsolr.max.connector.thread=10000 -Dsolr.tomcat.connectionLinger=300 -Dsolr.tomcat.bufferSize=131072 -Dsolr.solr.home=/var/lib/solr -Djava.endorsed.dirs=/usr/lib/solr/../bigtop-tomcat/endorsed -classpath /usr/lib/solr/../bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/solr/tomcat-deployment -Dcatalina.home=/usr/lib/solr/../bigtop-tomcat -Djava.io.tmpdir=/var/lib/solr/ org.apache.catalina.startup.Bootstrap start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dzookeeper.datadir.autocreate=false -Dzookeeper.log.dir=/var/log/zookeeper -Dzookeeper.root.logger=INFO,ROLLINGFILE -cp /usr/lib/zookeeper/bin/../build/classes:/usr/lib/zookeeper/bin/../build/lib/*.jar:/usr/lib/zookeeper/bin/../lib/slf4j-log4j12.jar:/usr/lib/zookeeper/bin/../lib/slf4j-log4j12-1.7.5.jar:/usr/lib/zookeeper/bin/../lib/slf4j-api-1.7.5.jar:/usr/lib/zookeeper/bin/../lib/netty-3.10.5.Final.jar:/usr/lib/zookeeper/bin/../lib/log4j-1.2.16.jar:/usr/lib/zookeeper/bin/../lib/jline-2.11.jar:/usr/lib/zookeeper/bin/../zookeeper-3.4.5-cdh5.13.0.jar:/usr/lib/zookeeper/bin/../src/java/lib/*.jar:/etc/zookeeper/conf::/etc/zookeeper/conf:/usr/lib/zookeeper/*:/usr/lib/zookeeper/lib/* -Dzookeeper.log.threshold=INFO -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false org.apache.zookeeper.server.quorum.QuorumPeerMain /etc/zookeeper/conf/zoo.cfg
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_datanode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-datanode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -server -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.datanode.DataNode
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_journalnode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-journalnode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.qjournal.server.JournalNode
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_namenode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-namenode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.namenode.NameNode
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_secondarynamenode -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-hdfs -Dhadoop.log.file=hadoop-hdfs-secondarynamenode-quickstart.cloudera.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str=hdfs -Dhadoop.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,RFAS org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/hadoop-httpfs/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Dproc_httpfs -Dhttpfs.log.dir=/var/log/hadoop-httpfs/ -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/hadoop-httpfs/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/run/hadoop-httpfs org.apache.catalina.startup.Bootstrap httpfs start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_historyserver -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.root.logger=INFO,console -Dhadoop.id.str=mapred -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.log.dir=/var/log/hadoop-mapreduce -Dhadoop.log.file=mapred-mapred-historyserver-quickstart.cloudera.log -Dhadoop.root.logger=INFO,console -Dmapred.jobsummary.logger=INFO,JSA -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_nodemanager -Xmx1000m -server -Dhadoop.log.dir=/var/log/hadoop-yarn -Dyarn.log.dir=/var/log/hadoop-yarn -Dhadoop.log.file=yarn-yarn-nodemanager-quickstart.cloudera.log -Dyarn.log.file=yarn-yarn-nodemanager-quickstart.cloudera.log -Dyarn.home.dir=/usr/lib/hadoop-yarn -Dhadoop.home.dir=/usr/lib/hadoop-yarn -Dhadoop.root.logger=INFO,RFA -Dyarn.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -classpath /etc/hadoop/conf:/etc/hadoop/conf:/etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/.//*::/usr/lib/llama/*:/usr/lib/llama/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-yarn/lib/*:/etc/hadoop/conf/nm-config/log4j.properties org.apache.hadoop.yarn.server.nodemanager.NodeManager
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_resourcemanager -Xmx1000m -Dhadoop.log.dir=/var/log/hadoop-yarn -Dyarn.log.dir=/var/log/hadoop-yarn -Dhadoop.log.file=yarn-yarn-resourcemanager-quickstart.cloudera.log -Dyarn.log.file=yarn-yarn-resourcemanager-quickstart.cloudera.log -Dyarn.home.dir=/usr/lib/hadoop-yarn -Dhadoop.home.dir=/usr/lib/hadoop-yarn -Dhadoop.root.logger=INFO,RFA -Dyarn.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native -classpath /etc/hadoop/conf:/etc/hadoop/conf:/etc/hadoop/conf:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/.//*:/usr/lib/hadoop-hdfs/./:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/.//*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/.//*:/usr/lib/hadoop-yarn/.//*:/usr/lib/hadoop-yarn/lib/*:/etc/hadoop/conf/rm-config/log4j.properties org.apache.hadoop.yarn.server.resourcemanager.ResourceManager
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_master -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-master-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.master.HMaster start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_rest -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-rest-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.rest.RESTServer start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_thrift -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-thrift-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.thrift.ThriftServer start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Xmx256m -Dhive.log.dir=/var/log/hive -Dhive.log.file=hive-metastore.log -Dhive.log.threshold=INFO -Dhadoop.log.dir=/usr/lib/hadoop/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/lib/hive/lib/hive-service-1.1.0-cdh5.13.0.jar org.apache.hadoop.hive.metastore.HiveMetaStore
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Xmx256m -Dhive.log.dir=/var/log/hive -Dhive.log.file=hive-server2.log -Dhive.log.threshold=INFO -Dhadoop.log.dir=/usr/lib/hadoop/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/lib/hadoop -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Djava.library.path=/usr/lib/hadoop/lib/native -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/lib/hive/lib/hive-service-1.1.0-cdh5.13.0.jar org.apache.hive.service.server.HiveServer2 --hiveconf hive.aux.jars.path=file:///usr/lib/hive/auxlib/hive-exec-1.1.0-cdh5.13.0-core.jar,file:///usr/lib/hive/auxlib/hive-exec-core.jar
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/sqoop2/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dsqoop.config.dir=/etc/sqoop2/conf -Djdk.tls.ephemeralDHKeySize=2048 -Xmx1024m -Dsqoop.http.port=12000 -Dsqoop.admin.port=12001 -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/sqoop2/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/tmp/sqoop2 org.apache.catalina.startup.Bootstrap start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -cp /etc/spark/conf/:/usr/lib/spark/lib/spark-assembly-1.6.0-cdh5.13.0-hadoop2.6.0-cdh5.13.0.jar:/etc/hadoop/conf/:/usr/lib/spark/lib/spark-assembly.jar:/usr/lib/hadoop/lib/*:/usr/lib/hadoop/*:/usr/lib/hadoop-hdfs/lib/*:/usr/lib/hadoop-hdfs/*:/usr/lib/hadoop-mapreduce/lib/*:/usr/lib/hadoop-mapreduce/*:/usr/lib/hadoop-yarn/lib/*:/usr/lib/hadoop-yarn/*:/usr/lib/hive/lib/*:/usr/lib/flume-ng/lib/*:/usr/lib/parquet/lib/*:/usr/lib/avro/* -Dspark.history.fs.logDirectory=hdfs:///user/spark/applicationHistory -Dspark.history.ui.port=18088 -Xms1g -Xmx1g -XX:MaxPermSize=256m org.apache.spark.deploy.history.HistoryServer
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Dproc_regionserver -XX:OnOutOfMemoryError=kill -9 %p -XX:+UseConcMarkSweepGC -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m -Dhbase.log.dir=/var/log/hbase -Dhbase.log.file=hbase-hbase-regionserver-quickstart.cloudera.log -Dhbase.home.dir=/usr/lib/hbase -Dhbase.id.str=hbase -Dhbase.root.logger=INFO,RFA -Djava.library.path=/usr/lib/hadoop/lib/native:/usr/lib/hbase/lib/native/Linux-amd64-64 -Dhbase.security.logger=INFO,RFAS org.apache.hadoop.hbase.regionserver.HRegionServer start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/oozie/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Dderby.stream.error.file=/var/log/oozie/derby.log -Doozie.home.dir=/usr/lib/oozie -Doozie.config.dir=/etc/oozie/conf -Doozie.log.dir=/var/log/oozie -Doozie.data.dir=/var/lib/oozie -Doozie.instance.id=quickstart.cloudera -Doozie.config.file=oozie-site.xml -Doozie.log4j.file=oozie-log4j.properties -Doozie.log4j.reload=10 -Doozie.http.hostname=quickstart.cloudera -Doozie.admin.port=11001 -Doozie.http.port=11000 -Doozie.https.port=11443 -Doozie.base.url=http://quickstart.cloudera:11000/oozie -Doozie.https.keystore.file=/var/lib/oozie/.keystore -Doozie.https.keystore.pass=password -Doozie.https.ciphers=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA -Djava.library.path=:/usr/lib/hadoop/lib/native:/usr/lib/hadoop/lib/native -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/oozie/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/lib/oozie org.apache.catalina.startup.Bootstrap start
+/usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/solr/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -DzkHost=quickstart.cloudera:2181/solr -Dsolr.solrxml.location=zookeeper -Dsolr.hdfs.home=hdfs://quickstart.cloudera:8020/solr -Dsolr.hdfs.confdir=/etc/hadoop/conf -Dsolr.authentication.type=simple -Dsolr.authentication.simple.anonymous.allowed=true -Dsolr.security.proxyuser.hue.hosts=* -Dsolr.security.proxyuser.hue.groups=* -Dhost=quickstart.cloudera -Djetty.port=8983 -Dsolr.host=quickstart.cloudera -Dsolr.port=8983 -DuseCachedStatsBetweenGetMBeanInfoCalls=true -DdisableSolrFieldCacheMBeanEntryListJmx=true -Dlog4j.configuration=file:///etc/solr/conf/log4j.properties -Dsolr.log=/var/log/solr -Dsolr.admin.port=8984 -Dsolr.tomcat.backlog=4096 -Dsolr.tomcat.connectionTimeout=180000 -Dsolr.tomcat.keepAliveTimeout=600000 -Dsolr.tomcat.maxKeepAliveRequests=-1 -Dsolr.max.connector.thread=10000 -Dsolr.tomcat.connectionLinger=300 -Dsolr.tomcat.bufferSize=131072 -Dsolr.solr.home=/var/lib/solr -Djava.endorsed.dirs=/usr/lib/solr/../bigtop-tomcat/endorsed -classpath /usr/lib/solr/../bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/solr/tomcat-deployment -Dcatalina.home=/usr/lib/solr/../bigtop-tomcat -Djava.io.tmpdir=/var/lib/solr/ org.apache.catalina.startup.Bootstrap start
 ```
 this has 
  captured a running Cloudera CDH 5.13 ecosystem:
@@ -2010,7 +2010,38 @@ this has
   - __Sqoop2__, __Oozie__, __Solr__
   - __Impala__'s native C++ daemons.
 
-This VM uses JDK 7u67, Cloudera's bundled Java installation, and CDH 5.13.0 components
+
+The standard Hadoop application stack TCP ports include:
+
+|Port|Conventional service|
+|----|--------------------|
+|8020|HDFS NameNode RPC|
+|50070|HDFS NameNode web UI (older Hadoop 2.x)|
+|50075|HDFS DataNode web UI (older Hadoop 2.x)|
+|50090|SecondaryNameNode web UI|
+|8032|YARN ResourceManager scheduler|
+|8088|YARN ResourceManager web UI|
+|8042|YARN NodeManager web UI|
+|2181|ZooKeeper client connection|
+|10000|HiveServer2|
+|9083|Hive Metastore|
+|3306|MySQL|
+
+
+To collect process/TCP port level information use
+```sh
+sudo netstat -lntp |
+awk 'NR>2 && $6=="LISTEN" {
+  split($7,p,"/")
+  if (p[1] ~ /^[0-9]+$/) print $4, p[1]
+}' |
+while read endpoint pid; do
+  printf '\n%s  PID=%s\n' "$endpoint" "$pid"
+  sudo ps -ww -p "$pid" -o args=
+done
+```
+
+This VM uses JDK 7u67, Cloudera's bundled Java installation, and __CDH__ ___5.13.0__ components
 It runs a static welcomepage on 80 on VM GUI desktop.
 
 Separate web applications of interest:
@@ -2137,6 +2168,8 @@ docker image ls
 REPOSITORY            TAG       IMAGE ID       CREATED        SIZE
 cloudera/quickstart   latest    4239cd2958c6   10 years ago   6.34GB
 ```
+
+Start the Hadoop container interactively 
 ```sh
 docker run --hostname=quickstart.cloudera --privileged=true -p 8888:8888 -p 7180:7180 -p 50070:50070 -p 80:80 -p 8983:8983 -it cloudera/quickstart:latest /usr/bin/docker-quickstart
 ```
@@ -2338,6 +2371,171 @@ Using CATALINA_PID:    /var/run/solr/solr.pid
 Started Impala Catalog Server (catalogd) :                 [  OK  ]
 Started Impala Server (impalad):                           [  OK  ]
 ```
+in the root shell
+
+```sh
+sudo netstat -lntp |
+awk 'NR>2 && $6=="LISTEN" {
+  split($7,p,"/")
+  if (p[1] ~ /^[0-9]+$/) print $4, p[1]
+}' |
+while read endpoint pid; do
+  printf '\n%s  PID=%s\n' "$endpoint" "$pid"
+  sudo ps -ww -p "$pid" -o args=
+done
+
+```
+with some manual edit, this can be as
+
+|TCP port |PID |app   |class                                         |comment|
+|---------|----|------|----------------------------------------------|-------|
+|9090     |1687| java |  org.apache.hadoop.hbase.thrift.ThriftServer |       |
+|45443  |271| java    |  org.apache.hadoop.hdfs.server.datanode.DataNode |       |
+|10020  |784| java | org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer  |       |
+|50020  |271| java |  org.apache.hadoop.hdfs.server.datanode.DataNode  |       |
+|8485   |371| java | org.apache.hadoop.hdfs.qjournal.server.JournalNode |      |
+|2181  |222 |java | org.apache.zookeeper.server.quorum.QuorumPeerMain |   | 
+|8070  |1470 | java | org.apache.hadoop.hbase.rest.RESTServer | |
+|9095  |1687 | java | org.apache.hadoop.hbase.thrift.ThriftServer |  |
+|21000  |3532| impalad |  | | 
+|25000  |3532| impalad |  | | 
+|18088  |2516|java | org.apache.spark.deploy.history.HistoryServer | | 
+|8040  |874| java | org.apache.hadoop.yarn.server.nodemanager.NodeManager| |
+|60010  |1332|java | org.apache.hadoop.hbase.master.HMaster  | |
+|8042  |874| java |  org.apache.hadoop.yarn.server.nodemanager.NodeManager| |
+|50090  |594| java | org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode | |
+|3306  |169| mysqld | | | 
+|23020  |3481| catalogd | | |
+|22000  |3532| impalad  | | |
+|26000  |3481| catalogd  | | |
+|10000  |2051| java | org.apache.hive.service.server.HiveServer2 |
+|19888  |784| java |org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer | |
+|14000  |730|java | org.apache.catalina.startup.Bootstrap | |
+|80     |195|python | | |
+|10033  |784|java | org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer|
+|33297  |874| java | org.apache.hadoop.yarn.server.nodemanager.NodeManager| |
+|14001  |730| java | org.apache.catalina.startup.Bootstrap httpfs | |
+|25010  |2873| statestored  | | |
+|10002  |2051| java | org.apache.hive.service.server.HiveServer2 |
+|60020  |2617|java | org.apache.hadoop.hbase.regionserver.HRegionServer| |
+|8020  |460| java |  org.apache.hadoop.hdfs.server.namenode.NameNode| |
+|8085  |1470|java |  org.apache.hadoop.hbase.rest.RESTServer | |
+|8022  |460| java | org.apache.hadoop.hdfs.server.namenode.NameNode | | 
+|50070  |460| java | org.apache.hadoop.hdfs.server.namenode.NameNode|  |
+|8983  |3436| java | org.apache.catalina.startup.Bootstrap start | | 
+|23000  |3532| impalad | | |
+|8984  |3436| java |  org.apache.catalina.startup.Bootstrap |
+|8888  |2935|python2.6 | | |
+|11000  |3027| java |  org.apache.catalina.startup.Bootstrap | |
+|8088  |1023|java |  org.apache.hadoop.yarn.server.resourcemanager.ResourceManager| |
+|11001  |3027| java | org.apache.catalina.startup.Bootstrap | | 
+|38137  |222| java | org.apache.zookeeper.server.quorum.QuorumPeerMain | |
+|21050  |3532|impalad | | |
+|13562  |874| java |  org.apache.hadoop.yarn.server.nodemanager.NodeManager|  |
+|50010  |271| java | org.apache.hadoop.hdfs.server.datanode.DataNode| |
+|9083  |1858|java | org.apache.hadoop.hive.metastore.HiveMetaStore| |
+|50075  |271|java | org.apache.hadoop.hdfs.server.datanode.DataNode| |
+|25020  |3481|catalogd | | |
+|60030  |2617|java | org.apache.hadoop.hbase.regionserver.HRegionServer | |
+|8030  |1023|java |org.apache.hadoop.yarn.server.resourcemanager.ResourceManager| |
+|8031  |1023|java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager| |
+|24000  |2873|statestored |                                   | |
+|12000  |2477| java | org.apache.catalina.startup.Bootstrap  | |
+|60000  |1332|java | org.apache.hadoop.hbase.master.HMaster | | 
+|8032  |1023|java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager |    | 
+|8480  |371|java |  org.apache.catalina.startup.Bootstrap |    | 
+|8033  |1023| java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager |    | 
+
+
+|Component|Ports observed|What they indicate|
+|---------|--------------|------------------|
+|HDFS NameNode|8020, 8022, 50070|RPC and web interfaces|
+|HDFS DataNode|50010, 50020, 50075|Data transfer, IPC and web interface|
+|YARN ResourceManager|8030–8033, 8088|Resource management interfaces|
+|YARN NodeManager|8040, 8042, 13562|Worker management interfaces|
+|ZooKeeper|2181, 38137|Client and additional listener|
+|HiveServer2|10000, 10002|SQL service and additional interface|
+|Hive Metastore|9083|Metadata service|
+|HBase Master|60000, 60010|Master RPC and web interface|
+|HBase RegionServer|60020, 60030|RegionServer RPC and web interface|
+|HBase REST|8070, 8085|REST service interfaces|
+|HBase Thrift|9090, 9095|Thrift service interfaces|
+|Impala|21000, 22000, 23000, 25000|Impala daemon interfaces|
+|Impala catalogd|23020, 25020, 26000|Catalog service interfaces|
+|Impala statestored|24000, 25010|State-store interfaces|
+
+
+|Port(s)|Tomcat deployment|Comment|
+|------|------------------|-------|
+|11000, 11001|/var/lib/oozie/tomcat-deployment|__Oozie__ — workflow scheduler and coordinator web application|
+|12000, 12001|/var/lib/sqoop2/tomcat-deployment|__Sqoop 2__ — data-transfer/integration service|
+|14000, 14001|/var/lib/hadoop-httpfs/tomcat-deployment|__HttpFS__ — HTTP gateway to __HDFS__|
+|8983, 8984|/var/lib/solr/tomcat-deployment|__Solr__ — search/indexing service; 8983 is the familiar __Solr__ HTTP endpoint|
+ 
+ 
+|TCP port|Comment|
+|-----|----------|
+|9090|HBase Thrift RPC endpoint|
+|9095|Additional HBase Thrift listener; likely web/info interface|
+|45443|Nonstandard DataNode listener; check dfs.datanode.* configuration for its exact purpose|
+|10020|MapReduce JobHistoryServer RPC|
+|50020|HDFS DataNode IPC|
+|50010|HDFS DataNode data-transfer endpoint|
+|50075|HDFS DataNode web UI|
+|8485|HDFS JournalNode RPC; participates in the shared edit-log quorum|
+|2181|ZooKeeper client connection|
+|38137|Additional ZooKeeper listener; verify against zoo.cfg|
+|8070|HBase REST gateway|
+|8085|Additional HBase REST listener, likely its web/info interface|
+|21000|Impala daemon — Beeswax query protocol|
+|21050|Impala daemon — HiveServer2-compatible protocol|
+|22000|Impala daemon — internal backend communication|
+|23000|Impala daemon — additional internal service interface|
+|25000|Impala daemon web UI|
+|23020|Impala catalog service — additional interface|
+|25020|Impala catalog service web UI|
+|26000|Impala catalog service — additional interface|
+|24000|Impala state-store service|
+|25010|Impala state-store web UI|
+|18088|Spark HistoryServer web UI|
+|8040|YARN NodeManager localizer service|
+|8042|YARN NodeManager web UI|
+|33297|Additional NodeManager listener; likely dynamically assigned|
+|13562|YARN NodeManager auxiliary shuffle service|
+|60000|HBase Master RPC|
+|60010|HBase Master web UI|
+|60020|HBase RegionServer RPC|
+|60030|HBase RegionServer web UI|
+|50090|SecondaryNameNode web UI|
+|3306|MySQL listener; likely the Hive Metastore backing database|
+|10000|HiveServer2 client connection (JDBC/ODBC)|
+|10002|HiveServer2 web UI|
+|10033|MapReduce JobHistoryServer administrative interface|
+|19888|MapReduce JobHistoryServer web UI|
+|9083|Hive Metastore Thrift interface|
+|8020|HDFS NameNode RPC|
+|8022|Additional NameNode RPC/service endpoint; verify configuration|
+|50070|HDFS NameNode web UI|
+|8030|YARN ResourceManager scheduler interface|
+|8031|YARN ResourceManager resource-tracker interface|
+|8032|YARN ResourceManager client interface|
+|8033|YARN ResourceManager administrative interface|
+|8088|YARN ResourceManager web UI|
+
+
+|TCP port|Comment|
+|--------|------|
+|8480|Check this row: normally the JournalNode HTTP interface, not a separate Tomcat application|
+|8983|Solr HTTP endpoint|
+|8984|Additional Solr listener|
+|11000|Oozie HTTP endpoint|
+|11001|Oozie additional/admin listener|
+|12000|Sqoop 2 HTTP endpoint|
+|12001|Sqoop 2 additional/admin listener|
+|14000|HttpFS HTTP endpoint|
+|14001|HttpFS additional/admin listener|
+|80|Cloudera QuickStart welcome page|
+|8888|Hue web interface| 
 
 ![Running the Landing Page in browser](screenshots/capture-cloudera-quickstart.png)
 
