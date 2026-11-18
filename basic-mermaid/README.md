@@ -1892,6 +1892,25 @@ makes it visible:
 
 ---
 
+### No Content Training
+
+A no-content training course is one where the presenter manages to consume an hour explaining material that could have been conveyed in five minutes
+
+No-content training may be perfectly polished, professionally produced, and technically correct — it's just astonishingly empty.
+
+closest terms are __content dilution__, __padding__, and, in instructional-design terminology, __low instructional density__.
+But the broader phenomenon of producing training at scale, with *minimal* __substantive content__ and a *great deal* of __verbal packaging__,
+is also associated with __industrialized instructional design__ or __content commoditization__
+
+|Term|Meaning|How it relates|
+|----|--------|--------------|
+|Content padding|Extending material with filler rather than useful substance|Excessive presenter narration, repetition, unnecessary introductions|
+|Low instructional density|Very little new knowledge delivered per unit of time|A long video yields only a few meaningful facts|
+|Content dilution|Substantive material is diluted with generic explanations|The actual technical material gets buried|
+|Instructional design|Systematic engineering of training to achieve learning objectives|Can be good design, but may also produce formulaic, shallow courses|
+|Content commoditization|Training becomes a standardized, reproducible product|Courses optimized for consistency, scale, and completion rather than depth|
+|Learning-object production|Breaking training into standardized, reusable modules|Short, self-contained units that can be assembled into a larger course|
+
 ### See Also:
 
   * https://github.com/mermaid-js/mermaid
