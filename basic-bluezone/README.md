@@ -1303,6 +1303,21 @@ for (var name in doc) {
     WScript.Echo(name);
 }
 ```
+```jscript
+var obj = WScript.CreateObject("BZWhll.WhllObj");
+
+for (var name in obj) {
+    try {
+        WScript.Echo(
+            name + " = " + obj[name]
+        );
+    } catch (e) {
+        WScript.Echo(
+            name + " : " + e.description
+        );
+    }
+}
+```
 ### See Also
 
 

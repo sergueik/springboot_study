@@ -1,8 +1,17 @@
 ### Background
+
+[Cloudera](https://en.wikipedia.org/wiki/Cloudera) an [data lake](https://en.wikipedia.org/wiki/Data_lake) former data puddle
+traditionally offered a pre-configured Cloudera QuickStart VM (a single-node Apache Hadoop environment packaged for VirtualBox, VMware, or KVM), though Cloudera officially stopped providing direct public downloads
+The [Cloudera Quickstart Docker Image](https://hub.docker.com/r/cloudera/quickstart/)
+is single-node deployment of Cloudera's 100% open-source distribution including
+[Apache Hadoop](https://en.wikipedia.org/wiki/Apache_Hadoop),
+and [Cloudera Manager](https://docs.cloudera.com/cdsw/1.10.5/architecture-overview/topics/cdsw-cloudera-manager.html).
+They are ideal environments for learning about Hadoop, trying out new ideas, testing and demoing your application.
+
 ```mermaid
 
 flowchart TB
-N(["query submitted by the client"]) 
+N(["query submitted by the client"])
 
 subgraph N2["Lexer and parser<br/>Syntax validation" ]
 N21[Tokenization]
@@ -13,7 +22,7 @@ subgraph N3["Semantic analysis<br/>Meaning validation<br/><br/>"]
 
 N31[Does the table exist?]
 N32[Are the columns valid?]
-N33[Are the data types compatible?] 
+N33[Are the data types compatible?]
 N34[Are the operations meaningful?]
 end
 
@@ -31,10 +40,102 @@ end
 
 N-->N2  --> N3 --> N4 --> N5
 ```
+Several TCP ports Hadoop services use for Inter-Process Communication (IPC/RPC), block data transfers, and web UI
+are standard default :
 
-[Hive](https://en.wikipedia.org/wiki/Apache_Hive) uses [ANTLR](https://en.wikipedia.org/wiki/ANTLR)
-rather than the traditional [MySQL](https://en.wikipedia.org/wiki/MySQL) 
-[Bison](https://en.wikipedia.org/wiki/GNU_Bison)/[Yacc](https://en.wikipedia.org/wiki/Yacc) approach:
+
+* __HDFS__ Ports:
+
+  +  8020: NameNode IPC/RPC for client communication and metadata operations
+  +  9870 / 9871: NameNode HTTP / HTTPS web UI
+  +  9866: DataNode data transfer and block replication
+  +  9867: DataNode IPC
+  +  9864 / 9865: DataNode HTTP / HTTPS web UI
+  +  9868 / 9869: Secondary NameNode HTTP / HTTPS checkpoint UI
+  +  8485: JournalNode IPC/RPC (quorum journal manager)
+
+
+* __YARN__ & __MapReduce__ Ports:
+
+  +  8088 / 8090: ResourceManager HTTP / HTTPS web UI
+  +  8030–8033: ResourceManager internal and external RPC/IPC endpoints (such as 8032 for client submissions)
+  +  8042 / 8044: NodeManager HTTP / HTTPS web UI
+  +  8040: NodeManager IPC
+  +  19888 / 19890: MapReduce JobHistoryServer HTTP / HTTPS web UI
+  +  10020: MapReduce JobHistoryServer IPC
+
+* Misc:
+
+  +  2181: Apache ZooKeeper client port
+  +  9083: Hive Metastore
+  +  10000 / 10002: HiveServer2 and Hive web UI
+  +  16000 / 16020: HBase Master and RegionServer IPC
+
+```mermaid
+
+
+flowchart TB
+  subgraph WEB["Web access"]
+      HUE["Hue"]
+      LANDING["Cloudera landing page"]
+  end
+
+  subgraph CORE["Hadoop core"]
+      HDFS["HDFS"]
+      YARN["YARN"]
+      MR["MapReduce"]
+  end
+
+  subgraph DATA["Data services"]
+      HIVE["Hive"]
+      HBASE["HBase"]
+      SPARK["Spark"]
+      IMPALA["Impala"]
+  end
+
+  subgraph SUPPORT["Coordination and supporting services"]
+      ZK["ZooKeeper"]
+      MYSQL["MySQL"]
+      OOZIE["Oozie"]
+      SQOOP["Sqoop"]
+      SOLR["Solr"]
+  end
+
+  HUE --> HIVE
+  HUE --> HDFS
+  HUE --> YARN
+  HUE --> OOZIE
+
+  HIVE --> HDFS
+  HIVE --> YARN
+  HBASE --> HDFS
+  SPARK --> YARN
+  SPARK --> HDFS
+  IMPALA --> HDFS
+
+  OOZIE --> YARN
+  SQOOP --> HDFS
+  HBASE --> ZK
+  HIVE --> MYSQL
+
+  classDef jvm fill:#dceeff,stroke:#3975a5,color:#172b40
+  classDef native fill:#ffe6cc,stroke:#b36b19,color:#49300e
+  classDef web fill:#e4f2df,stroke:#52834b,color:#20391d
+
+  class HDFS,YARN,MR,HIVE,HBASE,SPARK,ZK,OOZIE,SQOOP,SOLR,MYSQL jvm
+  class IMPALA native
+  class HUE,LANDING web
+```
+
+![capture processes](screenshots/capture-processes.png)
+
+#### Grammar
+
+Hadoop [Hive](https://en.wikipedia.org/wiki/Apache_Hive)
+SQL-like query language called [HiveQL](https://docs.cloudera.com/cdw-runtime/1.5.5/using-hiveql/topics/hive_hive_query_language_basics.html)
+
+[AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree)
+uses [ANTLR](https://en.wikipedia.org/wiki/ANTLR)
 
 ```antlr
 
@@ -70,9 +171,134 @@ loadStatement
       (KW_OVERWRITE)?
       KW_INTO KW_TABLE tableOrPartition
     ;
-    
+
 ```
-> NOTE: to recognize classic __SQL__ functiions e.g. ` COALESCE(TRIM(customer_name), 'Unknown')`, Hadoop will  introduce fuction registry to Resolve those functions to Java implementations. 
+rather than the traditional
+of [Bison](https://en.wikipedia.org/wiki/GNU_Bison)/[Yacc](https://en.wikipedia.org/wiki/Yacc) approach
+[MySQL](https://en.wikipedia.org/wiki/MySQL) and similar applications.
+
+`mysql.y`:
+
+```yacc
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+int yylex(void);
+void yyerror(const char *s);
+%}
+
+/* Tokens */
+%token SELECT FROM WHERE INSERT INTO VALUES CREATE TABLE
+%token INT_TYPE VARCHAR_TYPE
+%token IDENTIFIER NUMBER STRING
+%token EQ NE LT GT LE GE
+
+/* Operator precedence */
+%left OR
+%left AND
+%nonassoc EQ NE LT GT LE GE
+
+%%
+
+program:
+    /* empty */
+    | program statement ';' { printf("Valid SQL statement parsed.\n"); }
+    ;
+
+statement:
+    select_stmt
+    | insert_stmt
+    | create_stmt
+    ;
+
+/* --- SELECT --- */
+select_stmt:
+    SELECT select_list FROM IDENTIFIER opt_where
+    ;
+
+select_list:
+    '*'
+    | column_list
+    ;
+
+column_list:
+    IDENTIFIER
+    | column_list ',' IDENTIFIER
+    ;
+
+opt_where:
+    /* empty */
+    | WHERE condition
+    ;
+
+condition:
+    expr comparison_op expr
+    | condition AND condition
+    | condition OR condition
+    | '(' condition ')'
+    ;
+
+comparison_op:
+    EQ | NE | LT | GT | LE | GE
+    ;
+
+expr:
+    IDENTIFIER
+    | literal
+    ;
+
+literal:
+    NUMBER
+    | STRING
+    ;
+
+/* --- INSERT --- */
+insert_stmt:
+    INSERT INTO IDENTIFIER '(' column_list ')' VALUES '(' value_list ')'
+    | INSERT INTO IDENTIFIER VALUES '(' value_list ')'
+    ;
+
+value_list:
+    literal
+    | value_list ',' literal
+    ;
+
+/* --- CREATE TABLE --- */
+create_stmt:
+    CREATE TABLE IDENTIFIER '(' column_defs ')'
+    ;
+
+column_defs:
+    column_def
+    | column_defs ',' column_def
+    ;
+
+column_def:
+    IDENTIFIER data_type
+    ;
+
+data_type:
+    INT_TYPE
+    | VARCHAR_TYPE '(' NUMBER ')'
+    ;
+
+%%
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Syntax error: %s\n", s);
+}
+
+int main(void) {
+    return yyparse();
+}
+
+```
+> NOTE: to recognize classic __SQL__ functiions e.g. `COALESCE(TRIM(customer_name), 'Unknown')`, __Hadoop__ will
+introduce fuction registry to Resolve those functions to Java implementations.
+
+The HiveQL Workbench/SQL Assistant is called [Hue](https://en.wikipedia.org/wiki/Hue_(software))
+
 ### Laptop Setup
 
 ```sh
@@ -132,7 +358,7 @@ block
 
 ```mermaid
  pie showData
-   title Typical Laptop SSD 
+   title Typical Laptop SSD
     "Windows8_OS · sda5" : 8.641
     "LENOVO · sda6" : 0.778
     "PBR_DRV · sda7" : 2.465
@@ -144,7 +370,7 @@ block
 ```
 ```mermaid
  pie showData
-   title Typical Laptop SSD 
+   title Typical Laptop SSD
     "Windows8_OS · sda5" : 8.641
     "LENOVO · sda6" : 0.778
     "PBR_DRV · sda7" : 1.143
@@ -153,14 +379,14 @@ block
     "SYSTEM_DRV · sda2" : 0.26
     "FAT32 · sda3" :  0.301
     "MS Reserved · sda4" : 0.128
-    
+
 ```
 > Important: the resulting sectors no longer represent actual capacity percentages (logarythimic scale was used)
-> They represent logarithmically compressed capacity weights. 
+> They represent logarithmically compressed capacity weights.
 
 ```mermaid
 pie showData
-    title Bootable CF 
+    title Bootable CF
     "Ubuntu · sdb3" : 53.5
     "FAT32 · sdb1" : 2
     "Swap · sdb2" : 11
@@ -170,8 +396,8 @@ pie showData
 * Recovering space from vendor-provided auxiliary partitions may be a more practical candidate, subject to understanding their recovery purpose.
 
 For example, a decade-old Windows installation can contain an immovable file that prevents `diskpart` from shrinking a volume,
-even when substantial available free space is reported. 
-Defragmentation does not necessarily resolve this: files such as system metadata, shadow-copy data, and other filesystem 
+even when substantial available free space is reported.
+Defragmentation does not necessarily resolve this: files such as system metadata, shadow-copy data, and other filesystem
 structures can constrain the shrink boundary
 
 ```sh
@@ -296,7 +522,7 @@ insert permanent mount record in `/etc/fstab`:
 UUID=0b180fc0-24e7-45dd-9630-00021add73bf /data/docker ext4 defaults,noatime,nofail 0 2
 ```
 ```sh
-sudo mount -a 
+sudo mount -a
 ```
 ```sh
 df -h /data/docker
@@ -383,7 +609,7 @@ testcontainers/ryuk   0.3.3     64f4b02dc986   5 years ago   12MB
 
 this means
 
-__Docker__ installation is relatively straightforward, and the version is old enough and 
+__Docker__ installation is relatively straightforward, and the version is old enough and
 don't have the newer containerd image-store complication.
 
 
@@ -441,7 +667,7 @@ But there was no Event 259. only 258. But  was an:
 ```txt
 Event 26228
 
-Chkdsk was executed in verify mode on a volume snapshot.  
+Chkdsk was executed in verify mode on a volume snapshot.
 
 Checking file system on \Device\HarddiskVolume5
 Volume label is Windows8_OS.
@@ -456,7 +682,7 @@ Windows has examined the list of previously identified potential issues and foun
 No further action is required.
 ```
 
-so i simply rebooted with chkdisk scheduled (the __Properties__/__Tools__/__Check__ did report the repair is necessary) and inspected the __Event Log__ afterwards:  
+so i simply rebooted with chkdisk scheduled (the __Properties__/__Tools__/__Check__ did report the repair is necessary) and inspected the __Event Log__ afterwards:
 
 ```text
 
@@ -470,11 +696,11 @@ Volume label is Windows8_OS.
 One of your disks needs to be checked for consistency. You
 may cancel the disk check, but it is strongly recommended
 that you continue.
-Windows will now check the disk.                         
+Windows will now check the disk.
 
 Stage 1: Examining basic file system structure ...
   693504 file records processed.                                                         File verification completed.
-  8627 large file records processed.                                      0 bad file records processed.                                      
+  8627 large file records processed.                                      0 bad file records processed.
 Stage 2: Examining file name linkage ...
 The first free byte, 0x28, and bytes available, 0xe8, for
 root index $I30 in file 0x19de5 are not equal.
@@ -482,8 +708,8 @@ root index $I30 in file 0x19de5 are not equal.
 The first free byte, 0x28, and bytes available, 0xb0, for
 root index $I30 in file 0x5ef19 are not equal.
   873680 index entries processed.                                                        Index verification completed.
-  0 unindexed files scanned.          
-  0 unindexed files recovered.                                       
+  0 unindexed files scanned.
+  0 unindexed files recovered.
 Stage 3: Examining security descriptors ...
 Cleaning up 342 unused index entries from index $SII of file 0x9.
 Cleaning up 342 unused index entries from index $SDH of file 0x9.
@@ -547,20 +773,20 @@ this looks very promising alredy, but for documentation purpose, located the eve
 Event 259
 
 A volume shrink analysis was initiated on volume Windows8_OS (C:). This event log entry details information about the last unmovable file that could limit the maximum number of reclaimable bytes.
- 
+
  Diagnostic details:
  - The last unmovable file appears to be: \Windows\System32\wdi\LogFiles\BootCKCL.etl::$DATA
  - The last cluster of the file is: 0x10bd740
  - Shrink potential target (LCN address): 0x2666cd3
  - The NTFS file flags are: ----D
  - Shrink phase: <analysis>
- 
+
  To find more details about this file please use the "fsutil volume querycluster \\?\Volume{b1b74bcb-3cb9-4ab4-8afc-2d1e07b55a3e} 0x10bd740" command.
- 
-``` 
+
+```
 and
 performed the command advised:
-```cmd 
+```cmd
 fsutil volume querycluster \\?\Volume{b1b74bcb-3cb9-4ab4-8afc-2d1e07b55a3e} 0x10bd740
 ```
 ```text
@@ -803,14 +1029,14 @@ sudo cp -r  data/* /data/data/
 ```
 > NOTE run as current user
 ```sh
-docker pull panovvv/livy:2.5.2; 
-docker pull panovvv/zeppelin-bigdata:2.5.2; 
-docker pull panovvv/hadoop-hive-spark:2.5.2; 
+docker pull panovvv/livy:2.5.2;
+docker pull panovvv/zeppelin-bigdata:2.5.2;
+docker pull panovvv/hadoop-hive-spark:2.5.2;
 docker pull postgres:11.5
 docker image is
 ```
 ```sh
-sudo docker-compose -f docker-compose.yaml.NEW up --build 2>&1 | tee a.log 
+sudo docker-compose -f docker-compose.yaml.NEW up --build 2>&1 | tee a.log
 ```
 ```text
 ...
@@ -829,13 +1055,13 @@ sudo docker-compose -f docker-compose.yaml.NEW up --build 2>&1 | tee a.log
 Attaching to basic-pocket-hadoop-hivemetastore-1, basic-pocket-hadoop-livy-1, basic-pocket-hadoop-master-1, basic-pocket-hadoop-worker1-1, basic-pocket-hadoop-worker2-1, basic-pocket-hadoop-zeppelin-1
 basic-pocket-hadoop-hivemetastore-1  | The files belonging to this database system will be owned by user "postgres".
 basic-pocket-hadoop-hivemetastore-1  | This user must also own the server process.
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | The database cluster will be initialized with locale "en_US.utf8".
 basic-pocket-hadoop-hivemetastore-1  | The default database encoding has accordingly been set to "UTF8".
 basic-pocket-hadoop-hivemetastore-1  | The default text search configuration will be set to "english".
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | Data page checksums are disabled.
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
 basic-pocket-hadoop-hivemetastore-1  | creating subdirectories ... ok
 basic-pocket-hadoop-hivemetastore-1  | selecting default max_connections ... 100
@@ -847,12 +1073,12 @@ basic-pocket-hadoop-hivemetastore-1  | running bootstrap script ... ok
 basic-pocket-hadoop-hivemetastore-1  | performing post-bootstrap initialization ... ok
 basic-pocket-hadoop-worker1-1        | Starting Hadoop data node...
 basic-pocket-hadoop-hivemetastore-1  | syncing data to disk ... ok
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | Success. You can now start the database server using:
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  |     pg_ctl -D /var/lib/postgresql/data -l logfile start
-basic-pocket-hadoop-hivemetastore-1  | 
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | WARNING: enabling "trust" authentication for local connections
 basic-pocket-hadoop-hivemetastore-1  | You can change this by editing pg_hba.conf or using the option -A, or
 basic-pocket-hadoop-hivemetastore-1  | --auth-local and --auth-host, the next time you run initdb.
@@ -861,11 +1087,11 @@ basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.257 UTC [45] LOG:  da
 basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.269 UTC [44] LOG:  database system is ready to accept connections
 basic-pocket-hadoop-hivemetastore-1  |  done
 basic-pocket-hadoop-hivemetastore-1  | server started
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sql
 basic-pocket-hadoop-hivemetastore-1  | CREATE DATABASE
-basic-pocket-hadoop-hivemetastore-1  | 
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.727 UTC [44] LOG:  received fast shutdown request
 basic-pocket-hadoop-hivemetastore-1  | waiting for server to shut down...2026-11-09 18:56:30.732 UTC [44] LOG:  aborting any active transactions
 basic-pocket-hadoop-hivemetastore-1  | .2026-11-09 18:56:30.742 UTC [44] LOG:  background worker "logical replication launcher" (PID 51) exited with exit code 1
@@ -873,9 +1099,9 @@ basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.768 UTC [46] LOG:  sh
 basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.822 UTC [44] LOG:  database system is shut down
 basic-pocket-hadoop-hivemetastore-1  |  done
 basic-pocket-hadoop-hivemetastore-1  | server stopped
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | PostgreSQL init process complete; ready for start up.
-basic-pocket-hadoop-hivemetastore-1  | 
+basic-pocket-hadoop-hivemetastore-1  |
 basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.862 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
 basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.863 UTC [1] LOG:  listening on IPv6 address "::", port 5432
 basic-pocket-hadoop-hivemetastore-1  | 2026-11-09 18:56:30.884 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
@@ -894,7 +1120,7 @@ basic-pocket-hadoop-worker1-1        | Process "scripts/watchdir /usr/hadoop/log
 basic-pocket-hadoop-worker1-1        | Process "scripts/watchdir /usr/spark/logs" started
 basic-pocket-hadoop-worker1-1        | Parallel processes have started
 basic-pocket-hadoop-worker1-1        | [usage] scripts/watchdir dir-to-monitor
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.out **:
 basic-pocket-hadoop-worker1-1        | [...]  (-i) 63646
 basic-pocket-hadoop-worker1-1        | max locked memory       (kbytes, -l) 65536
@@ -908,7 +1134,7 @@ basic-pocket-hadoop-worker1-1        | cpu time               (seconds, -t) unli
 basic-pocket-hadoop-worker1-1        | max user processes              (-u) unlimited
 basic-pocket-hadoop-worker1-1        | virtual memory          (kbytes, -v) unlimited
 basic-pocket-hadoop-worker1-1        | file locks                      (-x) unlimited
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.out **:
 basic-pocket-hadoop-worker1-1        | [...]  (-i) 63646
 basic-pocket-hadoop-worker1-1        | max locked memory       (kbytes, -l) 65536
@@ -924,7 +1150,7 @@ basic-pocket-hadoop-worker1-1        | virtual memory          (kbytes, -v) unli
 basic-pocket-hadoop-worker1-1        | file locks                      (-x) unlimited
 basic-pocket-hadoop-worker1-1        | starting org.apache.spark.deploy.worker.Worker, logging to /usr/spark/logs/spark--org.apache.spark.deploy.worker.Worker-1-worker1.out
 basic-pocket-hadoop-master-1         | SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
-basic-pocket-hadoop-master-1         | 2026-11-09 18:56:36,338 INFO namenode.NameNode: STARTUP_MSG: 
+basic-pocket-hadoop-master-1         | 2026-11-09 18:56:36,338 INFO namenode.NameNode: STARTUP_MSG:
 basic-pocket-hadoop-master-1         | /************************************************************
 basic-pocket-hadoop-master-1         | STARTUP_MSG: Starting NameNode
 basic-pocket-hadoop-master-1         | STARTUP_MSG:   host = master/172.28.1.1
@@ -942,28 +1168,28 @@ basic-pocket-hadoop-worker2-1        | Process "scripts/watchdir /usr/hadoop/log
 basic-pocket-hadoop-worker2-1        | Process "scripts/watchdir /usr/spark/logs" started
 basic-pocket-hadoop-worker2-1        | Parallel processes have started
 basic-pocket-hadoop-worker2-1        | [usage] scripts/watchdir dir-to-monitor
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | [...]er.datanode.DataNode: Starting DataNode with maxLockedMemory = 0
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:34,702 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Opened streaming server at /0.0.0.0:9866
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:34,723 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Balancing bandwidth is 10485760 bytes/s
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:34,724 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Number threads for balancing is 50
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:35,076 INFO org.eclipse.jetty.util.log: Logging initialized @4761ms
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** fairscheduler-statedump.log **:
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** SecurityAuth-root.audit **:
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,059 INFO org.apache.hadoop.security.authentication.server.AuthenticationFilter: Unable to initialize FileSignerSecretProvider, falling back to use random secrets.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,163 INFO org.apache.hadoop.http.HttpRequestLog: Http request log for http.requests.datanode is not defined
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.out **:
 basic-pocket-hadoop-worker1-1        | SLF4J: Class path contains multiple SLF4J bindings.
 basic-pocket-hadoop-worker1-1        | SLF4J: Found binding in [jar:file:/usr/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
 basic-pocket-hadoop-worker1-1        | SLF4J: Found binding in [jar:file:/usr/hive/lib/log4j-slf4j-impl-2.10.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
 basic-pocket-hadoop-worker1-1        | SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,395 INFO org.apache.hadoop.http.HttpServer2: Added global filter 'safety' (class=org.apache.hadoop.http.HttpServer2$QuotingInputFilter)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,437 INFO org.apache.hadoop.http.HttpServer2: Added filter static_user_filter (class=org.apache.hadoop.http.lib.StaticUserWebFilter$StaticUserFilter) to context datanode
@@ -971,7 +1197,7 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,437 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,437 INFO org.apache.hadoop.http.HttpServer2: Added filter static_user_filter (class=org.apache.hadoop.http.lib.StaticUserWebFilter$StaticUserFilter) to context static
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,653 INFO org.apache.hadoop.http.HttpServer2: Jetty bound to port 36415
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:37,655 INFO org.eclipse.jetty.server.Server: jetty-9.3.24.v20180605, build timestamp: 2018-06-05T17:11:56Z, git hash: 84205aa28f11a4f31f2a3b86d1bba2cc8ab69827
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.out **:
 basic-pocket-hadoop-worker2-1        | [...]  (-i) 63646
 basic-pocket-hadoop-worker2-1        | max locked memory       (kbytes, -l) 65536
@@ -985,7 +1211,7 @@ basic-pocket-hadoop-worker2-1        | cpu time               (seconds, -t) unli
 basic-pocket-hadoop-worker2-1        | max user processes              (-u) unlimited
 basic-pocket-hadoop-worker2-1        | virtual memory          (kbytes, -v) unlimited
 basic-pocket-hadoop-worker2-1        | file locks                      (-x) unlimited
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.out **:
 basic-pocket-hadoop-worker2-1        | [...]  (-i) 63646
 basic-pocket-hadoop-worker2-1        | max locked memory       (kbytes, -l) 65536
@@ -1002,13 +1228,13 @@ basic-pocket-hadoop-worker2-1        | file locks                      (-x) unli
 basic-pocket-hadoop-worker2-1        | starting org.apache.spark.deploy.worker.Worker, logging to /usr/spark/logs/spark--org.apache.spark.deploy.worker.Worker-1-worker2.out
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:38,215 INFO server.AccessManager: AccessControlManager acls disabled;users with view permission: ;users with modify permission: ;users with super permission: ;other allowed users: *
 basic-pocket-hadoop-master-1         | 2026-11-09 18:56:38,605 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-basic-pocket-hadoop-zeppelin-1       | 
+basic-pocket-hadoop-zeppelin-1       |
 basic-pocket-hadoop-master-1         | 2026-11-09 18:56:41,496 INFO common.Util: Assuming 'file' scheme for path /dfs/name in configuration.
 basic-pocket-hadoop-master-1         | 2026-11-09 18:56:41,506 INFO common.Util: Assuming 'file' scheme for path /dfs/name in configuration.
 basic-pocket-hadoop-zeppelin-1       | ** zeppelin.log **:
 basic-pocket-hadoop-zeppelin-1       | Pid dir doesn't exist, create /usr/zeppelin/run
 basic-pocket-hadoop-zeppelin-1       | Zeppelin start [60G[[1;32m  OK  [0;39m]
-basic-pocket-hadoop-zeppelin-1       | 
+basic-pocket-hadoop-zeppelin-1       |
 basic-pocket-hadoop-zeppelin-1       | ** zeppelin--zeppelin.out **:
 basic-pocket-hadoop-zeppelin-1       | [...]pl-1.2.5.jar:/usr/hive/lib/taglibs-standard-spec-1.2.5.jar:/usr/hive/lib/tempus-fugit-1.1.jar:/usr/hive/lib/transaction-api-1.1.jar:/usr/hive/lib/validation-api-1.1.0.Final.jar:/usr/hive/lib/velocity-1.5.jar:/usr/hive/lib/websocket-api-9.3.20.v20170531.jar:/usr/hive/lib/websocket-client-9.3.20.v20170531.jar:/usr/hive/lib/websocket-common-9.3.20.v20170531.jar:/usr/hive/lib/websocket-server-9.3.20.v20170531.jar:/usr/hive/lib/websocket-servlet-9.3.20.v20170531.jar:/usr/hive/lib/zookeeper-3.4.6.jar
 basic-pocket-hadoop-zeppelin-1       | SLF4J: Class path contains multiple SLF4J bindings.
@@ -1019,19 +1245,19 @@ basic-pocket-hadoop-zeppelin-1       | SLF4J: See http://www.slf4j.org/codes.htm
 basic-pocket-hadoop-master-1         | Formatting using clusterid: CID-065004fb-119c-476c-876c-973917392b10
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:38,279 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@413f69cc{/logs,file:///usr/hadoop/logs/,AVAILABLE}
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:38,295 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@1b75c2e3{/static,file:///usr/hadoop/share/hadoop/hdfs/webapps/static/,AVAILABLE}
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.out **:
 basic-pocket-hadoop-worker1-1        | SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:40,006 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.w.WebAppContext@648c94da{/,file:///usr/hadoop/share/hadoop/hdfs/webapps/datanode/,AVAILABLE}{/datanode}
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:40,181 INFO org.eclipse.jetty.server.AbstractConnector: Started ServerConnector@4b3a9b36{HTTP/1.1,[http/1.1]}{localhost:36415}
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:40,181 INFO org.eclipse.jetty.server.Server: Started @9890ms
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
-basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:41,298 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: STARTUP_MSG: 
+basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:41,298 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: STARTUP_MSG:
 basic-pocket-hadoop-worker1-1        | /************************************************************
 basic-pocket-hadoop-worker1-1        | STARTUP_MSG: Starting NodeManager
 basic-pocket-hadoop-worker1-1        | STARTUP_MSG:   host = worker1/172.28.1.2
@@ -1043,22 +1269,22 @@ basic-pocket-hadoop-worker1-1        | STARTUP_MSG:   java = 1.8.0_252
 basic-pocket-hadoop-worker1-1        | ************************************************************/
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:41,541 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: registered UNIX signal handlers for [TERM, HUP, INT]
 basic-pocket-hadoop-master-1         | 2026-11-09 18:56:41,819 INFO namenode.FSEditLog: Edit logging is async:true
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | [...]ache/hadoop.git -r e97acb3bd8f3befd27418996fa5d4b50bf2e17bf; compiled by 'sunilg' on 2019-01-08T06:08Z
 basic-pocket-hadoop-worker2-1        | STARTUP_MSG:   java = 1.8.0_252
 basic-pocket-hadoop-worker2-1        | ************************************************************/
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:33,911 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: registered UNIX signal handlers for [TERM, HUP, INT]
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:36,460 WARN org.apache.hadoop.util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** fairscheduler-statedump.log **:
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** SecurityAuth-root.audit **:
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:39,346 INFO org.apache.hadoop.hdfs.server.datanode.checker.ThrottledAsyncChecker: Scheduling a check for [DISK]file:/dfs/data
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:40,663 INFO org.apache.hadoop.metrics2.impl.MetricsConfig: Loaded properties from hadoop-metrics2.properties
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.out **:
 basic-pocket-hadoop-worker2-1        | SLF4J: Class path contains multiple SLF4J bindings.
 basic-pocket-hadoop-worker2-1        | SLF4J: Found binding in [jar:file:/usr/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
@@ -1125,12 +1351,12 @@ basic-pocket-hadoop-master-1         | 2026-11-09 18:56:43,766 INFO common.Stora
 basic-pocket-hadoop-master-1         | 2026-11-09 18:56:43,911 INFO namenode.FSImageFormatProtobuf: Saving image file /dfs/name/current/fsimage.ckpt_0000000000000000000 using no compression
 basic-pocket-hadoop-master-1         | 2026-11-09 18:56:44,313 INFO namenode.FSImageFormatProtobuf: Image file /dfs/name/current/fsimage.ckpt_0000000000000000000 of size 399 bytes saved in 0 seconds .
 basic-pocket-hadoop-master-1         | 2026-11-09 18:56:44,431 INFO namenode.NNStorageRetentionManager: Going to retain 1 images with txid >= 0
-basic-pocket-hadoop-master-1         | 2026-11-09 18:56:44,499 INFO namenode.NameNode: SHUTDOWN_MSG: 
+basic-pocket-hadoop-master-1         | 2026-11-09 18:56:44,499 INFO namenode.NameNode: SHUTDOWN_MSG:
 basic-pocket-hadoop-master-1         | /************************************************************
 basic-pocket-hadoop-master-1         | SHUTDOWN_MSG: Shutting down NameNode at master/172.28.1.1
 basic-pocket-hadoop-master-1         | ************************************************************/
 basic-pocket-hadoop-zeppelin-1       | SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
-basic-pocket-hadoop-zeppelin-1       | 
+basic-pocket-hadoop-zeppelin-1       |
 basic-pocket-hadoop-zeppelin-1       | ** zeppelin--zeppelin.log **:
 basic-pocket-hadoop-zeppelin-1       |  WARN [2026-11-09 18:56:42,626] ({main} ZeppelinConfiguration.java[create]:168) - Failed to load configuration, proceeding with a default
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:56:43,115] ({main} ZeppelinConfiguration.java[create]:180) - Server Host: 0.0.0.0
@@ -1141,16 +1367,16 @@ basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:56:43,293] ({main} L
 basic-pocket-hadoop-zeppelin-1       |  WARN [2026-11-09 18:56:46,024] ({main} ZeppelinConfiguration.java[getConfigFSDir]:694) - zeppelin.config.fs.dir is not specified, fall back to local conf directory zeppelin.conf.dir
 basic-pocket-hadoop-zeppelin-1       |  WARN [2026-11-09 18:56:46,025] ({main} ZeppelinConfiguration.java[getConfigFSDir]:694) - zeppelin.config.fs.dir is not specified, fall back to local conf directory zeppelin.conf.dir
 basic-pocket-hadoop-zeppelin-1       |  WARN [2026-11-09 18:56:46,025] ({main} ZeppelinConfiguration.java[getConfigFSDir]:694) - zeppelin.config.fs.dir is not specified, fall back to local conf directory zeppelin.conf.dir
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:41,895 INFO org.apache.hadoop.metrics2.impl.MetricsSystemImpl: Scheduled Metric snapshot period at 10 second(s).
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:41,895 INFO org.apache.hadoop.metrics2.impl.MetricsSystemImpl: DataNode metrics system started
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.out **:
 basic-pocket-hadoop-worker2-1        | SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
-basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:46,223 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: STARTUP_MSG: 
+basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:46,223 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: STARTUP_MSG:
 basic-pocket-hadoop-worker2-1        | /************************************************************
 basic-pocket-hadoop-worker2-1        | STARTUP_MSG: Starting NodeManager
 basic-pocket-hadoop-worker2-1        | STARTUP_MSG:   host = worker2/172.28.1.3
@@ -1166,7 +1392,7 @@ basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,547 INFO utils.LineBu
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,548 INFO utils.LineBufferedStream:     _\ \/ _ \/ _ `/ __/  '_/
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,548 INFO utils.LineBufferedStream:    /___/ .__/\_,_/_/ /_/\_\   version 2.4.5
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,549 INFO utils.LineBufferedStream:       /_/
-basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,550 INFO utils.LineBufferedStream:                         
+basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,550 INFO utils.LineBufferedStream:
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,551 INFO utils.LineBufferedStream: Using Scala version 2.11.12, OpenJDK 64-Bit Server VM, 1.8.0_252
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,554 INFO utils.LineBufferedStream: Branch HEAD
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,579 INFO utils.LineBufferedStream: Compiled by user centos on 2020-02-02T20:01:52Z
@@ -1174,7 +1400,7 @@ basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,589 INFO utils.LineBu
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,624 INFO utils.LineBufferedStream: Url https://gitbox.apache.org/repos/asf/spark.git
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:46,625 INFO utils.LineBufferedStream: Type --help for more information.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:46,654 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: registered UNIX signal handlers for [TERM, HUP, INT]
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:47,365 INFO org.apache.hadoop.hdfs.server.common.Util: dfs.datanode.fileio.profiling.sampling.percentage set to 0. Disabling file IO profiling
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:47,388 INFO org.apache.hadoop.hdfs.server.datanode.BlockScanner: Initialized block scanner with targetBytesPerSec 1048576
@@ -1185,16 +1411,16 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:48,287 INFO org.apache.h
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:48,354 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Balancing bandwidth is 10485760 bytes/s
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:48,355 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Number threads for balancing is 50
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:48,614 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:42,755 INFO org.apache.hadoop.hdfs.server.datanode.web.DatanodeHttpServer: Listening HTTP traffic on /0.0.0.0:9864
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:42,950 INFO org.apache.hadoop.util.JvmPauseMonitor: Starting JVM pause monitor
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:42,973 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: dnUserName = root
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:42,973 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: supergroup = supergroup
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:47,153 WARN org.apache.hadoop.util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:48,996 INFO org.apache.hadoop.ipc.CallQueueManager: Using callQueue: class java.util.concurrent.LinkedBlockingQueue, queueCapacity: 1000, scheduler: class org.apache.hadoop.ipc.DefaultRpcScheduler, ipcBackoff: false.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:49,336 INFO org.apache.hadoop.ipc.Server: Starting Socket Reader #1 for port 9867
@@ -1227,7 +1453,7 @@ basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:53,024 INFO sessions.Bat
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:53,033 INFO sessions.InteractiveSessionManager: Recovered 0 interactive sessions. Next session id: 0
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:53,134 INFO sessions.InteractiveSessionManager: Heartbeat watchdog thread started.
 basic-pocket-hadoop-livy-1           | 2026-11-09 18:56:53,318 INFO util.log: Logging initialized @18850ms
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:52,671 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: Node Manager health check script is not available or doesn't have execute permission, so not starting the node health script runner.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:53,958 INFO org.apache.hadoop.yarn.event.AsyncDispatcher: Registering class org.apache.hadoop.yarn.server.nodemanager.containermanager.container.ContainerEventType for class org.apache.hadoop.yarn.server.nodemanager.containermanager.ContainerManagerImpl$ContainerEventDispatcher
@@ -1250,28 +1476,28 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:52,482 INFO org.apache.h
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:52,516 INFO org.eclipse.jetty.server.Server: jetty-9.3.24.v20180605, build timestamp: 2018-06-05T17:11:56Z, git hash: 84205aa28f11a4f31f2a3b86d1bba2cc8ab69827
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:53,384 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@413f69cc{/logs,file:///usr/hadoop/logs/,AVAILABLE}
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:53,413 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@1b75c2e3{/static,file:///usr/hadoop/share/hadoop/hdfs/webapps/static/,AVAILABLE}
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:53,806 WARN org.apache.hadoop.util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:56,912 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.w.WebAppContext@648c94da{/,file:///usr/hadoop/share/hadoop/hdfs/webapps/datanode/,AVAILABLE}{/datanode}
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:57,144 INFO org.eclipse.jetty.server.AbstractConnector: Started ServerConnector@47f9738{HTTP/1.1,[http/1.1]}{localhost:34641}
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:57,144 INFO org.eclipse.jetty.server.Server: Started @25498ms
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:54,927 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Opened IPC server at /0.0.0.0:9867
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:55,486 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Refresh request received for nameservices: null
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:55,746 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Starting BPOfferServices for nameservices: <default>
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:55,910 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Block pool <registering> (Datanode Uuid unassigned) service to master/172.28.1.1:9000 starting to offer service
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:55,743 INFO org.apache.hadoop.metrics2.impl.MetricsConfig: Loaded properties from hadoop-metrics2.properties
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:56,173 INFO org.apache.hadoop.ipc.Server: IPC Server Responder: starting
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:56,180 INFO org.apache.hadoop.ipc.Server: IPC Server listener on 9867: starting
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:57,250 INFO org.apache.hadoop.metrics2.impl.MetricsSystemImpl: Scheduled Metric snapshot period at 10 second(s).
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:57,250 INFO org.apache.hadoop.metrics2.impl.MetricsSystemImpl: NodeManager metrics system started
@@ -1282,18 +1508,18 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:58,400 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:58,402 INFO org.apache.hadoop.yarn.event.AsyncDispatcher: Registering class org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.sharedcache.SharedCacheUploadEventType for class org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.sharedcache.SharedCacheUploadService
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:58,402 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.ContainerManagerImpl: AMRMProxyService is disabled
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:58,402 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.ResourceLocalizationService: per directory file limit = 8192
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:58,907 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 0 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:58,984 INFO org.apache.hadoop.yarn.event.AsyncDispatcher: Registering class org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.event.LocalizerEventType for class org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.ResourceLocalizationService$LocalizerTracker
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:59,085 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.linux.resources.ResourceHandlerModule: Using traffic control bandwidth handler
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:59,291 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.AuxServices: Adding auxiliary service mapreduce_shuffle, "mapreduce_shuffle"
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:59,910 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 1 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:59,691 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.monitor.ContainersMonitorImpl:  Using ResourceCalculatorPlugin : org.apache.hadoop.yarn.util.ResourceCalculatorPlugin@43599640
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:56:59,692 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.monitor.ContainersMonitorImpl:  Using ResourceCalculatorProcessTree : null
@@ -1309,7 +1535,7 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:59,390 INFO org.apache.h
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:59,639 INFO org.apache.hadoop.util.JvmPauseMonitor: Starting JVM pause monitor
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:59,665 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: dnUserName = root
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:59,665 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: supergroup = supergroup
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:56:59,994 INFO org.apache.hadoop.yarn.server.nodemanager.NodeManager: Node Manager health check script is not available or doesn't have execute permission, so not starting the node health script runner.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:00,765 INFO org.apache.hadoop.yarn.event.AsyncDispatcher: Registering class org.apache.hadoop.yarn.server.nodemanager.containermanager.container.ContainerEventType for class org.apache.hadoop.yarn.server.nodemanager.containermanager.ContainerManagerImpl$ContainerEventDispatcher
@@ -1326,7 +1552,7 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:00,150 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:00,196 INFO org.apache.hadoop.yarn.util.resource.ResourceUtils: Unable to find 'node-resources.xml'.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:00,277 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Nodemanager resources is set to: <memory:8192, vCores:8>
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:00,361 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Initialized nodemanager with : physical-memory=8192 virtual-memory=17204 virtual-cores=8
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:00,911 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 2 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:01,914 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 3 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
@@ -1343,11 +1569,11 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:04,145 INFO org.apache.h
 basic-pocket-hadoop-master-1         | Configuring Hive...
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:04,930 INFO org.apache.hadoop.yarn.event.AsyncDispatcher: Registering class org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.event.LocalizerEventType for class org.apache.hadoop.yarn.server.nodemanager.containermanager.localizer.ResourceLocalizationService$LocalizerTracker
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:04,968 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.linux.resources.ResourceHandlerModule: Using traffic control bandwidth handler
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:05,424 INFO org.apache.hadoop.ipc.CallQueueManager: Using callQueue: class java.util.concurrent.LinkedBlockingQueue, queueCapacity: 1000, scheduler: class org.apache.hadoop.ipc.DefaultRpcScheduler, ipcBackoff: false.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:05,678 INFO org.apache.hadoop.ipc.Server: Starting Socket Reader #1 for port 9867
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:05,394 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.AuxServices: Adding auxiliary service mapreduce_shuffle, "mapreduce_shuffle"
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:05,896 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.monitor.ContainersMonitorImpl:  Using ResourceCalculatorPlugin : org.apache.hadoop.yarn.util.ResourceCalculatorPlugin@43599640
@@ -1362,7 +1588,7 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:02,919 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:03,923 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 5 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:04,926 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 6 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:05,931 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 7 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:06,564 INFO org.apache.hadoop.ipc.CallQueueManager: Using callQueue: class java.util.concurrent.LinkedBlockingQueue, queueCapacity: 2000, scheduler: class org.apache.hadoop.ipc.DefaultRpcScheduler, ipcBackoff: false.
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:56:50,197] ({ImmediateThread-1794250606010} GitNotebookRepo.java[init]:77) - Opening a git repo at '/zeppelin_notebooks'
@@ -1379,22 +1605,22 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:06,426 INFO org.apache.h
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:06,448 INFO org.apache.hadoop.yarn.util.resource.ResourceUtils: Unable to find 'node-resources.xml'.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:06,557 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Nodemanager resources is set to: <memory:8192, vCores:8>
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:06,647 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Initialized nodemanager with : physical-memory=8192 virtual-memory=17204 virtual-cores=8
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:08,418 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Opened IPC server at /0.0.0.0:9867
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:08,657 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Refresh request received for nameservices: null
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:08,809 INFO org.apache.hadoop.hdfs.server.datanode.DataNode: Starting BPOfferServices for nameservices: <default>
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:06,935 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 8 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:06,815 INFO org.apache.hadoop.ipc.Server: Starting Socket Reader #1 for port 41815
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:07,939 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 9 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:07,941 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Problem connecting to server: master/172.28.1.1:9000
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:09,801 INFO org.apache.hadoop.yarn.factories.impl.pb.RpcServerFactoryPBImpl: Adding protocol org.apache.hadoop.yarn.api.ContainerManagementProtocolPB to the server
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:09,817 INFO org.apache.hadoop.ipc.Server: IPC Server Responder: starting
@@ -1404,14 +1630,14 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:09,071 INFO org.apache.h
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:10,686 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 0 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:11,691 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 1 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:12,694 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 2 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:12,668 INFO org.apache.hadoop.ipc.CallQueueManager: Using callQueue: class java.util.concurrent.LinkedBlockingQueue, queueCapacity: 2000, scheduler: class org.apache.hadoop.ipc.DefaultRpcScheduler, ipcBackoff: false.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:12,790 INFO org.apache.hadoop.ipc.Server: Starting Socket Reader #1 for port 42687
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:13,698 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 3 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:14,217 INFO org.apache.hadoop.yarn.factories.impl.pb.RpcServerFactoryPBImpl: Adding protocol org.apache.hadoop.yarn.api.ContainerManagementProtocolPB to the server
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:14,223 INFO org.apache.hadoop.ipc.Server: IPC Server Responder: starting
@@ -1424,11 +1650,11 @@ basic-pocket-hadoop-master-1         | SLF4J: See http://www.slf4j.org/codes.htm
 basic-pocket-hadoop-master-1         | SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:09,848 INFO org.apache.hadoop.ipc.Server: IPC Server listener on 41815: starting
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:09,997 INFO org.apache.hadoop.yarn.server.nodemanager.security.NMContainerTokenSecretManager: Updating node address : worker1:41815
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:13,944 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 0 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:14,944 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 1 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:15,026 INFO org.apache.hadoop.ipc.CallQueueManager: Using callQueue: class java.util.concurrent.LinkedBlockingQueue, queueCapacity: 500, scheduler: class org.apache.hadoop.ipc.DefaultRpcScheduler, ipcBackoff: false.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:15,027 INFO org.apache.hadoop.ipc.Server: Starting Socket Reader #1 for port 8040
@@ -1452,10 +1678,10 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:15,348 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:15,348 WARN org.apache.hadoop.yarn.server.nodemanager.logaggregation.tracker.NMLogAggregationStatusTracker: Log Aggregation is disabled.So is the LogAggregationStatusTracker.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:15,385 INFO org.apache.hadoop.yarn.server.nodemanager.webapp.WebServer: Instantiating NMWebApp at 0.0.0.0:8042
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:15,572 INFO org.eclipse.jetty.util.log: Logging initialized @42452ms
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:15,945 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 2 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-zeppelin-1       | 
+basic-pocket-hadoop-zeppelin-1       |
 basic-pocket-hadoop-zeppelin-1       | ** zeppelin--zeppelin.log truncated **
 basic-pocket-hadoop-zeppelin-1       | [...]zeppelin.interpreter.recovery.NullRecoveryStorage
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:15,783] ({main} InterpreterSettingManager.java[registerInterpreterSetting]:540) - Register InterpreterSettingTemplate: jupyter
@@ -1510,19 +1736,19 @@ basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,334] ({main} I
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,351] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: jupyter from interpreter setting template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,366] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: java from interpreter setting template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,366] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: submarine from interpreter setting template
-basic-pocket-hadoop-zeppelin-1       | 
+basic-pocket-hadoop-zeppelin-1       |
 basic-pocket-hadoop-zeppelin-1       | ** zeppelin--zeppelin.log truncated **
 basic-pocket-hadoop-zeppelin-1       | [...] template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,366] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: java from interpreter setting template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,366] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: submarine from interpreter setting template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,368] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: hazelcastjet from interpreter setting template
-basic-pocket-hadoop-zeppelin-1       | 
+basic-pocket-hadoop-zeppelin-1       |
 basic-pocket-hadoop-zeppelin-1       | ** zeppelin--zeppelin.log truncated **
 basic-pocket-hadoop-zeppelin-1       | [...] template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,366] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: java from interpreter setting template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,366] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: submarine from interpreter setting template
 basic-pocket-hadoop-zeppelin-1       |  INFO [2026-11-09 18:57:16,368] ({main} InterpreterSettingManager.java[loadFromFile]:304) - Create interpreter setting: hazelcastjet from interpreter setting template
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:16,379 INFO org.apache.hadoop.security.authentication.server.AuthenticationFilter: Unable to initialize FileSignerSecretProvider, falling back to use random secrets.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:16,414 INFO org.apache.hadoop.http.HttpRequestLog: Http request log for http.requests.nodemanager is not defined
@@ -1535,11 +1761,11 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:16,494 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:16,494 INFO org.apache.hadoop.http.HttpServer2: Added filter authentication (class=org.apache.hadoop.security.authentication.server.AuthenticationFilter) to context static
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:16,514 INFO org.apache.hadoop.http.HttpServer2: adding path spec: /node/*
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:16,527 INFO org.apache.hadoop.http.HttpServer2: adding path spec: /ws/*
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:16,958 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 3 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:17,961 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 4 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:18,396 INFO org.apache.hadoop.yarn.webapp.WebApps: Registered webapp guice modules
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:18,399 INFO org.apache.hadoop.http.HttpServer2: Jetty bound to port 8042
@@ -1547,23 +1773,23 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:18,401 INFO org.eclipse.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:18,730 INFO org.apache.hadoop.security.authentication.server.AuthenticationFilter: Unable to initialize FileSignerSecretProvider, falling back to use random secrets.
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:18,750 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@1643d68f{/logs,file:///usr/hadoop/logs/,AVAILABLE}
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:18,790 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@4052274f{/static,jar:file:/usr/hadoop/share/hadoop/yarn/hadoop-yarn-common-3.2.0.jar!/webapps/static,AVAILABLE}
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:14,699 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 4 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:15,701 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 5 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:16,705 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 6 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:17,708 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 7 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:18,711 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 8 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,395 INFO org.apache.hadoop.ipc.CallQueueManager: Using callQueue: class java.util.concurrent.LinkedBlockingQueue, queueCapacity: 500, scheduler: class org.apache.hadoop.ipc.DefaultRpcScheduler, ipcBackoff: false.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,397 INFO org.apache.hadoop.ipc.Server: Starting Socket Reader #1 for port 8040
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,425 INFO org.apache.hadoop.yarn.factories.impl.pb.RpcServerFactoryPBImpl: Adding protocol org.apache.hadoop.yarn.server.nodemanager.api.LocalizationProtocolPB to the server
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,714 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 9 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,737 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Problem connecting to server: master/172.28.1.1:9000
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,439 INFO org.apache.hadoop.ipc.Server: IPC Server listener on 8040: starting
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,445 INFO org.apache.hadoop.ipc.Server: IPC Server Responder: starting
@@ -1574,11 +1800,11 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,828 INFO org.apache.h
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,828 INFO org.apache.hadoop.yarn.server.nodemanager.containermanager.ContainerManagerImpl: ContainerManager bound to 0.0.0.0/0.0.0.0:0
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,844 WARN org.apache.hadoop.yarn.server.nodemanager.logaggregation.tracker.NMLogAggregationStatusTracker: Log Aggregation is disabled.So is the LogAggregationStatusTracker.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:19,854 INFO org.apache.hadoop.yarn.server.nodemanager.webapp.WebServer: Instantiating NMWebApp at 0.0.0.0:8042
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:18,967 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 5 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:19,971 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 6 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.out **:
 basic-pocket-hadoop-worker1-1        | Nov 09, 2026 6:57:20 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory register
 basic-pocket-hadoop-worker1-1        | INFO: Registering org.apache.hadoop.yarn.server.nodemanager.webapp.NMWebServices as a root resource class
@@ -1600,17 +1826,17 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:21,110 INFO org.apache.h
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:21,111 INFO org.apache.hadoop.http.HttpServer2: Added filter authentication (class=org.apache.hadoop.security.authentication.server.AuthenticationFilter) to context static
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:21,163 INFO org.apache.hadoop.http.HttpServer2: adding path spec: /node/*
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:21,164 INFO org.apache.hadoop.http.HttpServer2: adding path spec: /ws/*
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:20,972 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 7 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.out **:
 basic-pocket-hadoop-worker1-1        | Nov 09, 2026 6:57:21 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory getComponentProvider
 basic-pocket-hadoop-worker1-1        | INFO: Binding org.apache.hadoop.yarn.server.nodemanager.webapp.JAXBContextResolver to GuiceManagedComponentProvider with the scope "Singleton"
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:21,975 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 8 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.out **:
 basic-pocket-hadoop-worker1-1        | Nov 09, 2026 6:57:22 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory getComponentProvider
 basic-pocket-hadoop-worker1-1        | INFO: Binding org.apache.hadoop.yarn.webapp.GenericExceptionHandler to GuiceManagedComponentProvider with the scope "Singleton"
@@ -1620,7 +1846,7 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:23,583 INFO org.eclipse.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:23,837 INFO org.apache.hadoop.security.authentication.server.AuthenticationFilter: Unable to initialize FileSignerSecretProvider, falling back to use random secrets.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:23,853 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@1643d68f{/logs,file:///usr/hadoop/logs/,AVAILABLE}
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:23,868 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.s.ServletContextHandler@4052274f{/static,jar:file:/usr/hadoop/share/hadoop/yarn/hadoop-yarn-common-3.2.0.jar!/webapps/static,AVAILABLE}
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.out **:
 basic-pocket-hadoop-worker2-1        | Nov 09, 2026 6:57:25 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory register
 basic-pocket-hadoop-worker2-1        | INFO: Registering org.apache.hadoop.yarn.server.nodemanager.webapp.NMWebServices as a root resource class
@@ -1630,15 +1856,15 @@ basic-pocket-hadoop-worker2-1        | Nov 09, 2026 6:57:25 PM com.sun.jersey.gu
 basic-pocket-hadoop-worker2-1        | INFO: Registering org.apache.hadoop.yarn.server.nodemanager.webapp.JAXBContextResolver as a provider class
 basic-pocket-hadoop-worker2-1        | Nov 09, 2026 6:57:25 PM com.sun.jersey.server.impl.application.WebApplicationImpl _initiate
 basic-pocket-hadoop-worker2-1        | INFO: Initiating Jersey application, version 'Jersey: 1.19 02/11/2015 03:25 AM'
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:22,977 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 9 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:22,979 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Problem connecting to server: master/172.28.1.1:9000
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.out **:
 basic-pocket-hadoop-worker1-1        | Nov 09, 2026 6:57:25 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory getComponentProvider
 basic-pocket-hadoop-worker1-1        | INFO: Binding org.apache.hadoop.yarn.server.nodemanager.webapp.NMWebServices to GuiceManagedComponentProvider with the scope "Singleton"
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:25,905 INFO org.eclipse.jetty.server.handler.ContextHandler: Started o.e.j.w.WebAppContext@60859f5a{/,file:///tmp/jetty-0.0.0.0-8042-node-_-any-351695342169222703.dir/webapp/,AVAILABLE}{/node}
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:25,938 INFO org.eclipse.jetty.server.AbstractConnector: Started ServerConnector@6ab2d545{HTTP/1.1,[http/1.1]}{0.0.0.0:8042}
@@ -1647,14 +1873,14 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:25,939 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:25,943 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Node ID assigned is : worker1:41815
 basic-pocket-hadoop-worker2-1        | Nov 09, 2026 6:57:25 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory getComponentProvider
 basic-pocket-hadoop-worker2-1        | INFO: Binding org.apache.hadoop.yarn.server.nodemanager.webapp.JAXBContextResolver to GuiceManagedComponentProvider with the scope "Singleton"
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:25,743 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 0 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.out **:
 basic-pocket-hadoop-worker2-1        | Nov 09, 2026 6:57:26 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory getComponentProvider
 basic-pocket-hadoop-worker2-1        | INFO: Binding org.apache.hadoop.yarn.webapp.GenericExceptionHandler to GuiceManagedComponentProvider with the scope "Singleton"
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:26,746 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 1 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:25,981 INFO org.apache.hadoop.util.JvmPauseMonitor: Starting JVM pause monitor
@@ -1662,27 +1888,27 @@ basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:25,987 INFO org.apache.h
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:26,322 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Sending out 0 NM container statuses: []
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:26,387 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Registering with RM using containers :[]
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:27,740 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:8031. Already tried 0 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:28,984 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 0 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:27,747 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 2 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:28,749 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 3 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:29,750 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 4 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.out **:
 basic-pocket-hadoop-worker2-1        | Nov 09, 2026 6:57:30 PM com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory getComponentProvider
 basic-pocket-hadoop-worker2-1        | INFO: Binding org.apache.hadoop.yarn.server.nodemanager.webapp.NMWebServices to GuiceManagedComponentProvider with the scope "Singleton"
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:28,741 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:8031. Already tried 1 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:29,987 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 1 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:29,744 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:8031. Already tried 2 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-datanode-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:30,990 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 2 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
@@ -1690,20 +1916,20 @@ basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,504 INFO org.eclipse.
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,525 INFO org.eclipse.jetty.server.AbstractConnector: Started ServerConnector@3cbf1ba4{HTTP/1.1,[http/1.1]}{0.0.0.0:8042}
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,526 INFO org.eclipse.jetty.server.Server: Started @54876ms
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,530 INFO org.apache.hadoop.yarn.webapp.WebApps: Web app node started at 8042
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-datanode-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,755 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:9000. Already tried 5 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker2-1        | 
+basic-pocket-hadoop-worker2-1        |
 basic-pocket-hadoop-worker2-1        | ** hadoop-root-nodemanager-worker2.log **:
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,555 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Node ID assigned is : worker2:42687
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,571 INFO org.apache.hadoop.util.JvmPauseMonitor: Starting JVM pause monitor
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,624 INFO org.apache.hadoop.yarn.client.RMProxy: Connecting to ResourceManager at master/172.28.1.1:8031
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,850 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Sending out 0 NM container statuses: []
 basic-pocket-hadoop-worker2-1        | 2026-11-09 18:57:30,892 INFO org.apache.hadoop.yarn.server.nodemanager.NodeStatusUpdaterImpl: Registering with RM using containers :[]
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 basic-pocket-hadoop-worker1-1        | ** hadoop-root-nodemanager-worker1.log **:
 basic-pocket-hadoop-worker1-1        | 2026-11-09 18:57:30,747 INFO org.apache.hadoop.ipc.Client: Retrying connect to server: master/172.28.1.1:8031. Already tried 3 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
-basic-pocket-hadoop-worker1-1        | 
+basic-pocket-hadoop-worker1-1        |
 ...
 ```
 (truncated). It is unclear if `sudo` is necessary
@@ -1711,7 +1937,7 @@ basic-pocket-hadoop-worker1-1        |
 it is massive:
 
 ```sh
-docker image ls 
+docker image ls
 ```
 ```text
 REPOSITORY                  TAG       IMAGE ID       CREATED       SIZE
@@ -1769,7 +1995,7 @@ a49fa9ee2c69   panovvv/hadoop-hive-spark:2.5.2   "/entrypoint.sh"         7 minu
 
 inspecting docker container logs is a work in progess.
 ```sh
-docker ps -q |awk '{print $1}' | xargs -IX docker logs X 
+docker ps -q |awk '{print $1}' | xargs -IX docker logs X
 ```
 ```sh
 (docker ps -q |awk '{print $1}' | xargs -IX docker logs X ) 2>&1 | grep ERROR
@@ -1779,7 +2005,7 @@ docker ps -q |awk '{print $1}' | xargs -IX docker logs X
 ### Using Standalone Vendor Image
 
 Hadoop nodes on [localhost:9870](http://localhost:9870)
-![Capture Hadoop Node](screenshots/capture-hadoop-node.png) 
+![Capture Hadoop Node](screenshots/capture-hadoop-node.png)
 
 Zeppelin on [localhost:8890](http://localhost:8890)
 ![Capture Zeppelin](screenshots/capture-zeppelin.png)
@@ -1790,14 +2016,14 @@ Yarm on [localhost:8088](http://localhost:8088)
 ### Cleanup
 
 ```sh
-sudo docker-compose -f docker-compose.yml stop 
+sudo docker-compose -f docker-compose.yml stop
 ```
 ```text
-✔ Container basic-pocket-hadoop-zeppelin-1       Stopped                 10.5s 
- ✔ Container basic-pocket-hadoop-livy-1           Stopped                 10.4s 
- ✔ Container basic-pocket-hadoop-master-1         Stopped                 10.8s 
- ✔ Container basic-pocket-hadoop-worker2-1        Stopped                 10.5s 
- ✔ Container basic-pocket-hadoop-worker1-1        Stopped                 10.6s 
+✔ Container basic-pocket-hadoop-zeppelin-1       Stopped                 10.5s
+ ✔ Container basic-pocket-hadoop-livy-1           Stopped                 10.4s
+ ✔ Container basic-pocket-hadoop-master-1         Stopped                 10.8s
+ ✔ Container basic-pocket-hadoop-worker2-1        Stopped                 10.5s
+ ✔ Container basic-pocket-hadoop-worker1-1        Stopped                 10.6s
  ✔ Container basic-pocket-hadoop-hivemetastore-1  Stopped                  0.4s
 ```
 ```sh
@@ -1806,11 +2032,11 @@ docker-compose -f docker-compose.yml rm -f
 ```text
 Going to remove basic-pocket-hadoop-zeppelin-1, basic-pocket-hadoop-livy-1, basic-pocket-hadoop-worker1-1, basic-pocket-hadoop-worker2-1, basic-pocket-hadoop-master-1, basic-pocket-hadoop-hivemetastore-1
 [+] Running 6/0
- ✔ Container basic-pocket-hadoop-hivemetastore-1  Removed                  0.0s 
- ✔ Container basic-pocket-hadoop-livy-1           Removed                  0.0s 
- ✔ Container basic-pocket-hadoop-zeppelin-1       Removed                  0.0s 
- ✔ Container basic-pocket-hadoop-worker2-1        Removed                  0.1s 
- ✔ Container basic-pocket-hadoop-master-1         Removed                  0.0s 
+ ✔ Container basic-pocket-hadoop-hivemetastore-1  Removed                  0.0s
+ ✔ Container basic-pocket-hadoop-livy-1           Removed                  0.0s
+ ✔ Container basic-pocket-hadoop-zeppelin-1       Removed                  0.0s
+ ✔ Container basic-pocket-hadoop-worker2-1        Removed                  0.1s
+ ✔ Container basic-pocket-hadoop-master-1         Removed                  0.0s
  ✔ Container basic-pocket-hadoop-worker1-1        Removed                  0.1s
 ```
 ```sh
@@ -1836,7 +2062,7 @@ curl -skLo ~/Downloads/cloudera-quickstart-vm-5.13.0-0-virtualbox.zip https://do
 
 > NOTE: when downloading using Chrome browser, it spends significant time computing checksum at the end
 ```sh
-unzip -l ~/Downloads/Unco* 
+unzip -l ~/Downloads/Unco*
 ```
 ```text
 Archive:  /home/sergueik/Downloads/Unconfirmed 617944.crdownload
@@ -1847,7 +2073,7 @@ Archive:  /home/sergueik/Downloads/Unconfirmed 617944.crdownload
     14457  2017-10-23 16:29   cloudera-quickstart-vm-5.13.0-0-virtualbox/cloudera-quickstart-vm-5.13.0-0-virtualbox.ovf
 ---------                     -------
 5949811833                     3 files
-``` 
+```
 
 ![Importing the VM](screenshots/capture-virtual-machine-import.png)
 
@@ -1964,64 +2190,63 @@ sudo netstat -antp | grep LISTEN
 ```
 
 ```text
-sudo netstat -antp | grep LISTEN
-tcp        0      0 0.0.0.0:60030               0.0.0.0:*                   LISTEN      7615/java           
-tcp        0      0 0.0.0.0:8030                0.0.0.0:*                   LISTEN      6224/java           
-tcp        0      0 0.0.0.0:8031                0.0.0.0:*                   LISTEN      6224/java           
-tcp        0      0 0.0.0.0:24000               0.0.0.0:*                   LISTEN      7837/statestored    
-tcp        0      0 0.0.0.0:12000               0.0.0.0:*                   LISTEN      7458/java           
-tcp        0      0 0.0.0.0:60000               0.0.0.0:*                   LISTEN      6496/java           
-tcp        0      0 0.0.0.0:8032                0.0.0.0:*                   LISTEN      6224/java           
-tcp        0      0 0.0.0.0:8480                0.0.0.0:*                   LISTEN      5430/java           
-tcp        0      0 127.0.0.1:12001             0.0.0.0:*                   LISTEN      7458/java           
-tcp        0      0 0.0.0.0:8033                0.0.0.0:*                   LISTEN      6224/java           
-tcp        0      0 0.0.0.0:9090                0.0.0.0:*                   LISTEN      6781/java           
-tcp        0      0 127.0.0.1:44034             0.0.0.0:*                   LISTEN      5324/java           
-tcp        0      0 0.0.0.0:10020               0.0.0.0:*                   LISTEN      5841/java           
-tcp        0      0 0.0.0.0:50020               0.0.0.0:*                   LISTEN      5324/java           
-tcp        0      0 0.0.0.0:44357               0.0.0.0:*                   LISTEN      5945/java           
-tcp        0      0 0.0.0.0:8485                0.0.0.0:*                   LISTEN      5430/java           
-tcp        0      0 0.0.0.0:2181                0.0.0.0:*                   LISTEN      5246/java           
-tcp        0      0 0.0.0.0:8070                0.0.0.0:*                   LISTEN      6641/java           
-tcp        0      0 0.0.0.0:9095                0.0.0.0:*                   LISTEN      6781/java           
-tcp        0      0 0.0.0.0:21000               0.0.0.0:*                   LISTEN      8292/impalad        
-tcp        0      0 0.0.0.0:25000               0.0.0.0:*                   LISTEN      8292/impalad        
-tcp        0      0 0.0.0.0:18088               0.0.0.0:*                   LISTEN      7489/java           
-tcp        0      0 0.0.0.0:8040                0.0.0.0:*                   LISTEN      5945/java           
-tcp        0      0 0.0.0.0:60010               0.0.0.0:*                   LISTEN      6496/java           
-tcp        0      0 0.0.0.0:8042                0.0.0.0:*                   LISTEN      5945/java           
-tcp        0      0 0.0.0.0:50090               0.0.0.0:*                   LISTEN      5658/java           
-tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN      5037/mysqld         
-tcp        0      0 0.0.0.0:23020               0.0.0.0:*                   LISTEN      8250/catalogd       
-tcp        0      0 0.0.0.0:111                 0.0.0.0:*                   LISTEN      4466/rpcbind        
-tcp        0      0 0.0.0.0:26000               0.0.0.0:*                   LISTEN      8250/catalogd       
-tcp        0      0 0.0.0.0:22000               0.0.0.0:*                   LISTEN      8292/impalad        
-tcp        0      0 0.0.0.0:19888               0.0.0.0:*                   LISTEN      5841/java           
-tcp        0      0 0.0.0.0:14000               0.0.0.0:*                   LISTEN      5784/java           
-tcp        0      0 0.0.0.0:80                  0.0.0.0:*                   LISTEN      5079/python         
-tcp        0      0 127.0.0.1:14001             0.0.0.0:*                   LISTEN      5784/java           
-tcp        0      0 0.0.0.0:10033               0.0.0.0:*                   LISTEN      5841/java           
-tcp        0      0 0.0.0.0:25010               0.0.0.0:*                   LISTEN      7837/statestored    
-tcp        0      0 0.0.0.0:60020               0.0.0.0:*                   LISTEN      7615/java           
-tcp        0      0 0.0.0.0:8020                0.0.0.0:*                   LISTEN      5521/java           
-tcp        0      0 0.0.0.0:57396               0.0.0.0:*                   LISTEN      5246/java           
-tcp        0      0 0.0.0.0:8085                0.0.0.0:*                   LISTEN      6641/java           
-tcp        0      0 0.0.0.0:8022                0.0.0.0:*                   LISTEN      5521/java           
-tcp        0      0 0.0.0.0:50070               0.0.0.0:*                   LISTEN      5521/java           
-tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      4862/sshd           
-tcp        0      0 0.0.0.0:8983                0.0.0.0:*                   LISTEN      8209/java           
-tcp        0      0 0.0.0.0:23000               0.0.0.0:*                   LISTEN      8292/impalad        
-tcp        0      0 127.0.0.1:8984              0.0.0.0:*                   LISTEN      8209/java           
-tcp        0      0 0.0.0.0:8888                0.0.0.0:*                   LISTEN      7771/python2.6      
-tcp        0      0 0.0.0.0:11000               0.0.0.0:*                   LISTEN      8001/java           
-tcp        0      0 0.0.0.0:8088                0.0.0.0:*                   LISTEN      6224/java           
-tcp        0      0 127.0.0.1:11001             0.0.0.0:*                   LISTEN      8001/java           
-tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      5207/master         
-tcp        0      0 0.0.0.0:21050               0.0.0.0:*                   LISTEN      8292/impalad        
-tcp        0      0 0.0.0.0:13562               0.0.0.0:*                   LISTEN      5945/java           
-tcp        0      0 0.0.0.0:50010               0.0.0.0:*                   LISTEN      5324/java           
-tcp        0      0 0.0.0.0:9083                0.0.0.0:*                   LISTEN      6902/java           
-tcp        0      0 0.0.0.0:50075               0.0.0.0:*                   LISTEN      5324/java           
+tcp        0      0 0.0.0.0:60030               0.0.0.0:*                   LISTEN      7615/java
+tcp        0      0 0.0.0.0:8030                0.0.0.0:*                   LISTEN      6224/java
+tcp        0      0 0.0.0.0:8031                0.0.0.0:*                   LISTEN      6224/java
+tcp        0      0 0.0.0.0:24000               0.0.0.0:*                   LISTEN      7837/statestored
+tcp        0      0 0.0.0.0:12000               0.0.0.0:*                   LISTEN      7458/java
+tcp        0      0 0.0.0.0:60000               0.0.0.0:*                   LISTEN      6496/java
+tcp        0      0 0.0.0.0:8032                0.0.0.0:*                   LISTEN      6224/java
+tcp        0      0 0.0.0.0:8480                0.0.0.0:*                   LISTEN      5430/java
+tcp        0      0 127.0.0.1:12001             0.0.0.0:*                   LISTEN      7458/java
+tcp        0      0 0.0.0.0:8033                0.0.0.0:*                   LISTEN      6224/java
+tcp        0      0 0.0.0.0:9090                0.0.0.0:*                   LISTEN      6781/java
+tcp        0      0 127.0.0.1:44034             0.0.0.0:*                   LISTEN      5324/java
+tcp        0      0 0.0.0.0:10020               0.0.0.0:*                   LISTEN      5841/java
+tcp        0      0 0.0.0.0:50020               0.0.0.0:*                   LISTEN      5324/java
+tcp        0      0 0.0.0.0:44357               0.0.0.0:*                   LISTEN      5945/java
+tcp        0      0 0.0.0.0:8485                0.0.0.0:*                   LISTEN      5430/java
+tcp        0      0 0.0.0.0:2181                0.0.0.0:*                   LISTEN      5246/java
+tcp        0      0 0.0.0.0:8070                0.0.0.0:*                   LISTEN      6641/java
+tcp        0      0 0.0.0.0:9095                0.0.0.0:*                   LISTEN      6781/java
+tcp        0      0 0.0.0.0:21000               0.0.0.0:*                   LISTEN      8292/impalad
+tcp        0      0 0.0.0.0:25000               0.0.0.0:*                   LISTEN      8292/impalad
+tcp        0      0 0.0.0.0:18088               0.0.0.0:*                   LISTEN      7489/java
+tcp        0      0 0.0.0.0:8040                0.0.0.0:*                   LISTEN      5945/java
+tcp        0      0 0.0.0.0:60010               0.0.0.0:*                   LISTEN      6496/java
+tcp        0      0 0.0.0.0:8042                0.0.0.0:*                   LISTEN      5945/java
+tcp        0      0 0.0.0.0:50090               0.0.0.0:*                   LISTEN      5658/java
+tcp        0      0 0.0.0.0:3306                0.0.0.0:*                   LISTEN      5037/mysqld
+tcp        0      0 0.0.0.0:23020               0.0.0.0:*                   LISTEN      8250/catalogd
+tcp        0      0 0.0.0.0:111                 0.0.0.0:*                   LISTEN      4466/rpcbind
+tcp        0      0 0.0.0.0:26000               0.0.0.0:*                   LISTEN      8250/catalogd
+tcp        0      0 0.0.0.0:22000               0.0.0.0:*                   LISTEN      8292/impalad
+tcp        0      0 0.0.0.0:19888               0.0.0.0:*                   LISTEN      5841/java
+tcp        0      0 0.0.0.0:14000               0.0.0.0:*                   LISTEN      5784/java
+tcp        0      0 0.0.0.0:80                  0.0.0.0:*                   LISTEN      5079/python
+tcp        0      0 127.0.0.1:14001             0.0.0.0:*                   LISTEN      5784/java
+tcp        0      0 0.0.0.0:10033               0.0.0.0:*                   LISTEN      5841/java
+tcp        0      0 0.0.0.0:25010               0.0.0.0:*                   LISTEN      7837/statestored
+tcp        0      0 0.0.0.0:60020               0.0.0.0:*                   LISTEN      7615/java
+tcp        0      0 0.0.0.0:8020                0.0.0.0:*                   LISTEN      5521/java
+tcp        0      0 0.0.0.0:57396               0.0.0.0:*                   LISTEN      5246/java
+tcp        0      0 0.0.0.0:8085                0.0.0.0:*                   LISTEN      6641/java
+tcp        0      0 0.0.0.0:8022                0.0.0.0:*                   LISTEN      5521/java
+tcp        0      0 0.0.0.0:50070               0.0.0.0:*                   LISTEN      5521/java
+tcp        0      0 0.0.0.0:22                  0.0.0.0:*                   LISTEN      4862/sshd
+tcp        0      0 0.0.0.0:8983                0.0.0.0:*                   LISTEN      8209/java
+tcp        0      0 0.0.0.0:23000               0.0.0.0:*                   LISTEN      8292/impalad
+tcp        0      0 127.0.0.1:8984              0.0.0.0:*                   LISTEN      8209/java
+tcp        0      0 0.0.0.0:8888                0.0.0.0:*                   LISTEN      7771/python2.6
+tcp        0      0 0.0.0.0:11000               0.0.0.0:*                   LISTEN      8001/java
+tcp        0      0 0.0.0.0:8088                0.0.0.0:*                   LISTEN      6224/java
+tcp        0      0 127.0.0.1:11001             0.0.0.0:*                   LISTEN      8001/java
+tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      5207/master
+tcp        0      0 0.0.0.0:21050               0.0.0.0:*                   LISTEN      8292/impalad
+tcp        0      0 0.0.0.0:13562               0.0.0.0:*                   LISTEN      5945/java
+tcp        0      0 0.0.0.0:50010               0.0.0.0:*                   LISTEN      5324/java
+tcp        0      0 0.0.0.0:9083                0.0.0.0:*                   LISTEN      6902/java
+tcp        0      0 0.0.0.0:50075               0.0.0.0:*                   LISTEN      5324/java
 tcp        0      0 0.0.0.0:25020               0.0.0.0:*                   LISTEN      8250/catalogd
 ```
 
@@ -2072,7 +2297,7 @@ sudo ps -awwwx | grep java |awk '{$1=""; $2=""; $3=""; $4=""; print}' | tee  a.l
 /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/oozie/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Doozie.https.port=11443 -Doozie.https.keystore.pass=password -Xmx1024m -Dderby.stream.error.file=/var/log/oozie/derby.log -Doozie.home.dir=/usr/lib/oozie -Doozie.config.dir=/etc/oozie/conf -Doozie.log.dir=/var/log/oozie -Doozie.data.dir=/var/lib/oozie -Doozie.instance.id=quickstart.cloudera -Doozie.config.file=oozie-site.xml -Doozie.log4j.file=oozie-log4j.properties -Doozie.log4j.reload=10 -Doozie.http.hostname=quickstart.cloudera -Doozie.admin.port=11001 -Doozie.http.port=11000 -Doozie.https.port=11443 -Doozie.base.url=http://quickstart.cloudera:11000/oozie -Doozie.https.keystore.file=/var/lib/oozie/.keystore -Doozie.https.keystore.pass=password -Doozie.https.ciphers=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA -Djava.library.path=:/usr/lib/hadoop/lib/native:/usr/lib/hadoop/lib/native -Djava.endorsed.dirs=/usr/lib/bigtop-tomcat/endorsed -classpath /usr/lib/bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/oozie/tomcat-deployment -Dcatalina.home=/usr/lib/bigtop-tomcat -Djava.io.tmpdir=/var/lib/oozie org.apache.catalina.startup.Bootstrap start
 /usr/java/jdk1.7.0_67-cloudera/bin/java -Djava.util.logging.config.file=/var/lib/solr/tomcat-deployment/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -DzkHost=quickstart.cloudera:2181/solr -Dsolr.solrxml.location=zookeeper -Dsolr.hdfs.home=hdfs://quickstart.cloudera:8020/solr -Dsolr.hdfs.confdir=/etc/hadoop/conf -Dsolr.authentication.type=simple -Dsolr.authentication.simple.anonymous.allowed=true -Dsolr.security.proxyuser.hue.hosts=* -Dsolr.security.proxyuser.hue.groups=* -Dhost=quickstart.cloudera -Djetty.port=8983 -Dsolr.host=quickstart.cloudera -Dsolr.port=8983 -DuseCachedStatsBetweenGetMBeanInfoCalls=true -DdisableSolrFieldCacheMBeanEntryListJmx=true -Dlog4j.configuration=file:///etc/solr/conf/log4j.properties -Dsolr.log=/var/log/solr -Dsolr.admin.port=8984 -Dsolr.tomcat.backlog=4096 -Dsolr.tomcat.connectionTimeout=180000 -Dsolr.tomcat.keepAliveTimeout=600000 -Dsolr.tomcat.maxKeepAliveRequests=-1 -Dsolr.max.connector.thread=10000 -Dsolr.tomcat.connectionLinger=300 -Dsolr.tomcat.bufferSize=131072 -Dsolr.solr.home=/var/lib/solr -Djava.endorsed.dirs=/usr/lib/solr/../bigtop-tomcat/endorsed -classpath /usr/lib/solr/../bigtop-tomcat/bin/bootstrap.jar -Dcatalina.base=/var/lib/solr/tomcat-deployment -Dcatalina.home=/usr/lib/solr/../bigtop-tomcat -Djava.io.tmpdir=/var/lib/solr/ org.apache.catalina.startup.Bootstrap start
 ```
-this has 
+this has
  captured a running Cloudera CDH 5.13 ecosystem:
 
   - __HDFS__: `NameNode`, `DataNode`, `JournalNode`, `SecondaryNameNode`
@@ -2088,7 +2313,7 @@ this has
 
 The standard Hadoop application stack TCP ports include:
 
-|Port|Conventional service|
+|__Port__|Conventional service|
 |----|--------------------|
 |8020|HDFS NameNode RPC|
 |50070|HDFS NameNode web UI (older Hadoop 2.x)|
@@ -2127,7 +2352,7 @@ Separate web applications of interest:
 |  10000 |HiveServer2|
 |  21000 / 25000 |Impala|
 
-next steps are: 
+next steps are:
 
 * Open the inherited .hql file.
 * Paste its contents into the Hive editor.
@@ -2161,64 +2386,6 @@ Typical entries in a Cloudera QuickStart VM might include:
 |python2.6|Python|Supporting management/services|
 |mysqld_safe|Shell wrapper|Database process supervision|
 
-```mermaid
-
-
-flowchart TB
-    subgraph WEB["Web access"]
-        HUE["Hue"]
-        LANDING["Cloudera landing page"]
-    end
-
-    subgraph CORE["Hadoop core"]
-        HDFS["HDFS"]
-        YARN["YARN"]
-        MR["MapReduce"]
-    end
-
-    subgraph DATA["Data services"]
-        HIVE["Hive"]
-        HBASE["HBase"]
-        SPARK["Spark"]
-        IMPALA["Impala"]
-    end
-
-    subgraph SUPPORT["Coordination and supporting services"]
-        ZK["ZooKeeper"]
-        MYSQL["MySQL"]
-        OOZIE["Oozie"]
-        SQOOP["Sqoop"]
-        SOLR["Solr"]
-    end
-
-    HUE --> HIVE
-    HUE --> HDFS
-    HUE --> YARN
-    HUE --> OOZIE
-
-    HIVE --> HDFS
-    HIVE --> YARN
-    HBASE --> HDFS
-    SPARK --> YARN
-    SPARK --> HDFS
-    IMPALA --> HDFS
-
-    OOZIE --> YARN
-    SQOOP --> HDFS
-    HBASE --> ZK
-    HIVE --> MYSQL
-
-    classDef jvm fill:#dceeff,stroke:#3975a5,color:#172b40
-    classDef native fill:#ffe6cc,stroke:#b36b19,color:#49300e
-    classDef web fill:#e4f2df,stroke:#52834b,color:#20391d
-
-    class HDFS,YARN,MR,HIVE,HBASE,SPARK,ZK,OOZIE,SQOOP,SOLR,MYSQL jvm
-    class IMPALA native
-    class HUE,LANDING web
-
-```
-![capture processes](screenshots/capture-processes.png)
-
 #### Standalone Container
 
 ```sh
@@ -2232,7 +2399,7 @@ ignore the
 
 ```text
 Image docker.io/cloudera/quickstart:latest uses outdated schema1 manifest format.
-Please upgrade to a schema2 image for better future compatibility. 
+Please upgrade to a schema2 image for better future compatibility.
 More information at https://docs.docker.com/registry/spec/deprecated-schema-v1/
 ```
 
@@ -2244,7 +2411,7 @@ REPOSITORY            TAG       IMAGE ID       CREATED        SIZE
 cloudera/quickstart   latest    4239cd2958c6   10 years ago   6.34GB
 ```
 
-Start the Hadoop container interactively 
+Start the Hadoop container interactively
 ```sh
 docker run --hostname=quickstart.cloudera --privileged=true -p 8888:8888 -p 7180:7180 -p 50070:50070 -p 80:80 -p 8983:8983 -it cloudera/quickstart:latest /usr/bin/docker-quickstart
 ```
@@ -2321,7 +2488,7 @@ Using   HTTPFS_CATALINA_HOME:       /usr/lib/bigtop-tomcat
 Setting CATALINA_OUT:        /var/log/hadoop-httpfs//httpfs-catalina.out
 Using   CATALINA_PID:        /var/run/hadoop-httpfs/hadoop-httpfs-httpfs.pid
 
-Using   CATALINA_OPTS:       
+Using   CATALINA_OPTS:
 Adding to CATALINA_OPTS:     -Dhttpfs.home.dir=/usr/lib/hadoop-httpfs -Dhttpfs.config.dir=/etc/hadoop-httpfs/conf -Dhttpfs.log.dir=/var/log/hadoop-httpfs/ -Dhttpfs.temp.dir=/var/run/hadoop-httpfs -Dhttpfs.admin.port=14001 -Dhttpfs.http.port=14000 -Dhttpfs.http.hostname=quickstart.cloudera
 Using CATALINA_BASE:   /var/lib/hadoop-httpfs/tomcat-deployment
 Using CATALINA_HOME:   /usr/lib/bigtop-tomcat
@@ -2331,7 +2498,7 @@ Using CLASSPATH:       /usr/lib/bigtop-tomcat/bin/bootstrap.jar
 Using CATALINA_PID:    /var/run/hadoop-httpfs/hadoop-httpfs-httpfs.pid
 Started Hadoop httpfs (hadoop-httpfs):                     [  OK  ]
 starting historyserver, logging to /var/log/hadoop-mapreduce/mapred-mapred-historyserver-quickstart.cloudera.out
-26/11/09 21:27:37 INFO hs.JobHistoryServer: STARTUP_MSG: 
+26/11/09 21:27:37 INFO hs.JobHistoryServer: STARTUP_MSG:
 ```
 ```text
 /************************************************************
@@ -2340,7 +2507,7 @@ STARTUP_MSG:   host = quickstart.cloudera/172.17.0.2
 STARTUP_MSG:   args = []
 STARTUP_MSG:   version = 2.6.0-cdh5.7.0
 STARTUP_MSG:   classpath = <truncated>
-STARTUP_MSG:   build = http://github.com/cloudera/hadoop -r c00978c67b0d3fe9f3b896b5030741bd40bf541a; 
+STARTUP_MSG:   build = http://github.com/cloudera/hadoop -r c00978c67b0d3fe9f3b896b5030741bd40bf541a;
                compiled by 'jenkins' on 2016-03-23T18:36Z
 STARTUP_MSG:   java = 1.7.0_67
 ************************************************************/
@@ -2469,17 +2636,17 @@ with some manual edit, this can be as
 |10020  |784| java | org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer  |       |
 |50020  |271| java |  org.apache.hadoop.hdfs.server.datanode.DataNode  |       |
 |8485   |371| java | org.apache.hadoop.hdfs.qjournal.server.JournalNode |      |
-|2181  |222 |java | org.apache.zookeeper.server.quorum.QuorumPeerMain |   | 
+|2181  |222 |java | org.apache.zookeeper.server.quorum.QuorumPeerMain |   |
 |8070  |1470 | java | org.apache.hadoop.hbase.rest.RESTServer | |
 |9095  |1687 | java | org.apache.hadoop.hbase.thrift.ThriftServer |  |
-|21000  |3532| impalad |  | | 
-|25000  |3532| impalad |  | | 
-|18088  |2516|java | org.apache.spark.deploy.history.HistoryServer | | 
+|21000  |3532| impalad |  | |
+|25000  |3532| impalad |  | |
+|18088  |2516|java | org.apache.spark.deploy.history.HistoryServer | |
 |8040  |874| java | org.apache.hadoop.yarn.server.nodemanager.NodeManager| |
 |60010  |1332|java | org.apache.hadoop.hbase.master.HMaster  | |
 |8042  |874| java |  org.apache.hadoop.yarn.server.nodemanager.NodeManager| |
 |50090  |594| java | org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode | |
-|3306  |169| mysqld | | | 
+|3306  |169| mysqld | | |
 |23020  |3481| catalogd | | |
 |22000  |3532| impalad  | | |
 |26000  |3481| catalogd  | | |
@@ -2495,15 +2662,15 @@ with some manual edit, this can be as
 |60020  |2617|java | org.apache.hadoop.hbase.regionserver.HRegionServer| |
 |8020  |460| java |  org.apache.hadoop.hdfs.server.namenode.NameNode| |
 |8085  |1470|java |  org.apache.hadoop.hbase.rest.RESTServer | |
-|8022  |460| java | org.apache.hadoop.hdfs.server.namenode.NameNode | | 
+|8022  |460| java | org.apache.hadoop.hdfs.server.namenode.NameNode | |
 |50070  |460| java | org.apache.hadoop.hdfs.server.namenode.NameNode|  |
-|8983  |3436| java | org.apache.catalina.startup.Bootstrap start | | 
+|8983  |3436| java | org.apache.catalina.startup.Bootstrap start | |
 |23000  |3532| impalad | | |
 |8984  |3436| java |  org.apache.catalina.startup.Bootstrap |
 |8888  |2935|python2.6 | | |
 |11000  |3027| java |  org.apache.catalina.startup.Bootstrap | |
 |8088  |1023|java |  org.apache.hadoop.yarn.server.resourcemanager.ResourceManager| |
-|11001  |3027| java | org.apache.catalina.startup.Bootstrap | | 
+|11001  |3027| java | org.apache.catalina.startup.Bootstrap | |
 |38137  |222| java | org.apache.zookeeper.server.quorum.QuorumPeerMain | |
 |21050  |3532|impalad | | |
 |13562  |874| java |  org.apache.hadoop.yarn.server.nodemanager.NodeManager|  |
@@ -2516,10 +2683,10 @@ with some manual edit, this can be as
 |8031  |1023|java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager| |
 |24000  |2873|statestored |                                   | |
 |12000  |2477| java | org.apache.catalina.startup.Bootstrap  | |
-|60000  |1332|java | org.apache.hadoop.hbase.master.HMaster | | 
-|8032  |1023|java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager |    | 
-|8480  |371|java |  org.apache.catalina.startup.Bootstrap |    | 
-|8033  |1023| java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager |    | 
+|60000  |1332|java | org.apache.hadoop.hbase.master.HMaster | |
+|8032  |1023|java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager |    |
+|8480  |371|java |  org.apache.catalina.startup.Bootstrap |    |
+|8033  |1023| java | org.apache.hadoop.yarn.server.resourcemanager.ResourceManager |    |
 
 
 |Component|Ports observed|What they indicate|
@@ -2546,8 +2713,8 @@ with some manual edit, this can be as
 |12000, 12001|/var/lib/sqoop2/tomcat-deployment|__Sqoop 2__ — data-transfer/integration service|
 |14000, 14001|/var/lib/hadoop-httpfs/tomcat-deployment|__HttpFS__ — HTTP gateway to __HDFS__|
 |8983, 8984|/var/lib/solr/tomcat-deployment|__Solr__ — search/indexing service; 8983 is the familiar __Solr__ HTTP endpoint|
- 
- 
+
+
 |TCP port|Comment|
 |-----|----------|
 |9090|HBase Thrift RPC endpoint|
@@ -2610,7 +2777,7 @@ with some manual edit, this can be as
 |14000|HttpFS HTTP endpoint|
 |14001|HttpFS additional/admin listener|
 |80|Cloudera QuickStart welcome page|
-|8888|Hue web interface| 
+|8888|Hue web interface|
 
 ![Running the Landing Page in browser](screenshots/capture-cloudera-quickstart.png)
 
@@ -2645,7 +2812,7 @@ with some manual edit, this can be as
 |8983|8983|Solr|
 
 ```sh
-service hue status 
+service hue status
 ```
 ```text
 supervisor (pid  2756) is running...
@@ -2693,7 +2860,7 @@ SystemExit: Signal 15 received. Exiting
 [09/Nov/2026 21:28:22 ] supervisor   INFO     Started proceses (pid 2887) /usr/lib/hue/build/env/bin/hue kt_renewer
 [09/Nov/2026 21:28:22 ] supervisor   INFO     Started proceses (pid 2896) /usr/lib/hue/build/env/bin/hue runcpserver
 [09/Nov/2026 21:28:24 ] supervisor   INFO     Command "/usr/lib/hue/build/env/bin/hue kt_renewer" exited normally.
-[root@quickstart /]# tail -100 /var/log/hue/error.log 
+[root@quickstart /]# tail -100 /var/log/hue/error.log
 [05/Apr/2016 19:20:31 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
 [05/Apr/2016 19:20:33 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
 [05/Apr/2016 19:20:41 -0700] __init__     WARNING  Couldn't import snappy. Support for snappy compression disabled.
@@ -2758,13 +2925,6 @@ Traceback (most recent call last):
 ValueError: No JSON object could be decoded
 
 ```
-### Background
-
-Cloudera traditionally offered a pre-configured Cloudera QuickStart VM (a single-node Apache Hadoop environment packaged for VirtualBox, VMware, or KVM), though Cloudera officially stopped providing direct public downloads
-The [Cloudera Quickstart Docker Image](https://hub.docker.com/r/cloudera/quickstart/)
-is single-node deployment of Cloudera's 100% open-source distribution including 
-[Apache Hadoop](https://en.wikipedia.org/wiki/Apache_Hadoop), 
-and [Cloudera Manager](). They are ideal environments for learning about Hadoop, trying out new ideas, testing and demoing your application. 
 
 ### Abandonezation
 
@@ -2793,7 +2953,7 @@ Compare with lst of producs abandoned with a passion
 
 __importance has absolutely no correlation with physical size__
 
-### TODO 
+### TODO
 
 The Gamer's Disappointment Redemption Project
 Turning Lenovo Y40/Y70 gaming disappointments into portable big-data laboratories.

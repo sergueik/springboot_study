@@ -143,7 +143,6 @@ curl -skLo /home/$USER/Downloads/eclipse.tar.gz "$URL"
 ```
 ```sh
 tar tzvf /home/$USER/Downloads/eclipse.tar.gz 1>/dev/null
-
 echo $?
 ```
 ignore warnings
@@ -183,6 +182,7 @@ ls -d eclipse*
 ```sh
 sudo mv /opt/eclipse /opt/eclipse.OLD
 sudo mv eclipse /opt
+sudo ln -fs /opt/eclipse/eclipse /usr/local/bin/eclipse
 ```
 With this version will need to import the `org.eclipse.m2e.core.maven2Nature` to import maven `pom.xml`.
 Eclipse will not be wrapping the packagee in the Project explorer making it barely useful with source file navication. a pseudo folders with partial package names are to be opened individually:
