@@ -3,11 +3,11 @@
 markets islelf and
 > *robust and feature-rich Web-to-host and desktop terminal emulator for IBM mainframes, iSeries, DEC/VT UNIX and Unisys with FTP support apable of emulating 3270, 5250, VT 52/100/220/320/420, SCO-ANSI, HP Character and Block Mode, Unisys, IBM 3151, Linux, VAX/AIX, WYSE60, and Tandem/6530*
 
-One can try to download the official __Rocket__ __Terminal Emulator__ __Free Trial__ directly from the vendor. 
+One can try to download the official __Rocket__ __Terminal Emulator__ __Free Trial__ directly from the vendor.
 
 The vendor of __BlueZone__, Rocket Software has rebranded the product to
-__Rocket Terminal Emulator__, which provides a full-featured, 30-day evaluation period for secure access to 
-IBM i (TN5250), IBM zSystems (TN3270), 
+__Rocket Terminal Emulator__, which provides a full-featured, 30-day evaluation period for secure access to
+IBM i (TN5250), IBM zSystems (TN3270),
 and UNIX (VT) systems.
 
 
@@ -37,9 +37,9 @@ files,
 >NOTE: To access all Rocket Software product documentation, visit the [Rocket Documentation Portal](https://docs.rocketsoftware.com/).
 
 
-To practice app, one may run it on Windows VM, an tn3270 on Docker joined to same host network and connect on 
+To practice app, one may run it on Windows VM, an tn3270 on Docker joined to same host network and connect on
 Trialware Gatekeeping that what it is - Rocket is not really interested in giving one a free 30 day trial
- 
+
 
 ```text
 
@@ -313,7 +313,7 @@ Get-ItemProperty `
 Get-ItemProperty `
   "Registry::HKEY_CLASSES_ROOT\CLSID\$clsid\LocalServer32" `
   -ErrorAction SilentlyContinue
-  
+
 ```
 |Technology|Purpose|
 |Host Automation Object (BZHAO)|COM API for controlling sessions and exchanging data with the host|
@@ -321,7 +321,7 @@ Get-ItemProperty `
 |BlueZone Plus VBA|Optional integration of Microsoft's VBA development environment into the emulator|
 
 
-Rocket's older BlueZone documentation explicitly identifies BlueZone VBA as an additional-cost installation option. Its newer Advanced Automation guide retains the distinction between the scripting environment and the COM automation object. 
+Rocket's older BlueZone documentation explicitly identifies BlueZone VBA as an additional-cost installation option. Its newer Advanced Automation guide retains the distinction between the scripting environment and the COM automation object.
 
 
 There is also HLLAPI, a different integration mechanism commonly used by legacy terminal automation tools. BlueZone's documented HLLAPI DLL is WHLAPI32.dll, with hllapi as its entry point
@@ -782,7 +782,7 @@ asic-bluezone/bluezone_reg.txt
  create mode 100644 basic-bluezone/help/bzdp_hcon_bluezone-alc.htm
  create mode 100644 basic-bluezone/help/bzdp_hcon_bz-6530-display-options.htm
 
-``` 
+```
 BlueZone exposes a substantial in-process COM automation object model, not merely a terminal window that an external script clicks and types into.
 
 A few findings stand out:
@@ -811,8 +811,8 @@ Technical debt as a problem of __time-to-understanding__, rather than simply old
 The Conan Doyle __Dancing Men__ story supplies a memorable distinction: possessing the evidence is _not_
 the same as being able to interpret it _before_ interpretation becomes useless
 
-Powerful use of the API Spec comparen to bare hands learning the legacy BlueZone scripts. 
-is a means to reduce the __apparent semantic distance between two pieces of code by learning the vocabulary of the API__ 
+Powerful use of the API Spec comparen to bare hands learning the legacy BlueZone scripts.
+is a means to reduce the __apparent semantic distance between two pieces of code by learning the vocabulary of the API__
 they use.
 
 In Arthur Conan Doyle's The Adventure of the Dancing Men, the detective must discover the correspondence between unfamiliar symbols and their underlying message.
@@ -820,7 +820,7 @@ It turns out,
 the symbols initially obscure an ordinary social human communication.
 
 
-There  may exist two or more hypothetical BlueZone scripts that retrieve an account balance. 
+There  may exist two or more hypothetical BlueZone scripts that retrieve an account balance.
 Lexically very different, and even without being behaviorally equivalent they
 may pursue the same business objective .
 
@@ -900,7 +900,7 @@ mv bzwhll.dll1 bzwhll.dll
 ```
 > NOTE: can install `msi` if this iis not good enough
 
-```sh  
+```sh
 strings -el bzwhll.dll | tee a.log
 ```
 ```sh
@@ -1318,6 +1318,488 @@ for (var name in obj) {
     }
 }
 ```
+### Why VBA and COM Automation matter
+
+The ancestry of Visual Basic begins with Alan Cooper's **Ruby**, a visual shell and form-construction system demonstrated to Microsoft in 1988. Microsoft acquired it and combined its visual interface technology with a BASIC language engine, producing Visual Basic 1.0 in 1991. Ruby was not the BASIC language itself; it supplied much of the visual programming environment. <https://computerhistory.org/blog/2017-chm-fellow-alan-cooper-father-of-visual-basic/>
+
+Microsoft subsequently pursued a common embedded programming environment for its application products. VBA first appeared in Excel 5 in 1993 and was incorporated into Access in 1995, replacing Access Basic. This gave users a substantially consistent programming language across applications rather than a collection of unrelated macro languages.
+
+The larger architectural idea was interoperability. Through OLE Automation and COM, an application could expose objects, properties and methods to VBA without requiring the application developer to implement an entirely separate scripting language. Third-party vendors could expose their own Automation objects in the same programming environment.
+
+This is the important connection to BlueZone: Rocket did not need to make its terminal emulator part of Microsoft Office. It needed to expose a COM Automation object model that an existing VBA or VBScript client could consume.
+
+Consequently, the same general programming model could automate an Excel workbook, an Access application, an XML document, or a 3270 terminal session. The language remained familiar; the underlying COM server supplied the application-specific functionality.
+
+
+1. Instantiate the root object.
+2. Enumerate its methods.
+3. Enumerate its properties.
+4. Identify properties returning objects/interfaces rather than scalar values.
+5. Instantiate or retrieve those objects through legitimate access paths.
+6. Enumerate the next object's exposed methods and properties.
+7. Repeat until you reach leaf objects, scalars, primitive types,  or non-explorable members.
+
+This is effectively object graph traversal, with COM Automation objects acting as the nodes.
+```mermaid
+flowchart TD
+    A["WhllObj root"] --> B["Methods"]
+    A --> C["Properties"]
+    C --> D["Scalar / string / numeric"]
+    C --> E["IDispatch object"]
+    E --> F["Methods and properties"]
+    F -- IDispatch--> G["Further objects"]
+    F --> H["Terminal values"]
+    G --> F
+```
+
+```powershell
+$o = new-object -com 'BZWhll.WhllObj'
+
+$o | get-member -membertype method | select-object -first 1 | select-object -property Name,Definition |format-list
+$o | get-member -membertype property | where-object {$_.Definition -match 'IDispatch'} | select-object -first 1 | select-object -property Name,Definition |format-list
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($o) | out-null
+Remove-Variable o
+```
+
+```powershell
+$o = New-Object -ComObject 'BZWhll.WhllObj'
+
+$catalog = New-Object System.Collections.ArrayList
+
+# Dump methods
+$o | Get-Member -MemberType Method | ForEach-Object {
+    $entry = New-Object PSObject -Property @{
+        Object    = 'WhllObj'
+        Category  = 'Method'
+        Name     = $_.Name
+        Definition = $_.Definition
+    }
+    [void]$catalog.Add($entry)
+}
+
+# Dump properties
+$o | Get-Member -MemberType Property | ForEach-Object {
+    $entry = New-Object PSObject -Property @{
+        Object    = 'WhllObj'
+        Category  = 'Property'
+        Name     = $_.Name
+        Definition = $_.Definition
+    }
+    [void]$catalog.Add($entry)
+}
+
+# Console examination
+$catalog | Format-Table -AutoSize
+
+# CSV export
+$catalog | Export-Csv -NoTypeInformation -Path 'bluezone-root.csv'
+
+# Markdown export
+$catalog | ForEach-Object {
+    '| ' + $_.Object + ' | ' + $_.Category + ' | ' + $_.Name + ' | ' +
+    ($_.Definition -replace '\|','\|' -replace "`r?`n",' ') + ' |'
+} | Out-File 'bluezone-root.md' -Encoding UTF8
+
+# Release COM object
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($o) | Out-Null
+Remove-Variable o
+
+```
+| type       |  name      | definition                             |
+|------------|------------|----------------------------------------|
+| Method | addConnectionCallback | int addConnectionCallback (int, int, string) |
+| Method | AddKeyMapping | int AddKeyMapping (string, string, Variant) |
+| Method | AppendSelection | void AppendSelection () |
+| Method | BackgroundColor | int BackgroundColor (int) |
+| Method | CancelSelection | int CancelSelection () |
+| Method | CheckEvent | int CheckEvent () |
+| Method | CheckEventNumber | int CheckEventNumber (int) |
+| Method | Clear | void Clear (int) |
+| Method | ClearEvents | void ClearEvents () |
+| Method | ClearSelection | int ClearSelection () |
+| Method | CloseAllConnections | void CloseAllConnections () |
+| Method | ClosePrinter | void ClosePrinter () |
+| Method | CloseSession | int CloseSession (int, int) |
+| Method | CloseStatusBox | void CloseStatusBox () |
+| Method | Connect | int Connect (Variant, Variant) |
+| Method | connectToHost | int connectToHost (byte, byte) |
+| Method | Copy | void Copy (int, Variant) |
+| Method | CopySelection | string CopySelection () |
+| Method | CurrentHost | IDispatch CurrentHost () |
+| Method | CursorRC | void CursorRC (int, int) |
+| Method | CutSelection | void CutSelection () |
+| Method | DefineEvent | void DefineEvent (int, int, Variant, Variant, Variant, Variant, Variant) |
+| Method | DefineToolbarButton | void DefineToolbarButton (string, int, int, string, int, string, int, string, string, string, Variant, Variant, Variant) |
+| Method | DeleteSession | int DeleteSession (string) |
+| Method | DFTSetParameters | int DFTSetParameters (int) |
+| Method | Disconnect | int Disconnect () |
+| Method | disconnectFromHost | int disconnectFromHost (byte, byte) |
+| Method | display | int display (string, bool) |
+| Method | EABGetColor | int EABGetColor (int, int) |
+| Method | EABIsBlinking | bool EABIsBlinking (int, int) |
+| Method | EABIsReversed | bool EABIsReversed (int, int) |
+| Method | EABIsSeparator | bool EABIsSeparator (int, int) |
+| Method | EABIsUnderlined | bool EABIsUnderlined (int, int) |
+| Method | EABQuery | int EABQuery () |
+| Method | EditMacro | void EditMacro (string) |
+| Method | EnableOnEvent | int EnableOnEvent (int, int) |
+| Method | Exit | void Exit () |
+| Method | ExtendSelection | void ExtendSelection (int, int) |
+| Method | ExtendSelectionLine | void ExtendSelectionLine (int) |
+| Method | ExtendSelectionPage | void ExtendSelectionPage (int) |
+| Method | ExtendSelectionRect | void ExtendSelectionRect (int, int) |
+| Method | ExtendSelectionWord | void ExtendSelectionWord (int) |
+| Method | Field | IField Field () |
+| Method | Fields | IField Fields (Variant) |
+| Method | findText | bool findText (string, int, int, Variant) |
+| Method | FlushPrinter | void FlushPrinter () |
+| Method | Focus | int Focus () |
+| Method | ForegroundColor | int ForegroundColor (int) |
+| Method | fromScreen | string fromScreen (int, int, int, bool, bool) |
+| Method | FTPGetCurrentHostDirectory | string FTPGetCurrentHostDirectory () |
+| Method | FTPReceiveFile | void FTPReceiveFile (string, string, Variant, Variant, Variant, Variant, Variant) |
+| Method | FTPSendFile | void FTPSendFile (string, string, Variant, Variant, Variant, Variant, Variant) |
+| Method | FTPSetCurrentHostDirectory | void FTPSetCurrentHostDirectory (string) |
+| Method | FTPStartServer | void FTPStartServer (string, string, string, Variant) |
+| Method | FTPStopServer | void FTPStopServer () |
+| Method | GetBrowserWnd | int GetBrowserWnd () |
+| Method | GetClipboardText | string GetClipboardText () |
+| Method | GetCursor | int GetCursor (Variant, Variant) |
+| Method | getCursorColumn | int getCursorColumn () |
+| Method | getCursorRow | int getCursorRow () |
+| Method | getDisplayText | string getDisplayText (int, int, int, Variant, Variant, Variant) |
+| Method | GetFieldColor | int GetFieldColor (int, int) |
+| Method | GetFolderName | string GetFolderName (Variant, Variant, Variant) |
+| Method | getInteger | int getInteger (string) |
+| Method | GetOpenFilename | string GetOpenFilename (Variant, Variant, Variant, Variant) |
+| Method | GetPassword | string GetPassword (Variant, Variant, Variant, Variant) |
+| Method | GetSaveAsFilename | string GetSaveAsFilename (Variant, Variant, Variant, Variant, Variant) |
+| Method | GetSessionId | int GetSessionId () |
+| Method | GetSessionName | string GetSessionName () |
+| Method | getString | string getString (byte, byte, string) |
+| Method | GetStringFromCurrentSession | string GetStringFromCurrentSession (int) |
+| Method | GetText | string GetText (int, int, int, int, Variant) |
+| Method | GraphicsMouse | void GraphicsMouse (int, int, int) |
+| Method | Help | void Help (Variant, Variant) |
+| Method | HighlightText | string HighlightText (int) |
+| Method | HostFromProfile | IDispatch HostFromProfile (string) |
+| Method | InputBox | string InputBox (string, string) |
+| Method | isConnected | bool isConnected (byte, byte) |
+| Method | isHostConnected | bool isHostConnected () |
+| Method | KermitReceiveFile | void KermitReceiveFile (string, string, Variant, Variant) |
+| Method | KermitSendFile | void KermitSendFile (string, string, Variant) |
+| Method | KermitStartServer | void KermitStartServer () |
+| Method | KermitStopServer | void KermitStopServer (Variant) |
+| Method | KeyboardMapSetupDlg | void KeyboardMapSetupDlg () |
+| Method | Keys | void Keys (string) |
+| Method | LicenseManager | int LicenseManager (string, string) |
+| Method | LoadSchemeFile | int LoadSchemeFile (string) |
+| Method | LockKeyboard | int LockKeyboard (bool) |
+| Method | makeVector | IVector makeVector () |
+| Method | MoveCursor | void MoveCursor (int, int) |
+| Method | MsgBeep | int MsgBeep (int) |
+| Method | MsgBox | int MsgBox (string, Variant, Variant) |
+| Method | NewSession | string NewSession (Variant, Variant, Variant) |
+| Method | NewToolBar | void NewToolBar (string) |
+| Method | OIAGetSymbol | int OIAGetSymbol (int) |
+| Method | OIAQueryImage | int OIAQueryImage () |
+| Method | OnEvent | int OnEvent (int, int, string, int, int, string, int, int) |
+| Method | OpenSession | int OpenSession (int, int, string, int, int) |
+| Method | OpenSettings | void OpenSettings (Variant, Variant) |
+| Method | OpenSettingsExtended | void OpenSettingsExtended (string, Variant, Variant) |
+| Method | PasswordBox | string PasswordBox (string, Variant, Variant) |
+| Method | Paste | void Paste () |
+| Method | Pause | int Pause (int) |
+| Method | PCSSetParameters | int PCSSetParameters (string, string) |
+| Method | Print | void Print (int, Variant) |
+| Method | PrintControl | void PrintControl (int) |
+| Method | PrintScreen | int PrintScreen (Variant, Variant) |
+| Method | PrintSelection | void PrintSelection () |
+| Method | PrintString | void PrintString (string) |
+| Method | PSGetText | string PSGetText (int, int) |
+| Method | PSSearch | int PSSearch (string, Variant) |
+| Method | PSSetText | int PSSetText (string, int) |
+| Method | PutStringToCurrentSession | void PutStringToCurrentSession (int, string, int) |
+| Method | PutText | int PutText (string, int, int) |
+| Method | QueryFieldAttribute | short QueryFieldAttribute (int) |
+| Method | QueryHostUpdate | int QueryHostUpdate (Variant) |
+| Method | Quit | void Quit () |
+| Method | RDE_SendKeys_Hsynch | int RDE_SendKeys_Hsynch (string, bool, int, int, string, int, int) |
+| Method | ReadChars | string ReadChars (int, Variant, Variant) |
+| Method | ReadLine | string ReadLine (Variant, Variant, Variant) |
+| Method | ReadScreen | int ReadScreen (Variant, int, int, int) |
+| Method | ReadUntil | string ReadUntil (string, Variant, Variant, Variant) |
+| Method | ReceiveFile | int ReceiveFile (string) |
+| Method | RemoveAllToolbars | void RemoveAllToolbars () |
+| Method | removeConnectionCallback | int removeConnectionCallback (int, int) |
+| Method | RemoveEvent | void RemoveEvent (int) |
+| Method | RemoveKeyMapping | int RemoveKeyMapping (string) |
+| Method | requestDisplayFocus | int requestDisplayFocus () |
+| Method | ResetEvent | void ResetEvent (int) |
+| Method | Run | int Run (string) |
+| Method | RunCmd | void RunCmd (string) |
+| Method | RunExternalMacro | void RunExternalMacro (string, string, Variant) |
+| Method | RunMacro | void RunMacro (string, Variant) |
+| Method | RunScript | void RunScript (string, Variant) |
+| Method | SaveDisplay | void SaveDisplay (int, int, string, int, int) |
+| Method | SaveSettings | int SaveSettings (Variant, Variant, Variant) |
+| Method | Search | int Search (string, Variant, Variant) |
+| Method | SelectAll | void SelectAll () |
+| Method | SelectCancel | void SelectCancel () |
+| Method | SelectDown | void SelectDown () |
+| Method | SelectionRect | void SelectionRect (int, int, int, int) |
+| Method | SelectLeft | void SelectLeft () |
+| Method | SelectLine | void SelectLine (int) |
+| Method | SelectRight | void SelectRight () |
+| Method | SelectText | int SelectText (int, int, int, int, Variant) |
+| Method | SelectUp | void SelectUp () |
+| Method | SelectWord | void SelectWord (int, int) |
+| Method | SendFile | int SendFile (string) |
+| Method | SendKey | int SendKey (string) |
+| Method | SendKeys | int SendKeys (string) |
+| Method | SetBrowserWnd | int SetBrowserWnd (Variant) |
+| Method | SetCfgFile | int SetCfgFile (string, string) |
+| Method | SetClipboardText | void SetClipboardText (string) |
+| Method | SetColorMap | void SetColorMap (int, int, int) |
+| Method | SetConnectionType | int SetConnectionType (ConTypeConstants) |
+| Method | SetCursor | int SetCursor (int, int) |
+| Method | setCursorBase | int setCursorBase (byte) |
+| Method | setCursorColumn | int setCursorColumn (int) |
+| Method | setCursorRow | int setCursorRow (int) |
+| Method | SetDLLName | int SetDLLName (string) |
+| Method | setFocus | int setFocus () |
+| Method | SetFormWnd | int SetFormWnd (Variant) |
+| Method | setHostPort | int setHostPort (byte, byte, int) |
+| Method | setHostURL | int setHostURL (byte, byte, string) |
+| Method | SetKeyMap | void SetKeyMap (int, string, Variant, Variant, Variant) |
+| Method | SetMousePos | void SetMousePos (int, int) |
+| Method | SetProfile | int SetProfile (string, string) |
+| Method | SetSelectionStartPos | void SetSelectionStartPos (int, int) |
+| Method | SetSessionParameters | int SetSessionParameters (string) |
+| Method | setString | bool setString (byte, byte, string, string) |
+| Method | SetToolbarMode | void SetToolbarMode (string, int) |
+| Method | SetupSession | void SetupSession (int, int, int) |
+| Method | SetWindowPos | void SetWindowPos (int, int, int, int) |
+| Method | Shell | int Shell (string, Variant, Variant, Variant) |
+| Method | ShowToolbar | void ShowToolbar (string, int, Variant) |
+| Method | SNASetParameters | int SNASetParameters (string) |
+| Method | StartHostNotification | int StartHostNotification (HostNotifyConstants, Variant) |
+| Method | StartTrace | int StartTrace (Variant) |
+| Method | StatusBox | void StatusBox (string, Variant) |
+| Method | StopHostNotification | int StopHostNotification (Variant) |
+| Method | StopTrace | int StopTrace () |
+| Method | Str | string Str (double) |
+| Method | TCPSetParameters | int TCPSetParameters (string, Variant, Variant) |
+| Method | TerminalMouse | void TerminalMouse (int, int, int) |
+| Method | TextRC | string TextRC (int, int, int) |
+| Method | toScreen | int toScreen (string, int, int) |
+| Method | Transmit | void Transmit (string, Variant) |
+| Method | TransmitAnsi | void TransmitAnsi (string) |
+| Method | transmitString | int transmitString (string) |
+| Method | TransmitTerminalKey | void TransmitTerminalKey (int) |
+| Method | TypePassword | int TypePassword (Variant) |
+| Method | TypeUserName | int TypeUserName (Variant) |
+| Method | Val | double Val (string) |
+| Method | ViewStatus | void ViewStatus () |
+| Method | Wait | void Wait (string, Variant) |
+| Method | WaitCursor | int WaitCursor (int, int, int, int) |
+| Method | WaitEvent | int WaitEvent (string, Variant) |
+| Method | waitForCursorEntered | bool waitForCursorEntered (int, int, int) |
+| Method | waitForDisplayString | bool waitForDisplayString (string, Variant, Variant, Variant) |
+| Method | waitForDisplayStrings | int waitForDisplayStrings (IVector, int) |
+| Method | WaitForEvent | bool WaitForEvent (int, string, string, int, int, Variant, Variant) |
+| Method | WaitForIncomingData | bool WaitForIncomingData (Variant, Variant) |
+| Method | WaitForKeys | string WaitForKeys (Variant, Variant) |
+| Method | WaitForReady | int WaitForReady () |
+| Method | WaitForSilence | bool WaitForSilence (string, Variant, Variant) |
+| Method | WaitForString | bool WaitForString (string, Variant, Variant, Variant) |
+| Method | WaitForStringRC | int WaitForStringRC (string, int, int, Variant, Variant, Variant) |
+| Method | WaitForStrings | int WaitForStrings (SAFEARRAY(string), Variant, Variant) |
+| Method | WaitForText | int WaitForText (string, Variant, Variant, Variant) |
+| Method | WaitIdle | void WaitIdle (int) |
+| Method | WaitPSUpdated | int WaitPSUpdated (int, Variant) |
+| Method | WaitReady | int WaitReady (int, int) |
+| Method | WaitUntil | void WaitUntil (string, Variant) |
+| Method | Window | IEmuWnd Window () |
+| Method | WriteScreen | int WriteScreen (string, int, int) |
+| Property | ActiveSession | IDispatch ActiveSession () {get}  |
+| Property | AppInst | byte AppInst () {get} {set}  |
+| Property | Application | IDispatch Application () {get}  |
+| Property | autECLConnList | IDispatch autECLConnList () {get}  |
+| Property | autECLOIA | IDispatch autECLOIA () {get}  |
+| Property | autECLPS | IDispatch autECLPS () {get}  |
+| Property | autECLSession | IDispatch autECLSession () {get}  |
+| Property | AutoConnect | bool AutoConnect () {get} {set}  |
+| Property | AutoFontSize | int AutoFontSize () {get} {set}  |
+| Property | AutoFormfeed | int AutoFormfeed () {get} {set}  |
+| Property | AutoStartTelnetTrace | bool AutoStartTelnetTrace () {get} {set}  |
+| Property | BackgndColor | int BackgndColor () {get} {set}  |
+| Property | BaudRate | int BaudRate () {get} {set}  |
+| Property | BDTIgnoreScrollLock | bool BDTIgnoreScrollLock () {get} {set}  |
+| Property | Bell | bool Bell () {get} {set}  |
+| Property | BkColor | int BkColor () {get}  |
+| Property | Blink | bool Blink () {get}  |
+| Property | BypassWindowsPrinting | bool BypassWindowsPrinting () {get} {set}  |
+| Property | CapsLock | bool CapsLock () {get} {set}  |
+| Property | CapsLockState | bool CapsLockState () {get} {set}  |
+| Property | Caption | string Caption () {get} {set}  |
+| Property | CharacterDelay | int CharacterDelay () {get} {set}  |
+| Property | ClosePrinterManually | bool ClosePrinterManually () {get} {set}  |
+| Property | Color | int Color () {get}  |
+| Property | Columns | int Columns () {get} {set}  |
+| Property | CommandLineSwitches | string CommandLineSwitches () {get}  |
+| Property | COMPort | string COMPort () {get} {set}  |
+| Property | Connected | bool Connected () {get}  |
+| Property | ConnectionSettings | string ConnectionSettings () {get} {set}  |
+| Property | ConnectionType | string ConnectionType () {get} {set}  |
+| Property | ConnectMacro | string ConnectMacro () {get} {set}  |
+| Property | ConnectMacroData | string ConnectMacroData () {get} {set}  |
+| Property | Cursor | int Cursor () {get} {set}  |
+| Property | CursorColumn | int CursorColumn () {get}  |
+| Property | CursorRow | int CursorRow () {get}  |
+| Property | DataBits | int DataBits () {get} {set}  |
+| Property | DefaultFilePath | string DefaultFilePath () {get} {set}  |
+| Property | DefaultPrinter | string DefaultPrinter () {get} {set}  |
+| Property | DeviceName | string DeviceName () {get} {set}  |
+| Property | DfltPrintCopies | int DfltPrintCopies () {get} {set}  |
+| Property | DisplayColumns | int DisplayColumns () {get} {set}  |
+| Property | DisplayEnabled | bool DisplayEnabled () {get} {set}  |
+| Property | DisplayMemoryTopRow | int DisplayMemoryTopRow () {get}  |
+| Property | DisplayRows | int DisplayRows () {get} {set}  |
+| Property | EABCharPos | int EABCharPos () {get} {set}  |
+| Property | EndOfLineWrap | bool EndOfLineWrap () {get} {set}  |
+| Property | ErrorHandling | bool ErrorHandling () {get} {set}  |
+| Property | EventDefined | int EventDefined () {get}  |
+| Property | ExitOnDisconnect | bool ExitOnDisconnect () {get} {set}  |
+| Property | FlowControl | string FlowControl () {get} {set}  |
+| Property | FontName | string FontName () {get} {set}  |
+| Property | FontSize | int FontSize () {get} {set}  |
+| Property | FontStyle | int FontStyle () {get} {set}  |
+| Property | FoundTextColumn | int FoundTextColumn () {get}  |
+| Property | FoundTextRow | int FoundTextRow () {get}  |
+| Property | FullName | string FullName () {get}  |
+| Property | GraphicsEnabled | bool GraphicsEnabled () {get} {set}  |
+| Property | HostCommTimeout | int HostCommTimeout () {get} {set}  |
+| Property | HostName | string HostName () {get} {set}  |
+| Property | IfLogExists | int IfLogExists () {get} {set}  |
+| Property | InactivityEventsIgnoreKeyboardMouse | int InactivityEventsIgnoreKeyboardMouse () {get} {set}  |
+| Property | KermitAutomaticServer | bool KermitAutomaticServer () {get} {set}  |
+| Property | KermitChecksum | int KermitChecksum () {get} {set}  |
+| Property | KermitPacketSize | int KermitPacketSize () {get} {set}  |
+| Property | KermitReceiveStartupCommand | string KermitReceiveStartupCommand () {get} {set}  |
+| Property | KermitSendStartupCommand | string KermitSendStartupCommand () {get} {set}  |
+| Property | KermitServerStartupCommand | string KermitServerStartupCommand () {get} {set}  |
+| Property | KermitTransferType | int KermitTransferType () {get} {set}  |
+| Property | KermitWindowSize | int KermitWindowSize () {get} {set}  |
+| Property | KeyboardLocked | bool KeyboardLocked () {get}  |
+| Property | LastError | int LastError () {get} {set}  |
+| Property | LineDelay | int LineDelay () {get} {set}  |
+| Property | LogToSerialDevice | bool LogToSerialDevice () {get} {set}  |
+| Property | MacroData | string MacroData () {get} {set}  |
+| Property | ModemName | string ModemName () {get} {set}  |
+| Property | Name | string Name () {get}  |
+| Property | NumLock | bool NumLock () {get} {set}  |
+| Property | NumLockState | int NumLockState () {get} {set}  |
+| Property | OLEServerName | string OLEServerName () {get} {set}  |
+| Property | Parent | IDispatch Parent () {get}  |
+| Property | Parity | string Parity () {get} {set}  |
+| Property | Password | string Password () {get} {set}  |
+| Property | Path | string Path () {get}  |
+| Property | PCUserName | string PCUserName () {get}  |
+| Property | PhoneNumber | string PhoneNumber () {get} {set}  |
+| Property | PrintDuplex | int PrintDuplex () {get} {set}  |
+| Property | PrinterAutoRowSize | bool PrinterAutoRowSize () {get} {set}  |
+| Property | PrinterBottomMargin | int PrinterBottomMargin () {get} {set}  |
+| Property | PrinterColumns | int PrinterColumns () {get} {set}  |
+| Property | PrinterColumnsSetOrientation | bool PrinterColumnsSetOrientation () {get} {set}  |
+| Property | PrinterColumnsTiedToDisplay | bool PrinterColumnsTiedToDisplay () {get} {set}  |
+| Property | PrinterFitFontToPage | bool PrinterFitFontToPage () {get} {set}  |
+| Property | PrinterFontName | string PrinterFontName () {get} {set}  |
+| Property | PrinterInverseFont | bool PrinterInverseFont () {get} {set}  |
+| Property | PrinterLogging | bool PrinterLogging () {get} {set}  |
+| Property | PrinterLogTop | bool PrinterLogTop () {get} {set}  |
+| Property | PrinterMarginBottom | int PrinterMarginBottom () {get} {set}  |
+| Property | PrinterMarginLeft | int PrinterMarginLeft () {get} {set}  |
+| Property | PrinterMarginRight | int PrinterMarginRight () {get} {set}  |
+| Property | PrinterMarginTop | int PrinterMarginTop () {get} {set}  |
+| Property | PrinterOrientation | int PrinterOrientation () {get} {set}  |
+| Property | PrinterPaperSize | int PrinterPaperSize () {get} {set}  |
+| Property | PrinterPaperSource | int PrinterPaperSource () {get} {set}  |
+| Property | PrinterPassEscape | bool PrinterPassEscape () {get} {set}  |
+| Property | PrinterPassThroughConversion | bool PrinterPassThroughConversion () {get} {set}  |
+| Property | PrinterRows | int PrinterRows () {get} {set}  |
+| Property | PrinterTimeout | int PrinterTimeout () {get} {set}  |
+| Property | PrintFileExistsAction | int PrintFileExistsAction () {get} {set}  |
+| Property | PrintFileName | string PrintFileName () {get} {set}  |
+| Property | PrintGraphicsBackground | bool PrintGraphicsBackground () {get} {set}  |
+| Property | PrintGraphicsColor | int PrintGraphicsColor () {get} {set}  |
+| Property | PrintGraphicsColorSpecification | int PrintGraphicsColorSpecification () {get} {set}  |
+| Property | PrintToFile | Variant PrintToFile () {get} {set}  |
+| Property | PSCursorPos | int PSCursorPos () {get} {set}  |
+| Property | PSText | string PSText () {get}  |
+| Property | Reverse | bool Reverse () {get}  |
+| Property | SaveChanges | int SaveChanges () {get} {set}  |
+| Property | ScreenTopRow | int ScreenTopRow () {get}  |
+| Property | ScriptFolder | string ScriptFolder () {get} {set}  |
+| Property | ScrollLockState | bool ScrollLockState () {get} {set}  |
+| Property | SelectionEndColumn | int SelectionEndColumn () {get}  |
+| Property | SelectionEndRow | int SelectionEndRow () {get}  |
+| Property | SelectionStartColumn | int SelectionStartColumn () {get}  |
+| Property | SelectionStartRow | int SelectionStartRow () {get}  |
+| Property | SelectionType | int SelectionType () {get}  |
+| Property | Separator | bool Separator () {get}  |
+| Property | SerialDevicePort | string SerialDevicePort () {get} {set}  |
+| Property | SerialDeviceSettings | string SerialDeviceSettings () {get} {set}  |
+| Property | SerialDeviceToHost | bool SerialDeviceToHost () {get} {set}  |
+| Property | Sessions | IDispatch Sessions () {get}  |
+| Property | SessionType | byte SessionType () {get} {set}  |
+| Property | SettingsFile | string SettingsFile () {get}  |
+| Property | SettingsTitle | string SettingsTitle () {get} {set}  |
+| Property | ShowMenuBar | bool ShowMenuBar () {get} {set}  |
+| Property | ShowStatusBar | bool ShowStatusBar () {get} {set}  |
+| Property | SingleSignOn | bool SingleSignOn () {get} {set}  |
+| Property | SLPDirectoryAgents | string SLPDirectoryAgents () {get} {set}  |
+| Property | SLPScope | string SLPScope () {get} {set}  |
+| Property | SLPScopedServicesOnly | bool SLPScopedServicesOnly () {get} {set}  |
+| Property | SLPUseLoadBalancing | bool SLPUseLoadBalancing () {get} {set}  |
+| Property | SSHPassword | string SSHPassword () {set}  |
+| Property | Status | int Status () {get}  |
+| Property | StatusBar | string StatusBar () {get} {set}  |
+| Property | StatusBarText | string StatusBarText () {get} {set}  |
+| Property | StatusLineText | string StatusLineText () {get} {set}  |
+| Property | StopBits | string StopBits () {get} {set}  |
+| Property | TelnetEncryption | int TelnetEncryption () {get} {set}  |
+| Property | TelnetEncryptionStrength | int TelnetEncryptionStrength () {get} {set}  |
+| Property | TelnetKeepAlive | int TelnetKeepAlive () {get} {set}  |
+| Property | TelnetKeepAliveTimeout | int TelnetKeepAliveTimeout () {get} {set}  |
+| Property | TelnetLocation | string TelnetLocation () {get} {set}  |
+| Property | TelnetPort | int TelnetPort () {get} {set}  |
+| Property | TelnetResponseMode | bool TelnetResponseMode () {get} {set}  |
+| Property | TelnetTerminalID | string TelnetTerminalID () {get} {set}  |
+| Property | TelnetUseSocks | bool TelnetUseSocks () {get} {set}  |
+| Property | Text | string Text () {get} {set}  |
+| Property | TimeoutValue | int TimeoutValue () {get} {set}  |
+| Property | TN3270EnableExtensions | bool TN3270EnableExtensions () {get} {set}  |
+| Property | TNAssociation | string TNAssociation () {get} {set}  |
+| Property | TransferDownLoadDirectory | string TransferDownLoadDirectory () {get} {set}  |
+| Property | Underline | bool Underline () {get}  |
+| Property | UserData | string UserData () {get} {set}  |
+| Property | UserName | string UserName () {get} {set}  |
+| Property | UseServiceLocation | bool UseServiceLocation () {get} {set}  |
+| Property | UseTableFormat | bool UseTableFormat () {get} {set}  |
+| Property | Version | string Version () {get}  |
+| Property | VersionMajor | int VersionMajor () {get}  |
+| Property | VersionMinor | int VersionMinor () {get}  |
+| Property | VersionString | string VersionString () {get}  |
+| Property | Visible | bool Visible () {get} {set}  |
+| Property | VTBackspaceSends | int VTBackspaceSends () {get} {set}  |
+| Property | VTCursorKeyMode | int VTCursorKeyMode () {get} {set}  |
+| Property | VTKeypadMode | int VTKeypadMode () {get} {set}  |
+| Property | WindowHandle | int WindowHandle () {get}  |
+| Property | WindowState | int WindowState () {get} {set}  |
+| Property | WriteCtrlZAsEOF | bool WriteCtrlZAsEOF () {get} {set}  |
+
+
 ### See Also
 
 
@@ -1331,8 +1813,8 @@ for (var name in obj) {
   * https://shareapp.net/bluezone_download/?ysclid=mvkc1l5cvn619119562
   * "noname" https://bluezone.en.download.it/downloading/started
   * [RFC 2355 - TN3270 enhancement](https://www.rfc-editor.org/info/rfc2355)
-  * [BlueZone Advanced Automation Developer's Guide](https://docs-be.rocketsoftware.com/bundle/TE_devguide_V10.1.0/raw/resource/enus/TE_devguide_V10.1.0.pdf) covering work with Rocket BlueZone had a COM automation object, a VBA integration option, and a separate Basic scripting environment 
+  * [BlueZone Advanced Automation Developer's Guide](https://docs-be.rocketsoftware.com/bundle/TE_devguide_V10.1.0/raw/resource/enus/TE_devguide_V10.1.0.pdf) covering work with Rocket BlueZone had a COM automation object, a VBA integration option, and a separate Basic scripting environment
 
---- 
+---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
