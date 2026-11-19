@@ -1665,8 +1665,203 @@ Row 1 Row 2 Row 3 Row 4
 
 ## Page 2
 ...
+
+```
+```sh
+cp sample-presentation.pptx ~/test
+```
+```sh
+docker run -v /c/Users/$USERNAME/test:/tmp -w /tmp -it --rm markitdown sample-presentation.pptx
+```
+```text
+<!-- Slide number: 1 -->
+# Sample Presentation
+A demo PPTX file from samplelib.com
+
+<!-- Slide number: 2 -->
+# Agenda
+Introduction
+Project goals
+Quarterly results
+Roadmap
+Questions & answers
+Lorem ipsum
+
+<!-- Slide number: 3 -->
+# Project Goals
+Ship the new dashboard
+Faster page loads
+Mobile-first layout
+Grow active users
+Lorem ipsum churn
+Improve vitae libero
+
+<!-- Slide number: 4 -->
+# vitae libero
+| Region | Q1 | Q2 | Q3 |
+| --- | --- | --- | --- |
+| North | 120 | 135 | 150 |
+| South | 98 | 102 | 117 |
+| East | 143 | 139 | 161 |
+| West | 76 | 88 | 94 |
+
+### Notes:
+Pellentesque fermentum nisl vitae fringilla venenatis. Etiam id mauris vitae orci maximus ultricies
+
+<!-- Slide number: 5 -->
+# Lorem ipsum by Quarter
+
+### Chart
+
+| Category | Product A | Product B |
+|---|---|---|
+| Q1 | 19.2 | 10.1 |
+| Q2 | 21.4 | 14.2 |
+| Q3 | 16.7 | 12.0 |
+| Q4 | 26.1 | 18.4 |
+
+<!-- Slide number: 6 -->
+# Embedded Image
+
+![image.png](Picture2.jpg)
+
+<!-- Slide number: 7 -->
+# Pros and Cons
+Advantages
+• Open standard
+• Wide tool support
+• Easy to script
+Trade-offs
+• Verbose XML
+• Large file sizes
+• Layout drift
+
+<!-- Slide number: 8 -->
+Thank you!
+
 ```
 
+```sh
+cp sample-simple.docx ~/test
+```
+```sh
+docker run -v /c/Users/$USERNAME/test:/tmp -w /tmp -it --rm markitdown sample-simple.docx
+```
+```text
+Sample Document
+
+A demo DOCX file from samplelib.com.
+
+# Introduction
+
+This document shows the common building blocks of a Word file: headings, formatted text, lists, tables and images. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+# Text Formatting
+
+Runs can be **bold**, *italic*, <u>underlined</u> or coloured. Font sizes vary too — like this.
+
+# Lists
+
+Bulleted list:
+
+* First bullet point
+* Second bullet point
+* Third bullet point
+
+Numbered list:
+
+1. First numbered step
+2. Second numbered step
+3. Third numbered step
+
+# Table
+
+|  |  |  |
+| --- | --- | --- |
+| **Product** | **Quantity** | **Price** |
+| **Notebook** | 3 | $24.00 |
+| **Pen** | 12 | $9.60 |
+| **Marker** | 5 | $11.25 |
+
+# Image
+
+An embedded raster image:
+
+![](data:image/png;base64...)
+
+In eleifend velit vitae libero sollicitudin euismod. Fusce vitae vestibulum velit. Pellentesque vulputate lectus quis pellentesque commodo. Aliquam erat volutpat. Vestibulum in egestas velit. Pellentesque fermentum nisl vitae fringilla venenatis. Etiam id mauris vitae orci maximus ultricies
+```
+```sh
+cp sample-simple.xlsx ~/test
+```
+```sh
+docker run -v /c/Users/$USERNAME/test:/tmp -w /tmp -it --rm markitdown sample-simple.xlsx
+```
+```text
+## test1
+| Lorem ipsum |
+| --- |
+
+## test2
+| dolor in reprehenderit |
+| --- |
+```
+```sh
+cp file_example_PPT_500kB.ppt ~/test
+```
+```sh
+docker run -v /c/Users/$USERNAME/test:/tmp -w /tmp -it --rm markitdown file_example_PPT_500kB.ppt
+```
+```text
+Traceback (most recent call last):
+  File "/usr/local/bin/markitdown", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/markitdown/__main__.py", line 259, in main
+    result = markitdown.convert(
+        args.filename, stream_info=stream_info, keep_data_uris=args.keep_data_uris
+    )
+  File "/usr/local/lib/python3.13/site-packages/markitdown/_markitdown.py", line 349, in convert
+    return self.convert_local(source, stream_info=stream_info, **kwargs)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/markitdown/_markitdown.py", line 403, in convert_local
+    return self._convert(file_stream=fh, stream_info_guesses=guesses, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/markitdown/_markitdown.py", line 697, in _convert
+    raise UnsupportedFormatException(
+        "Could not convert stream to Markdown. No converter attempted a conversion, suggesting that the filetype is simply not supported."
+    )
+markitdown._exceptions.UnsupportedFormatException: Could not convert stream to Markdown. No converter attempted a conversion, suggesting that the filetype is simply not supported.
+
+```
+```sh
+cp tf16403429.vsdx ~/test
+```
+```sh
+docker run -v /c/Users/$USERNAME/test:/tmp -w /tmp -it --rm markitdown tf16403429.vsdx
+```
+```text
+Traceback (most recent call last):
+  File "/usr/local/bin/markitdown", line 6, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/usr/local/lib/python3.13/site-packages/markitdown/__main__.py", line 259, in main
+    result = markitdown.convert(
+        args.filename, stream_info=stream_info, keep_data_uris=args.keep_data_uris
+    )
+  File "/usr/local/lib/python3.13/site-packages/markitdown/_markitdown.py", line 349, in convert
+    return self.convert_local(source, stream_info=stream_info, **kwargs)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/markitdown/_markitdown.py", line 403, in convert_local
+    return self._convert(file_stream=fh, stream_info_guesses=guesses, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/markitdown/_markitdown.py", line 694, in _convert
+    raise FileConversionException(attempts=failed_attempts)
+markitdown._exceptions.FileConversionException: File conversion failed after 2 attempts:
+ - DocxConverterWithOCR threw OSError with message: Could not find main document part. Are you sure this is a valid .docx file?
+ - DocxConverter threw OSError with message: Could not find main document part. Are you sure this is a valid .docx file?
+
+```
 ### Background
 ```sh
 git ls-remote https://github.com/microsoft/markitdown.git \
