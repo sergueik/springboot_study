@@ -15,7 +15,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     FFMPEG_PATH=/usr/bin/ffmpeg
 
 ARG REPO=https://github.com/microsoft/markitdown.git
-ARG BRANCH=main
+# ARG BRANCH=main
 # TODO: read commit from release page Version 0.1.8
 RUN grep -rl -E 'debian-security|bullseye-security' \
     /etc/apt/sources.list /etc/apt/sources.list.d/ /dev/null \
@@ -31,13 +31,10 @@ RUN apt-get install -qy --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt
-ARG COMMIT=b8f79c5
+# ARG COMMIT=b8f79c5
+ARG TAG=v0.1.8
  
-
-RUN git clone --no-progress --depth 100 --branch "${BRANCH}" "${REPO}" markitdown
-RUN cd /opt/markitdown \
-    && git log \
-    && git checkout $COMMIT
+RUN git clone --no-progress --depth 1 --branch "${TAG}" "${REPO}" markitdown
 
 WORKDIR /opt/markitdown
 

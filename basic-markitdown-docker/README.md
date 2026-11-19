@@ -30,50 +30,30 @@ docker build -t markitdown -f Dockerfile .
 
 ```text
 Sending build context to Docker daemon  64.72MB
+Sending build context to Docker daemon  118.3kB
 Step 1/18 : FROM python:3.13-slim-bullseye
  ---> 5e751abf51db
 Step 2/18 : ENV DEBIAN_FRONTEND=noninteractive     PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     EXIFTOOL_PATH=/usr/bin/exiftool     FFMPEG_PATH=/usr/bin/ffmpeg
  ---> Using cache
  ---> 7d1496197792
-Step 3/18 : ARG MARKITDOWN_REPO=https://github.com/microsoft/markitdown.git
+Step 3/18 : ARG REPO=https://github.com/microsoft/markitdown.git
  ---> Using cache
- ---> 86940bc32735
-Step 4/18 : ARG MARKITDOWN_REF=main
- ---> Using cache
- ---> 145281e80e8e
-Step 5/18 : RUN grep -rl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ /dev/null     | xargs -IX sed -i '/\(debian-security\|bullseye-security\)/d' X
- ---> Using cache
- ---> f8067a6001f6
-Step 6/18 : RUN (grep -qrl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ && echo 'still have';  exit 1) || exit 0
- ---> Using cache
- ---> d9c09fdbb433
-Step 7/18 : RUN apt-get update
- ---> Using cache
- ---> 275970ab4422
-Step 8/18 : RUN apt-get install -y perl=5.32.1-4+deb11u3 perl-base=5.32.1-4+deb11u3 --allow-downgrades
- ---> Running in 34718b3c1fa2
-Reading package lists...
-Building dependency tree...
-Reading state information...
-The following additional packages will be installed:
-  libgdbm-compat4 libperl5.32 perl-modules-5.32
-Suggested packages:
-  sensible-utils perl-doc libterm-readline-gnu-perl
-  | libterm-readline-perl-perl make libtap-harness-archive-perl
-The following NEW packages will be installed:
-  libgdbm-compat4 libperl5.32 perl perl-modules-5.32
-The following packages will be DOWNGRADED:
-  perl-base
-0 upgraded, 4 newly installed, 1 downgraded, 0 to remove and 0 not upgraded.
-Need to get 8911 kB of archives.
-After this operation, 47.2 MB of additional disk space will be used.
-Get:1 http://deb.debian.org/debian bullseye/main amd64 perl-base amd64 5.32.1-4+deb11u3 [1628 kB]
-Get:2 http://deb.debian.org/debian bullseye/main amd64 perl-modules-5.32 all 5.32.1-4+deb11u3 [2823 kB]
-Get:3 http://deb.debian.org/debian bullseye/main amd64 libgdbm-compat4 amd64 1.19-2 [44.7 kB]
-Get:4 http://deb.debian.org/debian bullseye/main amd64 libperl5.32 amd64 5.32.1-4+deb11u3 [4121 kB]
-Get:5 http://deb.debian.org/debian bullseye/main amd64 perl amd64 5.32.1-4+deb11u3 [293 kB]
+ ---> a50e6c2e3f74
+Step 4/18 : RUN grep -rl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ /dev/null     | xargs -IX sed -i '/\(debian-security\|bullseye-security\)/d' X
+ ---> Running in 0bdfd38c7b7e
+Removing intermediate container 0bdfd38c7b7e
+ ---> 5504254284a5
+Step 5/18 : RUN (grep -qrl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ && echo 'still have';  exit 1) || exit 0
+ ---> Running in 752f7e3a0db1
+Removing intermediate container 752f7e3a0db1
+ ---> 98328503f315
+Step 6/18 : RUN apt-get -qq update
+ ---> Running in 1df1149edac1
+Removing intermediate container 1df1149edac1
+ ---> aa32168eef4c
+Step 7/18 : RUN apt-get install -qqy perl=5.32.1-4+deb11u3 perl-base=5.32.1-4+deb11u3 --allow-downgrades
+ ---> Running in 1752118dc193
 debconf: delaying package configuration, since apt-utils is not installed
-Fetched 8911 kB in 4s (2101 kB/s)
 dpkg: warning: downgrading perl-base from 5.32.1-4+deb11u4 to 5.32.1-4+deb11u3
 (Reading database ... 7034 files and directories currently installed.)
 Preparing to unpack .../perl-base_5.32.1-4+deb11u3_amd64.deb ...
@@ -97,10 +77,10 @@ Setting up libgdbm-compat4:amd64 (1.19-2) ...
 Setting up libperl5.32:amd64 (5.32.1-4+deb11u3) ...
 Setting up perl (5.32.1-4+deb11u3) ...
 Processing triggers for libc-bin (2.31-13+deb11u13) ...
-Removing intermediate container 34718b3c1fa2
- ---> 81a2ff7c7e78
-Step 9/18 : RUN apt-get install -y --no-install-recommends         ca-certificates         git         ffmpeg         exiftool     && rm -rf /var/lib/apt/lists/*
- ---> Running in b6650bfdf1ef
+Removing intermediate container 1752118dc193
+ ---> e0d2b60ba336
+Step 8/18 : RUN apt-get install -qy --no-install-recommends         ca-certificates git ffmpeg exiftool     && rm -rf /var/lib/apt/lists/*
+ ---> Running in 6aaa1bfad753
 Reading package lists...
 Building dependency tree...
 Reading state information...
@@ -392,7 +372,7 @@ Get:198 http://deb.debian.org/debian bullseye/main amd64 git-man all 1:2.30.2-1+
 Get:199 http://deb.debian.org/debian bullseye/main amd64 git amd64 1:2.30.2-1+deb11u2 [5518 kB]
 Get:200 http://deb.debian.org/debian bullseye/main amd64 libimage-exiftool-perl all 12.16+dfsg-2 [3618 kB]
 debconf: delaying package configuration, since apt-utils is not installed
-Fetched 127 MB in 50s (2523 kB/s)
+Fetched 127 MB in 50s (2536 kB/s)
 Selecting previously unselected package sensible-utils.
 (Reading database ... 9000 files and directories currently installed.)
 Preparing to unpack .../000-sensible-utils_0.0.14_all.deb ...
@@ -1202,28 +1182,49 @@ Setting up libavfilter7:amd64 (7:4.3.7-0+deb11u1) ...
 Setting up libavdevice58:amd64 (7:4.3.7-0+deb11u1) ...
 Setting up ffmpeg (7:4.3.7-0+deb11u1) ...
 Processing triggers for libc-bin (2.31-13+deb11u13) ...
-Removing intermediate container b6650bfdf1ef
- ---> 202905998d37
-Step 10/18 : WORKDIR /opt
- ---> Running in 7bd35f2b78f7
-Removing intermediate container 7bd35f2b78f7
- ---> cb0019718540
-Step 11/18 : RUN git clone --depth 1 --branch "${MARKITDOWN_REF}" "${MARKITDOWN_REPO}" markitdown
- ---> Running in 65b49d6584b5
+Removing intermediate container 6aaa1bfad753
+ ---> 04733495184a
+Step 9/18 : WORKDIR /opt
+ ---> Running in 9a49a2497c15
+Removing intermediate container 9a49a2497c15
+ ---> e813ab0482de
+Step 10/18 : ARG TAG=v0.1.8
+ ---> Running in 253386799cc5
+Removing intermediate container 253386799cc5
+ ---> 3c878bab1933
+Step 11/18 : RUN git clone --no-progress --depth 1 --branch "${TAG}" "${REPO}" markitdown
+ ---> Running in 43b62431600a
 Cloning into 'markitdown'...
-Removing intermediate container 65b49d6584b5
- ---> b67cc2d41ffe
+Note: switching to 'b8f79c57ebc0044be41323d89b2a45d3fda8460e'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+Removing intermediate container 43b62431600a
+ ---> ce58df8379f3
 Step 12/18 : WORKDIR /opt/markitdown
- ---> Running in 19bf65189b7a
-Removing intermediate container 19bf65189b7a
- ---> aee152a418c7
+ ---> Running in 78257a9874b9
+Removing intermediate container 78257a9874b9
+ ---> 1b9bb347cf0d
 Step 13/18 : RUN pip install --no-cache-dir --upgrade pip     && pip install --no-cache-dir         "packages/markitdown[all]"         "packages/markitdown-sample-plugin"         markitdown-ocr         openai
- ---> Running in 862b98a89a12
+ ---> Running in e2e1170556d8
 Requirement already satisfied: pip in /usr/local/lib/python3.13/site-packages (25.2)
 Collecting pip
   Downloading pip-26.3-py3-none-any.whl.metadata (4.6 kB)
 Downloading pip-26.3-py3-none-any.whl (2.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 2.7 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 1.9 MB/s  0:00:01
 Installing collected packages: pip
   Attempting uninstall: pip
     Found existing installation: pip 25.2
@@ -1249,62 +1250,66 @@ Collecting markitdown-ocr
   Downloading markitdown_ocr-0.1.2-py3-none-any.whl.metadata (9.0 kB)
 Collecting openai
   Downloading openai-3.55.1-py3-none-any.whl.metadata (45 kB)
-Collecting beautifulsoup4 (from markitdown==0.1.9)
+Collecting beautifulsoup4 (from markitdown==0.1.8)
   Downloading beautifulsoup4-4.15.0-py3-none-any.whl.metadata (3.8 kB)
-Collecting certifi>=2026.10.19 (from markitdown==0.1.9)
-  Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
-Collecting charset-normalizer (from markitdown==0.1.9)
+Collecting charset-normalizer (from markitdown==0.1.8)
   Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
-Collecting defusedxml (from markitdown==0.1.9)
+Collecting defusedxml (from markitdown==0.1.8)
   Downloading defusedxml-0.7.1-py2.py3-none-any.whl.metadata (32 kB)
-Collecting magika<2,>=0.6.1 (from markitdown==0.1.9)
-  Downloading magika-1.0.3-py3-none-manylinux_2_28_x86_64.whl.metadata (10 kB)
-Collecting markdownify (from markitdown==0.1.9)
+Collecting magika~=0.6.1 (from markitdown==0.1.8)
+  Downloading magika-0.6.3-py3-none-manylinux_2_28_x86_64.whl.metadata (10 kB)
+Collecting markdownify (from markitdown==0.1.8)
   Downloading markdownify-1.2.4-py3-none-any.whl.metadata (10 kB)
-Collecting requests (from markitdown==0.1.9)
+Collecting requests (from markitdown==0.1.8)
   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
 Collecting striprtf (from markitdown-sample-plugin==0.1.0a1)
   Downloading striprtf-0.0.35-py3-none-any.whl.metadata (2.4 kB)
-Collecting azure-ai-contentunderstanding>=1.2.0b1 (from markitdown==0.1.9)
+Collecting azure-ai-contentunderstanding>=1.2.0b1 (from markitdown==0.1.8)
   Downloading azure_ai_contentunderstanding-1.2.0b3-py3-none-any.whl.metadata (43 kB)
-Collecting azure-ai-documentintelligence (from markitdown==0.1.9)
+Collecting azure-ai-documentintelligence (from markitdown==0.1.8)
   Downloading azure_ai_documentintelligence-1.0.2-py3-none-any.whl.metadata (53 kB)
-Collecting azure-identity (from markitdown==0.1.9)
+Collecting azure-identity (from markitdown==0.1.8)
   Downloading azure_identity-1.27.0-py3-none-any.whl.metadata (96 kB)
-Collecting lxml (from markitdown==0.1.9)
+Collecting lxml (from markitdown==0.1.8)
   Downloading lxml-6.1.3-cp313-cp313-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
-Collecting mammoth<2,>=1.12.2 (from markitdown==0.1.9)
-  Downloading mammoth-1.13.0-py2.py3-none-any.whl.metadata (26 kB)
-Collecting olefile (from markitdown==0.1.9)
+Collecting mammoth~=1.11.0 (from markitdown==0.1.8)
+  Downloading mammoth-1.11.0-py2.py3-none-any.whl.metadata (26 kB)
+Collecting olefile (from markitdown==0.1.8)
   Downloading olefile-0.47-py2.py3-none-any.whl.metadata (9.7 kB)
-Collecting openpyxl (from markitdown==0.1.9)
+Collecting openpyxl (from markitdown==0.1.8)
   Downloading openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
-Collecting pandas (from markitdown==0.1.9)
+Collecting pandas (from markitdown==0.1.8)
   Downloading pandas-3.1.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
-Collecting pdfminer-six>=20251230 (from markitdown==0.1.9)
+Collecting pdfminer-six>=20251230 (from markitdown==0.1.8)
   Downloading pdfminer_six-20260107-py3-none-any.whl.metadata (4.3 kB)
-Collecting pdfplumber>=0.11.9 (from markitdown==0.1.9)
+Collecting pdfplumber>=0.11.9 (from markitdown==0.1.8)
   Downloading pdfplumber-0.11.10-py3-none-any.whl.metadata (43 kB)
-Collecting pydub (from markitdown==0.1.9)
+Collecting pydub (from markitdown==0.1.8)
   Downloading pydub-0.25.1-py2.py3-none-any.whl.metadata (1.4 kB)
-Collecting python-pptx (from markitdown==0.1.9)
+Collecting python-pptx (from markitdown==0.1.8)
   Downloading python_pptx-1.0.2-py3-none-any.whl.metadata (2.5 kB)
-Collecting speechrecognition>=3.10.4 (from markitdown==0.1.9)
+Collecting speechrecognition (from markitdown==0.1.8)
   Downloading speechrecognition-3.17.0-py3-none-any.whl.metadata (28 kB)
-Collecting xlrd (from markitdown==0.1.9)
+Collecting xlrd (from markitdown==0.1.8)
   Downloading xlrd-2.0.2-py2.py3-none-any.whl.metadata (3.5 kB)
-Collecting youtube-transcript-api~=1.2.3 (from markitdown==0.1.9)
+Collecting youtube-transcript-api~=1.2.3 (from markitdown==0.1.8)
   Downloading youtube_transcript_api-1.2.5-py3-none-any.whl.metadata (25 kB)
-Collecting click>=8.1.7 (from magika<2,>=0.6.1->markitdown==0.1.9)
+Collecting click>=8.1.7 (from magika~=0.6.1->markitdown==0.1.8)
   Downloading click-8.5.1-py3-none-any.whl.metadata (2.6 kB)
-Collecting onnxruntime>=1.21.0 (from magika<2,>=0.6.1->markitdown==0.1.9)
+Collecting onnxruntime>=1.17.0 (from magika~=0.6.1->markitdown==0.1.8)
   Downloading onnxruntime-1.32.0-cp313-cp313-manylinux_2_28_x86_64.whl.metadata (5.8 kB)
-Collecting cobble<0.2,>=0.1.3 (from mammoth<2,>=1.12.2->markitdown==0.1.9)
+Collecting numpy>=2.1.0 (from magika~=0.6.1->markitdown==0.1.8)
+  Downloading numpy-2.5.5-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting python-dotenv>=1.0.1 (from magika~=0.6.1->markitdown==0.1.8)
+  Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+Collecting cobble<0.2,>=0.1.3 (from mammoth~=1.11.0->markitdown==0.1.8)
   Downloading cobble-0.1.4-py3-none-any.whl.metadata (2.7 kB)
-Collecting pillow>=12.1.1 (from markitdown-ocr)
+Collecting markitdown-ocr
+  Downloading markitdown_ocr-0.1.1-py3-none-any.whl.metadata (9.0 kB)
+Collecting pillow>=9.0.0 (from markitdown-ocr)
   Downloading pillow-13.0.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
-Collecting pymupdf<2,>=1.24.0 (from markitdown-ocr)
-  Downloading pymupdf-1.28.2-cp310-abi3-manylinux_2_28_x86_64.whl.metadata (26 kB)
+Collecting pymupdf>=1.24.0 (from markitdown-ocr)
+  Downloading pymupdf-2.1-cp311-abi3-manylinux_2_28_x86_64.whl.metadata (26 kB)
 Collecting python-docx (from markitdown-ocr)
   Downloading python_docx-1.2.0-py3-none-any.whl.metadata (2.0 kB)
 Collecting anyio<5,>=4.10.0 (from openai)
@@ -1333,100 +1338,112 @@ Collecting pydantic-core==2.50.5 (from pydantic!=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,<
   Downloading pydantic_core-2.50.5-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.6 kB)
 Collecting typing-inspection>=0.4.4 (from pydantic!=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,<3,>=1.10.13->openai)
   Downloading typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)
-Collecting isodate>=0.6.1 (from azure-ai-contentunderstanding>=1.2.0b1->markitdown==0.1.9)
+Collecting isodate>=0.6.1 (from azure-ai-contentunderstanding>=1.2.0b1->markitdown==0.1.8)
   Downloading isodate-0.7.2-py3-none-any.whl.metadata (11 kB)
-Collecting azure-core>=1.37.0 (from azure-ai-contentunderstanding>=1.2.0b1->markitdown==0.1.9)
+Collecting azure-core>=1.37.0 (from azure-ai-contentunderstanding>=1.2.0b1->markitdown==0.1.8)
   Downloading azure_core-1.41.0-py3-none-any.whl.metadata (49 kB)
-Collecting flatbuffers (from onnxruntime>=1.21.0->magika<2,>=0.6.1->markitdown==0.1.9)
+Collecting flatbuffers (from onnxruntime>=1.17.0->magika~=0.6.1->markitdown==0.1.8)
   Downloading flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)
-Collecting numpy>=1.21.6 (from onnxruntime>=1.21.0->magika<2,>=0.6.1->markitdown==0.1.9)
-  Downloading numpy-2.5.5-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
-Collecting packaging (from onnxruntime>=1.21.0->magika<2,>=0.6.1->markitdown==0.1.9)
+Collecting packaging (from onnxruntime>=1.17.0->magika~=0.6.1->markitdown==0.1.8)
   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
-Collecting protobuf>=4.25.8 (from onnxruntime>=1.21.0->magika<2,>=0.6.1->markitdown==0.1.9)
+Collecting protobuf>=4.25.8 (from onnxruntime>=1.17.0->magika~=0.6.1->markitdown==0.1.8)
   Downloading protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)
-Collecting cryptography>=36.0.0 (from pdfminer-six>=20251230->markitdown==0.1.9)
+Collecting cryptography>=36.0.0 (from pdfminer-six>=20251230->markitdown==0.1.8)
   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_28_x86_64.whl.metadata (4.4 kB)
-Collecting cffi>=2.0.0 (from cryptography>=36.0.0->pdfminer-six>=20251230->markitdown==0.1.9)
+Collecting cffi>=2.0.0 (from cryptography>=36.0.0->pdfminer-six>=20251230->markitdown==0.1.8)
   Downloading cffi-2.1.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
-Collecting pycparser (from cffi>=2.0.0->cryptography>=36.0.0->pdfminer-six>=20251230->markitdown==0.1.9)
+Collecting pycparser (from cffi>=2.0.0->cryptography>=36.0.0->pdfminer-six>=20251230->markitdown==0.1.8)
   Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
-Collecting pypdfium2>=5.9.0 (from pdfplumber>=0.11.9->markitdown==0.1.9)
+Collecting pypdfium2>=5.9.0 (from pdfplumber>=0.11.9->markitdown==0.1.8)
   Downloading pypdfium2-5.15.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (64 kB)
-Collecting urllib3<3,>=1.26 (from requests->markitdown==0.1.9)
+Collecting networkx (from pymupdf>=1.24.0->markitdown-ocr)
+  Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+Collecting pyyaml (from pymupdf>=1.24.0->markitdown-ocr)
+  Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting pymupdf-layout==2.1 (from pymupdf>=1.24.0->markitdown-ocr)
+  Downloading pymupdf_layout-2.1-py3-none-any.whl.metadata (657 bytes)
+Collecting psutil (from pymupdf>=1.24.0->markitdown-ocr)
+  Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+Collecting tabulate (from pymupdf>=1.24.0->markitdown-ocr)
+  Downloading tabulate-0.10.0-py3-none-any.whl.metadata (40 kB)
+Collecting pymupdf4llm==2.1 (from pymupdf>=1.24.0->markitdown-ocr)
+  Downloading pymupdf4llm-2.1-py3-none-any.whl.metadata (648 bytes)
+Collecting urllib3<3,>=1.26 (from requests->markitdown==0.1.8)
   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
-Collecting standard-aifc (from speechrecognition>=3.10.4->markitdown==0.1.9)
-  Downloading standard_aifc-3.13.0-py3-none-any.whl.metadata (969 bytes)
-Collecting audioop-lts (from speechrecognition>=3.10.4->markitdown==0.1.9)
-  Downloading audioop_lts-0.2.2-cp313-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (2.0 kB)
-Collecting msal>=1.39.0 (from azure-identity->markitdown==0.1.9)
+Collecting certifi>=2023.5.7 (from requests->markitdown==0.1.8)
+  Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+Collecting msal>=1.39.0 (from azure-identity->markitdown==0.1.8)
   Downloading msal-1.39.0-py3-none-any.whl.metadata (11 kB)
-Collecting msal-extensions>=1.2.0 (from azure-identity->markitdown==0.1.9)
+Collecting msal-extensions>=1.2.0 (from azure-identity->markitdown==0.1.8)
   Downloading msal_extensions-1.3.1-py3-none-any.whl.metadata (7.8 kB)
-Collecting PyJWT<3,>=1.0.0 (from PyJWT[crypto]<3,>=1.0.0->msal>=1.39.0->azure-identity->markitdown==0.1.9)
+Collecting PyJWT<3,>=1.0.0 (from PyJWT[crypto]<3,>=1.0.0->msal>=1.39.0->azure-identity->markitdown==0.1.8)
   Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
-Collecting soupsieve>=1.6.1 (from beautifulsoup4->markitdown==0.1.9)
+Collecting soupsieve>=1.6.1 (from beautifulsoup4->markitdown==0.1.8)
   Downloading soupsieve-4.1.2-py3-none-any.whl.metadata (4.4 kB)
-Collecting et-xmlfile (from openpyxl->markitdown==0.1.9)
+Collecting et-xmlfile (from openpyxl->markitdown==0.1.8)
   Downloading et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
-Collecting python-dateutil>=2.9.0 (from pandas->markitdown==0.1.9)
+Collecting python-dateutil>=2.9.0 (from pandas->markitdown==0.1.8)
   Downloading python_dateutil-4.0.0-py3-none-any.whl.metadata (7.3 kB)
-Collecting tzdata (from python-dateutil>=2.9.0->pandas->markitdown==0.1.9)
+Collecting tzdata (from python-dateutil>=2.9.0->pandas->markitdown==0.1.8)
   Downloading tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
-Collecting XlsxWriter>=0.5.7 (from python-pptx->markitdown==0.1.9)
+Collecting XlsxWriter>=0.5.7 (from python-pptx->markitdown==0.1.8)
   Downloading xlsxwriter-3.3.1-py3-none-any.whl.metadata (2.9 kB)
-Collecting standard-chunk (from standard-aifc->speechrecognition>=3.10.4->markitdown==0.1.9)
+Collecting standard-aifc (from speechrecognition->markitdown==0.1.8)
+  Downloading standard_aifc-3.13.0-py3-none-any.whl.metadata (969 bytes)
+Collecting audioop-lts (from speechrecognition->markitdown==0.1.8)
+  Downloading audioop_lts-0.2.2-cp313-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (2.0 kB)
+Collecting standard-chunk (from standard-aifc->speechrecognition->markitdown==0.1.8)
   Downloading standard_chunk-3.13.0-py3-none-any.whl.metadata (860 bytes)
-Downloading magika-1.0.3-py3-none-manylinux_2_28_x86_64.whl (16.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.2/16.2 MB 2.5 MB/s  0:00:06
-Downloading mammoth-1.13.0-py2.py3-none-any.whl (55 kB)
+Downloading magika-0.6.3-py3-none-manylinux_2_28_x86_64.whl (15.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.4/15.4 MB 3.1 MB/s  0:00:04
+Downloading mammoth-1.11.0-py2.py3-none-any.whl (54 kB)
 Downloading cobble-0.1.4-py3-none-any.whl (4.0 kB)
 Downloading youtube_transcript_api-1.2.5-py3-none-any.whl (485 kB)
 Downloading defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
-Downloading markitdown_ocr-0.1.2-py3-none-any.whl (16 kB)
-Downloading pymupdf-1.28.2-cp310-abi3-manylinux_2_28_x86_64.whl (25.8 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 25.8/25.8 MB 2.7 MB/s  0:00:09
+Downloading markitdown_ocr-0.1.1-py3-none-any.whl (16 kB)
 Downloading openai-3.55.1-py3-none-any.whl (2.5 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.5/2.5 MB 2.7 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.5/2.5 MB 3.0 MB/s  0:00:00
 Downloading anyio-4.16.0-py3-none-any.whl (134 kB)
 Downloading httpx2-2.16.2-py3-none-any.whl (97 kB)
 Downloading httpcore2-2.16.2-py3-none-any.whl (85 kB)
 Downloading jiter-0.19.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (335 kB)
 Downloading pydantic-2.14.4-py3-none-any.whl (494 kB)
 Downloading pydantic_core-2.50.5-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.3 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 2.8 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 3.1 MB/s  0:00:00
 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
 Downloading azure_ai_contentunderstanding-1.2.0b3-py3-none-any.whl (127 kB)
 Downloading azure_core-1.41.0-py3-none-any.whl (220 kB)
-Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
 Downloading click-8.5.1-py3-none-any.whl (126 kB)
 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
 Downloading idna-3.20-py3-none-any.whl (69 kB)
 Downloading isodate-0.7.2-py3-none-any.whl (22 kB)
-Downloading onnxruntime-1.32.0-cp313-cp313-manylinux_2_28_x86_64.whl (27.8 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 27.8/27.8 MB 2.7 MB/s  0:00:10
 Downloading numpy-2.5.5-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (15.7 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.7/15.7 MB 2.7 MB/s  0:00:05
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.7/15.7 MB 3.1 MB/s  0:00:05
+Downloading onnxruntime-1.32.0-cp313-cp313-manylinux_2_28_x86_64.whl (27.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 27.8/27.8 MB 3.3 MB/s  0:00:08
 Downloading pdfminer_six-20260107-py3-none-any.whl (6.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 2.7 MB/s  0:00:02
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 3.2 MB/s  0:00:02
 Downloading charset_normalizer-3.5.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (254 kB)
 Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_28_x86_64.whl (4.8 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 2.8 MB/s  0:00:01
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 3.2 MB/s  0:00:01
 Downloading cffi-2.1.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
 Downloading pdfplumber-0.11.10-py3-none-any.whl (60 kB)
 Downloading pillow-13.0.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.1/7.1 MB 2.8 MB/s  0:00:02
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.1/7.1 MB 3.1 MB/s  0:00:02
 Downloading protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl (343 kB)
+Downloading pymupdf-2.1-cp311-abi3-manylinux_2_28_x86_64.whl (69.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.0/69.0 MB 3.3 MB/s  0:00:20
+Downloading pymupdf_layout-2.1-py3-none-any.whl (1.0 kB)
+Downloading pymupdf4llm-2.1-py3-none-any.whl (1.0 kB)
 Downloading pypdfium2-5.15.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.0/4.0 MB 2.6 MB/s  0:00:01
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.0/4.0 MB 3.2 MB/s  0:00:01
+Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
 Downloading requests-2.34.2-py3-none-any.whl (73 kB)
 Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
-Downloading speechrecognition-3.17.0-py3-none-any.whl (32.9 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 32.9/32.9 MB 2.7 MB/s  0:00:12
+Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
 Downloading truststore-0.10.5-py3-none-any.whl (19 kB)
 Downloading typing_inspection-0.4.5-py3-none-any.whl (14 kB)
-Downloading audioop_lts-0.2.2-cp313-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (85 kB)
 Downloading azure_ai_documentintelligence-1.0.2-py3-none-any.whl (106 kB)
 Downloading azure_identity-1.27.0-py3-none-any.whl (203 kB)
 Downloading msal-1.39.0-py3-none-any.whl (131 kB)
@@ -1436,104 +1453,68 @@ Downloading beautifulsoup4-4.15.0-py3-none-any.whl (109 kB)
 Downloading soupsieve-4.1.2-py3-none-any.whl (59 kB)
 Downloading flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)
 Downloading lxml-6.1.3-cp313-cp313-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 2.6 MB/s  0:00:02
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 3.0 MB/s  0:00:01
 Downloading markdownify-1.2.4-py3-none-any.whl (15 kB)
+Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 3.0 MB/s  0:00:00
 Downloading olefile-0.47-py2.py3-none-any.whl (114 kB)
 Downloading openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
 Downloading et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
 Downloading packaging-26.3-py3-none-any.whl (129 kB)
 Downloading pandas-3.1.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (12.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 2.6 MB/s  0:00:04
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 3.1 MB/s  0:00:03
 Downloading python_dateutil-4.0.0-py3-none-any.whl (92 kB)
+Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
 Downloading pycparser-3.12-py3-none-any.whl (62 kB)
 Downloading pydub-0.25.1-py2.py3-none-any.whl (32 kB)
 Downloading python_docx-1.2.0-py3-none-any.whl (252 kB)
 Downloading python_pptx-1.0.2-py3-none-any.whl (472 kB)
 Downloading xlsxwriter-3.3.1-py3-none-any.whl (180 kB)
+Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 801.6/801.6 kB 3.3 MB/s  0:00:00
 Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+Downloading speechrecognition-3.17.0-py3-none-any.whl (32.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 32.9/32.9 MB 3.1 MB/s  0:00:10
+Downloading audioop_lts-0.2.2-cp313-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (85 kB)
 Downloading standard_aifc-3.13.0-py3-none-any.whl (10 kB)
 Downloading standard_chunk-3.13.0-py3-none-any.whl (4.9 kB)
 Downloading striprtf-0.0.35-py3-none-any.whl (8.4 kB)
+Downloading tabulate-0.10.0-py3-none-any.whl (39 kB)
 Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
 Downloading xlrd-2.0.2-py2.py3-none-any.whl (96 kB)
 Building wheels for collected packages: markitdown, markitdown-sample-plugin
   Building wheel for markitdown (pyproject.toml): started
   Building wheel for markitdown (pyproject.toml): finished with status 'done'
-  Created wheel for markitdown: filename=markitdown-0.1.9-py3-none-any.whl size=93257 sha256=7d23253450e8e72cdc2f7e0119720399d2e08700166c8d0b01316401e56e90a9
-  Stored in directory: /tmp/pip-ephem-wheel-cache-blb1j42c/wheels/f1/6b/88/b8de18d447246ec8b787d2b1db33e550504e9352d267a4b22a
+  Created wheel for markitdown: filename=markitdown-0.1.8-py3-none-any.whl size=89733 sha256=fb92062adb95b5500660366ccdc85b01b2bf32642e400f1a93ffd3ca64564150
+  Stored in directory: /tmp/pip-ephem-wheel-cache-bxc2lksu/wheels/f1/6b/88/b8de18d447246ec8b787d2b1db33e550504e9352d267a4b22a
   Building wheel for markitdown-sample-plugin (pyproject.toml): started
   Building wheel for markitdown-sample-plugin (pyproject.toml): finished with status 'done'
-  Created wheel for markitdown-sample-plugin: filename=markitdown_sample_plugin-0.1.0a1-py3-none-any.whl size=4628 sha256=1f444b12c52c72920a79810d508777c14bb281411a9a3afbca01bfb039d368ed
-  Stored in directory: /tmp/pip-ephem-wheel-cache-blb1j42c/wheels/47/9d/2a/261a0e4e84d4883a80e2533963869a75d8fbe7a48395846e9b
+  Created wheel for markitdown-sample-plugin: filename=markitdown_sample_plugin-0.1.0a1-py3-none-any.whl size=4628 sha256=bc86580943e0703762b7fc04e548e555ab09ff1b9e306e915ef7781d9a50fdda
+  Stored in directory: /tmp/pip-ephem-wheel-cache-bxc2lksu/wheels/47/9d/2a/261a0e4e84d4883a80e2533963869a75d8fbe7a48395846e9b
 Successfully built markitdown markitdown-sample-plugin
-Installing collected packages: standard-chunk, pydub, flatbuffers, XlsxWriter, xlrd, urllib3, tzdata, typing-extensions, truststore, striprtf, soupsieve, sniffio, pypdfium2, pymupdf, PyJWT, pycparser, protobuf, pillow, packaging, olefile, numpy, lxml, jiter, isodate, idna, h11, et-xmlfile, defusedxml, cobble, click, charset-normalizer, certifi, audioop-lts, annotated-types, typing-inspection, standard-aifc, requests, python-pptx, python-docx, python-dateutil, pydantic-core, openpyxl, onnxruntime, mammoth, httpcore2, cffi, beautifulsoup4, anyio, youtube-transcript-api, speechrecognition, pydantic, pandas, markdownify, magika, httpx2, cryptography, azure-core, pdfminer-six, openai, markitdown, azure-ai-documentintelligence, azure-ai-contentunderstanding, pdfplumber, msal, markitdown-sample-plugin, msal-extensions, markitdown-ocr, azure-identity
-
-Successfully installed PyJWT-2.15.1 XlsxWriter-3.3.1 annotated-types-0.8.0 anyio-4.16.0 audioop-lts-0.2.2 azure-ai-contentunderstanding-1.2.0b3 azure-ai-documentintelligence-1.0.2 azure-core-1.41.0 azure-identity-1.27.0 beautifulsoup4-4.15.0 certifi-2026.10.23 cffi-2.1.1 charset-normalizer-3.5.2 click-8.5.1 cobble-0.1.4 cryptography-50.0.2 defusedxml-0.7.1 et-xmlfile-2.0.0 flatbuffers-25.12.19 h11-0.16.0 httpcore2-2.16.2 httpx2-2.16.2 idna-3.20 isodate-0.7.2 jiter-0.19.0 lxml-6.1.3 magika-1.0.3 mammoth-1.13.0 markdownify-1.2.4 markitdown-0.1.9 markitdown-ocr-0.1.2 markitdown-sample-plugin-0.1.0a1 msal-1.39.0 msal-extensions-1.3.1 numpy-2.5.5 olefile-0.47 onnxruntime-1.32.0 openai-3.55.1 openpyxl-3.1.5 packaging-26.3 pandas-3.1.1 pdfminer-six-20260107 pdfplumber-0.11.10 pillow-13.0.0 protobuf-7.36.2 pycparser-3.12 pydantic-2.14.4 pydantic-core-2.50.5 pydub-0.25.1 pymupdf-1.28.2 pypdfium2-5.15.2 python-dateutil-4.0.0 python-docx-1.2.0 python-pptx-1.0.2 requests-2.34.2 sniffio-1.3.1 soupsieve-4.1.2 speechrecognition-3.17.0 standard-aifc-3.13.0 standard-chunk-3.13.0 striprtf-0.0.35 truststore-0.10.5 typing-extensions-4.16.0 typing-inspection-0.4.5 tzdata-2026.6 urllib3-2.8.0 xlrd-2.0.2 youtube-transcript-api-1.2.5
+Installing collected packages: standard-chunk, pydub, flatbuffers, XlsxWriter, xlrd, urllib3, tzdata, typing-extensions, truststore, tabulate, striprtf, soupsieve, sniffio, pyyaml, python-dotenv, pypdfium2, PyJWT, pycparser, psutil, protobuf, pillow, packaging, olefile, numpy, networkx, lxml, jiter, isodate, idna, h11, et-xmlfile, defusedxml, cobble, click, charset-normalizer, certifi, audioop-lts, annotated-types, typing-inspection, standard-aifc, requests, python-pptx, python-docx, python-dateutil, pydantic-core, openpyxl, onnxruntime, mammoth, httpcore2, cffi, beautifulsoup4, anyio, youtube-transcript-api, speechrecognition, pydantic, pandas, markdownify, magika, httpx2, cryptography, azure-core, pdfminer-six, openai, markitdown, azure-ai-documentintelligence, azure-ai-contentunderstanding, pdfplumber, msal, markitdown-sample-plugin, msal-extensions, azure-identity, pymupdf4llm, pymupdf-layout, pymupdf, markitdown-ocr
 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
-Removing intermediate container 862b98a89a12
- ---> bb8d7e99668e
+Removing intermediate container e2e1170556d8
+ ---> f738464ce32d
 Step 14/18 : COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY failed: stat /mnt/sda1/var/lib/docker/tmp/docker-builder164797498/entrypoint.sh: no such file or directory
-```
-```text
-Sending build context to Docker daemon  64.72MB
-Step 1/18 : FROM python:3.13-slim-bullseye
- ---> 5e751abf51db
-Step 2/18 : ENV DEBIAN_FRONTEND=noninteractive     PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     EXIFTOOL_PATH=/usr/bin/exiftool     FFMPEG_PATH=/usr/bin/ffmpeg
- ---> Using cache
- ---> 7d1496197792
-Step 3/18 : ARG MARKITDOWN_REPO=https://github.com/microsoft/markitdown.git
- ---> Using cache
- ---> 86940bc32735
-Step 4/18 : ARG MARKITDOWN_REF=main
- ---> Using cache
- ---> 145281e80e8e
-Step 5/18 : RUN grep -rl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ /dev/null     | xargs -IX sed -i '/\(debian-security\|bullseye-security\)/d' X
- ---> Using cache
- ---> f8067a6001f6
-Step 6/18 : RUN (grep -qrl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ && echo 'still have';  exit 1) || exit 0
- ---> Using cache
- ---> d9c09fdbb433
-Step 7/18 : RUN apt-get update
- ---> Using cache
- ---> 275970ab4422
-Step 8/18 : RUN apt-get install -y perl=5.32.1-4+deb11u3 perl-base=5.32.1-4+deb11u3 --allow-downgrades
- ---> Using cache
- ---> 81a2ff7c7e78
-Step 9/18 : RUN apt-get install -y --no-install-recommends         ca-certificates         git         ffmpeg         exiftool     && rm -rf /var/lib/apt/lists/*
- ---> Using cache
- ---> 202905998d37
-Step 10/18 : WORKDIR /opt
- ---> Using cache
- ---> cb0019718540
-Step 11/18 : RUN git clone --depth 1 --branch "${MARKITDOWN_REF}" "${MARKITDOWN_REPO}" markitdown
- ---> Using cache
- ---> b67cc2d41ffe
-Step 12/18 : WORKDIR /opt/markitdown
- ---> Using cache
- ---> aee152a418c7
-Step 13/18 : RUN pip install --no-cache-dir --upgrade pip     && pip install --no-cache-dir         "packages/markitdown[all]"         "packages/markitdown-sample-plugin"         markitdown-ocr         openai
- ---> Using cache
- ---> bb8d7e99668e
-Step 14/18 : COPY entrypoint.sh /usr/local/bin/entrypoint.sh
- ---> 9f40f5707f43
+ ---> e7ee7efe43ec
 Step 15/18 : RUN chmod +x /usr/local/bin/entrypoint.sh
- ---> Running in 7660fa6fe27e
-Removing intermediate container 7660fa6fe27e
- ---> eca26192cfba
+ ---> Running in 38ae70d9b13c
+Removing intermediate container 38ae70d9b13c
+ ---> 97c08b3b1260
 Step 16/18 : WORKDIR /data
- ---> Running in 5e3ec67309f2
-Removing intermediate container 5e3ec67309f2
- ---> fd1b9a584293
+ ---> Running in 248a833df63d
+Removing intermediate container 248a833df63d
+ ---> 96a248b7ab6c
 Step 17/18 : ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
- ---> Running in 548dfeaf54d4
-Removing intermediate container 548dfeaf54d4
- ---> 903892dcd71e
+ ---> Running in 5d4626dc9f8b
+Removing intermediate container 5d4626dc9f8b
+ ---> 285db8d7e634
 Step 18/18 : CMD ["--help"]
- ---> Running in 6543fa3ba318
-Removing intermediate container 6543fa3ba318
- ---> e9506c1364ed
-Successfully built e9506c1364ed
+ ---> Running in 2a9ea257a118
+Removing intermediate container 2a9ea257a118
+ ---> 3869540548a8
+Successfully built 3869540548a8
 Successfully tagged markitdown:latest
 ```
 
@@ -1643,7 +1624,6 @@ git rev-parse v0.1.8^{commit}
 ### See Also:
 
   * [ottijp/markitdown](https://hub.docker.com/r/ottijp/markitdown/tags)
-
 
 ---
 ### Author
