@@ -25,7 +25,7 @@ E: Packages were downgraded and -y was used without --allow-downgrades.
 docker pull python:3.13-slim-bullseye
 ```
 ```sh
-docker build -t markitdown -f Dockerfile .
+docker build -t markitdown --build-arg TAG=v0.1.8 -f Dockerfile .
 ```
 
 ```text
@@ -1517,7 +1517,20 @@ Removing intermediate container 2a9ea257a118
 Successfully built 3869540548a8
 Successfully tagged markitdown:latest
 ```
-
+```sh
+docker image ls
+```
+```text
+REPOSITORY          TAG                  IMAGE ID            CREATED             SIZE
+markitdown          latest               b9c2704b95cc        2 minutes ago       1.24GB
+python              3.13-slim-bullseye   5e751abf51db        15 months ago       120MB
+```
+```sh
+ls -hl ~/.docker/machine/machines/default/disk.vmdk
+```
+```text
+-rw-r--r-- 1 kouzm 197609 2.4G Nov 19 12:20 /c/Users/kouzm/.docker/machine/machines/default/disk.vmdk
+```
 ```sh
 docker run -it --rm markitdown
 ```
@@ -1609,7 +1622,52 @@ options:
   --keep-data-uris      Keep data URIs (like base64-encoded images) in the
                         output. By default, data URIs are truncated.
 ```
+```sh
+cp file-sample_150kB.pdf  ~/test
+```
+```sh
+docker run -v /c/Users/$USERNAME/test:/tmp -w /tmp -it --rm markitdown file-sample_150kB.pdf
+```
+```text
+## Page 1
 
+Lorem ipsum
+Lorem ipsum dolor sit amet, consectetur adipiscing
+elit. Nunc ac faucibus odio.
+Vestibulum neque massa, scelerisque sit amet ligula eu, congue molestie mi. Praesent ut
+varius sem. Nullam at porttitor arcu, nec lacinia nisi. Ut ac dolor vitae odio interdum
+condimentum. Vivamus dapibus sodales ex, vitae malesuada ipsum cursus
+convallis. Maecenas sed egestas nulla, ac condimentum orci. Mauris diam felis,
+vulputate ac suscipit et, iaculis non est. Curabitur semper arcu ac ligula semper, nec luctus
+nisl blandit. Integer lacinia ante ac libero lobortis imperdiet. Nullam mollis convallis ipsum,
+ac accumsan nunc vehicula vitae. Nulla eget justo in felis tristique fringilla. Morbi sit amet
+tortor quis risus auctor condimentum. Morbi in ullamcorper elit. Nulla iaculis tellus sit amet
+mauris tempus fringilla.
+Maecenas mauris lectus, lobortis et purus mattis, blandit dictum tellus.
+ Maecenas non lorem quis tellus placerat varius.
+ Nulla facilisi.
+ Aenean congue fringilla justo ut aliquam.
+
+Mauris id ex erat. Nunc vulputate neque vitae justo facilisis, non condimentum ante
+sagittis.
+ Morbi viverra semper lorem nec molestie.
+ Maecenas tincidunt est efficitur ligula euismod, sit amet ornare est vulputate.
+12
+10
+8
+Column 1
+6
+Column 2
+4 Column 3
+2
+0
+Row 1 Row 2 Row 3 Row 4
+
+## Page 2
+...
+```
+
+### Background
 ```sh
 git ls-remote https://github.com/microsoft/markitdown.git \
     'refs/tags/v0.1.8' 'refs/tags/v0.1.8^{}'
