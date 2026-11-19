@@ -1628,6 +1628,18 @@ options:
   --keep-data-uris      Keep data URIs (like base64-encoded images) in the
                         output. By default, data URIs are truncated.
 ```
+
+```sh
+git ls-remote https://github.com/microsoft/markitdown.git \
+    'refs/tags/v0.1.8' 'refs/tags/v0.1.8^{}'
+```
+```sh
+git fetch --tags
+
+git show --no-patch --format=fuller v0.1.8
+
+git rev-parse v0.1.8^{commit}
+```
 ### See Also:
 
   * [ottijp/markitdown](https://hub.docker.com/r/ottijp/markitdown/tags)
