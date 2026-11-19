@@ -1,0 +1,32 @@
+services:
+  markitdown:
+    build:
+      context: .
+      args:
+        MARKITDOWN_REF: main
+    image: markitdown
+    container_name: markitdown
+    working_dir: /data
+    volumes:
+      - ./:/data
+    environment:
+      # OpenAI-compatible LLM credentials for markitdown-ocr plugin.
+      # Set OPENAI_API_KEY and LLM_MODEL to enable OCR via LLM Vision.
+      # Leave OPENAI_API_KEY empty to run without LLM (OCR silently skipped).
+      #
+      # --- Anthropic Claude (OpenAI-compatible endpoint) ---
+      # OPENAI_API_KEY: "sk-ant-..."
+      # OPENAI_BASE_URL: "https://api.anthropic.com/v1"
+      # LLM_MODEL: "claude-opus-4-6"
+      #
+      # --- OpenAI ---
+      # OPENAI_API_KEY: "sk-..."
+      # LLM_MODEL: "gpt-4o"
+      #
+      # --- Other OpenAI-compatible providers ---
+      # OPENAI_API_KEY: "..."
+      # OPENAI_BASE_URL: "https://your-provider/v1"
+      # LLM_MODEL: "model-name"
+      OPENAI_API_KEY: ""
+      OPENAI_BASE_URL: ""
+      LLM_MODEL: ""
