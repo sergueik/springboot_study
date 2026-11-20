@@ -4,6 +4,11 @@
 FROM builder
 
 WORKDIR /opt
+RUN apt-get -qq update
+
+RUN apt-get install -qy --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
 
 ARG REPO=https://github.com/microsoft/markitdown.git
 # ARG BRANCH=main

@@ -17,36 +17,22 @@ docker build -t builder -f Dockerfile.builder .
 Step 1/7 : FROM python:3.13-slim-bullseye
  ---> 5e751abf51db
 Step 2/7 : ENV DEBIAN_FRONTEND=noninteractive     PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     EXIFTOOL_PATH=/usr/bin/exiftool     FFMPEG_PATH=/usr/bin/ffmpeg
- ---> Running in f72f2f85bb78
-Removing intermediate container f72f2f85bb78
+ ---> Using cache
  ---> 4e3122274a8d
 Step 3/7 : RUN grep -rl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ /dev/null     | xargs -IX sed -i '/\(debian-security\|bullseye-security\)/d' X
- ---> Running in 3a41e199ed0a
-Removing intermediate container 3a41e199ed0a
+ ---> Using cache
  ---> 154bdd53e907
 Step 4/7 : RUN (grep -qrl -E 'debian-security|bullseye-security'     /etc/apt/sources.list /etc/apt/sources.list.d/ && echo 'still have';  exit 1) || exit 0
- ---> Running in b0985b3ad9f4
-Removing intermediate container b0985b3ad9f4
+ ---> Using cache
  ---> e23df0951be5
 Step 5/7 : RUN apt-get -qq update
- ---> Running in 496f071e6d76
-Removing intermediate container 496f071e6d76
+ ---> Using cache
  ---> c50fe01753e1
 Step 6/7 : RUN apt-get install -qqy perl=5.32.1-4+deb11u3 perl-base=5.32.1-4+deb11u3 --allow-downgrades
- ---> Running in 34ab2379076e
-debconf: delaying package configuration, since apt-utils is not installed
-dpkg: warning: downgrading perl-base from 5.32.1-4+deb11u4 to 5.32.1-4+deb11u3
-(Reading database ... 7034 files and directories currently installed.)
-Preparing to unpack .../perl-base_5.32.1-4+deb11u3_amd64.deb ...
-Unpacking perl-base (5.32.1-4+deb11u3) over (5.32.1-4+deb11u4) ...
-Setting up perl-base (5.32.1-4+deb11u3) ...
-Selecting previously unselected package perl-modules-5.32.
-(Reading database ... 7035 files and directories currently installed.)
-Preparing to unpack .../perl-modules-5.32_5.32.1-4+deb11u3_all.deb ...
-Unpacking perl-modules-5.32 (5.32.1-4+deb11u3) ...
-...
-Step 7/7 : RUN apt-get install -qy --no-install-recommends         ca-certificates git ffmpeg exiftool     && rm -rf /var/lib/apt/lists/*
- ---> Running in 05fe0410f828
+ ---> Using cache
+ ---> 2ad9d551420c
+Step 7/7 : RUN apt-get install -qy --no-install-recommends         ca-certificates ffmpeg exiftool     && rm -rf /var/lib/apt/lists/*
+ ---> Running in 59eaa2fe68f6
 Reading package lists...
 Building dependency tree...
 Reading state information...
@@ -55,101 +41,91 @@ The following additional packages will be installed:
 ...
 Suggested packages:
 ...
-Setting up ffmpeg (7:4.3.7-0+deb11u1) ...
+0 upgraded, 189 newly installed, 0 to remove and 0 not upgraded.
+Need to get 119 MB of archives.
+...
 Processing triggers for libc-bin (2.31-13+deb11u13) ...
-Removing intermediate container 05fe0410f828
- ---> 47e9035e62a3
-Successfully built 47e9035e62a3
+Removing intermediate container 59eaa2fe68f6
+ ---> d5e5d23bb8ab
+Successfully built d5e5d23bb8ab
 Successfully tagged builder:latest
 ```
 * clone specified tag of MarkItDown repository source and expose `markitdown` CLI as the container entrypoint.
 
 ```sh
-docker build -t markitdown --build-arg TAG=v0.1.8 -f Dockerfile.build .
+docker build -t markitdown --build-arg VERSION=0.1.8 -f Dockerfile.build .
 ```
 
 ```text
-Step 1/13 : FROM builder
- ---> 47e9035e62a3
-Step 2/13 : WORKDIR /opt
- ---> Running in 65742be30bf1
-Removing intermediate container 65742be30bf1
- ---> d0018e6b5de3
-Step 3/13 : ARG REPO=https://github.com/microsoft/markitdown.git
- ---> Running in 803a0d0b8159
-Removing intermediate container 803a0d0b8159
- ---> 125f2f4ff1a4
-Step 4/13 : ARG VERSION=0.1.8
- ---> Running in 57b8146a3b43
-Removing intermediate container 57b8146a3b43
- ---> 531c753e66dc
-Step 5/13 : ENV TAG=v$VERSION
- ---> Running in d4d101dc8979
-Removing intermediate container d4d101dc8979
- ---> 853534cac4af
-Step 6/13 : RUN git clone --no-progress --depth 1 --branch "${TAG}" "${REPO}" markitdown
- ---> Running in 089f8ac3267b
-Cloning into 'markitdown'...
-Note: switching to 'b8f79c57ebc0044be41323d89b2a45d3fda8460e'.
+Step 1/15 : FROM builder
+ ---> d5e5d23bb8ab
+Step 2/15 : WORKDIR /opt
+ ---> Using cache
+ ---> 5f92fceec8b3
+Step 3/15 : RUN apt-get -qq update
+ ---> Running in 65bb29fec7ba
+Removing intermediate container 65bb29fec7ba
+ ---> 7fc892c667f8
+Step 4/15 : RUN apt-get install -qy --no-install-recommends git     && rm -rf /var/lib/apt/lists/*
+ ---> Running in 82ed3cb3ab65
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+...
+Removing intermediate container 82ed3cb3ab65
+ ---> 827f3869e644
+Step 5/15 : ARG REPO=https://github.com/microsoft/markitdown.git
+ ---> Running in 507a8d311605
+Removing intermediate container 507a8d311605
+ ---> 39fd57053247
+Step 6/15 : ARG VERSION=0.1.8
+ ---> Running in f4533e55a2d1
+Removing intermediate container f4533e55a2d1
+ ---> 2664d9dc23ca
+Step 7/15 : ENV TAG=v$VERSION
+ ---> Running in cc4bade39730
+Removing intermediate container cc4bade39730
+ ---> 6cdd05766906
+Step 8/15 : RUN git clone --no-progress --depth 1 --branch "${TAG}" "${REPO}" markitdown
+ ---> Running in a3e89ba2ad5f
+[91mCloning into 'markitdown'...
+[0m[91mNote: switching to 'b8f79c57ebc0044be41323d89b2a45d3fda8460e'.
 
 You are in 'detached HEAD' state. You can look around, make experimental
 changes and commit them, and you can discard any commits you make in this
 state without impacting any branches by switching back to a branch.
-
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -c with the switch command. Example:
-
-  git switch -c <new-branch-name>
-
-Or undo this operation with:
-
-  git switch -
-
-Turn off this advice by setting config variable advice.detachedHead to false
-
-Removing intermediate container 089f8ac3267b
- ---> e585b634ea5c
-Step 7/13 : WORKDIR /opt/markitdown
- ---> Running in f41a5a4210ad
-Removing intermediate container f41a5a4210ad
- ---> ba21ff545707
-Step 8/13 : RUN pip install --no-cache-dir --upgrade pip     && pip install --no-cache-dir         "packages/markitdown[all]"         "packages/markitdown-sample-plugin"         markitdown-ocr         openai
- ---> Running in 52870eb6b90c
-Requirement already satisfied: pip in /usr/local/lib/python3.13/site-packages (25.2)
-Collecting pip
-  Downloading pip-26.3-py3-none-any.whl.metadata (4.6 kB)
-Downloading pip-26.3-py3-none-any.whl (2.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 21.1 MB/s  0:00:00
-Installing collected packages: pip
+...
+Building wheels for collected packages: markitdown, markitdown-sample-plugin
 ...
 Successfully built markitdown markitdown-sample-plugin
 Installing collected packages: standard-chunk, pydub, flatbuffers, XlsxWriter, xlrd, urllib3, tzdata, typing-extensions, truststore, tabulate, striprtf, soupsieve, sniffio, pyyaml, python-dotenv, pypdfium2, PyJWT, pycparser, psutil, protobuf, pillow, packaging, olefile, numpy, networkx, lxml, jiter, isodate, idna, h11, et-xmlfile, defusedxml, cobble, click, charset-normalizer, certifi, audioop-lts, annotated-types, typing-inspection, standard-aifc, requests, python-pptx, python-docx, python-dateutil, pydantic-core, openpyxl, onnxruntime, mammoth, httpcore2, cffi, beautifulsoup4, anyio, youtube-transcript-api, speechrecognition, pydantic, pandas, markdownify, magika, httpx2, cryptography, azure-core, pdfminer-six, openai, markitdown, azure-ai-documentintelligence, azure-ai-contentunderstanding, pdfplumber, msal, markitdown-sample-plugin, msal-extensions, azure-identity, pymupdf4llm, pymupdf-layout, pymupdf, markitdown-ocr
 
 Successfully installed PyJWT-2.15.1 XlsxWriter-3.3.3 annotated-types-0.8.0 anyio-4.16.0 audioop-lts-0.2.2 azure-ai-contentunderstanding-1.2.0b3 azure-ai-documentintelligence-1.0.2 azure-core-1.41.0 azure-identity-1.27.0 beautifulsoup4-4.15.0 certifi-2026.10.23 cffi-2.1.1 charset-normalizer-3.5.2 click-8.5.1 cobble-0.1.4 cryptography-50.0.2 defusedxml-0.7.1 et-xmlfile-2.0.0 flatbuffers-25.12.19 h11-0.16.0 httpcore2-2.16.2 httpx2-2.16.2 idna-3.20 isodate-0.7.2 jiter-0.19.0 lxml-6.1.3 magika-0.6.3 mammoth-1.11.0 markdownify-1.2.4 markitdown-0.1.8 markitdown-ocr-0.1.1 markitdown-sample-plugin-0.1.0a1 msal-1.39.0 msal-extensions-1.3.1 networkx-3.7 numpy-2.5.5 olefile-0.47 onnxruntime-1.32.0 openai-3.57.0 openpyxl-3.1.5 packaging-26.3 pandas-3.1.1 pdfminer-six-20260107 pdfplumber-0.11.10 pillow-13.0.0 protobuf-7.36.2 psutil-7.2.2 pycparser-3.12 pydantic-2.14.4 pydantic-core-2.50.5 pydub-0.25.1 pymupdf-2.1 pymupdf-layout-2.1 pymupdf4llm-2.1 pypdfium2-5.15.2 python-dateutil-4.0.0 python-docx-1.2.0 python-dotenv-1.2.4 python-pptx-1.0.2 pyyaml-6.0.3 requests-2.34.2 sniffio-1.3.1 soupsieve-4.1.3 speechrecognition-3.17.0 standard-aifc-3.13.0 standard-chunk-3.13.0 striprtf-0.0.35 tabulate-0.10.0 truststore-0.10.5 typing-extensions-4.16.0 typing-inspection-0.4.5 tzdata-2026.6 urllib3-2.8.0 xlrd-2.0.2 youtube-transcript-api-1.2.5
-WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
-Removing intermediate container 52870eb6b90c
- ---> 698f0bcf151d
-Step 9/13 : COPY entrypoint.sh /usr/local/bin/entrypoint.sh
- ---> e4658667d503
-Step 10/13 : RUN chmod +x /usr/local/bin/entrypoint.sh
- ---> Running in 2ab01bffdcc0
-Removing intermediate container 2ab01bffdcc0
- ---> 0585308b92cc
-Step 11/13 : WORKDIR /data
- ---> Running in 1954dde2d14f
-Removing intermediate container 1954dde2d14f
- ---> 6982299dcdcc
-Step 12/13 : ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
- ---> Running in 72fafb66da56
-Removing intermediate container 72fafb66da56
- ---> 70662b5301bc
-Step 13/13 : CMD ["--help"]
- ---> Running in d0f1d30ef92c
-Removing intermediate container d0f1d30ef92c
- ---> a65be005639c
-[Warning] One or more build-args [TAG] were not consumed
-Successfully built a65be005639c
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[0mRemoving intermediate container 4fa76185acee
+ ---> 058320aebef1
+Step 11/15 : COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+ ---> 0a1d8a3f16f3
+Step 12/15 : RUN chmod +x /usr/local/bin/entrypoint.sh
+ ---> Running in 721383efad5b
+Removing intermediate container 721383efad5b
+ ---> 5fd774f83735
+Step 13/15 : WORKDIR /data
+ ---> Running in e9ceffc9f8a6
+Removing intermediate container e9ceffc9f8a6
+ ---> 8217ee4c20a3
+Step 14/15 : ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ ---> Running in e6af4a9725be
+Removing intermediate container e6af4a9725be
+ ---> 0ad2f7f2b620
+Step 15/15 : CMD ["--help"]
+ ---> Running in 51afc91ccd33
+Removing intermediate container 51afc91ccd33
+ ---> 5873afaee7d1
+Successfully built 5873afaee7d1
 Successfully tagged markitdown:latest
+
 ```      
     
 * alternatviely install the published application sans markitdown-ocr and openai
@@ -159,53 +135,44 @@ docker build -t markitdown2 --build-arg VERSION=0.1.8 -f Dockerfile .
 ```
 ```text
 Step 1/8 : FROM builder
- ---> 47e9035e62a3
+ ---> d5e5d23bb8ab
 Step 2/8 : ARG VERSION=0.1.8
- ---> Running in 22129db5297a
-Removing intermediate container 22129db5297a
- ---> fe6ebbbf537f
-Step 3/8 : RUN python -m pip install --no-cache-dir --upgrade pip     && python -m pip install --no-cache-dir         "markitdown[all]==${VERSION}"         markitdown-sample-plugin         "markitdown-ocr[llm]"
- ---> Running in 39531ec8522a
+ ---> Running in a367d5a7b89b
+Removing intermediate container a367d5a7b89b
+ ---> 57f20158e6d9
+Step 3/8 : RUN python -m pip install --no-cache-dir --upgrade pip     && python -m pip install --no-cache-dir         "markitdown[all]==${VERSION}"         markitdown-sample-plugin
+ ---> Running in 12cfdae61b07
 Requirement already satisfied: pip in /usr/local/lib/python3.13/site-packages (25.2)
 Collecting pip
   Downloading pip-26.3-py3-none-any.whl.metadata (4.6 kB)
 Downloading pip-26.3-py3-none-any.whl (2.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 18.2 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 12.1 MB/s  0:00:00
 Installing collected packages: pip
   Attempting uninstall: pip
-    Found existing installation: pip 25.2
-    Uninstalling pip-25.2:
-      Successfully uninstalled pip-25.2
-Successfully installed pip-26.3
-WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
-Collecting markitdown==0.1.8 (from markitdown[all]==0.1.8)
-  Downloading markitdown-0.1.8-py3-none-any.whl.metadata (4.9 kB)
 ...
-Installing collected packages: standard-chunk, pydub, flatbuffers, XlsxWriter, xlrd, urllib3, tzdata, typing-extensions, truststore, tabulate, striprtf, soupsieve, sniffio, pyyaml, python-dotenv, pypdfium2, PyJWT, pycparser, psutil, protobuf, pillow, packaging, olefile, numpy, networkx, lxml, jiter, isodate, idna, h11, et-xmlfile, defusedxml, cobble, click, charset-normalizer, certifi, audioop-lts, annotated-types, typing-inspection, standard-aifc, requests, python-pptx, python-docx, python-dateutil, pydantic-core, openpyxl, onnxruntime, mammoth, httpcore2, cffi, beautifulsoup4, anyio, youtube-transcript-api, speechrecognition, pydantic, pandas, markdownify, magika, httpx2, cryptography, azure-core, pdfminer-six, openai, markitdown, azure-ai-documentintelligence, azure-ai-contentunderstanding, pdfplumber, msal, markitdown-sample-plugin, msal-extensions, azure-identity, pymupdf4llm, pymupdf-layout, pymupdf, markitdown-ocr
-
-Successfully installed PyJWT-2.15.1 XlsxWriter-3.3.3 annotated-types-0.8.0 anyio-4.16.0 audioop-lts-0.2.2 azure-ai-contentunderstanding-1.2.0b3 azure-ai-documentintelligence-1.0.2 azure-core-1.41.0 azure-identity-1.27.0 beautifulsoup4-4.15.0 certifi-2026.10.23 cffi-2.1.1 charset-normalizer-3.5.2 click-8.5.1 cobble-0.1.4 cryptography-50.0.2 defusedxml-0.7.1 et-xmlfile-2.0.0 flatbuffers-25.12.19 h11-0.16.0 httpcore2-2.16.2 httpx2-2.16.2 idna-3.20 isodate-0.7.2 jiter-0.19.0 lxml-6.1.3 magika-0.6.3 mammoth-1.11.0 markdownify-1.2.4 markitdown-0.1.8 markitdown-ocr-0.1.1 markitdown-sample-plugin-0.1.0a1 msal-1.39.0 msal-extensions-1.3.1 networkx-3.7 numpy-2.5.5 olefile-0.47 onnxruntime-1.32.0 openai-3.57.0 openpyxl-3.1.5 packaging-26.3 pandas-3.1.1 pdfminer-six-20260107 pdfplumber-0.11.10 pillow-13.0.0 protobuf-7.36.2 psutil-7.2.2 pycparser-3.12 pydantic-2.14.4 pydantic-core-2.50.5 pydub-0.25.1 pymupdf-2.1 pymupdf-layout-2.1 pymupdf4llm-2.1 pypdfium2-5.15.2 python-dateutil-4.0.0 python-docx-1.2.0 python-dotenv-1.2.4 python-pptx-1.0.2 pyyaml-6.0.3 requests-2.34.2 sniffio-1.3.1 soupsieve-4.1.3 speechrecognition-3.17.0 standard-aifc-3.13.0 standard-chunk-3.13.0 striprtf-0.0.35 tabulate-0.10.0 truststore-0.10.5 typing-extensions-4.16.0 typing-inspection-0.4.5 tzdata-2026.6 urllib3-2.8.0 xlrd-2.0.2 youtube-transcript-api-1.2.5
+Successfully installed Pillow-13.0.0 PyJWT-2.15.1 XlsxWriter-3.3.3 audioop-lts-0.2.2 azure-ai-contentunderstanding-1.2.0b3 azure-ai-documentintelligence-1.0.2 azure-core-1.41.0 azure-identity-1.27.0 beautifulsoup4-4.15.0 certifi-2026.10.23 cffi-2.1.1 charset-normalizer-3.5.2 click-8.5.1 cobble-0.1.4 cryptography-50.0.2 defusedxml-0.7.1 et-xmlfile-2.0.0 flatbuffers-25.12.19 idna-3.20 isodate-0.7.2 lxml-6.1.3 magika-0.6.3 mammoth-1.11.0 markdownify-1.2.4 markitdown-0.1.8 markitdown-sample-plugin-0.1.0a1 msal-1.39.0 msal-extensions-1.3.1 numpy-2.5.5 olefile-0.47 onnxruntime-1.32.0 openpyxl-3.1.5 packaging-26.3 pandas-3.1.1 pdfminer-six-20260107 pdfplumber-0.11.10 protobuf-7.36.2 pycparser-3.12 pydub-0.25.1 pypdfium2-5.15.2 python-dateutil-4.0.0 python-dotenv-1.2.4 python-pptx-1.0.2 requests-2.34.2 soupsieve-4.1.3 speechrecognition-3.17.0 standard-aifc-3.13.0 standard-chunk-3.13.0 striprtf-0.0.35 typing-extensions-4.16.0 tzdata-2026.6 urllib3-2.8.0 xlrd-2.0.2 youtube-transcript-api-1.2.5
 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
-Removing intermediate container 39531ec8522a
- ---> c8270ddc9fe4
+Removing intermediate container 12cfdae61b07
+ ---> 105b9da4fae0
 Step 4/8 : COPY entrypoint.sh /usr/local/bin/entrypoint.sh
- ---> 88c897c2271a
+ ---> c948dc3449ce
 Step 5/8 : RUN chmod +x /usr/local/bin/entrypoint.sh
- ---> Running in d579e557dbfe
-Removing intermediate container d579e557dbfe
- ---> e83698a9e1cc
+ ---> Running in 3f225aedcba6
+Removing intermediate container 3f225aedcba6
+ ---> 3b0fa2ae4860
 Step 6/8 : WORKDIR /data
- ---> Running in 4f1db5542d76
-Removing intermediate container 4f1db5542d76
- ---> 855227547e1e
+ ---> Running in 3287373adc6a
+Removing intermediate container 3287373adc6a
+ ---> af7f89d6b1a0
 Step 7/8 : ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
- ---> Running in 1dc5f83ba8f4
-Removing intermediate container 1dc5f83ba8f4
- ---> 4d5660df4229
+ ---> Running in 68387d38c36c
+Removing intermediate container 68387d38c36c
+ ---> 1e90d9a60035
 Step 8/8 : CMD ["--help"]
- ---> Running in b4fcc4623098
-Removing intermediate container b4fcc4623098
- ---> 93a597ed8d04
-Successfully built 93a597ed8d04
+ ---> Running in 93be30fdadaa
+Removing intermediate container 93be30fdadaa
+ ---> f6843f1cf232
+Successfully built f6843f1cf232
 Successfully tagged markitdown2:latest
 ```
 ```sh
@@ -213,10 +180,10 @@ docker image ls
 ```
 ```text
 REPOSITORY          TAG                  IMAGE ID            CREATED             SIZE
-markitdown2         latest               93a597ed8d04        31 seconds ago      1.21GB
-markitdown          latest               a65be005639c        10 minutes ago      1.24GB
-<none>              <none>               72d07614c0b0        14 minutes ago      635MB
-builder             latest               47e9035e62a3        16 minutes ago      617MB
+markitdown2         latest               f6843f1cf232        3 minutes ago       1GB
+markitdown          latest               5873afaee7d1        8 minutes ago       1.26GB
+builder             latest               d5e5d23bb8ab        16 minutes ago      591MB
+<none>              <none>               47e9035e62a3        45 minutes ago      617MB
 python              3.13-slim-bullseye   5e751abf51db        15 months ago       120MB
 ```
 ```sh

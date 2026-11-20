@@ -16,6 +16,6 @@ RUN apt-get -qq update
 
 RUN apt-get install -qqy perl=5.32.1-4+deb11u3 perl-base=5.32.1-4+deb11u3 --allow-downgrades
 RUN apt-get install -qy --no-install-recommends \
-        ca-certificates git ffmpeg exiftool \
+        ca-certificates ffmpeg exiftool \
     && rm -rf /var/lib/apt/lists/*
 
