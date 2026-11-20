@@ -365,6 +365,19 @@ But,
 
   * A chart author can still choose a _monolithic_ design. A large umbrella chart with hundreds of parameters can become difficult to understand, especially if the configuration structure mirrors neither service ownership nor deployment boundaries
 
+### Scan Pipeline
+
+**Progressive, cumulative quality gates**
+
+As dependencies arrive and are vetted, more advanced checks become possible. Earlier checks never go away.
+
+A Helm chart is not just YAML. It is a deployable infrastructure artifact, introducing risks beyond those of an application package or Docker image: privileges, RBAC, networking, storage, secrets and deployment behavior.
+
+Build its security pipeline early. Established tools already make meaningful checks possible, even without a complete dependency inventory.
+
+Take a heavyweight Helm chart. Let the Netflix Chaos Monkey loose. Can your pipeline detect what it breaks?
+
+
 
 ### See Also
 
