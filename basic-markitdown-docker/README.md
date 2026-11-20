@@ -535,6 +535,113 @@ git show --no-patch --format=fuller v0.1.8
 
 git rev-parse v0.1.8^{commit}
 ```
+
+
+### Rationale
+
+Why introduce and maintain another document-extraction technology when Microsoft already owns the formats, maintains the applications that produce them, and provides an extraction solution that can be extended through an established enterprise relationship?
+
+I would sharpen your argument into six points.
+Executive rationale for retaining Microsoft MarkItDown
+1. Microsoft has the first-party advantage.
+
+Microsoft is the original creator and principal maintainer of the Office document formats and their underlying application-specific implementations.
+
+Other extraction solutions generally fall into three categories:
+- Implementations following published specifications, with varying degrees of completeness.
+- Implementations reproducing Microsoft behavior through compatibility engineering.
+- Reverse-engineered implementations, such as Apache POI, which reconstruct document semantics from the underlying OOXML structures.
+These approaches can be technically impressive, but they do not enjoy the same first-party position as Microsoft.
+
+2. Reverse engineering has limited strategic value in this particular enterprise context.
+
+Apache POI is a mature and useful engineering solution. Its value is undeniable when building independent integrations, processing documents without Microsoft dependencies, or conducting forensic inspection.
+
+However, if the objective is ordinary enterprise document ingestion rather than document archaeology, the advantage of reconstructing Microsoft's implementation is considerably less compelling.
+
+Why invest in reproducing behavior when the original vendor is available?
+
+3. SharePoint integration changes the equation.
+
+The in-house MarkItDown port has already been extended substantially to accommodate SharePoint.
+
+This is particularly relevant because enterprise document access is not simply a matter of downloading a file. Authentication, authorization, SSO, and the surrounding access-control model are part of the problem.
+
+The existing implementation has already crossed much of that integration boundary.
+
+Whether it satisfies every client-specific access requirement remains an open question, but it provides a substantial head start over introducing an unrelated extraction framework.
+
+4. PDF extraction is a separate evaluation criterion.
+
+Microsoft has substantial capabilities in the PDF ecosystem as well.
+
+The relative merits of MarkItDown and alternative PDF extraction engines should be assessed independently, rather than assuming that a different Office extraction library automatically offers a better overall solution.
+
+This is an area where comparative testing is justified.
+
+5. Missing format support is a potential vendor roadmap item.
+
+Suppose the current implementation does not adequately support Visio.
+
+That is a legitimate gap, but it is also a candidate for a formal feature request.
+
+The bank may already have a substantial commercial and technical relationship with Microsoft, including established escalation and product-feedback channels.
+
+A feature request to an existing strategic vendor may be more economical than adopting, integrating, testing, and maintaining another technology.
+
+6. Avoid creating an unnecessary internal fork.
+
+This is perhaps the strongest operational argument.
+
+The functionality is already available in an existing Microsoft project. A coding assistant might be prompted to recreate similar functionality, perhaps even producing a reasonably convincing implementation.
+
+But that creates a new responsibility:
+- Identify and validate the generated code.
+- Establish functional equivalence.
+- Submit and maintain the implementation locally.
+- Track upstream changes.
+- Handle security patches and compatibility regressions.
+- Own the resulting technical debt.
+What business benefit justifies taking on those responsibilities?
+
+If no material advantage can be demonstrated, the additional implementation is an unnecessary maintenance liability.
+
+The existing in-house MarkItDown port also benefits from substantial SharePoint integration work, including the authentication and authorization boundary. Although client-specific access requirements still require validation, this represents an established integration investment.
+
+Remaining functional gaps, such as Visio support, should first be evaluated as potential extensions or feature requests within the existing Microsoft relationship.
+
+Introducing another extraction framework, or generating an internal alternative through AI-assisted development, would create additional validation, security, compatibility, and maintenance obligations.
+
+The burden of proof should therefore be on the proposed alternative: what measurable capability does it provide that the existing Microsoft-based implementation cannot reasonably deliver?
+
+Absent a convincing answer, extending and maintaining the existing implementation is the more defensible enterprise decision.
+
+**7. Preserve the institutional value of engineering contributions.**
+
+There is also an important distinction between developing a useful capability independently and developing it as an institutional contribution.
+
+If the bank identifies and implements a genuinely valuable enhancement, such as Visio extraction, submitting that work through the bank's established Microsoft relationship is potentially much more valuable than publishing or maintaining an isolated personal contribution.
+
+The bank can bring institutional credibility, an existing commercial relationship, a broader use case, and an opportunity for formal product engagement. Microsoft, in turn, has an incentive to consider improvements that benefit an established enterprise customer and potentially its wider user base.
+
+This creates a preferable outcome: useful engineering work becomes a candidate for upstream adoption rather than another privately maintained fork.
+
+The objective should be to invest engineering effort where its benefits can be shared and sustained, not merely where code can be produced.
+
+
+
+### Practical validation: Extracting an executive Kanban diagram from PowerPoint
+
+A recent conversion request provided a useful real-world validation opportunity for the locally deployed Microsoft MarkItDown implementation.
+
+The source PowerPoint contained an executive-level Kanban/state-transition diagram. Although visually resembling a decorated spreadsheet, its actual structure was considerably more sophisticated: colored header rows, breadcrumb-like visual elements, a chessboard-style panel arrangement, and a left-to-right timeline representing causal relationships and state progression.
+
+Rather than constructing a synthetic benchmark, this actual business document was used as test material for the extraction pipeline.
+
+The exercise demonstrated the practical value of having MarkItDown installed locally using vetted enterprise-repository components. Initial execution was performed through Docker to provide a more controlled and auditable deployment boundary, with desktop and virtual-environment execution available as subsequent options.
+
+The important outcome was not merely converting another PowerPoint file. It was demonstrating that an existing, readily deployable extraction technology could be applied immediately to an authentic business-document conversion requirement, without first commissioning a custom parser or introducing another independently maintained framework.
+
 ### See Also
 
   * MarkItDown [package](https://pypi.org/project/markitdown/) - is a Python package and command-line utility for converting various files to Markdown (e.g., for indexing, text analysis, etc)

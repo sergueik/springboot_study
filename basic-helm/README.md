@@ -488,7 +488,116 @@ Helm --> K8
     Container3 -- Application3
 
 ```
+```code
+classDiagram
+    direction TB
 
+    class K8 {
+        Control pane
+        Worker
+        Worker
+        Built-in Resources
+        Extended Resources
+    }
+
+    class Helm {
+        Templates
+        Values
+        Dependencies
+        Deployment logic
+    }
+
+    class Ingress
+    class Service
+    class Deployment
+    class ReplicaSet
+    class DaemonSet
+    class ConfigMap
+    class Secret
+    class ServiceAccount
+    class Container2
+    class Pod2
+    class Pod4
+    class Pod5
+    class Pod6
+    class CRD { 
+      Custom 
+      Resource 
+      Definitions
+    }
+
+Helm --> K8
+    K8-- Deployment
+    K8 -- Service
+    K8 -- Ingress
+    K8 -- ConfigMap
+    K8 -- DaemonSet
+    K8 -- Secret
+    K8 -- ServiceAccount
+    K8 -- Role 
+    K8 -- CRD
+    Deployment -- ReplicaSet
+    ReplicaSet -- Pod1
+    ReplicaSet -- Pod3
+    ReplicaSet -- Pod2
+    CRD -- CustomResource
+    CustomResource -- Operator
+
+    DaemonSet -- Pod4
+    DaemonSet -- Pod5
+    DaemonSet -- Pod6
+
+    class CustomResource {
+        Configuration
+        Desired stat
+    }
+    class Operator {
+        Reconciliation logic
+    }
+    class Container1 {
+        Network namespace
+        Process environment
+        Runtime
+        File System
+    }
+    class Pod3 {
+        OS 
+        File System
+        NIC
+    }
+    class Pod1 {
+        OS 
+        File System
+        NIC
+    }
+    class Container3 {
+        Network namespace
+        Process environment
+        Runtime
+        File System
+    }
+
+    class Application1 {
+        API
+    }
+    class Application2 {
+        GUI 
+    }
+    class Application3 {
+        Console
+        Web
+        API
+    }
+
+    Pod3 -- Container1
+    Pod3 -- Container3
+    Pod1 -- Container2
+
+    Container1 -- Application1
+    Container3 -- Application2
+    Container3 -- Application3
+
+```
 
 __Pod__ is the boundary for shared operating-system resources, while __Containers__ are the boundaries for individual
 *process environments*.
