@@ -365,7 +365,7 @@ But,
 
   * A chart author can still choose a _monolithic_ design. A large umbrella chart with hundreds of parameters can become difficult to understand, especially if the configuration structure mirrors neither service ownership nor deployment boundaries
 
-### Scan Pipeline
+### Helm Chart Scan Pipeline
 
 **Progressive, cumulative quality gates**
 
@@ -377,7 +377,141 @@ Build its security pipeline early. Established tools already make meaningful che
 
 Take a heavyweight Helm chart. Let the Netflix Chaos Monkey loose. Can your pipeline detect what it breaks?
 
+```mermaid
 
+classDiagram
+    direction TB
+
+    class K8 {
+        Control pane
+        Worker
+        Worker
+        Built-in Resources
+        Extended Resources
+    }
+
+    class Helm {
+        Templates
+        Values
+        Dependencies
+        Deployment logic
+    }
+
+    class Ingress
+    class Service
+    class Deployment
+    class ReplicaSet
+    class DaemonSet
+    class ConfigMap
+    class Secret
+    class ServiceAccount
+    class Container2
+    class Pod2
+    class Pod4
+    class Pod5
+    class Pod6
+    class CRD { 
+      Custom 
+      Resource 
+      Definitions
+    }
+
+Helm --> K8
+    K8-- Deployment
+    K8 -- Service
+    K8 -- Ingress
+    K8 -- ConfigMap
+    K8 -- DaemonSet
+    K8 -- Secret
+    K8 -- ServiceAccount
+    K8 -- Role 
+    K8 -- CRD
+    Deployment -- ReplicaSet
+    ReplicaSet -- Pod1
+    ReplicaSet -- Pod3
+    ReplicaSet -- Pod2
+    CRD -- CustomResource
+    CustomResource -- Operator
+
+    DaemonSet -- Pod4
+    DaemonSet -- Pod5
+    DaemonSet -- Pod6
+
+    class CustomResource {
+        Configuration
+        Desired stat
+    }
+    class Operator {
+        Reconciliation logic
+    }
+    class Container1 {
+        Network namespace
+        Process environment
+        Runtime
+        File System
+    }
+    class Pod3 {
+        OS 
+        File System
+        NIC
+    }
+    class Pod1 {
+        OS 
+        File System
+        NIC
+    }
+    class Container3 {
+        Network namespace
+        Process environment
+        Runtime
+        File System
+    }
+
+    class Application1 {
+        API
+    }
+    class Application2 {
+        GUI 
+    }
+    class Application3 {
+        Console
+        Web
+        API
+    }
+
+    Pod3 -- Container1
+    Pod3 -- Container3
+    Pod1 -- Container2
+
+    Container1 -- Application1
+    Container3 -- Application2
+    Container3 -- Application3
+
+```
+
+
+__Pod__ is the boundary for shared operating-system resources, while __Containers__ are the boundaries for individual
+*process environments*.
+
+
+__DaemonSet__ is a particularly useful example for a security review
+because it can introduce infrastructure-level workloads that are not part of the business application itself:
+
+  - Log collection agents
+  - Node monitoring agents
+  - Network plugins
+  - Storage agents
+  - Security and runtime monitoring agents
+
+
+|Layer|Security inspection questions|
+|-----|-----------------------------|
+|Helm|What resources and permissions are being generated?|
+|Kubernetes cluster|Which controllers and identities manage them?|
+|Deployment / ReplicaSet|What configuration is propagated to replicas?|
+|Pod|What network identity, volumes and shared resources exist?|
+|Container|What filesystem, runtime and security restrictions apply?|
+|Application|Which interfaces, protocols and operations are exposed?|
 
 ### See Also
 
