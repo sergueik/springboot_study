@@ -1,0 +1,31 @@
+# based on: https://github.com/tupolev/markitdown/blob/main/Dockerfile
+# syntax=docker/dockerfile:1.7
+
+FROM builder
+
+WORKDIR /opt
+
+ARG REPO=https://github.com/microsoft/markitdown.git
+# ARG BRANCH=main
+ARG VERSION=0.1.8
+ENV TAG=v$VERSION
+# ARG COMMIT=b8f79c5
+ 
+RUN git clone --no-progress --depth 1 --branch "${TAG}" "${REPO}" markitdown
+
+WORKDIR /opt/markitdown
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir \
+        "packages/markitdown[all]" \
+        "packages/markitdown-sample-plugin" \
+        markitdown-ocr \
+        openai
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+WORKDIR /data
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["--help"]
