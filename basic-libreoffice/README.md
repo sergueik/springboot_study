@@ -266,14 +266,132 @@ Reading symbols from /usr/lib/libreoffice/program/soffice.bin...
 (No debugging symbols found in /usr/lib/libreoffice/program/soffice.bin)
 log will be saved as gdbtrace.log, this will take some time, patience...
 terminate called after throwing an instance of 'com::sun::star::uno::RuntimeException'
-
+```
+```sh
+docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m --user root -v /c/Users/${USERNAME}/data:/home/alpine $IMAGE
+```
+```
+apk list | grep -i libreo
+```
+```text
+libreoffice-base-25.2.5.2-r0 x86_64 {libreoffice} (MPL-2.0) [installed]
+libreoffice-calc-25.2.5.2-r0 x86_64 {libreoffice} (MPL-2.0) [installed]
+libreoffice-common-25.2.5.2-r0 x86_64 {libreoffice} (MPL-2.0) [installed]
+libreoffice-lang-en_us-25.8.7.3-r4 x86_64 {libreoffice} (MPL-2.0) [installed]
 ```
 > NOTE the
 ```text
 Error: source file could not be loaded
 ```
-is because of Alpine gap.
+is because of Alpine 7-25 gap.
 
+
+
+"wird es interessanter und sogar  höchst interessant": 
+```sh
+libreoffice --headless --convert-to odf /home/alpine/sample-simple.xlsx
+```
+```text
+Error: no export filter for /home/alpine/sample-simple.odf found, aborting.
+Error: no export filter
+```
+```sh
+
+libreoffice --headless --convert-to odt sample-simple.docx
+```
+```text
+
+convert /home/alpine/sample-simple.docx as a Writer document -> /home/alpine/sample-simple.odt using filter : writer8
+Overwriting: /home/alpine/sample-simple.odt
+```
+```sh
+libreoffice --headless --convert-to pdf /home/alpine/sample-simple.xlsx
+```
+```text
+
+convert /home/alpine/sample-simple.xlsx as a Calc document -> /home/alpine/sample-simple.pdf using filter : calc_pdf_Export
+Overwriting: /home/alpine/sample-simple.pdf
+```
+```sh
+libreoffice --headless --convert-to pdf /home/alpine/macro-enabled_workbook1.xlsm
+```
+```text
+convert /home/alpine/macro-enabled_workbook1.xlsm as a Calc document -> /home/alpine/macro-enabled_workbook1.pdf using filter : calc_pdf_Export
+```
+```sh
+libreoffice --headless --convert-to odf /home/alpine/macro-enabled_workbook1.xlsm
+```
+```text
+Error: no export filter for /home/alpine/macro-enabled_workbook1.odf found, aborting.
+Error: no export filter
+```
+This is no export filter found - fixed by providing filter hint explicitly
+```sh
+libreoffice --headless --convert-to ods:"calc8" /home/alpine/macro-enabled_workbook1.xlsm
+```
+```text
+convert /home/alpine/macro-enabled_workbook1.xlsm as a Calc document -> /home/alpine/macro-enabled_workbook1.ods using filter : calc8
+```
+LibreOffice successfully imported the workbook and exported its VBA-related project into the ODS archive.
+```sh
+unzip -ql macro-enabled_workbook1.ods
+```
+```text
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+       46  2026-11-21 22:55   mimetype
+     2018  2026-11-21 22:55   Basic/VBAProject/ThisWorkbook.xml
+      405  2026-11-21 22:55   Basic/VBAProject/Sheet1 (Sheetname1).xml
+      359  2026-11-21 22:55   Basic/VBAProject/Sheet1.xml
+      452  2026-11-21 22:55   Basic/VBAProject/script-lb.xml
+      287  2026-11-21 22:55   Basic/Standard/script-lb.xml
+      405  2026-11-21 22:55   Basic/script-lc.xml
+     4647  2026-11-21 22:55   settings.xml
+        0  2026-11-21 22:55   Configurations2/toolpanel/
+        0  2026-11-21 22:55   Configurations2/floater/
+        0  2026-11-21 22:55   Configurations2/statusbar/
+        0  2026-11-21 22:55   Configurations2/toolbar/
+        0  2026-11-21 22:55   Configurations2/progressbar/
+        0  2026-11-21 22:55   Configurations2/popupmenu/
+        0  2026-11-21 22:55   Configurations2/menubar/
+    28641  2026-11-21 22:55   styles.xml
+      899  2026-11-21 22:55   manifest.rdf
+     7033  2026-11-21 22:55   content.xml
+      974  2026-11-21 22:55   meta.xml
+     2491  2026-11-21 22:55   Thumbnails/thumbnail.png
+     1707  2026-11-21 22:55   META-INF/manifest.xml
+---------                     -------
+    50364                     21 files
+```    
+This is not proof that the original VBA project is preserved byte-for-byte. It isn't. You are looking at LibreOffice's representation of the imported project.
+```sh
+unzip -x macro-enabled_workbook1.ods  Basic/VBAProject/ThisWorkbook.xml
+```
+```text
+Archive:  macro-enabled_workbook1.ods
+  inflating: Basic/VBAProject/ThisWorkbook.xml
+```
+```sh
+file Basic/VBAProject/ThisWorkbook.xml
+```
+```text
+Basic/VBAProject/ThisWorkbook.xml: XML 1.0 document, ASCII text
+```
+```sh
+head Basic/VBAProject/ThisWorkbook.xml
+```
+```text
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="ThisWorkbook" script:language="StarBasic" script:moduleType="document">Rem Attribute VBA_ModuleType=VBADocumentModule
+Option VBASupport 1
+Sub NameSheetsFromAList()
+
+    &apos;iterate from 2 to last row count, name them. then name sheet 1
+    &apos;then delete content of sheet 1
+
+    &apos;list of sheet names headings should start from cells(1,1) of first sheet in the active workbook
+```
 
 #### Using Uno Conv
 
