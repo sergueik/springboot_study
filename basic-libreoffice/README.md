@@ -11,11 +11,306 @@ in order the container to be long running server and have the headless libreoffi
 ### History
 
 [Libreoffice](https://documentation.libreoffice.org/en/english-documentation/) recognizes the `--headless` option, 
-which lets its process without requiring an X windows otherwise needed
-to render the graphical user interface.
+which lets its process without requiring an X windows otherwise needed to render the graphical user interface.
 This is often used in combination with other switches when converting files between formats, including PDF, HTML, DOC, DOCX, EPUB, plain text, etc.
 
 ### Usage
+
+For legacy `.xlsx`/`.xls` binary Microsofr Office files, one first converts the subject to OpenDocument format via 
+
+```sh
+set "PATH=%PATH%;c:\Program Files\LibreOffice\program"
+call soffice.exe --headless --convert-to odf macro-enabled_workbook1.xlsm 
+```
+
+NOTE: the command
+
+```cmd
+call soffice.exe --headless --help
+```
+
+will create a new console with help message:
+```text
+LibreOffice 24.8.0.3 0bdf1299c94fe897b119f97f3c613e9dca6be583
+
+Usage: soffice [argument...]
+       argument - switches, switch parameters and document URIs (filenames).
+
+Using without special arguments:
+Opens the start center, if it is used without any arguments.
+   {file}              Tries to open the file (files) in the components
+                       suitable for them.
+   {file} {macro:///Library.Module.MacroName}
+                       Opens the file and runs specified macro from
+                       My Macros container.
+   {file} {macro://./Library.Module.MacroName}
+                       Opens the file and runs specified macro from
+                       the file.
+
+Getting help and information:
+   --help | -h | -?    Shows this help and quits.
+   --helpwriter        Opens built-in or online Help on Writer.
+   --helpcalc          Opens built-in or online Help on Calc.
+   --helpdraw          Opens built-in or online Help on Draw.
+   --helpimpress       Opens built-in or online Help on Impress.
+   --helpbase          Opens built-in or online Help on Base.
+   --helpbasic         Opens built-in or online Help on Basic scripting
+                       language.
+   --helpmath          Opens built-in or online Help on Math.
+   --version           Shows the version and quits.
+   --nstemporarydirectory
+                       (MacOS X sandbox only) Returns path of the temporary
+                       directory for the current user and exits. Overrides
+                       all other arguments.
+
+General arguments:
+   --quickstart[=no]   Activates[Deactivates] the Quickstarter service.
+   --nolockcheck       Disables check for remote instances using one
+                       installation.
+   --infilter={filter} Force an input filter type if possible. For example:
+                       --infilter="Calc Office Open XML"
+                       --infilter="Text (encoded):UTF8,LF,,,"
+   --pidfile={file}    Store soffice.bin pid to {file}.
+   --display {display} Sets the DISPLAY environment variable on UNIX-like
+                       platforms to the value {display} (only supported by a
+                       start script).
+
+User/programmatic interface control:
+   --nologo            Disables the splash screen at program start.
+   --minimized         Starts minimized. The splash screen is not displayed.
+   --nodefault         Starts without displaying anything except the splash
+                       screen (do not display initial window).
+   --invisible         Starts in invisible mode. Neither the start-up logo nor
+                       the initial program window will be visible. Application
+                       can be controlled, and documents and dialogs can be
+                       controlled and opened via the API. Using the parameter,
+                       the process can only be ended using the taskmanager
+                       (Windows) or the kill command (UNIX-like systems). It
+                       cannot be used in conjunction with --quickstart.
+   --headless          Starts in "headless mode" which allows using the
+                       application without GUI. This special mode can be used
+                       when the application is controlled by external clients
+                       via the API.
+   --norestore         Disables restart and file recovery after a system crash.
+   --safe-mode         Starts in a safe mode, i.e. starts temporarily with a
+                       fresh user profile and helps to restore a broken
+                       configuration.
+   --accept={connect-string}  Specifies a UNO connect-string to create a UNO
+                       acceptor through which other programs can connect to
+                       access the API. Note that API access allows execution
+                       of arbitrary commands.
+                       The syntax of the {connect-string} is:
+                         connection-type,params;protocol-name,params
+                       e.g.  pipe,name={some name};urp
+                         or  socket,host=localhost,port=54321;urp
+   --unaccept={connect-string}  Closes an acceptor that was created with
+                       --accept. Use --unaccept=all to close all acceptors.
+   --language={lang}   Uses specified language, if language is not selected
+                       yet for UI. The lang is a tag of the language in IETF
+                       language tag.
+
+Developer arguments:
+   --terminate_after_init
+                       Exit after initialization complete (no documents loaded)
+   --eventtesting      Exit after loading documents.
+
+New document creation arguments:
+The arguments create an empty document of specified kind. Only one of them may
+be used in one command line. If filenames are specified after an argument,
+then it tries to open those files in the specified component.
+   --writer            Creates an empty Writer document.
+   --calc              Creates an empty Calc document.
+   --draw              Creates an empty Draw document.
+   --impress           Creates an empty Impress document.
+   --base              Creates a new database.
+   --global            Creates an empty Writer master (global) document.
+   --math              Creates an empty Math document (formula).
+   --web               Creates an empty HTML document.
+
+File open arguments:
+The arguments define how following filenames are treated. New treatment begins
+after the argument and ends at the next argument. The default treatment is to
+open documents for editing, and create new documents from document templates.
+   -n                  Treats following files as templates for creation of new
+                       documents.
+   -o                  Opens following files for editing, regardless whether
+                       they are templates or not.
+   --pt {Printername}  Prints following files to the printer {Printername},
+                       after which those files are closed. The splash screen
+                       does not appear. If used multiple times, only last
+                       {Printername} is effective for all documents of all
+                       --pt runs. Also, --printer-name argument of
+                       --print-to-file switch interferes with {Printername}.
+   -p                  Prints following files to the default printer, after
+                       which those files are closed. The splash screen does
+                       not appear. If the file name contains spaces, then it
+                       must be enclosed in quotation marks.
+   --view              Opens following files in viewer mode (read-only).
+   --show[=slide_number]  Opens and starts the slideshow of the following
+                       presentation documents immediately.
+                       Files are closed after the showing.
+                       If a slide_number is provided, they start at that slide.
+   --convert-to OutputFileExtension[:OutputFilterName] \
+     [--outdir output_dir] [--convert-images-to]
+                       Batch convert files (implies --headless). If --outdir
+                       isn't specified, then current working directory is used
+                       as output_dir. If --convert-images-to is given, its
+                       parameter is taken as the target filter format for *all*
+                       images written to the output format. If --convert-to is
+                       used more than once, the last value of
+                       OutputFileExtension[:OutputFilterName] is effective. If
+                       --outdir is used more than once, only its last value is
+                       effective. For example:
+                   --convert-to pdf *.odt
+                   --convert-to epub *.doc
+                   --convert-to pdf:writer_pdf_Export --outdir /home/user *.doc
+                   --convert-to "html:XHTML Writer File:UTF8" \
+                                --convert-images-to "jpg" *.doc
+                   --convert-to "txt:Text (encoded):UTF8" *.doc
+   --print-to-file [--printer-name printer_name] [--outdir output_dir]
+                       Batch print files to file. If --outdir is not specified,
+                       then current working directory is used as output_dir.
+                       If --printer-name or --outdir used multiple times, only
+                       last value of each is effective. Also, {Printername} of
+                       --pt switch interferes with --printer-name.
+   --cat               Dump text content of the following files to console
+                       (implies --headless). Cannot be used with --convert-to.
+   --script-cat        Dump text content of any scripts embedded in the files
+                       to console (implies --headless). Cannot be used with
+                       --convert-to.
+   -env:<VAR>[=<VALUE>] Set a bootstrap variable. For example: to set
+                       a non-default user profile path:
+                       -env:UserInstallation=file:///tmp/test
+
+Ignored switches:
+   -psn                Ignored (MacOS X only).
+   -Embedding          Ignored (COM+ related; Windows only).
+   --nofirststartwizard Does nothing, accepted only for backward compatibility.
+   --protector {arg1} {arg2}
+                       Used only in unit tests and should have two arguments.
+
+Press Enter to continue...
+```
+and then unzip the result 
+
+The macro will be in `Basic/` folder:
+
+#### Building Container
+
+```sh
+docker pull alpine/java:11-jre
+```
+```sh
+export IMAGE=basic-libreoffice
+docker build -f Dockerfile -t $IMAGE .
+```
+
+```sh
+export NAME=docker_libreoffice
+export IMAGE=basic-libreoffice
+
+docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v /usr/share/fonts:/usr/share/fonts:ro -v $(pwd)/data:/home/alpine $IMAGE /usr/bin/libreoffice --headless --convert-to pdf /home/alpine/test.doc
+```
+> NOTE: on Windows Docker Toolbox use a local directory under `$USERPROFILE` for bind volume map instead of current: 
+currently prints few errors but completes the task:
+
+```sh
+mkdir -p ~/data; cp sample-simple.docx ~/data
+export NAME=docker_libreoffice
+export IMAGE=basic-libreoffice
+
+docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v /c/Users/${USERNAME}/data:/home/alpine $IMAGE /usr/bin/libreoffice --headless --convert-to pdf /home/alpine/sample-simple.docx
+```
+```text
+convert /home/alpine/test.doc -> /home/alpine/test.pdf using filter : writer_pdf_Export
+```
+
+```sh
+pushd ~/data/
+file sample-simple.pdf
+```
+```text
+sample-simple.pdf: PDF document, version 1.7, 5 page(s)
+```
+
+with Macro Enabled Excel sample file which opens fine on Windows version __24__and ealier:
+```sh
+mkdir -p ~/data; cp macro-enabled_workbook1.xlsm ~/data
+docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v /c/Users/${USERNAME}/data:/home/alpine $IMAGE /usr/bin/libreoffice --headless --convert-to odf /home/alpine/senabled_workbook1.xlsm
+```
+```
+terminate called after throwing an instance of 'com::sun::star::uno::RuntimeException'
+```
+seriously? 
+```sh
+docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v /c/Users/${USERNAME}/data:/home/alpine $IMAGE /usr/bin/libreoffice --backtrace --headless --convert-to odf /home/alpine/senabled_workbook1.xlsm
+```
+no new useful information after engaging gdb:
+```text
+GNU gdb (GDB) 15.2
+Copyright (C) 2024 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-alpine-linux-musl".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from /usr/lib/libreoffice/program/soffice.bin...
+(No debugging symbols found in /usr/lib/libreoffice/program/soffice.bin)
+log will be saved as gdbtrace.log, this will take some time, patience...
+terminate called after throwing an instance of 'com::sun::star::uno::RuntimeException'
+
+```
+> NOTE the
+```text
+Error: source file could not be loaded
+```
+is because of Alpine gap.
+
+
+#### Using Uno Conv
+
+```sh
+docker build -t libreoffice-uno -f Dockerfile.uno .
+```
+```sh
+docker run -d --name libreoffice-uno -p 8100:8100 libreoffice-uno
+```
+```sh
+cp /c/Users/$USERNAME/data/sample-simple.docx .
+```
+```sh
+docker cp sample-simple.docx libreoffice-uno:/tmp/sample-simple.docx
+```
+
+```sh
+docker exec -ti libreoffice-uno unoconv   --connection 'socket,host=127.0.0.1,port=8100,tcpNoDelay=1;urp;StarOffice.ComponentContext'   -f pdf /tmp/sample-simple.docx
+```
+```
+docker cp libreoffice-uno:/tmp/sample-simple.pdf .
+``` 
+
+##### Troublshooting Uno Conv Solutions
+
+a classic
+```sh
+docker logs 
+```
+```text
+javaldx failed!
+Warning: failed to read path from javaldx
+LibreOffice 7.6 - Fatal Error: The application cannot be started.
+User installation could not be completed.  
+```
+
+#### Fallback: Using External Image
 
 * pull the external custom image
 ```sh
@@ -100,60 +395,11 @@ docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=
 ```
 works successtully and does not suffer from this defect
 
-### Building Container
-
-use the stock alpine JRE image, temporarily skip certain fonts by commenting the line
-```sh
-RUN apk add --no-cache -U ttf-font-awesome ttf-mononoki ttf-hack
-```
-```sh
-docker pull alpine/java:11-jre
-```
-```sh
-export IMAGE=basic-libreoffice
-docker build -f Dockerfile -t $IMAGE .
-```
-this wll create image of slightly smaller size
-```sh
-docker images $IMAGE
-```
-```text
-basic-libreoffice   latest              95cfde060d48        About a minute ago   816MB
-```
-```sh
-export NAME=docker_libreoffice
-export IMAGE=basic-libreoffice
-
-docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v /usr/share/fonts:/usr/share/fonts:ro -v $(pwd)/data:/home/alpine $IMAGE /usr/bin/libreoffice --headless --convert-to pdf /home/alpine/test.doc
-```
-> NOTE: on Windows Docker Toolbox use a local directory under `$USERPROFILE` for bind volume map instead of current: 
-currently prints few errors but completes the task:
-
-```sh
-mkdir -p ~/data; cp ./WordFileTool/Test/sample-simple.docx ~/data
-export NAME=docker_libreoffice
-export IMAGE=basic-libreoffice
-
-docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v /c/Users/${USERNAME}/data:/home/alpine $IMAGE /usr/bin/libreoffice --headless --convert-to pdf /home/alpine/sample-simple.docx
-```
-```text
-convert /home/alpine/sample-simple.docx as a Writer document -> /home/alpine/sample-simple.pdf using filter : writer_pdf_Export
-```
-```text
-WARNING: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.
-javaldx: Could not find a Java Runtime Environment!
-Warning: failed to read path from javaldx
-convert /home/alpine/test.doc -> /home/alpine/test.pdf using filter : writer_pdf_Export
-```
-
-```sh
-pushd ~/data/
-file sample-simple.pdf
-```
-```text
-sample-simple.pdf: PDF document, version 1.7, 5 page(s)
-```
+####
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-libreoffice/screenshots/capture-libreoffice-container.png)
+
+
+#### Old Document
 
 ```sh
 docker-machine ssh
@@ -1738,22 +1984,13 @@ fc-cache -f -v
   * https://github.com/linuxserver/docker-libreoffice/blob/master/Dockerfile
   * https://github.com/hannesdejager/docker-libreoffice-api/blob/master/Dockerfile - an headless LibreOffice in Docker listening for API requests on port 8100
   * https://hub.docker.com/r/libreofficedocker/alpine
-  *  https://github.com/ipunkt/docker-libreoffice-headless
+  * https://github.com/ipunkt/docker-libreoffice-headless
+  * [converting doc/docx Format to PDF With Help of LibreOffice and LaTeX](https://www.baeldung.com/linux/latex-doc-docx-pdf-conversion)
+  * [converting PDF to Word Documents in Linux](https://www.baeldung.com/linux/pdf-word-conversion)
+  * [conversion of a PowerPoint PPT File to PDF From the Command Line](https://www.baeldung.com/linux/convert-powerpoint-ppt-to-pdf) 
+  * [convert CSV to XLS or XSLX in Linux](https://www.baeldung.com/linux/csv-xls-xslx)
 ---
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
-docker build -t libreoffice-uno -f Dockerfile.uno  .
-docker run -d --name libreoffice-uno -p 8100:8100 libreoffice-uno
-cp  /c/Users/$USERNAME/data/sample-simple.docx .
-docker cp sample-simple.docx libreoffice-uno:/tmp/sample-simple.docx
-docker exec -ti libreoffice-uno unoconv   --connection 'socket,host=127.0.0.1,port=8100,tcpNoDelay=1;urp;StarOffice.ComponentContext'   -f pdf /tmp/sample-simple.docx
-docker exec -ti libreoffice-uno unoconv   --connection 'socket,host=127.0.0.1,port=8100,tcpNoDelay=1;urp;StarOffice.ComponentContext'   -f pdf /tmp/sample-simple.docx
-
-  
-  docker cp libreoffice-uno:/tmp/sample-simple.pdf .
-  
-javaldx failed!
-Warning: failed to read path from javaldx
-LibreOffice 7.6 - Fatal Error: The application cannot be started.
-User installation could not be completed.  
