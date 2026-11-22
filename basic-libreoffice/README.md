@@ -7,10 +7,88 @@ For binary Microsoft Office `.xlsx`/`.xls` files, to extract the VB  sceipt / ma
 using [Libreoffice](https://documentation.libreoffice.org/en/english-documentation/) in `--headless` mode in particular for converting files between formats, including PDF, HTML, DOC, DOCX, EPUB, plain text, etc.
 using various built-in filters
 
+### Visio Support
+
+__LibreOffice__ first added support for opening [Microsoft Visio] files in 3.5 - released in February 2012 -
+with full support for newer `.vsdx` OpenDoc Visio combined semantics files arriving in LibreOffice 4.0 -
+Release [timeline](https://www.libreoffice.org/media/OOo-major-derivatives.png) lists expanded coverage to support all existing Visio file formats, spanning from original __Visio__ __1.0__ (1992) up through the OpenDoc XML-based `.vsdx`
+format introduced in __Microsoft Visio__ __2013__.
+
+LibreOffice Desktop application features input only for Visio:  can read/import .vsdx (and other Visio formats), but not write/export Visio formats.
+• Native drawing formats: Save as OpenDocument Drawing (.odg) or OpenDocument Drawing Template (.otg) to keep editable diagram layers and objects in LibreOffice Draw.
+• Document & vector export: Export or convert to PDF (.pdf), Scalable Vector Graphics (.svg), Encapsulated PostScript (.eps), Enhanced Metafile (.emf), or Windows Metafile (.wmf).
+• Raster image export: Export to PNG (.png), JPEG (.jpg/.jpeg), BMP (.bmp), TIFF (.tif/.tiff), or GIF (.gif).
+
+
+### Samle Data
+
+One can find the early format of Visio x.y  released in 1992 by __Shapeware Corporation__ (later __Visio Corporation__)
+and acquired by Microsoft in 2000 samples known as
+[20 Visio 2003 Sample Diagrams](https://legacyupdate.net/download-center/download/24023/visio-2003-sample-20-sample-diagrams)
+from Microsoft Download Center Archive:
+
+|Description | Filename|
+|------------|---------|
+|Active Directory diagram | ActvDir.vsd|
+|Basic Flowchart | Bflowcht.vsd|
+|Block Diagram - BlkDiagm.vsd|
+|Building Floor Plan | BldgPlan.vsd|
+|Basic Network diagram | Bnetwork.vsd|
+|Brainstorming/Mind map | Brainstm.vsd|
+|Calendar | Calendar.vsd|
+|Database diagram | Database.vsd|
+|Detailed Network diagram | Dnetwork.vsd|
+|Electrical Engineering Control diagram | EECtrl.vsd|
+|Fluid Power diagram | FluidPwr.vsd|
+|Meeting Room layout | MeetRoom.vsd|
+|Organization Chart | OrgChart.vsd|
+|Process Engineering diagram | ProcEng.vsd|
+|IT Rack diagram | Rack.vsd|
+|Timeline diagram | Timeline.vsd|
+|UML diagram | UML.vsd|
+|Web Design diagram | WebDsgn.vsd|
+|Web Site diagram | WebSite.vsd|
+|Window UI diagram | WinUI.vsd |
+
+
+|Filename|Description| Comment |
+|----|-----|------|
+|`ActvDir.vsd`|Active Directory diagram||
+|`Bflowcht.vsd`|Basic Flowchart|Two pages, used as `sample.vsd`|
+|`BlkDiagm.vsd`|Block Diagram||
+|`BldgPlan.vsd`|Building Floor Plan||
+|`Bnetwork.vsd`|Basic Network diagram||
+|`Brainstm.vsd`|Brainstorming/Mind map||
+|`Calendar.vsd`|Calendar||
+|`Database.vsd`|Database diagram||
+|`Dnetwork.vsd`|Detailed Network diagram||
+|`EECtrl.vsd`|Electrical Engineering Control diagram||
+|`FluidPwr.vsd`|Fluid Power diagram||
+|`MeetRoom.vsd`|Meeting Room layout||
+|`OrgChart.vsd`|Organization Chart||
+|`ProcEng.vsd`|Process Engineering diagram||
+|`Rack.vsd`|IT Rack diagram||
+|`Timeline.vsd`|Timeline diagram||
+|`UML.vsd`|UML diagram||
+|`WebDsgn.vsd`|Web Design diagram||
+|`WebSite.vsd`|Web Site diagram||
+|`WinUI.vsd`|Window UI diagram||
+
+packaged as `VisioSam.exe`
+
+> NOTE: This download is no longer available on microsoft.com.
+The downloads below links provided by the Internet Archive Wayback Machine from the Microsoft Download Center are also not workig,
+Link listed on https://www.visiocafe.com/microsoft.htm is no longer available.
+The https://download.cnet.com/visio-2003-sample-20-sample-diagrams has the non expired __Visio 2003 Sample: 20 Sample Diagrams for Windows__ copy.
+
+One can get a [Open Packaging Conventions](https://en.wikipedia.org/wiki/Open_Packaging_Conventions) __OPC__ Visio 365 [Microsoft Visio VSDX Files Download](https://www.howtoanalyzedata.net/microsoft-visio-vsdx-files-download)
+and from  [featured Visio templates and diagrams](https://support.microsoft.com/en-us/visio/featured-visio-templates-and-diagrams)
+
+
 ### Usage
 
 ```sh
-docker pull alpine/java:11-jre
+docker pull alpine:3.22
 ```
 ```sh
 export IMAGE=basic-libreoffice
@@ -69,7 +147,7 @@ Basic/VBAProject/ThisWorkbook.xml: XML 1.0 document, ASCII text
 ```sh
 xmlstarlet fo -D Basic/VBAProject/ThisWorkbook.xml | xmlstarlet sel -t -v "//script:module" -| head -40
 ```
-> NOTE: on Windows xmlstarlet binary is called `xml.exe` 
+> NOTE: on Windows xmlstarlet binary is called `xml.exe`
 on RHEL based system use
 ```sh
 xmllint --format Basic/VBAProject/ThisWorkbook.xml | sed -n '/<script:module/,/<\/script:module>/p' | head -40
@@ -124,11 +202,12 @@ which matches quite close to what one find in the desktop application or Microso
 ![Capture Libreoffice Macro Explore](screenshots/capture-libreoffice-macros.png)
 
 ### Using Uno Conv
+
 The `unoconv` implementation is not merely another way to run the same command:
 it introduces a persistent UNO service, allowing multiple clients to submit conversion requests without repeatedly launching LibreOffice.
 ```sh
 export IMAGE=basic-libreoffice-uno
-docker build -t $IMAGE  -f Dockerfile.uno .
+docker build -t $IMAGE -f Dockerfile.uno .
 ```
 ```sh
 export IMAGE=basic-libreoffice-uno
@@ -159,6 +238,60 @@ unzip -ql sample.ods
 ---------                     -------
     50364                     21 files
 ```
+
+### Visio to LibreOffice Draw Conversion (Lossy?)
+
+```sh
+export IMAGE=basic-libreoffice-uno
+docker build -t $IMAGE -f Dockerfile.uno .
+```
+```sh
+export IMAGE=basic-libreoffice-uno
+export NAME=$IMAGE
+docker run -d --name $NAME -p 8100:8100 $IMAGE
+```
+
+```sh
+docker cp sample.vsd $NAME:/tmp/
+```
+```sh
+docker exec -ti $NAME unoconv --connection 'socket,host=127.0.0.1,port=8100,tcpNoDelay=1;urp;StarOffice.ComponentContext' -f odg /tmp/sample.vsd
+```
+```text
+if product.ooName not in ('LibreOffice', 'LOdev') or LooseVersion(product.ooSetupVersion) <= LooseVersion('3.3'):
+```
+```sh
+docker cp $NAME:/tmp/sample.odg .
+```
+```sh
+file sample.odg
+```
+```text
+sample.odg: OpenDocument Drawing
+```
+
+The result
+
+![capture libreoffice draw](screenshots/capture-libreoffice-draw.png)
+
+looks very well match to the original
+
+![capture visio 2003](screenshots/capture-visio2003.png)
+
+and the edges/nodes selectable individually
+
+However the Semantic fidelity is not preserved:
+As this becomes immediately apparent when trying to
+__move a connected node around and inspect whether its connectors remain attached__
+
+While native __Visio__ retains the connector attachments:
+
+![capture Editing in visio 2003](screenshots/capture-visio2003-editing.png)
+
+__LibreOffice__ does not:
+
+![capture Editing in Libre Office Draw](screenshots/capture-libreoffice-draw-editing.png)
+
 ### See Also
 
   * https://stackoverflow.com/questions/50982064/converting-docx-to-pdf-with-pure-python-on-linux-without-libreoffice
