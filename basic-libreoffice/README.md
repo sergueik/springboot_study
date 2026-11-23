@@ -84,7 +84,26 @@ The https://download.cnet.com/visio-2003-sample-20-sample-diagrams has the non e
 One can get a [Open Packaging Conventions](https://en.wikipedia.org/wiki/Open_Packaging_Conventions) __OPC__ Visio 365 [Microsoft Visio VSDX Files Download](https://www.howtoanalyzedata.net/microsoft-visio-vsdx-files-download)
 and from  [featured Visio templates and diagrams](https://support.microsoft.com/en-us/visio/featured-visio-templates-and-diagrams)
 
-
+```text
+'BPMN cross-functional chart tf16393606.vstx'
+'Bank Account database tf22876660.vsdx'
+'Basic UML communication tf22725921.vsdx'
+'Basic UML component tf33765020.vsdx'
+'Basic UML deployment tf22667440.vsdx'
+'Basic UML use case tf11670301.vsdx'
+'Basic flowchart tf11712902.vstx'
+'Basic home network tf78855695.vstx'
+'Computer block diagram tf16403437.vsdx'
+'Cross-functional flowchart tf56636647.vstx'
+'Detailed network tf33958593.vstx'
+'Ethernet LAN diagram tf16393633.vstx'
+'Login-registry activity tf56142499.vsdx'
+'Office network plan tf16403889.vsdx'
+'Property buying flow tf16403429.vsdx'
+'Star network diagram tf16403888.vsdx'
+'UML database for employees tf33998165.vsdx'
+'UML state ATM tf11406762.vsdx'
+```
 ### Usage
 
 ```sh
@@ -291,6 +310,343 @@ While native __Visio__ retains the connector attachments:
 __LibreOffice__ does not:
 
 ![capture Editing in Libre Office Draw](screenshots/capture-libreoffice-draw-editing.png)
+
+
+One can download individual templates and diagram examples from from  [featured Visio templates and diagrams](https://support.microsoft.com/en-us/visio/featured-visio-templates-and-diagrams)
+ using curl command / `Invoke-WebRequest` Powershell cmdlet / `[System.Net.Http.HttpClient]` with resource URLs
+`https://createcatalog.public.onecdn.static.microsoft/support/templates/en-us/tf33958593.vstx` and similar or download in the browser
+ - for some files download will be made pending the approval.
+
+
+#### Data augmentation through controlled perturbation of the original diagrams
+
+
+Bar analogy is good:
+
+- Same person.
+- Same underlying identity.
+- Same driver ID.
+- Progressively different appearance after each shot.
+- Eventually, identifying the person from the observed appearance becomes increasingly difficult
+
+
+|Term|Meaning in Visio Conversion experiment|
+|----|--------------------------|
+|Data augmentation|Generate additional examples from existing diagrams|
+|Controlled perturbation|Change geometry while preserving diagram semantics|
+|Invariant representation|Identify the same logical relationships despite geometric changes|
+|Domain randomization|Expose the model to many variations of the same underlying structure|
+|Ground-truth labeling|Retain the original Visio connection graph as the correct answer|
+
+
+### Automation Exercise
+```powershell
+
+# CreateFlowchart.ps1
+# based on:
+# https://dellenny.com/approaches-to-automatically-generate-visio-diagrams-from-text/
+# https://www.visguy.com/2006/09/13/create-visio-flowcharts-programmatically
+# Visio COM Automation
+# Compatible with Windows PowerShell 2.0 / Visio 2007
+
+$ErrorActionPreference = "Stop"
+
+# --------------------------------------------------
+# Step 1: Get the flowchart template and stencil
+# --------------------------------------------------
+
+$flowchartTemplateName = "C:\Program Files\Microsoft Office\Office12\1049\BASFLO_M.VST"
+$flowchartStencilName = "BASFLO_M.VSS"
+
+$masterProcessName = "Process"
+$masterDecisionName = "Decision"
+
+$visApp = $null
+$docFlowTemplate = $null
+$docFlowStencil = $null
+
+try {
+
+    # Start Visio
+
+    $visApp = New-Object -ComObject Visio.Application
+    $visApp.Visible = $true
+
+    # Open a new document using the flowchart template
+
+    $docFlowTemplate = $visApp.Documents.Add(
+        $flowchartTemplateName
+    )
+
+    # Search open documents for the flowchart stencil
+
+    foreach ($doc in $visApp.Documents) {
+
+        Write-Host "Document:" $doc.Name
+
+        if ($doc.Name -eq $flowchartStencilName) {
+            $docFlowStencil = $doc
+            break
+        }
+    }
+
+    # Fallback: open stencil explicitly if not found
+    
+    if ($null -eq $docFlowStencil) {
+
+        # NOTE: system ACP locale is used in Office application resource path and name attributes 
+        # en-us 0x409 1033
+        # ru-ru 0x419 1049
+        $stencilPath = "C:\Program Files\Microsoft Office\Office12\1049\BASFLO_M.VSS"
+
+        $docFlowStencil = $visApp.Documents.OpenEx(
+            $stencilPath,
+            4
+        )
+    }
+
+    # --------------------------------------------------
+    # Step 2: Get masters and connector
+    # --------------------------------------------------
+
+    $mstProcess = $docFlowStencil.Masters.ItemU(
+        $masterProcessName
+    )
+
+    $mstDecision = $docFlowStencil.Masters.ItemU(
+        $masterDecisionName
+    )
+
+    # Built-in connector object (not a Master)
+
+    $conn = $visApp.ConnectorToolDataObject
+
+    # --------------------------------------------------
+    # Step 3: Drop the masters
+    # --------------------------------------------------
+
+    $numShapes = 7
+    $decisionStepNumber = 3
+
+    $dx = 1.5
+    $dy = 1.0
+
+    # First page of the document
+
+    $pg = $docFlowTemplate.Pages.Item(1)
+
+    # Get center and top of page
+
+    $x = $pg.PageSheet.CellsU(
+        "PageWidth"
+    ).ResultIU / 2
+
+    $y = $pg.PageSheet.CellsU(
+        "PageHeight"
+    ).ResultIU - 1
+
+    $shpLast = $null
+    $shpDec = $null
+    $shpConn = $null
+
+    for ($i = 1; $i -le $numShapes; $i++) {
+
+        # Drop Process or Decision shape
+
+        if ($i -eq $decisionStepNumber) {
+
+            $shpNew = $pg.Drop(
+                $mstDecision,
+                $x,
+                $y
+            )
+
+            $shpNew.Text = "$i?"
+
+            # Remember decision shape
+
+            $shpDec = $shpNew
+        }
+        else {
+
+            $shpNew = $pg.Drop(
+                $mstProcess,
+                $x,
+                $y
+            )
+
+            $shpNew.Text = "Do Step $i"
+        }
+
+        # Set custom properties
+
+        $shpNew.CellsU(
+            "Prop.Cost"
+        ).ResultIU = $i
+
+        # Duration expressed in elapsed hours
+<#
+        $shpNew.CellsU(
+            "Prop.Duration"
+        ).FormulaU = ("$i h")
+		#>
+<# Exception setting "FormulaU": "
+#NAME?"
+
+- this is ShapeSheet formula parsing issue
+#>
+        # Connect shapes
+
+        if ($i -ne 1) {
+
+            # Drop connector
+
+            $shpConn = $pg.Drop(
+                $conn,
+                0,
+                0
+            )
+
+            # Glue BeginX
+
+            if ($i -eq ($decisionStepNumber + 1)) {
+
+                # Glue to right-side decision connection
+
+                $shpConn.CellsU(
+                    "BeginX"
+                ).GlueTo(
+                    $shpDec.CellsU("Connections.X2")
+                )
+            }
+            else {
+
+                # Dynamic glue to previous shape
+
+                $shpConn.CellsU(
+                    "BeginX"
+                ).GlueTo(
+                    $shpLast.CellsU("PinX")
+                )
+            }
+
+            # Glue EndX to new shape
+
+            $shpConn.CellsU(
+                "EndX"
+            ).GlueTo(
+                $shpNew.CellsU("PinX")
+            )
+        }
+
+        # Prepare for next iteration
+
+        $shpLast = $shpNew
+
+        # Adjust coordinates according to branch
+
+        if ($i -eq $decisionStepNumber) {
+
+            $x = $x + $dx
+        }
+        elseif ($i -eq ($decisionStepNumber + 1)) {
+
+            $x = $x - $dx
+            $y = $y - $dy
+
+            # Label decision branch
+
+            $shpConn.Text = "No"
+
+            # Next connector starts at decision shape
+
+            $shpLast = $shpDec
+        }
+        else {
+
+            $y = $y - $dy
+        }
+    }
+
+    # --------------------------------------------------
+    # Step 4: Layout and deselect
+    # --------------------------------------------------
+
+    # Original example leaves automatic layout disabled.
+    # Uncomment to experiment:
+    #
+    # $pg.Layout()
+
+    # Deselect all shapes
+
+    $visApp.ActiveWindow.DeselectAll()
+
+    # Original example:
+    #
+    # Visio.Windows.Arrange(
+    #     Visio.visArrangeTileVertical
+    # )
+    #
+    # This requires resolving the Visio enum value
+    # or using the installed Visio interop assembly.
+
+    Write-Host "Flowchart created successfully."
+
+}
+finally {
+
+    # Close documents and quit Visio
+
+    if ($null -ne $docFlowTemplate) {
+		$docFlowTemplate.Layout
+		$docFlowTemplate.SaveAs( "C:\DOCUME~1\Admin\LOCALS~1\Temp\AutomatedFlowchart.vsd")
+		$docFlowTemplate.Saved = $true
+        $docFlowTemplate.Close()
+    }
+
+    if ($null -ne $docFlowStencil) {
+      try {
+        $docFlowStencil.Close()
+      } catch [Exception] { 
+        # System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.Runtime.InteropServices.COMException (0x86DB0898):
+        # the stencil is a shared document, already owned or managed by the template/document session. Closing it independently may be rejected by Visio
+        write-host $_.Exception
+      }
+    }
+
+    if ($null -ne $visApp) {
+      $visApp.Quit()
+    }
+}
+	
+```
+```powershell
+. .\create_flowchart.ps1
+```
+```text
+Document: Документ1
+Document: ARROWS_M.VSS
+Document: BACKGR_M.VSS
+Document: BASFLO_M.VSS
+Flowchart created successfully.
+0
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.Runtime.InteropServices.COMException (0x86DB0898):
+Возникло исключение.
+   --- End of inner exception stack trace ---
+   at System.RuntimeType.InvokeDispMethod(String name, BindingFlags invokeAttr,Object target, Object[] args, Boolean[] byrefModifiers, Int32 culture, String[]namedParameters)
+```
+```text
+ Directory of C:\DOCUME~1\Admin\LOCALS~1\Temp
+
+11/22/2026  03:49 PM    <DIR>          WPDNSE
+11/22/2026  05:34 PM                81 dw.log
+11/22/2026  05:42 PM            38,400 AutomatedFlowchart.vsd
+11/22/2026  05:42 PM    <DIR>          ..
+11/22/2026  05:42 PM    <DIR>          .
+               2 File(s)         38,481 bytes
+```
+
+![Capture generated diagram](screenshots/capture-visio-scripted.png)
 
 ### See Also
 
