@@ -211,21 +211,21 @@ Exception setting 'FormulaU': '
 
   foreach ($shape in $pg.Shapes) {
 
-    Write-Host ('ID: {0} Name: "{1}" NameU: "{2}" Text: "{3}" OneD: {4} Master ID: {5} Master Name: "{6}" Master NameU: "{7}"' -f $shape.ID , $shape.Name, $shape.NameU, $shape.Text, $shape.OneD, $shape.Master.ID, $shape.Master.Name,$shape.Master.NameU )
+    [Console]::Error.WriteLine(('ID: {0} Name: "{1}" NameU: "{2}" Text: "{3}" OneD: {4} Master ID: {5} Master Name: "{6}" Master NameU: "{7}"' -f $shape.ID , $shape.Name, $shape.NameU, $shape.Text, $shape.OneD, $shape.Master.ID, $shape.Master.Name,$shape.Master.NameU ))
+	[Console]::Error.WriteLine(('{0} connects' -f $shape.Connects.Count))
 
     if ($shape.OneD) {
 
       # https://learn.microsoft.com/en-us/office/client-developer/visio/gluetype-cell-glue-info-section
-      Write-Host ('EndX: "{0}" {1}' -f  $shape.CellsU('EndX').ResultIU, $shape.CellsU('EndX').GlueType)
-      Write-Host ('BeginX: "{0}" {1}' -f $shape.CellsU('BeginX').ResultIU, $shape.CellsU('BeginX').GlueType)
-      
+	  [Console]::Error.WriteLine( ('EndX: "{0}" {1}' -f  $shape.CellsU('EndX').ResultIU, $shape.CellsU('EndX').GlueType))
+	  [Console]::Error.WriteLine(('BeginX: "{0}" {1}' -f $shape.CellsU('BeginX').ResultIU, $shape.CellsU('BeginX').GlueType))
     } else {
 
-      Write-Host 'Master:' $shape.Master.Name
-      Write-Host 'MasterU:' $shape.Master.NameU
+      [Console]::Error.WriteLine( (Write-Host 'Master:'  + $shape.Master.Name ))
+      [Console]::Error.WriteLine( ('MasterU:' + $shape.Master.NameU))
 
-      Write-Host 'PinX:' $shape.CellsU('PinX').ResultIU
-      Write-Host 'PinY:' $shape.CellsU('PinY').ResultIU
+      [Console]::Error.WriteLine( ('PinX:' + $shape.CellsU('PinX').ResultIU))
+      [Console]::Error.WriteLine( ( 'PinY:'+  $shape.CellsU('PinY').ResultIU))
     }
   }
 
@@ -254,3 +254,28 @@ Exception setting 'FormulaU': '
     $visApp.Quit()
   }
 }
+
+<#
+Write-Host 'Output encoding:'
+Write-Host [Console]::OutputEncoding.WebName
+
+Write-Host 'Error encoding:'
+Write-Host [Console]::Error.Encoding.WebName
+
+Write-Host 'Output code page:'
+Write-Host [Console]::OutputEncoding.CodePage
+
+Write-Host 'Error code page:'
+Write-Host [Console]::Error.Encoding.CodePage
+
+$encoding = New-Object System.Text.UTF8Encoding($false)
+$writer = New-Object System.IO.StreamWriter(
+  [Console]::OpenStandardError(),
+  $encoding
+)
+$writer.AutoFlush = $true
+[Console]::SetError($writer)
+
+[Console]::Error.WriteLine($shape.Name)
+
+#>
