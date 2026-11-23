@@ -349,17 +349,17 @@ Bar analogy is good:
 # Visio COM Automation
 # Compatible with Windows PowerShell 2.0 / Visio 2007
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
 # --------------------------------------------------
 # Step 1: Get the flowchart template and stencil
 # --------------------------------------------------
 
-$flowchartTemplateName = "C:\Program Files\Microsoft Office\Office12\1049\BASFLO_M.VST"
-$flowchartStencilName = "BASFLO_M.VSS"
+$flowchartTemplateName = 'C:\Program Files\Microsoft Office\Office12\1049\BASFLO_M.VST'
+$flowchartStencilName = 'BASFLO_M.VSS'
 
-$masterProcessName = "Process"
-$masterDecisionName = "Decision"
+$masterProcessName = 'Process'
+$masterDecisionName = 'Decision'
 
 $visApp = $null
 $docFlowTemplate = $null
@@ -367,256 +367,236 @@ $docFlowStencil = $null
 
 try {
 
-    # Start Visio
+  # Start Visio
 
-    $visApp = New-Object -ComObject Visio.Application
-    $visApp.Visible = $true
+  $visApp = New-Object -ComObject Visio.Application
+  $visApp.Visible = $true
 
-    # Open a new document using the flowchart template
+  # Open a new document using the flowchart template
 
-    $docFlowTemplate = $visApp.Documents.Add(
-        $flowchartTemplateName
-    )
+  $docFlowTemplate = $visApp.Documents.Add($flowchartTemplateName)
 
-    # Search open documents for the flowchart stencil
+  # Search open documents for the flowchart stencil
 
-    foreach ($doc in $visApp.Documents) {
+  foreach ($doc in $visApp.Documents) {
 
-        Write-Host "Document:" $doc.Name
+    Write-Host 'Document:' $doc.Name
 
-        if ($doc.Name -eq $flowchartStencilName) {
-            $docFlowStencil = $doc
-            break
-        }
+    if ($doc.Name -eq $flowchartStencilName) {
+      $docFlowStencil = $doc
+      break
+    }
+  }
+
+  # Fallback: open stencil explicitly if not found
+
+  if ($null -eq $docFlowStencil) {
+
+    # https://learn.microsoft.com/en-us/visualstudio/vsto/how-to-programmatically-open-visio-documents?view=visualstudio&tabs=csharp
+    # NOTE: ACP locale is used in Office application resource path and name attributes
+    # NOTE: may be different from [System.Globalization.CultureInfo]::CurrentCulture.LCID
+    # en-us 0x409 1033
+    # ru-ru 0x419 1049
+    $programFiles = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::ProgramFiles)
+    $stencilPath = $programFiles + '\Microsoft Office\Office12\1049\BASFLO_M.VSS'
+    # https://learn.microsoft.com/en-us/dotnet/api/system.environment.specialfolder?view=netframework-4.5
+    # https://learn.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.currentculture?view=netframework-4.5
+    # https://learn.microsoft.com/sr-latn-rs/office/vba/api/visio.visopensaveargs
+    # NOTE: may choose to open with visOpenHidden flag instead
+    $docFlowStencil = $visApp.Documents.OpenEx( $stencilPath, [Microsoft.Office.Interop.Visio.VisOpenSaveArgs]::visOpenDocked )
+  }
+
+  # --------------------------------------------------
+  # Step 2: Get masters and connector
+  # --------------------------------------------------
+
+  $mstProcess = $docFlowStencil.Masters.ItemU($masterProcessName)
+
+  $mstDecision = $docFlowStencil.Masters.ItemU($masterDecisionName)
+
+  # Built-in connector object (not a Master)
+
+  $conn = $visApp.ConnectorToolDataObject
+
+  # --------------------------------------------------
+  # Step 3: Drop the masters
+  # --------------------------------------------------
+
+  $numShapes = 7
+  $decisionStepNumber = 3
+
+  $dx = 1.5
+  $dy = 1.0
+
+  # First page of the document
+
+  $pg = $docFlowTemplate.Pages.Item(1)
+
+  # Get center and top of page
+
+  $x = $pg.PageSheet.CellsU( 'PageWidth').ResultIU / 2
+
+  $y = $pg.PageSheet.CellsU( 'PageHeight').ResultIU - 1
+
+  $shpLast = $null
+  $shpDec = $null
+  $shpConn = $null
+
+  for ($i = 1; $i -le $numShapes; $i++) {
+
+    # Drop Process or Decision shape
+
+    if ($i -eq $decisionStepNumber) {
+      # https://learn.microsoft.com/en-us/office/vba/api/visio.page.drop
+      $shpNew = $pg.Drop( $mstDecision, $x, $y)
+
+      $shpNew.Text = ('{0}?' -f $i )
+
+      # Remember decision shape
+
+      $shpDec = $shpNew
+    } else {
+      $shpNew = $pg.Drop( $mstProcess, $x, $y)
+
+      $shpNew.Text = ('Do Step {0}' -f $i)
     }
 
-    # Fallback: open stencil explicitly if not found
-    
-    if ($null -eq $docFlowStencil) {
+    # Set custom properties
 
-        # NOTE: system ACP locale is used in Office application resource path and name attributes 
-        # en-us 0x409 1033
-        # ru-ru 0x419 1049
-        $stencilPath = "C:\Program Files\Microsoft Office\Office12\1049\BASFLO_M.VSS"
+    $shpNew.CellsU( 'Prop.Cost').ResultIU = $i
+    $cell = $shpNew.CellsU('Prop.Duration')
 
-        $docFlowStencil = $visApp.Documents.OpenEx(
-            $stencilPath,
-            4
-        )
-    }
-
-    # --------------------------------------------------
-    # Step 2: Get masters and connector
-    # --------------------------------------------------
-
-    $mstProcess = $docFlowStencil.Masters.ItemU(
-        $masterProcessName
-    )
-
-    $mstDecision = $docFlowStencil.Masters.ItemU(
-        $masterDecisionName
-    )
-
-    # Built-in connector object (not a Master)
-
-    $conn = $visApp.ConnectorToolDataObject
-
-    # --------------------------------------------------
-    # Step 3: Drop the masters
-    # --------------------------------------------------
-
-    $numShapes = 7
-    $decisionStepNumber = 3
-
-    $dx = 1.5
-    $dy = 1.0
-
-    # First page of the document
-
-    $pg = $docFlowTemplate.Pages.Item(1)
-
-    # Get center and top of page
-
-    $x = $pg.PageSheet.CellsU(
-        "PageWidth"
-    ).ResultIU / 2
-
-    $y = $pg.PageSheet.CellsU(
-        "PageHeight"
-    ).ResultIU - 1
-
-    $shpLast = $null
-    $shpDec = $null
-    $shpConn = $null
-
-    for ($i = 1; $i -le $numShapes; $i++) {
-
-        # Drop Process or Decision shape
-
-        if ($i -eq $decisionStepNumber) {
-
-            $shpNew = $pg.Drop(
-                $mstDecision,
-                $x,
-                $y
-            )
-
-            $shpNew.Text = "$i?"
-
-            # Remember decision shape
-
-            $shpDec = $shpNew
-        }
-        else {
-
-            $shpNew = $pg.Drop(
-                $mstProcess,
-                $x,
-                $y
-            )
-
-            $shpNew.Text = "Do Step $i"
-        }
-
-        # Set custom properties
-
-        $shpNew.CellsU(
-            "Prop.Cost"
-        ).ResultIU = $i
-
-        # Duration expressed in elapsed hours
+    # Duration expressed in elapsed hours
+    # https://learn.microsoft.com/en-us/office/vba/api/visio.cell.result
+    $cell.Result([Microsoft.Office.Interop.Visio.VisUnitCodes]::visElapsedHour) = $i
 <#
-        $shpNew.CellsU(
-            "Prop.Duration"
-        ).FormulaU = ("$i h")
-		#>
-<# Exception setting "FormulaU": "
-#NAME?"
+    $shpNew.CellsU( 'Prop.Duration').FormulaU = ('$i h') 
+
+leading to
+Exception setting 'FormulaU': '
+#NAME?'
 
 - this is ShapeSheet formula parsing issue
 #>
-        # Connect shapes
+    # Connect shapes
 
-        if ($i -ne 1) {
+    if ($i -ne 1) {
 
-            # Drop connector
+      # Drop connector
 
-            $shpConn = $pg.Drop(
-                $conn,
-                0,
-                0
-            )
+      $shpConn = $pg.Drop( $conn, 0, 0)
 
-            # Glue BeginX
+      # Glue BeginX
 
-            if ($i -eq ($decisionStepNumber + 1)) {
+      if ($i -eq ($decisionStepNumber + 1)) {
 
-                # Glue to right-side decision connection
+        # Glue to right-side decision connection
+        # https://learn.microsoft.com/en-us/office/vba/api/visio.cell.glueto
+        $shpConn.CellsU( 'BeginX').GlueTo( $shpDec.CellsU('Connections.X2'))
+      } else {
+        # Dynamic glue to previous shape
 
-                $shpConn.CellsU(
-                    "BeginX"
-                ).GlueTo(
-                    $shpDec.CellsU("Connections.X2")
-                )
-            }
-            else {
-
-                # Dynamic glue to previous shape
-
-                $shpConn.CellsU(
-                    "BeginX"
-                ).GlueTo(
-                    $shpLast.CellsU("PinX")
-                )
-            }
-
-            # Glue EndX to new shape
-
-            $shpConn.CellsU(
-                "EndX"
-            ).GlueTo(
-                $shpNew.CellsU("PinX")
-            )
-        }
-
-        # Prepare for next iteration
-
-        $shpLast = $shpNew
-
-        # Adjust coordinates according to branch
-
-        if ($i -eq $decisionStepNumber) {
-
-            $x = $x + $dx
-        }
-        elseif ($i -eq ($decisionStepNumber + 1)) {
-
-            $x = $x - $dx
-            $y = $y - $dy
-
-            # Label decision branch
-
-            $shpConn.Text = "No"
-
-            # Next connector starts at decision shape
-
-            $shpLast = $shpDec
-        }
-        else {
-
-            $y = $y - $dy
-        }
-    }
-
-    # --------------------------------------------------
-    # Step 4: Layout and deselect
-    # --------------------------------------------------
-
-    # Original example leaves automatic layout disabled.
-    # Uncomment to experiment:
-    #
-    # $pg.Layout()
-
-    # Deselect all shapes
-
-    $visApp.ActiveWindow.DeselectAll()
-
-    # Original example:
-    #
-    # Visio.Windows.Arrange(
-    #     Visio.visArrangeTileVertical
-    # )
-    #
-    # This requires resolving the Visio enum value
-    # or using the installed Visio interop assembly.
-
-    Write-Host "Flowchart created successfully."
-
-}
-finally {
-
-    # Close documents and quit Visio
-
-    if ($null -ne $docFlowTemplate) {
-		$docFlowTemplate.Layout
-		$docFlowTemplate.SaveAs( "C:\DOCUME~1\Admin\LOCALS~1\Temp\AutomatedFlowchart.vsd")
-		$docFlowTemplate.Saved = $true
-        $docFlowTemplate.Close()
-    }
-
-    if ($null -ne $docFlowStencil) {
-      try {
-        $docFlowStencil.Close()
-      } catch [Exception] { 
-        # System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.Runtime.InteropServices.COMException (0x86DB0898):
-        # the stencil is a shared document, already owned or managed by the template/document session. Closing it independently may be rejected by Visio
-        write-host $_.Exception
+        $shpConn.CellsU( 'BeginX').GlueTo( $shpLast.CellsU('PinX'))
       }
+
+      # Glue EndX to new shape
+
+      $shpConn.CellsU( 'EndX').GlueTo( $shpNew.CellsU('PinX'))
     }
 
-    if ($null -ne $visApp) {
-      $visApp.Quit()
+    # Prepare for next iteration
+
+    $shpLast = $shpNew
+
+    # Adjust coordinates according to branch
+
+    if ($i -eq $decisionStepNumber) {
+      $x = $x + $dx
+    } elseif ($i -eq ($decisionStepNumber + 1)) {
+
+      $x = $x - $dx
+      $y = $y - $dy
+
+      # Label decision branch
+
+      $shpConn.Text = 'No'
+
+      # Next connector starts at decision shape
+
+      $shpLast = $shpDec
+    } else {
+      $y = $y - $dy
     }
+  }
+
+  # --------------------------------------------------
+  # Step 4: Layout and deselect
+  # --------------------------------------------------
+
+  # Original example leaves automatic layout disabled.
+  # Uncomment to experiment:
+  #
+  $pg.Layout()
+
+  # Deselect all shapes
+
+  $visApp.ActiveWindow.DeselectAll()
+
+  # Original example:
+  #
+  # Visio.Windows.Arrange(
+  #   Visio.visArrangeTileVertical
+  # )
+  #
+  # This requires resolving the Visio enum value
+  # or using the installed Visio interop assembly.
+
+  Write-Host 'Flowchart created successfully.'
+
+  foreach ($shape in $pg.Shapes) {
+
+    Write-Host ('ID: {0} Name: "{1}" NameU: "{2}" Text: "{3}" OneD: {4} Master ID: {5} Master Name: "{6}" Master NameU: "{7}"' -f $shape.ID , $shape.Name, $shape.NameU, $shape.Text, $shape.OneD, $shape.Master.ID, $shape.Master.Name,$shape.Master.NameU )
+
+    if ($shape.OneD) {
+
+      # https://learn.microsoft.com/en-us/office/client-developer/visio/gluetype-cell-glue-info-section
+      Write-Host ('EndX: "{0}" {1}' -f  $shape.CellsU('EndX').ResultIU, $shape.CellsU('EndX').GlueType)
+      Write-Host ('BeginX: "{0}" {1}' -f $shape.CellsU('BeginX').ResultIU, $shape.CellsU('BeginX').GlueType)
+      
+    } else {
+
+      Write-Host 'Master:' $shape.Master.Name
+      Write-Host 'MasterU:' $shape.Master.NameU
+
+      Write-Host 'PinX:' $shape.CellsU('PinX').ResultIU
+      Write-Host 'PinY:' $shape.CellsU('PinY').ResultIU
+    }
+  }
+
+} finally {
+
+  # Close documents and quit Visio
+  # NOTE: also saves when docyment management was unsuccessful
+  if ($null -ne $docFlowTemplate) {
+    $docFlowTemplate.SaveAs( [System.IO.Path]::GetTempPath()  + '\AutomatedFlowchart.vsd')
+    # $docFlowTemplate.Saved = $true
+    # not needed
+    $docFlowTemplate.Close()
+  }
+
+  if ($null -ne $docFlowStencil) {
+    try {
+      $docFlowStencil.Close()
+    } catch [Exception] {
+      # System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.Runtime.InteropServices.COMException (0x86DB0898):
+      # the stencil is a shared document, already owned or managed by the template/document session. Closing it independently may be rejected by Visio
+      write-host $_.Exception
+    }
+  }
+
+  if ($null -ne $visApp) {
+    $visApp.Quit()
+  }
 }
 	
 ```
@@ -624,16 +604,70 @@ finally {
 . .\create_flowchart.ps1
 ```
 ```text
-Document: Документ1
-Document: ARROWS_M.VSS
-Document: BACKGR_M.VSS
-Document: BASFLO_M.VSS
 Flowchart created successfully.
+ID: 1 Name: "Процесс" NameU: "Process" Text: "Do Step 1" OneD: 0 Master ID: 0 Master Name: "Процесс" Master NameU: "Process"
+Master: Процесс
+MasterU: Process
+PinX: 4.13385826771654
+PinY: 8.26033464566929
+ID: 2 Name: "Процесс.2" NameU: "Process.2" Text: "Do Step 2" OneD: 0 Master ID: 0 Master Name: "Процесс" Master NameU: "Process"
+Master: Процесс
+MasterU: Process
+PinX: 4.13385826771654
+PinY: 7.29478346456693
+ID: 3 Name: "Динамическая соединительная линия" NameU: "Dynamic connector" Text: "" OneD: -1 Master ID: 2 Master Name: "Динамическая соединительная линия" Master NameU: "Dynamic connector"
+EndX: "4.13385826771654"
+BeginX: "4.13385826771654"
+ID: 4 Name: "Решение" NameU: "Decision" Text: "3?" OneD: 0 Master ID: 3 Master Name: "Решение" Master NameU: "Decision"
+Master: Решение
+MasterU: Decision
+PinX: 4.13385826771654
+PinY: 6.32923228346457
+ID: 5 Name: "Динамическая соединительная линия.5" NameU: "Dynamic connector.5" Text: "" OneD: -1 Master ID: 2 Master Name: "Динамическая соединительная линия" Master NameU: "Dynamic connector"
+EndX: "4.13385826771654"
+BeginX: "4.13385826771654"
+ID: 6 Name: "Процесс.6" NameU: "Process.6" Text: "Do Step 4" OneD: 0 Master ID: 0 Master Name: "Процесс" Master NameU: "Process"
+Master: Процесс
+MasterU: Process
+PinX: 4.8134842519685
+PinY: 5.3636811023622
+ID: 7 Name: "Динамическая соединительная линия.7" NameU: "Dynamic connector.7" Text: "No" OneD: -1 Master ID: 2 Master Name: "Динамическая соединительная линия" Master NameU: "Dynamic connector"
+EndX: "4.8134842519685"
+BeginX: "4.6259842519685"
+ID: 8 Name: "Процесс.8" NameU: "Process.8" Text: "Do Step 5" OneD: 0 Master ID: 0 Master Name: "Процесс" Master NameU: "Process"
+Master: Процесс
+MasterU: Process
+PinX: 3.45423228346457
+PinY: 5.3636811023622
+ID: 9 Name: "Динамическая соединительная линия.9" NameU: "Dynamic connector.9" Text: "" OneD: -1 Master ID: 2 Master Name: "Динамическая соединительная линия" Master NameU: "Dynamic connector"
+EndX: "3.45423228346457"
+BeginX: "4.13385826771654"
+ID: 10 Name: "Процесс.10" NameU: "Process.10" Text: "Do Step 6" OneD: 0 Master ID: 0 Master Name: "Процесс" Master NameU: "Process"
+Master: Процесс
+MasterU: Process
+PinX: 3.45423228346457
+PinY: 4.39812992125984
+ID: 11 Name: "Динамическая соединительная линия.11" NameU: "Dynamic connector.11" Text: "" OneD: -1 Master ID: 2 Master Name: "Динамическая соединительная линия" Master NameU: "Dynamic connector"
+EndX: "3.45423228346457"
+BeginX: "3.45423228346457"
+ID: 12 Name: "Процесс.12" NameU: "Process.12" Text: "Do Step 7" OneD: 0 Master ID: 0 Master Name: "Процесс" Master NameU: "Process"
+Master: Процесс
+MasterU: Process
+PinX: 3.45423228346457
+PinY: 3.43257874015748
+ID: 13 Name: "Динамическая соединительная линия.13" NameU: "Dynamic connector.13" Text: "" OneD: -1 Master ID: 2 Master Name: "Динамическая соединительная линия" Master NameU: "Dynamic connector"
+EndX: "3.45423228346457"
+BeginX: "3.45423228346457"
 0
+
+
 System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.Runtime.InteropServices.COMException (0x86DB0898):
+
 Возникло исключение.
    --- End of inner exception stack trace ---
    at System.RuntimeType.InvokeDispMethod(String name, BindingFlags invokeAttr,Object target, Object[] args, Boolean[] byrefModifiers, Int32 culture, String[]namedParameters)
+   at System.RuntimeType.InvokeMember(String name, BindingFlags bindingFlags, Binder binder, Object target, Object[] providedArgs, ParameterModifier[] modifiers, CultureInfo culture, String[] namedParams)
+   at System.Management.Automation.ComMethod.InvokeMethod(PSMethod method, Object[] arguments)
 ```
 ```text
  Directory of C:\DOCUME~1\Admin\LOCALS~1\Temp
