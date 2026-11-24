@@ -161,6 +161,8 @@ which eclipse
 ```text
 /usr/local/bin/eclipse
 ```
+(may be empty)
+
 ```sh
 readlink $(which eclipse)
 ```
@@ -174,6 +176,12 @@ ls -ld $(dirname $(readlink $(which eclipse)))
 drwxrwxr-x 9 sergueik sergueik 4096 Nov 17 10:00 /opt/eclipse
 ```
 ```sh
+file /opt/eclipse/eclipse 
+```
+```text
+/opt/eclipse/eclipse: ELF 64-bit LSB executable
+```
+```sh
 pushd /tmp
 rm -fr /tmp/eclipse
 tar xzf /home/$USER/Downloads/eclipse.tar.gz 2>/dev/null
@@ -183,6 +191,14 @@ ls -d eclipse*
 sudo mv /opt/eclipse /opt/eclipse.OLD
 sudo mv eclipse /opt
 sudo ln -fs /opt/eclipse/eclipse /usr/local/bin/eclipse
+```
+```sh
+cat  /opt/eclipse/.eclipseproduct
+```
+```text
+name=Eclipse Platform
+id=org.eclipse.platform
+version=4.33.0
 ```
 With this version will need to import the `org.eclipse.m2e.core.maven2Nature` to import maven `pom.xml`.
 Eclipse will not be wrapping the packagee in the Project explorer making it barely useful with source file navication. a pseudo folders with partial package names are to be opened individually:

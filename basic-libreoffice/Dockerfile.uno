@@ -19,12 +19,7 @@ RUN set -xe \
         libstdc++ dbus-x11 \
     && rm -rf /var/cache/apk/* /tmp/*
 
-RUN curl -svkLo /tmp/unoconv  https://raw.githubusercontent.com/dagwieers/unoconv/master/unoconv  \
-    && mv /tmp/unoconv /usr/local/bin \
-    && chmod +x /usr/local/bin/unoconv \
-    && test -f /usr/bin/python || ln -stv /usr/bin/python3 /usr/bin/python
-
-RUN pip install setuptools --break-system-packages
+RUN pip install setuptools unoconv==0.9.0 --break-system-packages
 WORKDIR /home/alpine/
 USER alpine
 RUN unoconv --version
