@@ -33,26 +33,26 @@ from Microsoft Download Center Archive:
 
 |Description | Filename|
 |------------|---------|
-|Active Directory diagram | ActvDir.vsd|
-|Basic Flowchart | Bflowcht.vsd|
-|Block Diagram - BlkDiagm.vsd|
-|Building Floor Plan | BldgPlan.vsd|
-|Basic Network diagram | Bnetwork.vsd|
-|Brainstorming/Mind map | Brainstm.vsd|
-|Calendar | Calendar.vsd|
-|Database diagram | Database.vsd|
-|Detailed Network diagram | Dnetwork.vsd|
-|Electrical Engineering Control diagram | EECtrl.vsd|
-|Fluid Power diagram | FluidPwr.vsd|
-|Meeting Room layout | MeetRoom.vsd|
-|Organization Chart | OrgChart.vsd|
-|Process Engineering diagram | ProcEng.vsd|
-|IT Rack diagram | Rack.vsd|
-|Timeline diagram | Timeline.vsd|
-|UML diagram | UML.vsd|
-|Web Design diagram | WebDsgn.vsd|
-|Web Site diagram | WebSite.vsd|
-|Window UI diagram | WinUI.vsd |
+|Active Directory diagram | `ActvDir.vsd`|
+|Basic Flowchart | `Bflowcht.vsd`|
+|Block Diagram | `BlkDiagm.vsd`|
+|Building Floor Plan | `BldgPlan.vsd`|
+|Basic Network diagram | `Bnetwork.vsd`|
+|Brainstorming/Mind map | `Brainstm.vsd`|
+|Calendar | `Calendar.vsd`|
+|Database diagram | `Database.vsd`|
+|Detailed Network diagram | `Dnetwork.vsd`|
+|Electrical Engineering Control diagram | `EECtrl.vsd`|
+|Fluid Power diagram | `FluidPwr.vsd`|
+|Meeting Room layout | `MeetRoom.vsd`|
+|Organization Chart | `OrgChart.vsd`|
+|Process Engineering diagram | `ProcEng.vsd`|
+|IT Rack diagram | `Rack.vsd`|
+|Timeline diagram | `Timeline.vsd`|
+|UML diagram | `UML.vsd`|
+|Web Design diagram | `WebDsgn.vsd`|
+|Web Site diagram | `WebSite.vsd`|
+|Window UI diagram | `WinUI.vsd` |
 
 
 |Filename|Description| Comment |
@@ -226,6 +226,55 @@ which matches quite close to what one find in the desktop application or Microso
 
 ![Capture Libreoffice Macro Explore](screenshots/capture-libreoffice-macros.png)
 
+
+### Visio 2013 to LibreOffice Draw Conversion
+
+```
+export IMAGE=basic-libreoffice
+export NAME=$IMAGE
+mkdir -p ~/data; cp Visio\ 365/Basic\ flowchart\ tf11712902.vstx  ~/data/saple.vstx
+
+docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v ${HOME}/data:/home/alpine $IMAGE 
+```
+```text
+WARNING: Your kernel does not support swap limit capabilities or the cgroup is not mounted. Memory limited without swap.
+```
+```sh
+file saple.vstx 
+```
+```text
+saple.vstx: Microsoft Visio 2013+
+```
+```sh
+libreoffice --headless --convert-to odg sample.vstx
+```
+```text
+Error: source file could not be loaded
+```
+```sh
+cp ~/Downloads/sample.vsdx ~/data/
+docker run --entrypoint sh --rm -it --name $NAME --hostname libreoffice -e PGID=1000 -e PUID=1000 -c 512 -m 2096m -v ${HOME}/data:/home/alpine $IMAGE
+```
+```sh
+/usr/bin/libreoffice --headless --convert-to odg sample.vsdx
+```
+```text
+convert /home/alpine/sample.vsdx as a Draw document -> /home/alpine/sample.odg using filter : draw8
+```
+
+
+![capture libreoffice draw](screenshots/capture-libreoffice-draw2.png)
+
+
+![capture visio 2003](screenshots/capture-visio2013.png)
+
+
+![capture Editing in visio 2003](screenshots/capture-visio2013-editing.png)
+
+
+![capture Editing in Libre Office Draw](screenshots/capture-libreoffice-draw2-editing.png)
+
+
 ### Using Uno Conv
 
 > NOTE this Dockerfile is intended for repeaded conversions
@@ -240,6 +289,11 @@ docker images $IMAGE
 ```text
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
 basic-libreoffice-uno   latest              a919aa25fd55        2 minutes ago       1.15GB
+```
+
+```sh
+docker save --output ${IMAGE}.tar ${IMAGE}
+gzip -9 ${IMAGE}.tar
 ```
 ```sh
 export IMAGE=basic-libreoffice-uno
@@ -400,12 +454,8 @@ docker build -t $IMAGE -f Dockerfile.uno .
 ```sh
 export IMAGE=basic-libreoffice-uno
 export NAME=$IMAGE
-docker run -d --name $NAME -p 8100:8100 $IMAGE
 ```
 
-```sh
-docker cp sample.vsd $NAME:/tmp/
-```
 ```sh
 docker exec -ti $NAME unoconv --connection 'socket,host=127.0.0.1,port=8100,tcpNoDelay=1;urp;StarOffice.ComponentContext' -f odg /tmp/sample.vsd
 ```
@@ -709,7 +759,7 @@ Exception setting 'FormulaU': '
 } finally {
 
   # Close documents and quit Visio
-  # NOTE: also saves when docyment management was unsuccessful
+  # NOTE: also saves when document generation was unsuccessful
   if ($null -ne $docFlowTemplate) {
     $docFlowTemplate.SaveAs( [System.IO.Path]::GetTempPath()  + '\AutomatedFlowchart.vsd')
     # $docFlowTemplate.Saved = $true
@@ -878,7 +928,9 @@ find .
 ./VBA/__SRP_4
 ./VBA/__SRP_5
 ```
-![Capture Excel 2003 Macro Editor](screenshots/capture-excel-2003-macros.png)
+![Capture Excel 2003 Macro Editor](screenshots/capture-excel2003-macros.png)
+
+
 ```
 Rem Attribute VBA_ModuleType=VBADocumentModule
 Option VBASupport 1
@@ -933,6 +985,8 @@ Sub NameSheetsFromAList()
 End Sub
 
 ```
+![Capture LibreOffice Macro Editor](screenshots/capture-excel2013-macros.png)
+
 ![Capture LibreOffice Macro Editor](screenshots/capture-libreoffice-calc-macros.png)
 ```vba
 Sub NameSheetsFromAList()
