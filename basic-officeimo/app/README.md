@@ -86,12 +86,39 @@ export WORKDIR=$(pwd)
 docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect
 ```
 
+
 ```sh
 export IMAGE=test
 export WORKDIR=$(echo ${USERPROFILE}| sed 's|\\|/|g;s|c:|/c|i')/data
 export WORKDIR=/c/Users/${USERNAME}/data
 cp application.accdb ${WORKDIR}
 docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect
+```
+
+```text
+Required argument missing for command: 'AccessVBAInspect'.
+
+Description:
+  Examine Access file. Extract VBA modules, saved queries SQL, References, Forms
+
+Usage:
+  AccessVBAInspect <files>... [options]
+
+Arguments:
+  <files>  files to examine
+
+Options:
+  --extract <extract>  Content to extract. Specify additional content by
+                       repetition
+  -?, -h, --help       Show help and usage information
+  --version            Show version information
+
+Status: Error
+
+```
+
+```sh
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect  --extract Modules application.accdb
 ```
 ```text
 FixtureForm:

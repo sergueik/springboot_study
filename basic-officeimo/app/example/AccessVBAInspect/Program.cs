@@ -1,19 +1,68 @@
 ﻿using OfficeIMO;
 using OfficeIMO.Access;
+using System.CommandLine;
+using System.CommandLine.Parsing;
 
-namespace PdfDocGenerator.CLI {
+namespace AccessVBAInspect {
+  public enum ExtractionTarget { 
+    Modules,
+    Forms,
+    Queries,
+    References
+  }
+  
 	public class Program {
-		public  static void Main(string[] args) {
-			using AccessDocument source = AccessDocument.Load("application.accdb");
-			foreach (AccessApplicationObject form in source.Forms) {
-				Console.WriteLine($"{form.Name}: {form.Definition?.RecordSource}");
-				foreach (AccessStorageStream stream in form.Streams)
-					Console.WriteLine($"{stream.Path}: {stream.Payload.GetBytes().Length} bytes");
+		public static int InspectFiles(FileInfo[] files, ExtractionTarget[] targets) {
+			var exitCode = 0;
+			foreach(FileInfo file in files) {
+				if (!file.Exists) {
+					Console.Error.WriteLine(String.Format("Source file {0} not found", file.FullName));
+					exitCode = 1;
+					continue;
+				}
+				Console.Error.WriteLine(String.Format("File: {0}", file.FullName));
+				Console.Error.WriteLine(String.Format("Extract: {0} targets", targets.Count()));
+				using AccessDocument source = AccessDocument.Load(file.FullName);
+				if ( targets.Contains(ExtractionTarget.Modules)) {
+					Console.Error.WriteLine("Modules: " );
+					foreach (AccessVbaModuleInfo module in source.VbaProject.Modules)
+						Console.WriteLine(module.Source ?? module.SourceLimitation);
+				}
+				if ( targets.Contains(ExtractionTarget.References)) {
+					Console.Error.WriteLine("References: " );
+					foreach (AccessVbaReferenceInfo reference in source.VbaProject.References)
+						Console.WriteLine($"{reference.Name}: {reference.LibraryId}");
+				}
+				if ( targets.Contains(ExtractionTarget.Forms)) {
+					Console.Error.WriteLine("Forms: " );
+					foreach (AccessApplicationObject form in source.Forms) {
+						Console.WriteLine($"{form.Name}: {form.Definition?.RecordSource}");
+						foreach (AccessStorageStream stream in form.Streams)
+							Console.Error.WriteLine($"{stream.Path}: {stream.Payload.GetBytes().Length} bytes");
+					}
+				}
 			}
-			foreach (AccessVbaModuleInfo module in source.VbaProject.Modules)
-				Console.WriteLine(module.Source ?? module.SourceLimitation);
-			foreach (AccessVbaReferenceInfo reference in source.VbaProject.References)
-				Console.WriteLine($"{reference.Name}: {reference.LibraryId}");
-	}
+			return exitCode;
+		} 
+		public static void Main(string[] args) {
+			// https://learn.microsoft.com/en-us/dotnet/api/system.io.fileinfo?view=netframework-4.8
+			Argument <FileInfo[]>filesArgiment = new("files") {
+				Arity = ArgumentArity.OneOrMore,
+				Description = "files to examine"
+			};
+			Option <ExtractionTarget[]>extractOption = new ("--extract") {
+				Arity = ArgumentArity.ExactlyOne,
+				Description = "Content to extract. Specify additional content by repetition"
+			};
+      // https://learn.microsoft.com/en-us/dotnet/api/system.commandline.rootcommand?view=net-11.0-pp&viewFallbackFrom=netframework-4.8
+			RootCommand rootCommand = new ("Examine Access file. Extract VBA modules, saved queries SQL, References, Forms");
+			rootCommand.Arguments.Add(filesArgiment);
+			rootCommand.Options.Add(extractOption);
+			// https://learn.microsoft.com/en-us/dotnet/api/system.commandline.command.setaction?view=net-11.0-pp&viewFallbackFrom=netframework-4.8
+      // https://learn.microsoft.com/en-us/dotnet/api/system.commandline.parseresult?view=net-11.0-pp&viewFallbackFrom=netframework-4.8
+			rootCommand.SetAction((ParseResult parseResult) => InspectFiles(parseResult.GetValue(filesArgiment)!, parseResult.GetValue(extractOption) ??[ExtractionTarget.Modules]));
+      Console.Error.WriteLine(String.Format("Status: {0}", ((rootCommand.Parse(args).Invoke()) == 0 ? "Success":"Error")));
+      return;
+	    } 
 	}
 }
