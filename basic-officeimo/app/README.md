@@ -13,33 +13,39 @@ Assemblies for COM-free .NET app for creating, reading, editing, converting, ren
 
 ```sh
 docker pull mcr.microsoft.com/dotnet/sdk:8.0-alpine
+docker pull mcr.microsoft.com/dotnet/runtime:8.0-alpine
 ```
 ```sh
-docker build -f Dockerfile -t test .
+export IMAGE=test
+docker build -f Dockerfile -t $IMAGE .
 ```
 ```text
-tep 1/9 : FROM  mcr.microsoft.com/dotnet/sdk:8.0  AS build
- ---> 45d16602f24a
-Step 2/9 : WORKDIR /source
- ---> Running in d0350ff96cf1
- ---> Removed intermediate container d0350ff96cf1
- ---> c936e3c5c02c
-Step 3/9 : COPY ["example/AccessVBAInspect/AccessVBAInspect.csproj", "./AccessVBAInspect/AccessVBAInspect.csproj"]
- ---> ba731c891a34
-Step 4/9 : RUN dotnet restore "./AccessVBAInspect/AccessVBAInspect.csproj"
- ---> Running in 54c14f9302c8
+Step 1/12 : FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+ ---> 5e56dd94b4c2
+Step 2/12 : WORKDIR /source
+ ---> Running in 2714571de2f4
+Removing intermediate container 2714571de2f4
+ ---> a8e4428b0bf3
+Step 3/12 : ARG PROJECT=AccessVBAInspect
+ ---> Running in f28058550fc5
+Removing intermediate container f28058550fc5
+ ---> 1af4c139ac0d
+Step 4/12 : COPY example/${PROJECT}/${PROJECT}.csproj ./${PROJECT}/${PROJECT}.csproj
+ ---> b3763578e817
+Step 5/12 : RUN dotnet restore ./${PROJECT}/${PROJECT}.csproj --runtime linux-musl-x64
+ ---> Running in d164acb0de3d
   Determining projects to restore...
-  Restored /source/AccessVBAInspect/AccessVBAInspect.csproj (in 43.56 sec).
- ---> Removed intermediate container 54c14f9302c8
- ---> 76580d344a40
-Step 5/9 : COPY example ./
- ---> 5107bb8c910d
-Step 6/9 : WORKDIR "/source/AccessVBAInspect"
- ---> Running in 00ee7a178ab0
- ---> Removed intermediate container 00ee7a178ab0
- ---> 0c88ee238cab
-Step 7/9 : RUN dotnet build -c Release -o /app
- ---> Running in f207d3ee3559
+  Restored /source/AccessVBAInspect/AccessVBAInspect.csproj (in 50.38 sec).
+Removing intermediate container d164acb0de3d
+ ---> e4b2bffbcd9c
+Step 6/12 : COPY example ./
+ ---> 68f83cfab6ea
+Step 7/12 : WORKDIR /source/${PROJECT}
+ ---> Running in db8261d14ce9
+Removing intermediate container db8261d14ce9
+ ---> 44d2e4d30cfa
+Step 8/12 : RUN dotnet build -c Release -o /app
+ ---> Running in bfcdf2b98eb5
   Determining projects to restore...
   All projects are up-to-date for restore.
   AccessVBAInspect -> /app/AccessVBAInspect.dll
@@ -48,39 +54,47 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:05.93
- ---> Removed intermediate container f207d3ee3559
- ---> a6b9a36e2517
-Step 8/9 : FROM build AS publish
- ---> a6b9a36e2517
-Step 9/9 : RUN dotnet publish -c Release -o /app
- ---> Running in bcf56c0598b7
-  Determining projects to restore...
-  All projects are up-to-date for restore.
-  AccessVBAInspect -> /source/AccessVBAInspect/bin/Release/net8.0/AccessVBAInspect.dll
-  AccessVBAInspect -> /app/
- ---> Removed intermediate container bcf56c0598b7
- ---> 640d7a51bfab
-Successfully built 640d7a51bfab
+Time Elapsed 00:00:14.12
+Removing intermediate container bfcdf2b98eb5
+ ---> 11b5a10d645c
+Step 9/12 : RUN dotnet publish --no-self-contained --runtime linux-musl-x64   --configuration Release --output /app/linux-musl-x64   --no-restore
+ ---> Running in 96a6513f2989
+  AccessVBAInspect -> /source/AccessVBAInspect/bin/Release/net8.0/linux-musl-x64/AccessVBAInspect.dll
+  AccessVBAInspect -> /app/linux-musl-x64/
+Removing intermediate container 96a6513f2989
+ ---> 3c5e71831670
+Step 10/12 : FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine AS publish
+ ---> 3fa529c25dbf
+Step 11/12 : WORKDIR /app
+ ---> Running in bf72f0ebf538
+Removing intermediate container bf72f0ebf538
+ ---> 0a4c21842cc4
+Step 12/12 : COPY --from=build /app .
+ ---> 46f28d9ce673
+Successfully built 46f28d9ce673
 Successfully tagged test:latest
-
 ```
+* if you like to use upstream project fixture
 ```sh
 git clone --depth 1 https://github.com/EvotecIT/OfficeIMO ../OfficeIMO
 find ../OfficeIMO/ -iname '*.accdb'
 cp ../OfficeIMO/OfficeIMO.Access.Tests/Fixtures/Application/objects-ace12.accdb application.accdb
 ```
 ```sh
-docker run -it -w  /source/AccessVBAInspect -v $(pwd):/source/AccessVBAInspect test /app/AccessVBAInspect
+export IMAGE=test
+export WORKDIR=$(pwd)
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect
 ```
-
 
 ```sh
-cp application.accdb  ~/data/
-docker run -it -w  /source/AccessVBAInspect -v /c/Users/$USERNAME/data:/source/AccessVBAInspect test /app/AccessVBAInspect
+export IMAGE=test
+export WORKDIR=$(echo ${USERPROFILE}| sed 's|\\|/|g;s|c:|/c|i')/data
+export WORKDIR=/c/Users/${USERNAME}/data
+cp application.accdb ${WORKDIR}
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect
 ```
 ```text
-FixtureForm: 
+FixtureForm:
 Forms/0/Blob: 915 bytes
 Forms/0/TypeInfo: 48 bytes
 Forms/0/BlobDelta: 0 bytes
@@ -96,6 +110,7 @@ stdole: *\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\System32\stdo
 DAO: *\G{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28}#c.0#0#C:\Program Files\Common Files\Microsoft Shared\OFFICE16\ACEDAO.DLL#Microsoft Office 16.0 Access database engine Object Library
 ```
 
+
 ### Fixtures
 
 |Fixture|Contents|Extraction target|
@@ -107,9 +122,8 @@ DAO: *\G{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28}#c.0#0#C:\Program Files\Common Fil
 |`queries.accdb`|Select, parameter, action queries|Query definitions|
 |`relationships.accdb`|Two related tables|Relationship metadata|
 
+# this can run from Powershell ISE
 ```powershell
-
-
 $databasePath = Join-Path $env:TEMP 'generated-fixture.accdb'
 
 if (Test-Path $databasePath) {
@@ -190,10 +204,35 @@ finally {
 }
 
 ```
+
+alternatively run as
+
+```powershell
+. .\generate_fixture.ps1
+```
+
+```
+export IMAGE=test
+export WORKDIR=$(echo ${USERPROFILE}| sed 's|\\|/|g;s|c:|/c|i')/data
+export WORKDIR=/c/Users/${USERNAME}/data
+cp ~/Downloads/generated-fixture.accdb ${WORKDIR}/application.accdb
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect
+```
+```text
+export IMAGE=test
+export WORKDIR=$(echo ${USERPROFILE}| sed 's|\\|/|g;s|c:|/c|i')/data
+export WORKDIR=/c/Users/${USERNAME}/data
+cp application.accdb ${WORKDIR}
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect
+
+```
+```text
+Created: C:\Users\sergueik\AppData\Local\Temp\generated-fixture.accdb
+```
 when run this pops the confirmation from Access applicaton:
 
 ![Capture Confirmation](screenshots/capture-confirmation.png)
-litreally offering 
+litreally offering
 
 ```text
 Save As
@@ -201,7 +240,7 @@ Module Name:
 FixtureModule
 ```
 
-and refusing to close until confirmed.
+and refusing to close until confirmed. Confirm the dialog. The notes below apply to when the dialog is not confirmed but `msaccess.exe` is forcibly closed
 
 the file is locked
 
@@ -233,6 +272,19 @@ Unhandled exception. System.IO.InvalidDataException: Native Access table row cou
    at OfficeIMO.Access.AccessDocument.Load(String path, AccessLoadOptions options, CancellationToken cancellationToken) in /_/OfficeIMO.Access/AccessDocument.Lifecycle.cs:line 64
    at PdfDocGenerator.CLI.Program.Main(String[] args) in /source/AccessVBAInspect/Program.cs:line 7
 
+```
+after repair and compact in Access the error disappears
+```
+docker run -it -w  /source/AccessVBAInspect -v /c/Users/$USERNAME/data:/source/AccessVBAInspect test /app/AccessVBAInspect
+```
+```text
+Form1:
+Forms/0/Blob: 1616 bytes
+Forms/0/TypeInfo: 68 bytes
+Forms/0/BlobDelta: 0 bytes
+Forms/0/PropData: 13 bytes
+stdole: *\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\System32\stdole2.tlb#OLE Automation
+DAO: *\G{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28}#c.0#0#C:\Program Files\Common Files\Microsoft Shared\OFFICE15\ACEDAO.DLL#Microsoft Office 15.0 Access database engine Object Library
 ```
 ### Troubleshooting
 

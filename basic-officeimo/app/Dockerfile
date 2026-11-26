@@ -1,9 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /source
-COPY example/AccessVBAInspect/AccessVBAInspect.csproji /source/AccessVBAInspect/AccessVBAInspect.csproj
-RUN dotnet restore ./AccessVBAInspect/AccessVBAInspect.csproj --runtime linux-musl-x64
+ARG PROJECT=AccessVBAInspect
+COPY example/${PROJECT}/${PROJECT}.csproj ./${PROJECT}/${PROJECT}.csproj
+RUN dotnet restore ./${PROJECT}/${PROJECT}.csproj --runtime linux-musl-x64
 COPY example ./
-WORKDIR /source/AccessVBAInspect
+WORKDIR /source/${PROJECT}
 RUN dotnet build -c Release -o /app
 
 # make a release build
