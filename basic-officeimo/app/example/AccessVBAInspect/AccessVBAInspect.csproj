@@ -8,6 +8,10 @@
     <PublishAot>false</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
+ <PropertyGroup>
+  <TargetFramework>net8.0</TargetFramework>
+  <RuntimeIdentifiers>linux-musl-x64</RuntimeIdentifiers>
+</PropertyGroup> 
   <ItemGroup>
     <PackageReference Include="OfficeIMO" Version="3.6.2"/>
     <PackageReference Include="OfficeIMO.Access" Version="3.6.2"/>
