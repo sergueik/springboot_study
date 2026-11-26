@@ -57,7 +57,7 @@ Build succeeded.
 Time Elapsed 00:00:14.12
 Removing intermediate container bfcdf2b98eb5
  ---> 11b5a10d645c
-Step 9/12 : RUN dotnet publish --no-self-contained --runtime linux-musl-x64   --configuration Release --output /app/linux-musl-x64   --no-restore
+Step 9/12 : RUN dotnet publish --no-self-contained --runtime linux-musl-x64  --configuration Release --output /app/linux-musl-x64 --no-restore
  ---> Running in 96a6513f2989
   AccessVBAInspect -> /source/AccessVBAInspect/bin/Release/net8.0/linux-musl-x64/AccessVBAInspect.dll
   AccessVBAInspect -> /app/linux-musl-x64/
@@ -285,10 +285,13 @@ but the file is probably corrupt:
 
 
 ```sh
- docker run -it -w  /source/AccessVBAInspect -v /c/Users/$USERNAME/data:/source/AccessVBAInspect test /app/AccessVBAInspect
+base64 -d < fixtures/broken.accdb.base64 > $WORKDIR/broken.accdb
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect broken.accdb --extract Modules --extract Forms --extract Forms  --extract Queries
 ```
 ```text
-Unhandled exception. System.IO.InvalidDataException: Native Access table row count disagrees with its owned live records.
+File: /data/broken.accdb
+Extract: 4 targets
+Unhandled exception: System.IO.InvalidDataException: Native Access table row count disagrees with its owned live records.
    at OfficeIMO.Access.AccessNativeRowCursor.ReadCore(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeRowCursor.cs:line 46
    at OfficeIMO.Access.AccessNativeRowCursor.Read(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeRowCursor.cs:line 31
    at OfficeIMO.Access.AccessNativeDatabase.ReadAceStorage(AccessNativeTable table, Dictionary`2 streams, CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeDatabase.ApplicationStorage.cs:line 21
@@ -297,8 +300,37 @@ Unhandled exception. System.IO.InvalidDataException: Native Access table row cou
    at OfficeIMO.Access.AccessNativeDatabase.LoadCatalog(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeDatabase.Catalog.cs:line 71
    at OfficeIMO.Access.AccessDocument.FromBytes(Byte[] bytes, AccessLoadOptions options, CancellationToken cancellationToken, String path) in /_/OfficeIMO.Access/AccessDocument.Lifecycle.cs:line 54
    at OfficeIMO.Access.AccessDocument.Load(String path, AccessLoadOptions options, CancellationToken cancellationToken) in /_/OfficeIMO.Access/AccessDocument.Lifecycle.cs:line 64
-   at PdfDocGenerator.CLI.Program.Main(String[] args) in /source/AccessVBAInspect/Program.cs:line 7
-
+   at AccessVBAInspect.Program.InspectFiles(FileInfo[] files, ExtractionTarget[] targets) in /source/AccessVBAInspect/Program.cs:line 25
+   at AccessVBAInspect.Program.<>c__DisplayClass1_0.<Main>b__0(ParseResult parseResult) in /source/AccessVBAInspect/Program.cs:line 70
+   at System.CommandLine.Invocation.AnonymousSynchronousCommandLineAction.Invoke(ParseResult parseResult)
+   at System.CommandLine.Invocation.InvocationPipeline.Invoke(ParseResult parseResult)
+Status: Error
+```
+alternatively
+```sh
+base64 -d < fixtures/broken.accdb.base64 > $WORKDIR/broken.accdb
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect broken.accdb --extract Modules --extract Forms --extract Forms  --extract Queries
+```
+```text
+File: /data/broken.accdb
+Extract: 4 targets
+Unhandled exception: System.InvalidOperationException: Failed to calculate the result.
+ ---> System.IO.InvalidDataException: Native Access table row count disagrees with its owned live records.
+   at OfficeIMO.Access.AccessNativeRowCursor.ReadCore(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeRowCursor.cs:line 46
+   at OfficeIMO.Access.AccessNativeRowCursor.Read(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeRowCursor.cs:line 31
+   at OfficeIMO.Access.AccessNativeDatabase.ReadAceStorage(AccessNativeTable table, Dictionary`2 streams, CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeDatabase.ApplicationStorage.cs:line 21
+   at OfficeIMO.Access.AccessNativeDatabase.ReadApplicationStorage(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeDatabase.ApplicationStorage.cs:line 11
+   at OfficeIMO.Access.AccessNativeDatabase.LoadApplicationObjects(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeDatabase.Application.cs:line 17
+   at OfficeIMO.Access.AccessNativeDatabase.LoadCatalog(CancellationToken cancellation) in /_/OfficeIMO.Access/Native/AccessNativeDatabase.Catalog.cs:line 71
+   at OfficeIMO.Access.AccessDocument.FromBytes(Byte[] bytes, AccessLoadOptions options, CancellationToken cancellationToken, String path) in /_/OfficeIMO.Access/AccessDocument.Lifecycle.cs:line 54
+   at OfficeIMO.Access.AccessDocument.Load(String path, AccessLoadOptions options, CancellationToken cancellationToken) in /_/OfficeIMO.Access/AccessDocument.Lifecycle.cs:line 64
+   at AccessVBAInspect.Program.InspectFiles(FileInfo[] files, ExtractionTarget[] targets) in /source/AccessVBAInspect/Program.cs:line 29
+   --- End of inner exception stack trace ---
+   at AccessVBAInspect.Program.InspectFiles(FileInfo[] files, ExtractionTarget[] targets) in /source/AccessVBAInspect/Program.cs:line 59
+   at AccessVBAInspect.Program.<>c__DisplayClass1_0.<Main>b__0(ParseResult parseResult) in /source/AccessVBAInspect/Program.cs:line 83
+   at System.CommandLine.Invocation.AnonymousSynchronousCommandLineAction.Invoke(ParseResult parseResult)
+   at System.CommandLine.Invocation.InvocationPipeline.Invoke(ParseResult parseResult)
+Status: Error
 ```
 after repair and compact in Access the error disappears
 ```
