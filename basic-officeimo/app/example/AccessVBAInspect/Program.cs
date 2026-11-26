@@ -51,7 +51,7 @@ namespace AccessVBAInspect {
 				Description = "files to examine"
 			};
 			Option <ExtractionTarget[]>extractOption = new ("--extract") {
-				Arity = ArgumentArity.ExactlyOne,
+				Arity = ArgumentArity.ZeroOrMore,
 				Description = "Content to extract. Specify additional content by repetition"
 			};
       // https://learn.microsoft.com/en-us/dotnet/api/system.commandline.rootcommand?view=net-11.0-pp&viewFallbackFrom=netframework-4.8
@@ -60,9 +60,9 @@ namespace AccessVBAInspect {
 			rootCommand.Options.Add(extractOption);
 			// https://learn.microsoft.com/en-us/dotnet/api/system.commandline.command.setaction?view=net-11.0-pp&viewFallbackFrom=netframework-4.8
       // https://learn.microsoft.com/en-us/dotnet/api/system.commandline.parseresult?view=net-11.0-pp&viewFallbackFrom=netframework-4.8
-			rootCommand.SetAction((ParseResult parseResult) => InspectFiles(parseResult.GetValue(filesArgiment)!, parseResult.GetValue(extractOption) ??[ExtractionTarget.Modules]));
+			rootCommand.SetAction((ParseResult parseResult) => InspectFiles(parseResult.GetValue(filesArgiment)!, parseResult.GetValue(extractOption) ?? new[] { ExtractionTarget.Modules }));
       Console.Error.WriteLine(String.Format("Status: {0}", ((rootCommand.Parse(args).Invoke()) == 0 ? "Success":"Error")));
       return;
-	    } 
+    } 
 	}
 }
