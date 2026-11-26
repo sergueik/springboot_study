@@ -41,6 +41,13 @@ namespace AccessVBAInspect {
 							Console.Error.WriteLine($"{stream.Path}: {stream.Payload.GetBytes().Length} bytes");
 					}
 				}
+				if ( targets.Contains(ExtractionTarget.Queries)) {
+					if (source.Queries.Count() != 0 ) {
+						Console.Error.WriteLine("Queries: " );
+						foreach (AccessQueryDefinition queryDefinition in source.Queries)
+							Console.WriteLine(String.Format("Query: {0}\n{1}", queryDefinition.Name, ((queryDefinition.HasSql)? queryDefinition.Sql : "SQL unavailable")));
+						}
+					}
 			}
 			return exitCode;
 		} 

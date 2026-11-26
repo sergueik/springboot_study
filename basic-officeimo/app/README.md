@@ -118,7 +118,7 @@ Status: Error
 ```
 
 ```sh
-docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect  --extract Modules application.accdb
+docker run -it -w /data -v ${WORKDIR}:/data $IMAGE /app/AccessVBAInspect --extract Modules application.accdb
 ```
 ```text
 FixtureForm:
