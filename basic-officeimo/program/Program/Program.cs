@@ -7,16 +7,20 @@ using System;
 using System.Linq;
 using System.Diagnostics;
 
-namespace Program {
-	public enum ExtractionTarget {
+namespace Program
+{
+	public enum ExtractionTarget
+	{
 		Modules,
 		Forms,
 		QueriesL,
 		References
 	}
 
-	public class Program {
-		public  static void Main(string[] args) {
+	public class Program
+	{
+		public  static void Main(string[] args)
+		{
 			AccessDocument source = AccessDocument.Load("application.accdb", new AccessLoadOptions { AccessMode = DocumentAccessMode.ReadOnly });
 			// https://github.com/EvotecIT/OfficeIMO/blob/master/OfficeIMO.Access/Model/AccessOpaqueValue.cs
 			Debug.WriteLine(String.Format("Opened {0} bytes: {1} streams", source.NativeProperties.Length, source.ApplicationStreams.Count));
@@ -48,5 +52,31 @@ namespace Program {
 				Debug.WriteLine("No Queries");
 			}
 		}
+		public static ExtractionTarget[] ParseExtractionTargets(ParseArgs args)
+		{
+			string value = args.GetMacro("extract");
+
+			if (String.IsNullOrEmpty(value))
+				return new[] { ExtractionTarget.Modules };
+
+			var result = new List<ExtractionTarget>();
+
+			foreach (string item in value.Split(',')) {
+				ExtractionTarget target;
+
+				if (!Enum.TryParse<ExtractionTarget>(
+					        item.Trim(), true, out target)
+				        || !Enum.IsDefined(typeof(ExtractionTarget), target)) {
+					throw new ArgumentException(
+						"Invalid extraction target: " + item);
+				}
+
+				if (!result.Contains(target))
+					result.Add(target);
+			}
+
+			return result.ToArray();
+		}
+
 	}
 }
