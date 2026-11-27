@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="OfficeIMO" Version="3.6.2"/>
     <PackageReference Include="OfficeIMO.Access" Version="3.6.2"/>
+    <PackageReference Include="OfficeIMO.Core" Version="3.6.2"/>
     <PackageReference Include="System.CommandLine" Version="2.0.0"/>
   </ItemGroup>
 </Project>

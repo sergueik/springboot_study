@@ -18,6 +18,22 @@
 *.tar.gz
 *.rar
 
+# Visual Studio
+**/*.exe
+**/*.dll
+**/*.zip
+**/*.jar
+**/*.msi
+**/*.wixobj
+**/*.wixobj.*
+**/*.FileList*.txt
+**/bin
+**/obj
+**/*.suo
+**/*.user
+**/.nuget
+**/packages/**
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /.idea/

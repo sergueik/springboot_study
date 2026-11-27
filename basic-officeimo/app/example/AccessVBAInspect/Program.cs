@@ -1,7 +1,10 @@
 ﻿using OfficeIMO;
 using OfficeIMO.Access;
+using OfficeIMO.Core;
+
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Linq;
 
 namespace AccessVBAInspect {
   public enum ExtractionTarget {
@@ -17,7 +20,7 @@ namespace AccessVBAInspect {
 			var exitCode = 0;
 			foreach(FileInfo file in files) {
 				try {
-					using (AccessDocument source = AccessDocument.Load(file.FullName)) {
+					using (AccessDocument source = AccessDocument.Load(file.FullName, new AccessLoadOptions { AccessMode = DocumentAccessMode.ReadOnly })) {
 						if (source is null){
 							Console.Error.WriteLine(String.Format("Source file {0} not read", file.FullName));
 							exitCode = 1;
@@ -34,30 +37,44 @@ namespace AccessVBAInspect {
 
 		public static int InspectDocument(AccessDocument source, ExtractionTarget[] targets) {
       if ( targets.Contains(ExtractionTarget.Modules)) {
-        Console.Error.WriteLine("Modules: " );
-        foreach (AccessVbaModuleInfo module in source.VbaProject.Modules)
-          Console.WriteLine(module.Source ?? module.SourceLimitation);
+        if (source.VbaProject != null && source.VbaProject.Modules.Count > 0) {
+         Console.Error.WriteLine("Modules:" );
+          foreach (AccessVbaModuleInfo module in source.VbaProject.Modules)
+            Console.WriteLine(module.Source ?? module.SourceLimitation);
+        } else {
+          Console.Error.WriteLine("No Modules");
+        }
       }
       if ( targets.Contains(ExtractionTarget.References)) {
-        Console.Error.WriteLine("References: " );
-        foreach (AccessVbaReferenceInfo reference in source.VbaProject.References)
-          Console.WriteLine($"{reference.Name}: {reference.LibraryId}");
+        if (source.VbaProject != null && source.VbaProject.References.Count > 0) {
+          Console.Error.WriteLine("References:" );
+          foreach (AccessVbaReferenceInfo reference in source.VbaProject.References)
+            Console.WriteLine($"{reference.Name}: {reference.LibraryId}");
+        } else {
+          Console.Error.WriteLine("No References");
+        }
       }
       if ( targets.Contains(ExtractionTarget.Forms)) {
-        Console.Error.WriteLine("Forms: " );
-        foreach (AccessApplicationObject form in source.Forms) {
-          Console.WriteLine($"{form.Name}: {form.Definition?.RecordSource}");
-          foreach (AccessStorageStream stream in form.Streams)
-            Console.Error.WriteLine($"{stream.Path}: {stream.Payload.GetBytes().Length} bytes");
+        if (source.Forms.Count != 0) {        
+          Console.Error.WriteLine("Forms:" );
+          foreach (AccessApplicationObject form in source.Forms) {
+            Console.WriteLine($"{form.Name}: {form.Definition?.RecordSource}");
+            foreach (AccessStorageStream stream in form.Streams)
+              Console.Error.WriteLine($"{stream.Path}: {stream.Payload.GetBytes().Length} bytes");
+          }
+        } else {
+          Console.Error.WriteLine("No Forms");
         }
       }
       if ( targets.Contains(ExtractionTarget.Queries)) {
-        if (source.Queries.Count() != 0 ) {
-          Console.Error.WriteLine("Queries: " );
+        if (source.Queries.Count != 0 ) {
+          Console.Error.WriteLine("Queries:" );
           foreach (AccessQueryDefinition queryDefinition in source.Queries)
             Console.WriteLine(String.Format("Query: {0}\n{1}", queryDefinition.Name, ((queryDefinition.HasSql)? queryDefinition.Sql : "SQL unavailable")));
-          }
+        } else {
+          Console.Error.WriteLine("No Queries");
         }
+      }
       return 0;
 		}
 
