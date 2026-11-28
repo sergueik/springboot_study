@@ -68,18 +68,6 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="CommandLine">
-      <HintPath>..\packages\CommandLineParser.2.9.1\lib\net45\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="OfficeIMO">
-      <HintPath>..\packages\OfficeIMO.3.6.0\lib\net472\OfficeIMO.dll</HintPath>
-    </Reference>
-    <Reference Include="OfficeIMO.Access">
-      <HintPath>..\packages\OfficeIMO.Access.3.6.0\lib\net472\OfficeIMO.Access.dll</HintPath>
-    </Reference>
-    <Reference Include="OfficeIMO.Core">
-      <HintPath>..\packages\OfficeIMO.Core.3.6.0\lib\net472\OfficeIMO.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

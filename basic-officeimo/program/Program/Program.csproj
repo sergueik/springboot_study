@@ -65,17 +65,14 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommandLine">
-      <HintPath>..\packages\CommandLineParser.2.9.1\lib\net45\CommandLine.dll</HintPath>
-    </Reference>
     <Reference Include="OfficeIMO">
-      <HintPath>..\packages\OfficeIMO.3.6.0\lib\net472\OfficeIMO.dll</HintPath>
+      <HintPath>..\packages\OrriceIMO.3.6.0\lib\net472\OfficeIMO.dll</HintPath>
     </Reference>
     <Reference Include="OfficeIMO.Access">
-      <HintPath>..\packages\OfficeIMO.Access.3.6.0\lib\net472\OfficeIMO.Access.dll</HintPath>
+      <HintPath>..\packages\OrriceIMO.Access.3.6.0\lib\net472\OfficeIMO.Access.dll</HintPath>
     </Reference>
     <Reference Include="OfficeIMO.Core">
-      <HintPath>..\packages\OfficeIMO.Core.3.6.0\lib\net472\OfficeIMO.Core.dll</HintPath>
+      <HintPath>..\packages\OrriceIMO.Core.3.6.0\lib\net472\OfficeIMO.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

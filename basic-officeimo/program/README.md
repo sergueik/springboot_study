@@ -42,14 +42,12 @@ unzip -u ~/Downloads/OfficeIMO.Access.3.6.0.nupkg -d ../packages/OrriceIMO.Acces
 unzip -u ~/Downloads/OfficeIMO.3.6.0.nupkg -d ../packages/OrriceIMO.3.6.0
 unzip -u ~/Downloads/OfficeIMO.Core.3.6.0.nupkg -d ../packages/OrriceIMO.Core.3.6.0
 ```
-```
- curl -skLo ~/Downloads/CommandLineParser.zip https://www.nuget.org/api/v2/package/CommandLineParser/2.9.1
- mkdir -p ../packages/CommandLineParser.2.9.1
- unzip -u ~/Downloads/CommandLineParser.zip -d ../packages/CommandLineParser.2.9.1
-```
-in the ShareDevelop, run in Debug mode:
-Sample Console output
 
+Run in console, or in debugger
+
+```cmd
+
+```
 ```text
 Opened 1079 bytes: 18 streams
 Modules:
@@ -70,13 +68,12 @@ End Function
 stdole: *\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\System32\stdole2.tlb#OLE Automation
 DAO: *\G{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28}#c.0#0#C:\Program Files\Common Files\Microsoft Shared\OFFICE15\ACEDAO.DLL#Microsoft Office 15.0 Access database engine Object Library
 Forms:
-Form1:
+Form1: 
 Forms/0/Blob: 1616 bytes
 Forms/0/TypeInfo: 68 bytes
 Forms/0/BlobDelta: 0 bytes
 Forms/0/PropData: 13 bytes
 No Queries
-
 ```
 ### See Also
 

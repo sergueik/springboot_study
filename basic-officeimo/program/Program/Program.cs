@@ -3,9 +3,8 @@ using OfficeIMO.Core;
 using OfficeIMO.Access;
 using System;
 using System.Linq;
-using System.Diagnostics;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using Utils;
 
 namespace Program {
@@ -17,17 +16,27 @@ namespace Program {
 	}
 
 	public class Program {
-		private static bool debug = true;
+		private static bool debug = false;
 		public static bool Debug { set { debug = value; } }
-		private static string operation = "encode";
 		private static string inputfile = null;
-		private static string outputfile = null;
 		private static ExtractionTarget[] targets = (ExtractionTarget[]) Enum.GetValues(typeof(ExtractionTarget));
 
-		public  static void Main(string[] args)
-		{
+		public  static void Main(string[] args) {
 
-			Console.Error.WriteLine("Start.");
+			
+			
+			if (Debugger.IsAttached) {
+				debug = true;
+				System.Diagnostics.Debug.AutoFlush = true;
+			}
+			string line = "check";
+			if (Debugger.IsAttached){
+				// outside of Debug configuration the Debug.WriteLine() calls are normally removed by compilation
+				System.Diagnostics.Debug.WriteLine(line);
+			} else {
+				Console.Error.WriteLine(line);
+			}
+
 			var parseArgs = new ParseArgs(System.Environment.CommandLine);
 	
 			targets = ParseExtractionTargets(parseArgs, "extract");
@@ -38,48 +47,47 @@ namespace Program {
 				targets = (ExtractionTarget[])Enum.GetValues(typeof(ExtractionTarget));
 			else if (parseArgs.GetMacro("extract") != String.Empty)
 				targets = ParseExtractionTargets(parseArgs.GetMacro("extract"));
-			else {
-				System.Diagnostics.Debug.WriteLine("Missing argument: extract");
+			else { 
+				Logger.Log("Missing argument: extract");
 				Environment.Exit(1);
 			}
 			
 			AccessDocument source = AccessDocument.Load("application.accdb", new AccessLoadOptions { AccessMode = DocumentAccessMode.ReadOnly });
 			// https://github.com/EvotecIT/OfficeIMO/blob/master/OfficeIMO.Access/Model/AccessOpaqueValue.cs
-			System.Diagnostics.Debug.WriteLine(String.Format("Opened {0} bytes: {1} streams", source.NativeProperties.Length, source.ApplicationStreams.Count));
+			Logger.Log(String.Format("Opened {0} bytes: {1} streams", source.NativeProperties.Length, source.ApplicationStreams.Count));
 			// Console.Error.WriteLine(String.Format("Opened {0} {1}", source.NativeProperties.NativeType, source.ApplicationStreams.Count));
 			if (targets.Contains(ExtractionTarget.Modules)) {
 				if (source.VbaProject != null && source.VbaProject.Modules.Count > 0) {
-					System.Diagnostics.Debug.WriteLine("Modules:");
+					Logger.Log("Modules:");
 					foreach (AccessVbaModuleInfo module in source.VbaProject.Modules)
-						System.Diagnostics.Debug.WriteLine(module.Source ?? module.SourceLimitation);
+						Logger.Log(module.Source ?? module.SourceLimitation);
 					foreach (AccessVbaReferenceInfo reference in source.VbaProject.References)
-						System.Diagnostics.Debug.WriteLine(String.Format("{0}: {1}", reference.Name, reference.LibraryId));
+						Logger.Log(String.Format("{0}: {1}", reference.Name, reference.LibraryId));
 				} else {
-					System.Diagnostics.Debug.WriteLine("No Modules");
+					Logger.Log("No Modules");
 				}
 			}
 			if (targets.Contains(ExtractionTarget.Forms)) {
 				if (source.Forms.Count != 0) {
-					System.Diagnostics.Debug.WriteLine("Forms:");
+					Logger.Log("Forms:");
 					foreach (AccessApplicationObject form in source.Forms) {
-						System.Diagnostics.Debug.WriteLine(String.Format("{0}: {1}", form.Name, (form.Definition != null) ? form.Definition.RecordSource : ""));
+						Logger.Log(String.Format("{0}: {1}", form.Name, (form.Definition != null) ? form.Definition.RecordSource : ""));
 						foreach (AccessStorageStream stream in form.Streams)
-							System.Diagnostics.Debug.WriteLine(String.Format("{0}: {1} bytes", stream.Path, stream.Payload.GetBytes().Length));
+							Logger.Log(String.Format("{0}: {1} bytes", stream.Path, stream.Payload.GetBytes().Length));
 					}
 				} else {
-					System.Diagnostics.Debug.WriteLine("No Forms");
+					Logger.Log("No Forms");
 				}
 			}
 			if (targets.Contains(ExtractionTarget.Queries)) {
 				if (source.Queries.Count != 0) {
-					System.Diagnostics.Debug.WriteLine("Queries:");
+					Logger.Log("Queries:");
 					foreach (AccessQueryDefinition queryDefinition in source.Queries)
-						System.Diagnostics.Debug.WriteLine(String.Format("Query: {0}\n{1}", queryDefinition.Name, (queryDefinition.HasSql ? queryDefinition.Sql : "SQL unavailable")));
+						Logger.Log(String.Format("Query: {0}\n{1}", queryDefinition.Name, (queryDefinition.HasSql ? queryDefinition.Sql : "SQL unavailable")));
 				} else {
-					System.Diagnostics.Debug.WriteLine("No Queries");
+					Logger.Log("No Queries");
 				}
 			}
-			Console.Error.WriteLine("Done.");
 		}
 
 		public static ExtractionTarget[] ParseExtractionTargets(string value) {
