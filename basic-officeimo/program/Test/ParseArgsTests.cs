@@ -128,19 +128,32 @@ namespace Test
 		}
 
 		[Test]
+		public void test9() {
+			var data = new List<Program.ExtractionTarget>();
+			var values = Enum.GetValues(typeof(Program.ExtractionTarget));
+			int number = values.Length > 4 ? 4 : values.Length;
+
+			while (number > data.Count) {
+				var randomTarget = (Program.ExtractionTarget)values.GetValue(random.Next(values.Length));
+				if (!data.Contains(randomTarget))
+					data.Add(randomTarget);
+			}
+			// NOTE: `Append` creates a new
+			data.Add(data[0]);
+			var targets = Program.Program.ParseExtractionTargets(new ParseArgs(String.Format("-arg_enum={0}", String.Join(",", data.Select(element => element.ToString()).ToList().ToArray()))), "arg_enum");
+			Assert.AreEqual(number, targets.Count());
+			foreach (Program.ExtractionTarget target in data){	Assert.Contains(target, targets); }
+		}
+
+		[Test]
 		// refactored test9
 		public void test10() {
-			var data =
-				new List<Program.ExtractionTarget>();
+			var data = new List<Program.ExtractionTarget>();
 
-			int number = Math.Min(
-				              4,
-				              Enum.GetValues(typeof(Program.ExtractionTarget)).Length);
+			int number = Math.Min( 4, Enum.GetValues(typeof(Program.ExtractionTarget)).Length);
 
 			while (data.Count < number) {
-				Program.ExtractionTarget target =
-					GetRandomEnum<Program.ExtractionTarget>();
-
+				Program.ExtractionTarget target = GetRandomEnum<Program.ExtractionTarget>();
 				if (!data.Contains(target))
 					data.Add(target);
 			}
@@ -148,34 +161,11 @@ namespace Test
 			// Deliberately introduce a duplicate.
 			data.Add(data[0]);
 
-			string argument = String.Join(",",
-				                   data.Select(element => element.ToString()).ToArray());
-
-			Program.ExtractionTarget[] targets =
-				Program.Program.ParseExtractionTargets(
-					new ParseArgs("-arg_enum=" + argument),
-					"arg_enum");
+			Program.ExtractionTarget[] targets = Program.Program.ParseExtractionTargets( new ParseArgs("-arg_enum=" + String.Join(",", data.Select(element => element.ToString()).ToArray())), "arg_enum");
 
 			Assert.AreEqual(number, targets.Length);
 		}
 
-		[Test]
-		public void test9() {
-			List<Program.ExtractionTarget> data = new List<ExtractionTarget>();
-			Array values = Enum.GetValues(typeof(Program.ExtractionTarget));
-			int number = values.Length > 4 ? 4 : values.Length;
-
-			while (number > data.Count) {
-				Program.ExtractionTarget randomTarget = (Program.ExtractionTarget)values.GetValue(random.Next(values.Length));
-				if (!data.Contains(randomTarget))
-					data.Add(randomTarget);
-			}
-			// NOTE: `Append` creates a new
-			data.Add(data[0]);
-			Program.ExtractionTarget[] targets = Program.Program.ParseExtractionTargets(new ParseArgs(String.Format("-arg_enum={0}", String.Join(",", data.Select(element => element.ToString()).ToList().ToArray()))), "arg_enum");
-			Assert.AreEqual(number, targets.Count());
-			foreach (Program.ExtractionTarget target in data){	Assert.Contains(target, targets); }
-		}
 		// Reuse a single Random instance: creating a new Random in every iteration can produce repeated values
 		private static readonly Random random = new Random();
 		// NOTE: c# 5.0 Error CS0702: Constraint cannot be special class 'System.Enum'
