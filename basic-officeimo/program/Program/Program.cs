@@ -1,26 +1,22 @@
 ﻿using OfficeIMO;
 using OfficeIMO.Core;
 using OfficeIMO.Access;
-// https://github.com/commandlineparser/commandline
-using CommandLine;
 using System;
 using System.Linq;
 using System.Diagnostics;
+using Utils;
+using System.Collections.Generic;
 
-namespace Program
-{
-	public enum ExtractionTarget
-	{
+namespace Program {
+	public enum ExtractionTarget  {
 		Modules,
 		Forms,
-		QueriesL,
+		Queries,
 		References
 	}
 
-	public class Program
-	{
-		public  static void Main(string[] args)
-		{
+	public class Program {
+		public  static void Main(string[] args) {
 			AccessDocument source = AccessDocument.Load("application.accdb", new AccessLoadOptions { AccessMode = DocumentAccessMode.ReadOnly });
 			// https://github.com/EvotecIT/OfficeIMO/blob/master/OfficeIMO.Access/Model/AccessOpaqueValue.cs
 			Debug.WriteLine(String.Format("Opened {0} bytes: {1} streams", source.NativeProperties.Length, source.ApplicationStreams.Count));
@@ -52,9 +48,9 @@ namespace Program
 				Debug.WriteLine("No Queries");
 			}
 		}
-		public static ExtractionTarget[] ParseExtractionTargets(ParseArgs args)
-		{
-			string value = args.GetMacro("extract");
+
+		public static ExtractionTarget[] ParseExtractionTargets(ParseArgs args, string name) {
+			string value = args.GetMacro(name);
 
 			if (String.IsNullOrEmpty(value))
 				return new[] { ExtractionTarget.Modules };

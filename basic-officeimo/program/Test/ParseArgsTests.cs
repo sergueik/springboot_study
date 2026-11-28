@@ -1,10 +1,12 @@
 using System;
 using System.Text;
 using System.Linq;
-using Utils;
+using System.Collections.Generic;
+
 
 using NUnit.Framework;
 using Program;
+using Utils;
 
 namespace Test
 {
@@ -93,7 +95,8 @@ namespace Test
 		}
 
 		[Test]
-		public void test7() {
+		public void test7()
+		{
 			parseArgs = new ParseArgs("-arg_multi=a,b,c");
 
 			var result = parseArgs.GetMacro("arg_multi");
@@ -101,9 +104,10 @@ namespace Test
 			StringAssert.Contains(",", result);
 			Console.Error.WriteLine("result: " + result);
 		}
-		
+
 		[Test]
-		public void test8() {
+		public void test8()
+		{
 			parseArgs = new ParseArgs("-arg_enum=modules");
 			var argument = parseArgs.GetMacro("arg_enum");
 			Console.Error.WriteLine(String.Format("argument: \"{0}\"", argument));
@@ -118,19 +122,75 @@ namespace Test
 				Console.WriteLine(String.Format("Invalid argument string:\"{0}\"", argument));
 			}
 			Assert.AreEqual(Program.ExtractionTarget.Modules, result);
-			
-			// altrenative
-			
 
-			Assert.IsTrue(Enum.TryParse<Program.ExtractionTarget>(
-				argument, true, out result)
-			&& Enum.IsDefined(typeof(Program.ExtractionTarget), result));
+			// altrenative
+			Assert.IsTrue(Enum.TryParse<Program.ExtractionTarget>(argument, true, out result) && Enum.IsDefined(typeof(Program.ExtractionTarget), result));
 		}
-		
+
+		[Test]
+		// refactored test9
+		public void test10() {
+			var data =
+				new List<Program.ExtractionTarget>();
+
+			int number = Math.Min(
+				              4,
+				              Enum.GetValues(typeof(Program.ExtractionTarget)).Length);
+
+			while (data.Count < number) {
+				Program.ExtractionTarget target =
+					GetRandomEnum<Program.ExtractionTarget>();
+
+				if (!data.Contains(target))
+					data.Add(target);
+			}
+
+			// Deliberately introduce a duplicate.
+			data.Add(data[0]);
+
+			string argument = String.Join(",",
+				                   data.Select(element => element.ToString()).ToArray());
+
+			Program.ExtractionTarget[] targets =
+				Program.Program.ParseExtractionTargets(
+					new ParseArgs("-arg_enum=" + argument),
+					"arg_enum");
+
+			Assert.AreEqual(number, targets.Length);
+		}
+
 		[Test]
 		public void test9() {
+			List<Program.ExtractionTarget> data = new List<ExtractionTarget>();
+			Array values = Enum.GetValues(typeof(Program.ExtractionTarget));
+			int number = values.Length > 4 ? 4 : values.Length;
+
+			while (number > data.Count) {
+				Program.ExtractionTarget randomTarget = (Program.ExtractionTarget)values.GetValue(random.Next(values.Length));
+				if (!data.Contains(randomTarget))
+					data.Add(randomTarget);
+			}
+			// NOTE: `Append` creates a new
+			data.Add(data[0]);
+			Program.ExtractionTarget[] targets = Program.Program.ParseExtractionTargets(new ParseArgs(String.Format("-arg_enum={0}", String.Join(",", data.Select(element => element.ToString()).ToList().ToArray()))), "arg_enum");
+			Assert.AreEqual(number, targets.Count());
+			foreach (Program.ExtractionTarget target in data){	Assert.Contains(target, targets); }
 		}
+		// Reuse a single Random instance: creating a new Random in every iteration can produce repeated values
+		private static readonly Random random = new Random();
+		// NOTE: c# 5.0 Error CS0702: Constraint cannot be special class 'System.Enum'
 		
-		
+		private static T GetRandomEnum<T>() where T : struct {
+			System.Type typeOfT = typeof(T);
+
+			if (!typeOfT.IsEnum)
+				throw new ArgumentException("Generic T must be an enum");
+
+			Array values = Enum.GetValues(typeOfT);
+
+			int index = random.Next(values.Length);
+
+			return (T)values.GetValue(index);
+		}
 	}
 }
