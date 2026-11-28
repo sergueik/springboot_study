@@ -23,12 +23,11 @@ namespace Program {
 
 		public  static void Main(string[] args) {
 
-			
-			
 			if (Debugger.IsAttached) {
 				debug = true;
 				System.Diagnostics.Debug.AutoFlush = true;
 			}
+			/*
 			string line = "check";
 			if (Debugger.IsAttached){
 				// outside of Debug configuration the Debug.WriteLine() calls are normally removed by compilation
@@ -36,7 +35,7 @@ namespace Program {
 			} else {
 				Console.Error.WriteLine(line);
 			}
-
+			*/
 			var parseArgs = new ParseArgs(System.Environment.CommandLine);
 	
 			targets = ParseExtractionTargets(parseArgs, "extract");
@@ -47,7 +46,7 @@ namespace Program {
 				targets = (ExtractionTarget[])Enum.GetValues(typeof(ExtractionTarget));
 			else if (parseArgs.GetMacro("extract") != String.Empty)
 				targets = ParseExtractionTargets(parseArgs.GetMacro("extract"));
-			else { 
+			else {
 				Logger.Log("Missing argument: extract");
 				Environment.Exit(1);
 			}
